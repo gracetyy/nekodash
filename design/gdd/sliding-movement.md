@@ -155,12 +155,12 @@ func compute_slide_duration(tile_count: int) -> float:
     return max(MIN_SLIDE_DURATION_SEC, tile_count / SLIDE_VELOCITY_TILES_PER_SEC)
 ```
 
-| Variable                       | Type    | Default / Source                                          | Description                                           |
-| ------------------------------ | ------- | --------------------------------------------------------- | ----------------------------------------------------- |
-| `tile_count`                   | `int`   | `max(abs(landing.x - start.x), abs(landing.y - start.y))` | Number of tiles traversed in one axis                 |
-| `SLIDE_VELOCITY_TILES_PER_SEC` | `float` | 15.0 (tuning knob)                                        | Visual speed of the slide in tiles per second         |
-| `MIN_SLIDE_DURATION_SEC`       | `float` | 0.10 (tuning knob)                                        | Minimum animation time regardless of tile count       |
-| return                         | `float` | Duration in seconds                                       | e.g.: 1-tile → 0.10s, 5-tile → 0.33s, 10-tile → 0.67s |
+| Variable                       | Type    | Default / Source                                                  | Description                                                                                                                                                                                                                                                        |
+| ------------------------------ | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `tile_count`                   | `int`   | `max(abs(landing.x - start.x), abs(landing.y - start.y))`         | Number of tiles traversed in one axis                                                                                                                                                                                                                              |
+| `SLIDE_VELOCITY_TILES_PER_SEC` | `float` | **Desktop: 15.0 / Mobile: 25.0** (platform-adaptive; tuning knob) | Visual speed of the slide in tiles per second. Mobile value is higher because the grid occupies fewer physical mm on a phone screen — 15 t/s felt sluggish in prototype testing. Production implementation selects via `DisplayServer.is_touchscreen_available()`. |
+| `MIN_SLIDE_DURATION_SEC`       | `float` | 0.10 (tuning knob)                                                | Minimum animation time regardless of tile count                                                                                                                                                                                                                    |
+| return                         | `float` | Duration in seconds                                               | e.g.: 1-tile → 0.10s, 5-tile → 0.33s, 10-tile → 0.67s                                                                                                                                                                                                              |
 
 _This constant-velocity formula ensures consistent perceived speed regardless of slide distance. A 10-tile slide looks and feels proportionally longer than a 2-tile slide._
 
@@ -193,15 +193,15 @@ _This constant-velocity formula ensures consistent perceived speed regardless of
 
 ## Tuning Knobs
 
-| Parameter                      | Current Value | Safe Range           | `@export` | Effect of Increase                                                            | Effect of Decrease                                                             |
-| ------------------------------ | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `SLIDE_VELOCITY_TILES_PER_SEC` | 15.0          | 8.0 – 25.0           | Yes       | Faster slides; can feel snappy or frantic; reduce for accessibility           | Slower slides; more deliberate feel; can feel sluggish for fast puzzle-solvers |
-| `MIN_SLIDE_DURATION_SEC`       | 0.10          | 0.05 – 0.20          | Yes       | Short slides linger longer; good for accessibility/legibility                 | Very short 1-tile slides can look like a pop rather than a movement            |
-| `BLOCKED_BUMP_OFFSET_PX`       | 6.0           | 2.0 – 16.0           | Yes       | More dramatic bump toward wall; reads more clearly as "hit something"         | Subtle; may not read as a blocked attempt on small mobile screens              |
-| `BLOCKED_BUMP_DURATION_SEC`    | 0.12          | 0.06 – 0.25          | Yes       | Longer bump animation; stalls input rhythm (input is NOT blocked during bump) | Faster feedback; less expressive                                               |
-| `CAT_LAND_SQUISH_SCALE`        | (1.2, 0.85)   | (1.05–1.3, 0.7–0.95) | Yes       | More exaggerated landing squish; cartoony; polarizing                         | Subtle; may not register as a landing on small screens                         |
-| `CAT_LAND_SQUISH_DURATION_SEC` | 0.08          | 0.04 – 0.15          | Yes       | Squish lingers; more cartoony                                                 | Fast snap back; snappier feel                                                  |
-| `MAX_SLIDE_DISTANCE`           | 20            | 16 – 20              | No        | Higher guard; covers hypothetical grids > 15×15 if `MAX_GRID_SIZE` increases  | Should not go below `MAX_GRID_SIZE`; could truncate valid slides               |
+| Parameter                      | Current Value                | Safe Range           | `@export` | Effect of Increase                                                            | Effect of Decrease                                                             |
+| ------------------------------ | ---------------------------- | -------------------- | --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `SLIDE_VELOCITY_TILES_PER_SEC` | Desktop: 15.0 / Mobile: 25.0 | 8.0 – 30.0           | Yes       | Faster slides; can feel snappy or frantic; reduce for accessibility           | Slower slides; more deliberate feel; can feel sluggish for fast puzzle-solvers |
+| `MIN_SLIDE_DURATION_SEC`       | 0.10                         | 0.05 – 0.20          | Yes       | Short slides linger longer; good for accessibility/legibility                 | Very short 1-tile slides can look like a pop rather than a movement            |
+| `BLOCKED_BUMP_OFFSET_PX`       | 6.0                          | 2.0 – 16.0           | Yes       | More dramatic bump toward wall; reads more clearly as "hit something"         | Subtle; may not read as a blocked attempt on small mobile screens              |
+| `BLOCKED_BUMP_DURATION_SEC`    | 0.12                         | 0.06 – 0.25          | Yes       | Longer bump animation; stalls input rhythm (input is NOT blocked during bump) | Faster feedback; less expressive                                               |
+| `CAT_LAND_SQUISH_SCALE`        | (1.2, 0.85)                  | (1.05–1.3, 0.7–0.95) | Yes       | More exaggerated landing squish; cartoony; polarizing                         | Subtle; may not register as a landing on small screens                         |
+| `CAT_LAND_SQUISH_DURATION_SEC` | 0.08                         | 0.04 – 0.15          | Yes       | Squish lingers; more cartoony                                                 | Fast snap back; snappier feel                                                  |
+| `MAX_SLIDE_DISTANCE`           | 20                           | 16 – 20              | No        | Higher guard; covers hypothetical grids > 15×15 if `MAX_GRID_SIZE` increases  | Should not go below `MAX_GRID_SIZE`; could truncate valid slides               |
 
 _All `@export` parameters are exposed on the CatController node for editor tuning without code changes. `MAX_SLIDE_DISTANCE` is a const, not exported — it is a correctness guard, not a design parameter._
 
