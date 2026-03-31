@@ -1,6 +1,6 @@
 # Main Menu
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 21 of 22
@@ -17,6 +17,17 @@ Skins. It reads from `SaveManager` only — no game systems are active on this s
 
 Music Manager automatically plays the menu track when `transition_completed(MAIN_MENU)`
 fires — Main Menu does not control audio.
+
+---
+
+## Player Fantasy
+
+The entry point. A cute cat waits for you — your cat, whichever skin you last equipped.
+The game title is present but doesn't shout. Two buttons. The menu is unhurried and
+confident: it knows you're there, it knows what to show you. For a returning player,
+seeing their equipped cat on the title screen is a small moment of "this is mine" before
+the puzzle session begins. The Main Menu doesn't try to convince you to play; it just
+opens the door and the cat sits by it.
 
 ---
 
@@ -166,6 +177,12 @@ tutorial is shown at MVP.
 | MM-5 | "Skins" button navigates to Skin Select                                          |
 | MM-6 | Returning from World Map or Skin Select re-shows Main Menu with fresh cat sprite |
 | MM-7 | No crash on first launch (default skin shown)                                    |
+
+---
+
+## Tuning Knobs
+
+None at MVP. No runtime-configurable parameters.
 
 ---
 

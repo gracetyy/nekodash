@@ -1,6 +1,6 @@
 # Star Rating System
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-30
 > **Last Updated**: 2026-03-30
 > **System #**: 15 of 22
@@ -20,6 +20,17 @@ This system enforces the game's key promise — _always know how close to perfec
 by making performance legible: three stars means optimal play, zero stars means the level was
 finished but inefficiently. In all cases, level completion is what matters for progression;
 stars are informational feedback.
+
+---
+
+## Player Fantasy
+
+The number at the end. When the Level Complete Screen appears and the stars pop in — one,
+two, three — the player knows exactly where they stand. Three stars means they found the
+optimal path. One star means they completed it but left moves on the table. Zero stars means
+they ground through it by brute force. None of these are wrong, but all of them are
+meaningful. The Star Rating System is what creates the difference between "I finished" and
+"I know where I stand." It is the honest mirror the game holds up at the end of every level.
 
 ---
 
@@ -192,6 +203,12 @@ them on this signal.
 | SR-7 | After restart, the next `level_completed` re-fires `rating_computed` with fresh data                                        |
 | SR-8 | Star Rating System never calls `SaveManager` directly                                                                       |
 | SR-9 | `get_current_rating()` returns the result of the most recent computation, or -1 if no computation has occurred this attempt |
+
+---
+
+## Tuning Knobs
+
+None at MVP. Star thresholds (`star_3_moves`, `star_2_moves`, `star_1_moves`) are per-level data authored in `LevelData`. The rating formula is locked. Post-jam option: `STAR_1_FLOOR: int` to guarantee at least 1 star when `final_moves < star_1_moves * N`.
 
 ---
 

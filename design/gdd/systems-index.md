@@ -1,6 +1,6 @@
 # Systems Index: NekoDash
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-30
 > **Last Updated**: 2026-03-30
 > **Source Concept**: design/gdd/game-concept.md

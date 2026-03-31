@@ -1,6 +1,6 @@
 # Level Complete Screen
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 19 of 22
@@ -20,6 +20,17 @@ Manager after `level_completed` fires in the gameplay scene. It receives its con
 `receive_scene_params()`, subscribes to `LevelProgression.level_record_saved` to read
 confirmed star and move data after SaveManager has written it, and delegates all navigation
 to `SceneManager`.
+
+---
+
+## Player Fantasy
+
+The pause after the last tile lights up. The cat has reached full coverage, the music sting
+hits, and then: this screen. Stars appear. The move count is confirmed. A "NEW BEST" badge
+appears if the player just beat themselves. For a moment, the puzzle is finished and the
+result is real. This screen is the punctuation mark at the end of the puzzle sentence —
+without it, the completion would feel incomplete, like a joke without a punchline. Done well,
+it closes the loop cleanly and makes the player want to open another one.
 
 ---
 
@@ -44,74 +55,88 @@ to `SceneManager`.
 
 ### How the screen is reached
 
-The gameplay scene root's Level Coordinator subscribes to `CoverageTracking.level_completed`
-and calls:
+The gameplay scene root's Level Coordinator subscribes to
+`LevelProgression.level_record_saved`. When that signal fires (after the record has been
+written to SaveManager), the Level Coordinator collects all result data while the gameplay
+scene is still alive, then calls:
 
 ```gdscript
+# In Level Coordinator, on _on_level_record_saved(level_id, stars, final_moves):
+var next_level := _level_progression.get_next_level(level_id)
 SceneManager.go_to(Screen.LEVEL_COMPLETE, {
-    "level_data": _current_level_data,
-    "level_progression": _level_progression_ref,
-    "final_moves": _move_counter.get_final_move_count()
+    "level_data":               _current_level_data,
+    "stars":                    stars,           # int, -1 to 3
+    "final_moves":              final_moves,     # int
+    "prev_best_moves":          _prev_best_moves, # snapshotted at level load time
+    "was_previously_completed": _was_previously_completed, # snapshotted at level load
+    "next_level_data":          next_level       # LevelData or null if last level
 })
 ```
 
-These three params are the minimum contract. The Level Complete Screen reads them from
-`receive_scene_params()`.
+`_prev_best_moves` and `_was_previously_completed` are snapshotted by the Level
+Coordinator at **level load time** (before any moves) by reading from `SaveManager` —
+the only safe moment to capture previous-session bests before the current session's
+write overwrites them.
+
+> **Why pass plain data instead of a node reference?** `LevelProgression` is a node
+> inside the gameplay scene that SceneManager is about to unload. Passing a node
+> reference as a scene param is unsafe — the node may be freed before the incoming scene
+> has a chance to use it. All required data is collected while the gameplay scene is
+> still alive, then passed as value types.
 
 ### `receive_scene_params(params: Dictionary) -> void`
 
-```
-_current_level_data = params.get("level_data")         # LevelData
-_level_progression = params.get("level_progression")  # LevelProgression node ref
-_final_moves = params.get("final_moves", 0)            # int
+```gdscript
+_current_level_data        = params.get("level_data")
+_stars                     = params.get("stars", 0)         # int -1..3
+_final_moves               = params.get("final_moves", 0)   # int
+_prev_best_moves           = params.get("prev_best_moves", 0)
+_was_previously_completed  = params.get("was_previously_completed", false)
+_next_level_data           = params.get("next_level_data")  # LevelData or null
 ```
 
-After receiving params, the screen does **not** immediately show star results — it waits
-for `LevelProgression.level_record_saved` to fire (confirming SaveManager has written the
-record) before populating the star display. This ensures the displayed result is the
-authoritative confirmed value, not a guess.
-
-> **Why wait for `level_record_saved`?** `StarRatingSystem.rating_computed` and
-> `LevelProgression.level_record_saved` fire close together but in separate signal
-> emissions. Waiting for `level_record_saved` guarantees the data shown matches exactly
-> what was saved. It also provides a natural beat before the results animate in.
+All display data is available immediately on `receive_scene_params`. The screen
+does **not** wait for any further signals — it populates results in `_ready()`.
 
 ---
 
 ## Display Elements
 
-| Element               | Source                                                                                   | Content                                          | Notes                                                                 |
-| --------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------- |
-| **Level name**        | `_current_level_data.display_name`                                                       | Level title                                      | Set immediately on `receive_scene_params`                             |
-| **Star display**      | `level_record_saved` signal `stars` arg                                                  | 0–3 filled star icons                            | Stars animate in one-by-one at MVP-Polish; instant at MVP             |
-| **Move count**        | `level_record_saved` signal `final_moves` arg                                            | `"{final} / {min}"` or `"{final}"` if min=0      | Same format rules as HUD                                              |
-| **New best badge**    | Compare `final_moves` to `SaveManager.get_level_record(level_id).best_moves` (pre-write) | "NEW BEST!" label                                | Only shown if final_moves < previous best moves (or first completion) |
-| **Next Level button** | `_level_progression.get_next_level(level_id)`                                            | Enabled if next level exists and is now unlocked | Hidden if `get_next_level()` returns null (last level)                |
-| **Retry button**      | Always visible                                                                           | Re-launches same level                           | Calls `SceneManager.go_to_level(_current_level_data)`                 |
-| **World Map button**  | Always visible                                                                           | Returns to World Map                             | Calls `SceneManager.go_to(Screen.WORLD_MAP)`                          |
+| Element               | Source                                                  | Content                                     | Notes                                                      |
+| --------------------- | ------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
+| **Level name**        | `_current_level_data.display_name`                      | Level title                                 | Set immediately in `_ready()`                              |
+| **Star display**      | `_stars` param (int, -1 to 3)                           | 0–3 filled star icons                       | Stars animate in one-by-one at MVP-Polish; instant at MVP  |
+| **Move count**        | `_final_moves` param                                    | `"{final} / {min}"` or `"{final}"` if min=0 | Same format rules as HUD                                   |
+| **New best badge**    | `_prev_best_moves` + `_was_previously_completed` params | "NEW BEST!" label                           | Shown if first completion or final_moves < prev_best_moves |
+| **Next Level button** | `_next_level_data` param                                | Enabled if `_next_level_data != null`       | Hidden if null (last level)                                |
+| **Retry button**      | Always visible                                          | Re-launches same level                      | Calls `SceneManager.go_to_level(_current_level_data)`      |
+| **World Map button**  | Always visible                                          | Returns to World Map                        | Calls `SceneManager.go_to(Screen.WORLD_MAP)`               |
 
 ---
 
 ## Design Rules
 
-1. **Wait for `level_record_saved` before displaying results**: Connect to
-   `_level_progression.level_record_saved` in `_ready()`. The handler populates star
-   display and move count. The level name is shown immediately (no wait needed).
+1. **Display results immediately from params**: All result data arrives in
+   `receive_scene_params()`. `_ready()` immediately calls `_populate_results()` and
+   `_update_next_button()`. No signal connection to Level Progression is needed or
+   present — the data is already confirmed (Level Coordinator waited for
+   `level_record_saved` before triggering this transition).
 
 2. **`stars == -1` sentinel**: If `level_record_saved` fires with `stars == -1`
    (in-development level), suppress the star display entirely — show dashes or an empty
    star row with a "?" indicator. The move count is still shown.
 
-3. **New best detection**: Before `level_record_saved` fires, the Level Complete Screen
-   reads `SaveManager.get_level_record(_current_level_data.level_id)` in
-   `receive_scene_params()` to snapshot the _previous_ best moves. After
-   `level_record_saved` fires, if `final_moves < _prev_best_moves` (or
-   `_prev_best_moves == 0` for first completion), show the "NEW BEST" badge.
+3. **New best detection**: `_prev_best_moves` and `_was_previously_completed` arrive as
+   params (snapshotted by Level Coordinator at level load, before the save write).
+   In `_populate_results()`, if `_was_previously_completed == false` (first completion)
+   or `final_moves < _prev_best_moves`, show the "NEW BEST" badge. No SaveManager
+   read from this screen.
 
-4. **Next Level button availability**: After `level_record_saved` fires, call
-   `_level_progression.get_next_level(level_id)`. If it returns a `LevelData` and
-   `_level_progression.is_level_unlocked(next.level_id)` is true, enable the button.
-   Otherwise hide it.
+4. **Next Level button availability**: `_next_level_data` was pre-computed by the
+   Level Coordinator before the transition. If it is `null` (last level in game), hide
+   the button. If it is a valid `LevelData`, show the button. The Level Coordinator
+   already applied the unlock check via `LevelProgression.get_next_level()` (which
+   only returns next level if it is unlocked).
 
 5. **First-time world completion**: If `LevelProgression.world_completed` fired (Level
    Complete Screen may subscribe to it), show a brief "World Complete!" banner before the
@@ -132,42 +157,37 @@ authoritative confirmed value, not a guess.
 
 ## Initialization Flow
 
-```
-_ready():
-    Connect _level_progression.level_record_saved → _on_level_record_saved
-    Connect _level_progression.world_completed → _on_world_completed (optional MVP-stretch)
+```gdscript
+func receive_scene_params(params: Dictionary) -> void:
+    _current_level_data       = params.get("level_data")
+    _stars                    = params.get("stars", 0)
+    _final_moves              = params.get("final_moves", 0)
+    _prev_best_moves          = params.get("prev_best_moves", 0)
+    _was_previously_completed = params.get("was_previously_completed", false)
+    _next_level_data          = params.get("next_level_data")
+
+func _ready() -> void:
     _level_name_label.text = _current_level_data.display_name
-    _snapshot_prev_best()  # read SaveManager before write lands
-
-_snapshot_prev_best():
-    var record = SaveManager.get_level_record(_current_level_data.level_id)
-    _prev_best_moves = record.get("best_moves", 0)
-    _was_previously_completed = record.get("completed", false)
-
-_on_level_record_saved(level_id, stars, final_moves):
-    if level_id != _current_level_data.level_id:
-        return  # guard against stale signals from prior levels
-    _populate_results(stars, final_moves)
+    _populate_results(_stars, _final_moves)
     _update_next_button()
 
-_populate_results(stars, final_moves):
+func _populate_results(stars: int, final_moves: int) -> void:
     _show_stars(stars)  # -1 → suppress; 0-3 → fill icons
     if _current_level_data.minimum_moves == 0:
         _moves_label.text = str(final_moves)
     else:
         _moves_label.text = "%d / %d" % [final_moves, _current_level_data.minimum_moves]
     # New best badge
-    var is_first = not _was_previously_completed
-    var is_better = _prev_best_moves > 0 and final_moves < _prev_best_moves
+    var is_first := not _was_previously_completed
+    var is_better := _prev_best_moves > 0 and final_moves < _prev_best_moves
     _new_best_badge.visible = is_first or is_better
 
-_update_next_button():
-    var next = _level_progression.get_next_level(_current_level_data.level_id)
-    if next == null or not _level_progression.is_level_unlocked(next.level_id):
+func _update_next_button() -> void:
+    # _next_level_data pre-computed by Level Coordinator; null = last level
+    if _next_level_data == null:
         _next_btn.visible = false
     else:
         _next_btn.visible = true
-        _next_level_data = next
 ```
 
 ---
@@ -208,14 +228,13 @@ When Next Level is hidden, Retry becomes the leftmost/primary button.
 
 ## Edge Cases
 
-| Edge Case                                             | Behaviour                                                                       |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `stars == -1` (in-dev level)                          | Star row shows dashes; move count shown normally                                |
-| Last level in game (`get_next_level()` returns null)  | Next Level button hidden; Retry and World Map only                              |
-| First time completing a level                         | `_prev_best_moves == 0` → "NEW BEST" badge shown                                |
-| Replay with worse move count                          | No new best badge; previous best preserved in SaveManager                       |
-| `level_record_saved` fires for a different level_id   | Handler returns early; no display corruption                                    |
-| Player taps buttons before `level_record_saved` fires | Retry and World Map always work; Next Level button is hidden until results land |
+| Edge Case                                                 | Behaviour                                                                               |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `stars == -1` (in-dev level)                              | Star row shows dashes; move count shown normally                                        |
+| Last level in game (`get_next_level()` returns null)      | Next Level button hidden; Retry and World Map only                                      |
+| First time completing a level                             | `_prev_best_moves == 0` → "NEW BEST" badge shown                                        |
+| Replay with worse move count                              | No new best badge; previous best preserved in SaveManager                               |
+| `next_level_data` is null but player is not on last level | Should not occur if Level Coordinator computes correctly; Next Level hidden as fallback |
 
 ---
 
@@ -224,7 +243,7 @@ When Next Level is hidden, Retry becomes the leftmost/primary button.
 | ID    | Criterion                                                                                 |
 | ----- | ----------------------------------------------------------------------------------------- |
 | LC-1  | Level name is displayed immediately when the screen loads                                 |
-| LC-2  | Star display and move count appear after `level_record_saved` fires                       |
+| LC-2  | Star display and move count appear immediately when the screen loads (from params)        |
 | LC-3  | 3 stars → 3 filled star icons; 0 stars → 0 filled                                         |
 | LC-4  | `stars == -1` → star icons suppressed or shown as "?"                                     |
 | LC-5  | Move display shows `"{final} / {min}"` when `minimum_moves > 0`                           |
@@ -238,16 +257,20 @@ When Next Level is hidden, Retry becomes the leftmost/primary button.
 
 ---
 
+## Tuning Knobs
+
+None at MVP. All display is data-driven from params received at scene load. No configurable animation durations or display thresholds.
+
+---
+
 ## Dependencies
 
-| Depends On         | Interface Used                                                                                       |
-| ------------------ | ---------------------------------------------------------------------------------------------------- |
-| Star Rating System | `stars` value arrives via `level_record_saved` (indirect; Star Rating → Level Progression → signal)  |
-| Level Progression  | `level_record_saved(level_id, stars, final_moves)` signal; `get_next_level()`; `is_level_unlocked()` |
-| Move Counter       | `final_moves` passed via `receive_scene_params` params                                               |
-| Level Data Format  | `display_name`, `minimum_moves`, `level_id`                                                          |
-| Save / Load System | `get_level_record()` — read _before_ `level_record_saved` fires to snapshot previous best            |
-| Scene Manager      | `go_to()`, `go_to_level()` for all navigation                                                        |
+| Depends On         | Interface Used                                                                                                               |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Level Coordinator  | Provides all result data as params: `stars`, `final_moves`, `prev_best_moves`, `was_previously_completed`, `next_level_data` |
+| Level Data Format  | `display_name`, `minimum_moves`, `level_id` (from `_current_level_data` param)                                               |
+| Save / Load System | No reads from this screen. SaveManager was read by Level Coordinator before transition.                                      |
+| Scene Manager      | `go_to()`, `go_to_level()` for all navigation                                                                                |
 
 ---
 

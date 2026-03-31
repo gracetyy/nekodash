@@ -72,9 +72,11 @@ It is taken **before** each `slide_completed` processes — i.e., on the signal'
 
    > **Signal ordering note**: `slide_completed` is connected by all subscribers
    > at `_ready()`. GDScript signal delivery is synchronous and ordered by
-   > connection time. Undo/Restart must connect **before** Coverage Tracking and
-   > Move Counter so its snapshot captures their state before they mutate it.
-   > The Level Coordinator is responsible for enforcing this connection order.
+   > connection time. Undo/Restart must connect **first** so its snapshot
+   > captures pre-mutation state. Move Counter must connect **before** Coverage
+   > Tracking so that when Coverage Tracking's handler emits `level_completed`
+   > (on the final slide), StarRatingSystem reads the already-incremented move
+   > count. The Level Coordinator is responsible for enforcing this order.
 
 2. **Undo**: `undo() -> void` is the single public method for undoing one move.
    - If `_history` is empty, logs a warning and returns (no-op).
@@ -136,11 +138,21 @@ must be taken **before** Coverage Tracking and Move Counter mutate their state.
 **Required connection order** (enforced by the Level Coordinator in `_ready()`):
 
 1. Undo/Restart connects first
-2. Coverage Tracking connects second
-3. Move Counter connects third
+2. Move Counter connects second
+3. Coverage Tracking connects third
 
-This ordering constraint is **critical** and must be documented in the Level
-Coordinator's implementation comments.
+**Why this order?**
+
+- Undo/Restart must be first: it captures pre-mutation state (`cat_pos_before`,
+  `coverage_before`, `move_count_before`) before Move Counter or Coverage Tracking
+  have processed the same signal.
+- Move Counter must be second: on the final slide, Coverage Tracking's handler
+  emits `level_completed`, which causes StarRatingSystem to call
+  `MoveCounter.get_final_move_count()`. Move Counter must have already incremented
+  before that call happens. If Move Counter connected after Coverage Tracking, the
+  star rating would be computed with an off-by-one move count.
+- Coverage Tracking connects third: by the time its handler runs, Undo/Restart has
+  snapshotted correctly and Move Counter has incremented correctly.
 
 ### States and Transitions
 

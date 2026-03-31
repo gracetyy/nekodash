@@ -160,6 +160,11 @@ _These are suggestions only — designers override per level. The formulas here 
 
 The Level Data Format itself has no runtime tuning knobs — it is a data schema, not a system with live parameters. The following authoring parameters apply at level design time:
 
+> **Content Convention — Catalogue path**: The `LevelCatalogue` resource must be saved at
+> `res://data/level_catalogue.tres`. This exact path is hardcoded in World Map,
+> Skin Unlock / Milestone Tracker, and Level Coordinator. If the file is placed
+> anywhere else, all three systems silently fail to load levels.
+
 | Parameter             | Default Guideline                    | Notes                                                                        |
 | --------------------- | ------------------------------------ | ---------------------------------------------------------------------------- |
 | `star_3_moves`        | = `minimum_moves`                    | Authoring guideline; set per level by designer after BFS run                 |

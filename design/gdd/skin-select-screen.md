@@ -1,6 +1,6 @@
 # Skin Select Screen
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 22 of 22
@@ -15,6 +15,18 @@ The Skin Select Screen lets the player browse all cat skins, see which are unloc
 preview locked skins with their unlock hint, and equip an unlocked skin. It is the final
 UI screen in the system. Equipping a skin writes to `SaveManager` immediately; the
 equipped skin is reflected in the Main Menu and gameplay scene on the next load.
+
+---
+
+## Player Fantasy
+
+My cats. A small gallery — most of it locked behind gameplay achievements, a few available
+from the start. The player scrolls through and sees silhouettes of skins they haven't
+earned yet. The unlock hint tells them what to do: complete a world, earn a certain number
+of stars. It's not a store; it's a trophy case with room to grow. The act of equipping a
+new skin — tapping a cat they just unlocked and seeing that choice reflected on the Main
+Menu — makes cosmetic customisation feel earned, not purchased. The skin they pick is a
+record of how far they've come.
 
 ---
 
@@ -207,6 +219,12 @@ level from this screen) so live refresh is not required. Document as a post-jam 
 | SS-8  | Equip button is disabled when the selected skin is locked                                         |
 | SS-9  | Back button returns to Main Menu                                                                  |
 | SS-10 | After equipping a skin and returning to Main Menu, the Main Menu cat sprite reflects the new skin |
+
+---
+
+## Tuning Knobs
+
+None at MVP. No runtime-configurable parameters.
 
 ---
 

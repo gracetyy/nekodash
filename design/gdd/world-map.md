@@ -1,6 +1,6 @@
 # World Map / Level Select
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 20 of 22
@@ -21,6 +21,18 @@ alive when the World Map is shown. The World Map does **not** call LevelProgress
 methods. It derives lock state using the same rule LevelProgression uses — the first level
 of each world is always unlocked; any subsequent level is unlocked if the previous level's
 record is completed in SaveManager.
+
+---
+
+## Player Fantasy
+
+The map that makes the game feel bigger than the level. When the player exits a completed
+level and lands on the World Map, they see the full picture: every level they've played,
+every star they've earned, every locked level still waiting. It's the difference between a
+game that feels like an endless hallway and one that feels like a space with shape and
+size. Seeing completed puzzles gives the player a sense of trajectory — they were here,
+they did that, they're going there next. Seeing locked levels gives them something to want.
+The World Map is the game's memory, made visible.
 
 ---
 
@@ -255,6 +267,12 @@ _make_level_button(level: LevelData) -> Control:
 | WM-7 | Back button returns to Main Menu                                                              |
 | WM-8 | Selecting a world tab shows only that world's levels                                          |
 | WM-9 | When `receive_scene_params` provides `highlight_world_id`, that world tab is selected on load |
+
+---
+
+## Tuning Knobs
+
+None at MVP. All display and unlock logic is data-driven from `LevelCatalogue` and `SaveManager`. No runtime-configurable display parameters.
 
 ---
 

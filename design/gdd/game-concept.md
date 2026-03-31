@@ -1,7 +1,7 @@
 # Game Concept: NekoDash
 
 _Created: 2026-03-30_
-_Status: Draft_
+_Status: Approved_
 
 ---
 
