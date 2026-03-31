@@ -1,6 +1,6 @@
 # Music Manager
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 10 of 22
@@ -19,6 +19,18 @@ entries.
 
 Music Manager is a Godot autoload singleton. Its only runtime dependency is SceneManager
 (also an autoload), subscribed to via signal at `_ready()`.
+
+---
+
+## Player Fantasy
+
+The music is the room the puzzle lives in. When the player taps into a new world, the warm
+ambient track that fades in is not decoration — it's atmosphere. It signals that this set of
+puzzles has its own identity. The Level Complete sting is the punctuation: a quick celebratory
+hit that says "you did it" before the screen even finishes loading. Silence on the Main Menu
+would feel empty; the wrong track on a hard world would feel wrong in a way the player
+couldn't name. The Music Manager is invisible when working perfectly. The player just feels
+like the game has soul.
 
 ---
 
@@ -193,14 +205,15 @@ None emitted. Music Manager is a pure consumer of Scene Manager signals.
 
 ## Edge Cases
 
-| Edge Case                                                         | Behaviour                                                                             |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `world_changed` fires for a world with no entry in `world_tracks` | Play silence (fade out current track); `push_warning()`                               |
-| `transition_completed` fires with `LOADING`                       | No track change; carry over current track                                             |
-| Level Complete sting has no asset assigned                        | Silent; `push_warning()`                                                              |
-| Cross-fade Tween interrupted by rapid scene changes               | Kill tween, snap volumes, begin new fade                                              |
-| App loses focus (mobile background)                               | Godot's Audio Server handles OS mute automatically; no special handling needed at MVP |
-| All tracks `null` on startup                                      | Both players idle; silence; no crash                                                  |
+| Edge Case                                                         | Behaviour                                                                                                                                                       |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `world_changed` fires for a world with no entry in `world_tracks` | Play silence (fade out current track); `push_warning()`                                                                                                         |
+| `transition_completed` fires with `LOADING`                       | No track change; carry over current track                                                                                                                       |
+| Level Complete sting has no asset assigned                        | Silent; `push_warning()`                                                                                                                                        |
+| Level Complete sting finishes (no loop)                           | Silence is intentional; the player is expected to navigate away within seconds. Menu track resumes on the next `transition_completed` signal (e.g., World Map). |
+| Cross-fade Tween interrupted by rapid scene changes               | Kill tween, snap volumes, begin new fade                                                                                                                        |
+| App loses focus (mobile background)                               | Godot's Audio Server handles OS mute automatically; no special handling needed at MVP                                                                           |
+| All tracks `null` on startup                                      | Both players idle; silence; no crash                                                                                                                            |
 
 ---
 

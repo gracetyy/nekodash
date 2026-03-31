@@ -1,6 +1,6 @@
 # Level Progression
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 16 of 22
@@ -19,6 +19,18 @@ emits signals so the Level Complete Screen and World Map can refresh their state
 
 Level Progression does not display anything and does not change scenes — it publishes facts.
 The Level Complete Screen and World Map read from it.
+
+---
+
+## Player Fantasy
+
+The reassuring feeling that the next puzzle is waiting. When a player finishes a level and
+taps "Next Level," the Level Progression system is what makes that tap do something
+meaningful. It knows what level comes next, whether the player has earned it, and whether
+this completion just unlocked a new world. Level Progression is entirely invisible — it has
+no display, no animation, no sound. Its player fantasy is felt only through its downstream
+effects: the World Map showing one more unlocked button, the Level Complete Screen knowing
+what to show. It is only noticeable when it breaks.
 
 ---
 
@@ -245,6 +257,12 @@ The table documents the expected authoring intent.
 
 ---
 
+## Tuning Knobs
+
+None at MVP. All progression rules are data-driven (catalogue order, single-unlock rule). No runtime-configurable constants.
+
+---
+
 ## Dependencies
 
 | Depends On         | Interface Used                                                              |
@@ -257,11 +275,19 @@ The table documents the expected authoring intent.
 
 ## Downstream Consumers
 
-| Consumer                            | What it reads                                                                                             | When                                     |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| **Level Complete Screen**           | Subscribes to `level_record_saved`; calls `get_next_level()`, `get_best_stars()`                          | After level ends                         |
-| **World Map / Level Select**        | Calls `is_level_unlocked()`, `get_best_stars()`, `get_levels_for_world()` on scene load                   | On World Map load / `level_record_saved` |
-| **Skin Unlock / Milestone Tracker** | Subscribes to `level_record_saved`; queries cumulative stars via `SaveManager.get_best_stars()` per level | On `level_record_saved`                  |
+| Consumer                            | What it reads                                                                                             | When                                                                    |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Level Coordinator**               | Subscribes to `level_record_saved`; calls `get_next_level()` to build Level Complete Screen params        | After `level_record_saved` fires; immediately triggers scene transition |
+| **World Map / Level Select**        | Calls `is_level_unlocked()`, `get_best_stars()`, `get_levels_for_world()` on scene load                   | On World Map load / `level_record_saved`                                |
+| **Skin Unlock / Milestone Tracker** | Subscribes to `level_record_saved`; queries cumulative stars via `SaveManager.get_best_stars()` per level | On `level_record_saved`                                                 |
+
+> **Unlock logic duplication**: World Map reimplements `is_level_unlocked()` with
+> the same rule as Level Progression (previous level completed = next unlocked).
+> This is intentional — World Map loads when the gameplay scene is not alive, so
+> it cannot call into Level Progression directly. **If the unlock rule ever changes,
+> it must be updated in both `level-progression.md` and `world-map.md`.**
+
+| `world_completed` has no documented subscriber | At MVP no system reacts to `world_completed`. It is defined for future use (e.g., a "World Complete!" banner on the Level Complete Screen). Level Coordinator may optionally pass `world_completed` state as a boolean in the scene params dict if the banner is implemented. If unused at ship, consider suppressing or removing the signal to avoid confusion. |
 
 ---
 

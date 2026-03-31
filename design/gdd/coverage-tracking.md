@@ -49,7 +49,8 @@ This serves **Pillar 1 — Every Move Is a Choice** because the coverage visuali
 
 ```gdscript
 signal tile_covered(coord: Vector2i)           # Emitted once per newly covered tile
-signal coverage_updated(covered: int, total: int)  # Emitted after each slide_completed
+signal tile_uncovered(coord: Vector2i)         # Emitted per tile reverting to uncovered (undo / restore_coverage_snapshot)
+signal coverage_updated(covered: int, total: int)  # Emitted after each slide_completed and after restore_coverage_snapshot
 signal level_completed                         # Emitted when covered_count == total_walkable
 ```
 
@@ -69,14 +70,14 @@ Tracking ──[restore_coverage_snapshot()]──► Tracking  (undo to earlier
 
 ### Interactions with Other Systems
 
-| System                                | Direction                            | Interface                                                                                                               |
-| ------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| **Grid System**                       | Coverage Tracking → Grid System      | Calls `grid.get_all_walkable_tiles() -> Array[Vector2i]` at initialization to enumerate the coverage target set.        |
-| **Sliding Movement**                  | Sliding Movement → Coverage Tracking | Subscribes to `spawn_position_set(pos)` (pre-covers start tile) and `slide_completed(..., tiles_covered)` (marks path). |
-| **Undo/Restart**                      | Bidirectional                        | Undo/Restart reads `get_coverage_snapshot()`, writes `restore_coverage_snapshot(snapshot)`, calls `reset_coverage()`.   |
-| **HUD**                               | Coverage Tracking → HUD              | HUD subscribes to `coverage_updated(covered, total)` to display live coverage count or percentage.                      |
-| **Level Complete Screen**             | Coverage Tracking → Level Complete   | `level_completed` signal triggers the level-complete flow; Level Complete Screen listens for this signal.               |
-| **CoverageVisualizer** (visual layer) | Coverage Tracking → Visual           | Subscribes to `tile_covered(coord)` to apply the "covered" visual style to that grid tile.                              |
+| System                                | Direction                             | Interface                                                                                                                                                        |
+| ------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Grid System**                       | Coverage Tracking → Grid System       | Calls `grid.get_all_walkable_tiles() -> Array[Vector2i]` at initialization to enumerate the coverage target set.                                                 |
+| **Sliding Movement**                  | Sliding Movement → Coverage Tracking  | Subscribes to `spawn_position_set(pos)` (pre-covers start tile) and `slide_completed(..., tiles_covered)` (marks path).                                          |
+| **Undo/Restart**                      | Bidirectional                         | Undo/Restart reads `get_coverage_snapshot()`, writes `restore_coverage_snapshot(snapshot)`, calls `reset_coverage()`.                                            |
+| **HUD**                               | Coverage Tracking → HUD               | HUD subscribes to `coverage_updated(covered, total)` to display live coverage count or percentage.                                                               |
+| **Level Coordinator**                 | Coverage Tracking → Level Coordinator | `level_completed` begins the rating→save→transition chain; Level Coordinator wires this connection to StarRatingSystem at scene init (see level-coordinator.md). |
+| **CoverageVisualizer** (visual layer) | Coverage Tracking → Visual            | Subscribes to `tile_covered(coord)` to apply the "covered" visual style to that grid tile.                                                                       |
 
 ## Formulas
 
@@ -142,14 +143,14 @@ _The snapshot is a full deep copy — no reference aliasing. `covered_count` is 
 
 ## Dependencies
 
-| System                    | Direction                                 | Nature                                                                                                              | Hard/Soft                                                                                      |
-| ------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Grid System**           | Coverage Tracking → Grid System           | Calls `get_all_walkable_tiles()` at level init to build the tile set; no ongoing dependency                         | **Hard** — cannot know which tiles to track without the grid                                   |
-| **Sliding Movement**      | Sliding Movement → Coverage Tracking      | Subscribes to `spawn_position_set` + `slide_completed(tiles_covered)`; no direct reference to Sliding Movement node | **Hard** — coverage cannot advance without slide events                                        |
-| **Undo/Restart**          | Bidirectional                             | Undo reads snapshot; Coverage Tracking exposes snapshot API; `reset_coverage()` called on restart                   | **Hard** — without snapshot support, Undo cannot correctly restore coverage state              |
-| **HUD**                   | Coverage Tracking → HUD                   | HUD subscribes to `coverage_updated`; Coverage Tracking has no reference to HUD                                     | **Soft** — game logic functions without HUD; only display breaks                               |
-| **Level Complete Screen** | Coverage Tracking → Level Complete Screen | Listens for `level_completed` signal to begin the completion flow                                                   | **Soft** — game technically reaches 100% without UI response; but player has no way to advance |
-| **CoverageVisualizer**    | Coverage Tracking → CoverageVisualizer    | Subscribes to `tile_covered(coord)` for visual updates                                                              | **Soft** — game logic is unaffected; only visual feedback breaks                               |
+| System                 | Direction                              | Nature                                                                                                                        | Hard/Soft                                                                                     |
+| ---------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Grid System**        | Coverage Tracking → Grid System        | Calls `get_all_walkable_tiles()` at level init to build the tile set; no ongoing dependency                                   | **Hard** — cannot know which tiles to track without the grid                                  |
+| **Sliding Movement**   | Sliding Movement → Coverage Tracking   | Subscribes to `spawn_position_set` + `slide_completed(tiles_covered)`; no direct reference to Sliding Movement node           | **Hard** — coverage cannot advance without slide events                                       |
+| **Undo/Restart**       | Bidirectional                          | Undo reads snapshot; Coverage Tracking exposes snapshot API; `reset_coverage()` called on restart                             | **Hard** — without snapshot support, Undo cannot correctly restore coverage state             |
+| **HUD**                | Coverage Tracking → HUD                | HUD subscribes to `coverage_updated`; Coverage Tracking has no reference to HUD                                               | **Soft** — game logic functions without HUD; only display breaks                              |
+| **Level Coordinator**  | Coverage Tracking → Level Coordinator  | `level_completed` initiates the rating→save→transition chain via StarRatingSystem; Level Coordinator wires this at scene init | **Soft** — game logic reaches 100% without this; but player has no path to the results screen |
+| **CoverageVisualizer** | Coverage Tracking → CoverageVisualizer | Subscribes to `tile_covered(coord)` and `tile_uncovered(coord)` for visual updates                                            | **Soft** — game logic is unaffected; only visual feedback breaks                              |
 
 ## Tuning Knobs
 
@@ -205,3 +206,54 @@ Coverage Tracking has no other UI obligations.
 | OQ-1 | Should `level_completed` be emitted synchronously within `slide_completed` handler (same frame), or deferred to the next frame to allow animation to settle first? Currently: synchronous. If the completion animation and slide-landing animation conflict visually, defer. Revisit at first art sprint. | Medium   | Gameplay Programmer + Art Director          | Provisional: synchronous |
 | OQ-2 | Should `coverage_updated` emit on every `tile_covered` (per tile), or only once at end of each `slide_completed` processing? Currently: once per slide for performance. If HUD needs per-tile animation, change to per-tile.                                                                              | Low      | Resolve during HUD GDD                      | Provisional: per-slide   |
 | OQ-3 | Is Coverage Tracking a standalone `Node` in the scene tree, an `Autoload` singleton, or a child of a Level Manager node? Since it holds per-level state, it should NOT be a singleton. Provisional: child of the Level scene root.                                                                        | Medium   | Lead Programmer + Scene Architecture review | Provisional: scene child |
+
+---
+
+## CoverageVisualizer Implementation Spec
+
+`CoverageVisualizer` is a visual-only sibling node in the gameplay scene that subscribes to
+Coverage Tracking's signals and updates tile appearance. It contains **no game logic**.
+
+### Node Type
+
+`TileMapLayer` (preferred) or `Node2D` with a texture array — implementation choice made
+at the first art sprint. The interface is the same either way.
+
+### Responsibilities
+
+| Responsibility                            | Owned By              |
+| ----------------------------------------- | --------------------- |
+| Rendering covered / uncovered tile states | CoverageVisualizer ✅ |
+| Handling undo visual rollback             | CoverageVisualizer ✅ |
+| Pre-covering the starting tile on spawn   | CoverageVisualizer ✅ |
+| Coverage game-state tracking              | Coverage Tracking ✗   |
+| Tile grid dimensions                      | Grid System ✗         |
+
+### Interface
+
+```gdscript
+## Called by Level Coordinator; pre-allocates visual state for the level grid
+func initialize_level(grid_width: int, grid_height: int) -> void
+
+## Wired to CoverageTracking.tile_covered by Level Coordinator
+func _on_tile_covered(coord: Vector2i) -> void
+
+## Wired to CoverageTracking.tile_uncovered by Level Coordinator
+func _on_tile_uncovered(coord: Vector2i) -> void
+
+## Wired to SlidingMovement.spawn_position_set by Level Coordinator
+func _on_spawn_position_set(pos: Vector2i) -> void
+```
+
+### Behaviour Rules
+
+1. `initialize_level()`: sets all tiles to uncovered visual state with no animation.
+2. `_on_tile_covered(coord)`: transitions tile to covered state. Instant at MVP; may play
+   a fill animation post-jam.
+3. `_on_tile_uncovered(coord)`: transitions tile to uncovered state. Called when Undo
+   triggers `restore_coverage_snapshot()`. Instant at MVP.
+4. `_on_spawn_position_set(pos)`: marks starting tile as covered immediately (no animation)
+   to match Coverage Tracking's pre-covered initial state.
+5. CoverageVisualizer **never** emits signals that affect game state.
+6. CoverageVisualizer maintains its own visual-state array (not a reference to
+   `coverage_map`). It is driven entirely by signals.

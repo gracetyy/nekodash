@@ -1,6 +1,6 @@
 # Cosmetic / Skin Database
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 6 of 22
@@ -20,6 +20,19 @@ The database has **no knowledge of unlock state** — it only knows what skins e
 their assets are. Whether a skin is unlocked for a specific player is tracked by
 `SaveManager`. Unlock _conditions_ (which milestones trigger which skin) are defined in the
 Skin Unlock / Milestone Tracker.
+
+---
+
+## Player Fantasy
+
+A catalog of cats the player has never seen. When a player opens the Skin Select Screen
+for the first time and scrolls past the default cat to find several locked silhouettes,
+they're looking at a promise: _there are more cats, and you can earn them_. The Cosmetic
+Database is what makes that promise real and trustworthy — every skin shown exists as a
+properly defined resource with real art, a real ID, and a real unlock condition. Its player
+fantasy is the quiet confidence that the cat shown on any screen is correct: the right
+sprite, the right name, the right state. It never shows a broken placeholder or undefined
+skin.
 
 ---
 
@@ -205,6 +218,12 @@ for skin in CosmeticDatabase.get_all_skins():
 | CD-4 | `CosmeticDatabase.get_all_skins()` returns all skins defined in the database                      |
 | CD-5 | Exactly one skin has `is_default_unlocked = true`                                                 |
 | CD-6 | `SaveManager.get_equipped_skin()` on fresh save returns a skin ID that exists in CosmeticDatabase |
+
+---
+
+## Tuning Knobs
+
+None at MVP. The database is a static `SkinDatabase` resource loaded once at startup. All skin data is authored at design time — no runtime-adjustable parameters.
 
 ---
 

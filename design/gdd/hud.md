@@ -1,6 +1,6 @@
 # HUD
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 18 of 22
@@ -20,6 +20,18 @@ game state of its own.
 The HUD lives as a child of the gameplay scene root (the same scene as Level Coordinator).
 It is not an autoload. It receives references to Move Counter, Undo/Restart, Coverage
 Tracking, and the current LevelData via `initialize()` at level load.
+
+---
+
+## Player Fantasy
+
+Clear information, no clutter. The player glances at the HUD and knows: how many moves
+they've made, how many tiles are left, and whether undo is available. They shouldn't need to
+think about those numbers — they should just be there, unobtrusive and correct. The HUD is
+the difference between a puzzle that feels legible and one that feels mysterious in the wrong
+way. A broken move counter, a stuck coverage display, or a greyed-out undo button that won't
+respond — these are the failure modes. When the HUD is working, the player never notices it;
+they just play.
 
 ---
 
@@ -229,6 +241,12 @@ GDD defines layout intent and element groupings only.
 | HU-10 | Tapping Restart calls `UndoRestart.restart()` and all HUD displays reset              |
 | HU-11 | Both buttons are hidden after `level_completed` fires                                 |
 | HU-12 | Level name label shows `level_data.display_name` and does not change during play      |
+
+---
+
+## Tuning Knobs
+
+None at MVP — all display is driven by incoming signals and `LevelData`. Post-jam option: `MOVE_FLASH_DURATION: float = 0.3` for the move counter flash animation when a new best is beaten.
 
 ---
 

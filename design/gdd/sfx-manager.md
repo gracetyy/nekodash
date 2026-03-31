@@ -1,6 +1,6 @@
 # SFX Manager
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 5 of 22
@@ -20,6 +20,17 @@ routing, pooling, volume, mute state).
 
 SFX Manager is a Godot autoload singleton. It has no gameplay, UI, or progression
 dependencies.
+
+---
+
+## Player Fantasy
+
+Every sound effect is invisible infrastructure. The player never thinks "the SFX Manager
+handled that" — they just feel the soft thud when the cat lands, the crisp click when tiles
+light up, the satisfying chime when coverage hits 100%. The SFX Manager's player fantasy is
+zero: it should be imperceptible. Its failure mode is a hollow, silent slide — the kind that
+makes a puzzle feel cheap, like something is broken. Good SFX infrastructure is what keeps
+that silence from ever happening.
 
 ---
 

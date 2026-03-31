@@ -1,6 +1,6 @@
 # Skin Unlock / Milestone Tracker
 
-> **Status**: Draft
+> **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
 > **System #**: 17 of 22
@@ -20,6 +20,17 @@ can observe.
 
 The Milestone Tracker knows nothing about UI. It never shows notifications. It only
 evaluates conditions and triggers unlocks.
+
+---
+
+## Player Fantasy
+
+The quiet surprise. The player didn't know they were working toward anything specific. Then
+suddenly, after completing a level, a new screen appears: a cat they've never seen is
+now unlocked. They didn't grind for it. They just played, and the game was watching. That
+feeling — unexpected reward for consistent play — is the Milestone Tracker's entire purpose.
+It makes cosmetic unlocks feel discovered rather than purchased. The tracker is silent until
+it fires, and when it fires, the impact belongs entirely to the player.
 
 ---
 
@@ -224,6 +235,12 @@ func _is_world_complete(world_id: int) -> bool:
 | MT-3 | Calling the above scenarios again (already unlocked) does not emit `skin_unlocked` again                |
 | MT-4 | On startup with conditions already met (new session), `_ready()` awards any pending milestones          |
 | MT-5 | MilestoneTracker loads LevelCatalogue successfully from the canonical path                              |
+
+---
+
+## Tuning Knobs
+
+Milestone thresholds are defined in the `_MILESTONES` constant array inside `MilestoneTracker`. Designers add, change, or remove milestone conditions by modifying that array — no logic code changes required.
 
 ---
 
