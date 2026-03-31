@@ -38,7 +38,12 @@ _(Fill in after running the prototype on desktop and mobile device)_
 
 **Mobile touch observations:**
 
-- [ ] Not tested on mobile — deferred to production build
+- [x] Slide feel validated on device — movement responsive and readable
+- [x] Portrait orientation confirmed working
+- [x] Screen fills correctly (canvas_items stretch, expand aspect)
+- [x] Grid not too small — tile size readable at phone screen dimensions
+- [ ] Swipe accuracy vs 20-swipe count — not formally measured
+- [ ] Swipe rejection rate — not formally measured
 
 ### Metrics
 
@@ -48,13 +53,15 @@ _(Fill in after testing)_
 - Slide duration (1 tile): expected 0.10s, actual: matches (no deviation noticed)
 - Slide duration (5 tiles): expected 0.33s, actual: matches (no deviation noticed)
 - Bump duration: expected 0.12s, actual: matches (no deviation noticed)
-- Swipe accuracy: not measured — mobile not tested
-- Swipe rejection rate: not measured — mobile not tested
-- Iteration count: 1 (initial build)
+- Swipe accuracy: not formally measured
+- Swipe rejection rate: not formally measured
+- **Slide speed desktop**: 15.0 t/s ✓ feels correct
+- **Slide speed mobile**: 25.0 t/s ✓ feels correct (15.0 felt sluggish — grid is physically smaller on device)
+- Iteration count: 2 (initial build + mobile speed + orientation fix)
 
 ### Recommendation: PROCEED
 
-Desktop feel validated all GDD tuning values — slide response, squish, and bump all read correctly at the specified parameters. 60fps with no hitches. Mobile testing was not completed in this prototype session; mobile validation should be added as a task in the first production sprint before locking the input system parameters.
+Desktop and mobile feel both validated. All GDD tuning values correct on desktop (15 t/s). Mobile requires 25 t/s due to the grid being physically smaller on screen — this is expected and resolved via platform detection (`DisplayServer.is_touchscreen_available()`). Portrait orientation and fullscreen stretch confirmed working. Easing (TRANS_QUAD) kept — no floatiness observed on device. Core verb hypothesis confirmed.
 
 ### If Proceeding
 
@@ -83,9 +90,10 @@ _(Only write if the concept fundamentally fails)_
 
 ### Lessons Learned
 
-- [ ] Speed (15 tiles/sec): no change needed on desktop
-- [ ] MIN_SLIDE_DURATION (0.10s): no change needed
-- [ ] Bump animation readability on mobile: untested — flag for first sprint
-- [x] **Easing**: EASE_OUT + TRANS_QUAD feels slightly floaty — production should trial a faster ease-out curve (e.g. TRANS_EXPO or reduced duration) before locking
+- [x] **Speed is platform-dependent**: 15 t/s correct for desktop; 25 t/s correct for mobile. Production `SlidingMovement` node must expose separate `@export` values for each platform, or use `DisplayServer.is_touchscreen_available()` to select at runtime.
+- [x] **EASE_OUT + TRANS_QUAD felt fine on device** — no floatiness observed on mobile. Previous desktop concern was premature. Keep TRANS_QUAD.
+- [x] **Portrait + stretch required in project.godot**: viewport 540×960, `stretch/mode=canvas_items`, `stretch/aspect=expand`, `orientation=1`. Must be set before any Android test build.
 - [x] **Bug found**: restart (R key) did not reset the HUD move counter — `proto_hud.gd` does not listen for a reset event. Production move counter must subscribe to a `level_restarted` signal from the Level Coordinator.
-- [ ] Input system changes for production GDD: none identified from desktop testing; mobile accuracy still needs validation
+- [ ] Swipe accuracy formal measurement still pending (20-swipe count)
+- [ ] Bump animation readability on mobile — not formally evaluated; appeared readable
+- [ ] Input system changes for production GDD: none identified; mobile accuracy formal count still pending
