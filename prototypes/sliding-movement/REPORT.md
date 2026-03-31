@@ -31,33 +31,30 @@ _(Fill in after running the prototype on desktop and mobile device)_
 
 **Desktop keyboard observations:**
 
-- [ ] Slide response time (perceived ms from keypress to motion start)
-- [ ] Landing squish visibility and feel
-- [ ] Bump animation readability
-- [ ] Multi-direction rapid input (does queuing feel natural?)
+- [x] Slide response time — immediate, no perceptible delay
+- [x] Landing squish visibility and feel — correct
+- [x] Bump animation readability — correct
+- [x] Multi-direction rapid input — felt natural, no queuing issues
 
 **Mobile touch observations:**
 
-- [ ] Swipe direction accuracy (% correct on first 20 swipes)
-- [ ] Swipe rejection rate (too-short / too-slow swipes)
-- [ ] Edge-of-screen swipe reliability
-- [ ] Perceived slide speed satisfaction
+- [ ] Not tested on mobile — deferred to production build
 
 ### Metrics
 
 _(Fill in after testing)_
 
-- Frame time: [measure with Godot profiler]
-- Slide duration (1 tile): expected 0.10s, actual: \_\_\_
-- Slide duration (5 tiles): expected 0.33s, actual: \_\_\_
-- Bump duration: expected 0.12s, actual: \_\_\_
-- Swipe accuracy: \_\_\_/20 correct direction
-- Swipe rejection rate: \_\_\_% of total gestures
+- Frame time: solid 60fps, no hitches (visual inspection)
+- Slide duration (1 tile): expected 0.10s, actual: matches (no deviation noticed)
+- Slide duration (5 tiles): expected 0.33s, actual: matches (no deviation noticed)
+- Bump duration: expected 0.12s, actual: matches (no deviation noticed)
+- Swipe accuracy: not measured — mobile not tested
+- Swipe rejection rate: not measured — mobile not tested
 - Iteration count: 1 (initial build)
 
-### Recommendation: [PROCEED / PIVOT / KILL]
+### Recommendation: PROCEED
 
-_(Fill in after testing — choose one and explain with evidence)_
+Desktop feel validated all GDD tuning values — slide response, squish, and bump all read correctly at the specified parameters. 60fps with no hitches. Mobile testing was not completed in this prototype session; mobile validation should be added as a task in the first production sprint before locking the input system parameters.
 
 ### If Proceeding
 
@@ -86,10 +83,9 @@ _(Only write if the concept fundamentally fails)_
 
 ### Lessons Learned
 
-_(Fill in after testing — discoveries that affect other systems)_
-
-- [ ] Does the 15 tiles/sec speed need adjustment?
-- [ ] Does MIN_SLIDE_DURATION (0.10s) need adjustment?
-- [ ] Is the bump animation readable enough on small mobile screens?
-- [ ] Does the EASE_OUT + QUAD easing feel right or should it be linear?
-- [ ] Any input system changes needed for the production GDD?
+- [ ] Speed (15 tiles/sec): no change needed on desktop
+- [ ] MIN_SLIDE_DURATION (0.10s): no change needed
+- [ ] Bump animation readability on mobile: untested — flag for first sprint
+- [x] **Easing**: EASE_OUT + TRANS_QUAD feels slightly floaty — production should trial a faster ease-out curve (e.g. TRANS_EXPO or reduced duration) before locking
+- [x] **Bug found**: restart (R key) did not reset the HUD move counter — `proto_hud.gd` does not listen for a reset event. Production move counter must subscribe to a `level_restarted` signal from the Level Coordinator.
+- [ ] Input system changes for production GDD: none identified from desktop testing; mobile accuracy still needs validation
