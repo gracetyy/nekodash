@@ -8,7 +8,11 @@
 extends Node2D
 
 # Tuning knobs from GDD
-const SLIDE_VELOCITY_TILES_PER_SEC: float = 15.0
+# Speed is platform-adaptive: mobile screen is physically smaller so needs higher t/s
+# to cover the same perceived distance in the same time.
+const SLIDE_VELOCITY_DESKTOP: float = 15.0
+const SLIDE_VELOCITY_MOBILE: float = 25.0
+var SLIDE_VELOCITY_TILES_PER_SEC: float # set in _ready()
 const MIN_SLIDE_DURATION_SEC: float = 0.10
 const BLOCKED_BUMP_OFFSET_PX: float = 6.0
 const BLOCKED_BUMP_DURATION_SEC: float = 0.12
@@ -40,6 +44,7 @@ signal slide_blocked(pos: Vector2i, direction: Vector2i)
 
 
 func _ready() -> void:
+	SLIDE_VELOCITY_TILES_PER_SEC = SLIDE_VELOCITY_MOBILE if DisplayServer.is_touchscreen_available() else SLIDE_VELOCITY_DESKTOP
 	_grid = get_parent().get_node("ProtoGrid")
 	initialize(Vector2i(1, 1))
 
