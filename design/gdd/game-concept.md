@@ -272,10 +272,10 @@ _Design test_: "Should we add an energy system to extend playtime?" → No. Ener
 
 ## Next Steps
 
-- [ ] Run `/setup-engine godot 4` to configure engine reference docs
-- [ ] Run `/design-review design/gdd/game-concept.md` to validate completeness
-- [ ] Run `/map-systems` to decompose into individual systems with dependencies and priorities
-- [ ] Run `/design-system` to author per-system GDDs (sliding movement, coverage tracker, solver algorithm, level format, skin system)
-- [ ] Run `/architecture-decision` for first key technical decisions (level data format, solver approach, swipe input handling)
-- [ ] Run `/prototype sliding-movement` to validate the core verb is fun before building everything else
+- [x] Run `/setup-engine godot 4` to configure engine reference docs
+- [x] Run `/design-review design/gdd/game-concept.md` to validate completeness
+- [x] Run `/map-systems` to decompose into individual systems with dependencies and priorities
+- [x] Run `/design-system` to author per-system GDDs (sliding movement, coverage tracker, solver algorithm, level format, skin system)
+- [x] Run `/architecture-decision` for first key technical decisions (level data format, solver approach, swipe input handling)
+- [x] Run `/prototype sliding-movement` to validate the core verb is fun before building everything else
 - [ ] Run `/sprint-plan new` to plan the first jam sprint
