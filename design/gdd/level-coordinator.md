@@ -2,7 +2,7 @@
 
 > **Status**: Approved
 > **Author**: Grace + GitHub Copilot
-> **Last Updated**: 2026-03-31
+> **Last Updated**: 2026-04-02
 > **System #**: 23 of 23
 > **Category**: Engine / Coordination
 > **Priority**: MVP-Core
@@ -188,21 +188,52 @@ time `_on_level_record_saved` is called, SaveManager has already written the rec
 and all in-scene query APIs return current-attempt values.
 
 ```gdscript
+const LEVEL_COMPLETE_OVERLAY_DELAY_SEC: float = 0.6
+
 func _on_level_record_saved(level_id: int, stars: int, final_moves: int) -> void:
     var next_level := _level_progression.get_next_level(level_id)  # LevelData or null
-    SceneManager.go_to(Screen.LEVEL_COMPLETE, {
+    var params := {
         "level_data":               _current_level_data,
         "stars":                    stars,
         "final_moves":              final_moves,
         "prev_best_moves":          _prev_best_moves,
         "was_previously_completed": _was_previously_completed,
         "next_level_data":          next_level,
-    })
+    }
+    # Register transition synchronously so SceneManager is ready immediately:
+    SceneManager.go_to(Screen.LEVEL_COMPLETE, params)
+    # Brief beat — lets the player see tiles fully lit before overlay appears:
+    await get_tree().create_timer(LEVEL_COMPLETE_OVERLAY_DELAY_SEC).timeout
+    if _state != State.TRANSITIONING:
+        return  # guard: restart during delay has re-entered PLAYING
+    _show_level_complete_overlay(params)
 ```
 
 All values are plain data types or resource objects — no node references. The gameplay
 scene is about to be unloaded by SceneManager; passing a node reference into the next
 scene's params would be unsafe.
+
+**`_on_overlay_next` — advancing to the next level inline**
+
+When the player taps Next on the inline overlay (before `level_complete.tscn` exists),
+the coordinator re-initializes all systems for the next level without a scene reload.
+Critically, `_snapshot_previous_bests()` **must** be called immediately after
+`_current_level_data` is updated — the same reason it is called first in `_ready()`: the
+save record for the new level must be read before any signal chain can overwrite it.
+
+```gdscript
+func _on_overlay_next(next_level: LevelData) -> void:
+    if _overlay != null:
+        _overlay.queue_free()
+        _overlay = null
+    _current_level_data = next_level
+    _snapshot_previous_bests()   # MUST happen before _initialize_systems()
+    _disconnect_signals()
+    _initialize_systems()
+    _connect_signals()
+    _sliding_movement.initialize_level(_current_level_data.cat_start)
+    _state = State.PLAYING
+```
 
 ---
 
@@ -215,12 +246,12 @@ cross-system signalling is wired through `_connect_signals()`.
 
 ## States and Transitions
 
-| State             | Entry Condition                                             | Exit Condition                  | Behavior                                                  |
-| ----------------- | ----------------------------------------------------------- | ------------------------------- | --------------------------------------------------------- |
-| **Loading**       | Scene instantiated; `receive_scene_params()` not yet called | `receive_scene_params()` called | `_current_level_data` not yet set; no child systems ready |
-| **Initializing**  | `receive_scene_params()` called                             | `_ready()` completes            | Systems initialized; signals connected; snapshot taken    |
-| **Playing**       | `_ready()` complete                                         | `level_record_saved` fires      | All systems active; player can move, undo, and restart    |
-| **Transitioning** | `level_record_saved` fired                                  | Scene unloaded by SceneManager  | `SceneManager.go_to()` called; scene teardown in progress |
+| State             | Entry Condition                                             | Exit Condition                  | Behavior                                                                                                                                                                    |
+| ----------------- | ----------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Loading**       | Scene instantiated; `receive_scene_params()` not yet called | `receive_scene_params()` called | `_current_level_data` not yet set; no child systems ready                                                                                                                   |
+| **Initializing**  | `receive_scene_params()` called                             | `_ready()` completes            | Systems initialized; signals connected; snapshot taken                                                                                                                      |
+| **Playing**       | `_ready()` complete                                         | `level_record_saved` fires      | All systems active; player can move, undo, and restart                                                                                                                      |
+| **Transitioning** | `level_record_saved` fired                                  | Scene unloaded by SceneManager  | `SceneManager.go_to()` called; `LEVEL_COMPLETE_OVERLAY_DELAY_SEC` timer running; overlay shown after delay. Restart during this window re-enters Playing and skips overlay. |
 
 ---
 
@@ -232,22 +263,25 @@ cross-system signalling is wired through `_connect_signals()`.
 | `level_data.spawn_position` outside grid bounds                        | GridSystem and SlidingMovement will detect and log; Level Coordinator does not validate — it delegates to child systems        |
 | `get_next_level()` returns `null` (last level)                         | Passed as `null` in params; Level Complete Screen hides Next Level button                                                      |
 | `level_record_saved` fires while scene transition is already in flight | `SceneManager.go_to()` is idempotent; duplicate call is either ignored or queued (SceneManager's responsibility)               |
+| Player restarts during the `LEVEL_COMPLETE_OVERLAY_DELAY_SEC` window   | `_state` reverts to `Playing`; the `await` continuation checks `_state != TRANSITIONING` and returns immediately — no overlay. |
 | Child node missing from scene tree                                     | `@onready` var will be `null`; first method call on it crashes with a clear null-reference error. Check scene structure first. |
 
 ---
 
 ## Acceptance Criteria
 
-| #    | Criterion                                                                                                        |
-| ---- | ---------------------------------------------------------------------------------------------------------------- |
-| LC-1 | `receive_scene_params()` is called before `_ready()`; all child systems initialize with the correct `LevelData`. |
-| LC-2 | `_prev_best_moves` reflects the player's previous-session best, not the current attempt's final move count.      |
-| LC-3 | `slide_completed` connection order is UndoRestart → MoveCounter → CoverageTracking.                              |
-| LC-4 | On the final slide, `StarRatingSystem` reads the incremented move count (not off-by-one).                        |
-| LC-5 | `level_record_saved` triggers `SceneManager.go_to(Screen.LEVEL_COMPLETE, ...)` exactly once per level.           |
-| LC-6 | All six keys are present in the params dict passed to Level Complete Screen.                                     |
-| LC-7 | No node references are included in the params dict — only plain types and resources.                             |
-| LC-8 | On `restart()`, all child systems return to their initial state without a scene reload.                          |
+| #     | Criterion                                                                                                                                       |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| LC-1  | `receive_scene_params()` is called before `_ready()`; all child systems initialize with the correct `LevelData`.                                |
+| LC-2  | `_prev_best_moves` reflects the player's previous-session best, not the current attempt's final move count.                                     |
+| LC-3  | `slide_completed` connection order is UndoRestart → MoveCounter → CoverageTracking.                                                             |
+| LC-4  | On the final slide, `StarRatingSystem` reads the incremented move count (not off-by-one).                                                       |
+| LC-5  | `level_record_saved` triggers `SceneManager.go_to(Screen.LEVEL_COMPLETE, ...)` exactly once per level.                                          |
+| LC-6  | All six keys are present in the params dict passed to Level Complete Screen.                                                                    |
+| LC-7  | No node references are included in the params dict — only plain types and resources.                                                            |
+| LC-8  | On `restart()`, all child systems return to their initial state without a scene reload.                                                         |
+| LC-9  | The level-complete overlay appears no sooner than `LEVEL_COMPLETE_OVERLAY_SEC` after `level_record_saved` fires.                                |
+| LC-10 | `_snapshot_previous_bests()` is called immediately after `_current_level_data` is changed in `_on_overlay_next`, before any system initializes. |
 
 ---
 
@@ -266,10 +300,12 @@ cross-system signalling is wired through `_connect_signals()`.
 
 ## Tuning Knobs
 
-No runtime-configurable parameters. All initialization is structural (scene hierarchy
-and signal wiring). The only "tunable" elements are the signal connection order (which
-is a correctness constraint, not a design variable) and the params dict structure
-(which is a contract with Level Complete Screen).
+| Constant                           | Default | Effect                                                                                                        |
+| ---------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------- |
+| `LEVEL_COMPLETE_OVERLAY_DELAY_SEC` | `0.6`   | Seconds between full grid coverage and overlay appearance. Provides the satisfying pause before results show. |
+
+All other initialization is structural (scene hierarchy and signal wiring). The
+signal connection order is a correctness constraint, not a design variable.
 
 ---
 

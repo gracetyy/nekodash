@@ -64,6 +64,12 @@ func mark_covered(coord: Vector2i) -> void:
 	queue_redraw()
 
 
+## Marks a single tile as uncovered and redraws (used by undo).
+func mark_uncovered(coord: Vector2i) -> void:
+	_covered_tiles.erase(coord)
+	queue_redraw()
+
+
 ## Clears all coverage overlays without redrawing grid structure.
 func clear_coverage() -> void:
 	_covered_tiles.clear()

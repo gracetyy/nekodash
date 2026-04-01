@@ -61,6 +61,15 @@ enum State {
 
 
 # —————————————————————————————————————————————
+# Constants
+# —————————————————————————————————————————————
+
+## Delay (seconds) between full grid coverage and the level-complete overlay
+## appearing. Gives the player a beat to see the completed board.
+const LEVEL_COMPLETE_OVERLAY_DELAY_SEC: float = 0.6
+
+
+# —————————————————————————————————————————————
 # State
 # —————————————————————————————————————————————
 
@@ -68,6 +77,9 @@ var _state: State = State.LOADING
 var _current_level_data: LevelData
 var _prev_best_moves: int = 0
 var _was_previously_completed: bool = false
+
+## Inline level-complete overlay node (temporary until level_complete.tscn exists).
+var _overlay: CanvasLayer
 
 
 # —————————————————————————————————————————————
@@ -208,6 +220,7 @@ func _connect_signals() -> void:
 	# Coverage updates
 	_coverage_tracking.coverage_updated.connect(_on_coverage_updated)
 	_coverage_tracking.tile_covered.connect(_on_tile_covered)
+	_coverage_tracking.tile_uncovered.connect(_on_tile_uncovered)
 
 
 ## Disconnects all inter-system signals. Called before restart.
@@ -244,11 +257,13 @@ func _disconnect_signals() -> void:
 	if _move_counter.move_count_changed.is_connected(_on_move_count_changed):
 		_move_counter.move_count_changed.disconnect(_on_move_count_changed)
 
-	# coverage_updated / tile_covered
+	# coverage_updated / tile_covered / tile_uncovered
 	if _coverage_tracking.coverage_updated.is_connected(_on_coverage_updated):
 		_coverage_tracking.coverage_updated.disconnect(_on_coverage_updated)
 	if _coverage_tracking.tile_covered.is_connected(_on_tile_covered):
 		_coverage_tracking.tile_covered.disconnect(_on_tile_covered)
+	if _coverage_tracking.tile_uncovered.is_connected(_on_tile_uncovered):
+		_coverage_tracking.tile_uncovered.disconnect(_on_tile_uncovered)
 
 
 # —————————————————————————————————————————————
@@ -288,11 +303,17 @@ func _on_level_record_saved(level_id: String, stars: int, final_moves: int) -> v
 		"next_level_data": next_level,
 	}
 
+	# Track state in SceneManager immediately — tests verify this synchronously.
+	SceneManager.go_to(SceneManager.Screen.LEVEL_COMPLETE, params)
+
+	# Brief pause so the player can see the completed grid before the overlay
+	# appears. State guard prevents a stale overlay if restarted during the delay.
+	await get_tree().create_timer(LEVEL_COMPLETE_OVERLAY_DELAY_SEC).timeout
+	if _state != State.TRANSITIONING:
+		return
+
 	# Show inline level-complete overlay (temporary until level_complete.tscn exists)
 	_show_level_complete_overlay(params)
-
-	# Track state in SceneManager (go_to is a stub but tests verify state)
-	SceneManager.go_to(SceneManager.Screen.LEVEL_COMPLETE, params)
 
 
 func _on_slide_blocked(pos: Vector2i, direction: Vector2i) -> void:
@@ -317,6 +338,11 @@ func _on_coverage_updated(_covered: int, _total: int) -> void:
 func _on_tile_covered(coord: Vector2i) -> void:
 	if _grid_renderer != null:
 		_grid_renderer.mark_covered(coord)
+
+
+func _on_tile_uncovered(coord: Vector2i) -> void:
+	if _grid_renderer != null:
+		_grid_renderer.mark_uncovered(coord)
 
 
 # —————————————————————————————————————————————
@@ -364,7 +390,6 @@ func was_previously_completed() -> bool:
 # —————————————————————————————————————————————
 # Level complete overlay (temporary until level_complete.tscn exists)
 # —————————————————————————————————————————————
-var _overlay: CanvasLayer
 
 func _show_level_complete_overlay(params: Dictionary) -> void:
 	if _overlay != null:
@@ -479,6 +504,9 @@ func _on_overlay_next(next_level: LevelData) -> void:
 		_overlay.queue_free()
 		_overlay = null
 	_current_level_data = next_level
+	# Snapshot previous bests for the new level BEFORE _initialize_systems()
+	# writes any data — same order as _ready() and restart_level().
+	_snapshot_previous_bests()
 	_disconnect_signals()
 	_initialize_systems()
 	_connect_signals()

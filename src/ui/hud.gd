@@ -200,6 +200,8 @@ func _connect_signals(
 # —————————————————————————————————————————————
 
 ## Updates the move display. Handles minimum_moves == 0 gracefully.
+## Also refreshes undo button — UndoRestart has already pushed a snapshot by
+## the time move_count_changed fires (connection order enforced by coordinator).
 func _on_move_count_changed(current: int, minimum: int) -> void:
 	if _move_label == null:
 		return
@@ -207,6 +209,8 @@ func _on_move_count_changed(current: int, minimum: int) -> void:
 		_move_label.text = str(current)
 	else:
 		_move_label.text = "%d / %d" % [current, minimum]
+	if _undo_restart_ref != null:
+		_set_undo_button_disabled(not _undo_restart_ref.can_undo())
 
 
 ## Updates the coverage display in "X / Y" tile format.

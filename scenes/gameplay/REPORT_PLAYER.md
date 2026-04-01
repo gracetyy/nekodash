@@ -2,7 +2,7 @@
 
 ## Session Info
 
-- **Date**: 2026-04-01
+- **Date**: 2026-04-01 (updated 2026-04-02 — post-fix)
 - **Build**: Local main build (gameplay.tscn focused)
 - **Duration**: Single focused feedback session
 - **Tester**: Player draft synthesis
@@ -30,10 +30,10 @@ Gameplay readability and feel for `gameplay.tscn`, with emphasis on controls, co
 
 ### Pain points
 
-- Undo button appears disabled after first move and clicking gives no response. **Severity: High**
-- Completion transitions to stars screen too immediately after full coverage; lacks satisfying pause/animation bridge. **Severity: High**
-- Move counter number lacks explicit label/context, reducing readability. **Severity: Medium**
-- Coverage counter may be redundant for players because tile colors already communicate progress. **Severity: Medium**
+- ~~Undo button appears disabled after first move and clicking gives no response.~~ **Fixed** (`hud.gd`: undo button refresh added to `_on_move_count_changed`)
+- ~~Completion transitions to stars screen too immediately after full coverage; lacks satisfying pause/animation bridge.~~ **Fixed** (`level_coordinator.gd`: 0.6s delay + `LEVEL_COMPLETE_OVERLAY_DELAY_SEC` constant)
+- ~~Move counter number lacks explicit label/context, reducing readability.~~ **Fixed** (`gameplay.tscn`: `MovesPrefix` label `"Moves: "` added before `MoveLabel`)
+- ~~Coverage counter may be redundant for players because tile colors already communicate progress.~~ **Fixed** (`gameplay.tscn`: `CoverageLabel` and `Spacer` hidden; data still flows for debug)
 - Current UI and animation quality feel early-stage and need significant polish for production. **Severity: Low (for current stage), High (for final quality target)**
 
 ### Confusion points
@@ -46,11 +46,11 @@ Gameplay readability and feel for `gameplay.tscn`, with emphasis on controls, co
 
 ## Bugs Encountered
 
-| #   | Description                                                           | Severity | Reproducible |
-| --- | --------------------------------------------------------------------- | -------- | ------------ |
-| 1   | Undo remains disabled after first move and button click has no effect | High     | Yes          |
-| 2   | Level complete jumps to results too quickly without transition beat   | High     | Yes          |
-| 3   | Move counter lacks text label clarifying what the number means        | Medium   | Yes          |
+| #   | Description                                                           | Severity | Reproducible | Status                |
+| --- | --------------------------------------------------------------------- | -------- | ------------ | --------------------- |
+| 1   | Undo remains disabled after first move and button click has no effect | High     | Yes          | ✅ Fixed (2026-04-02) |
+| 2   | Level complete jumps to results too quickly without transition beat   | High     | Yes          | ✅ Fixed (2026-04-02) |
+| 3   | Move counter lacks text label clarifying what the number means        | Medium   | Yes          | ✅ Fixed (2026-04-02) |
 
 ## Feature-Specific Feedback
 
@@ -121,6 +121,12 @@ Gameplay readability and feel for `gameplay.tscn`, with emphasis on controls, co
 
 ## Top 3 Priorities from this session
 
-1. Fix Undo button state/behavior so Undo is usable after first move.
-2. Add a short completion transition beat before results screen.
-3. Improve HUD clarity (labeled move counter) and decide whether coverage count remains player-facing.
+~~1. Fix Undo button state/behavior so Undo is usable after first move.~~ ✅ Fixed
+~~2. Add a short completion transition beat before results screen.~~ ✅ Fixed
+~~3. Improve HUD clarity (labeled move counter) and decide whether coverage count remains player-facing.~~ ✅ Fixed (label added; coverage hidden)
+
+## Revised Priorities (post-fix)
+
+1. Tune 3-star thresholds on existing levels so 1-2 extra moves above minimum can still earn 3 stars.
+2. Add step-by-step tutorial hints covering controls and objective (mobile swipe + desktop WASD/arrow).
+3. Replace inline level-complete overlay with proper `level_complete.tscn` scene for visual polish.
