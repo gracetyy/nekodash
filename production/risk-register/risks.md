@@ -1,13 +1,13 @@
 # Risk Register
 
 **Project**: NekoDash
-**Last Updated**: 2026-04-01 (Sprint 1 complete — all 9 tasks done; 241 tests; R-03 closed)
+**Last Updated**: 2026-04-01 (S2-07 complete — R-01 formally closed with device test data)
 
 ---
 
 | ID   | Risk                                                                                                    | Category            | Probability | Impact | Score  | Mitigation                                                                                                                   | Status                                                                                             |
 | ---- | ------------------------------------------------------------------------------------------------------- | ------------------- | ----------- | ------ | ------ | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| R-01 | Mobile swipe easing (TRANS_QUAD) feels floaty on device — may require feel iteration that delays S1     | Prototype carryover | High        | Medium | HIGH   | Sprint 1 task S1-06 validates easing on device on Day 3 at the latest; TRANS_EXPO is the pre-approved fallback               | **CLOSED** — TRANS_QUAD validated on device, no floatiness. Easing locked.                         |
+| R-01 | Mobile swipe easing (TRANS_QUAD) feels floaty on device — may require feel iteration that delays S1     | Prototype carryover | High        | Medium | HIGH   | Sprint 1 task S1-06 validates easing on device on Day 3 at the latest; TRANS_EXPO is the pre-approved fallback               | **CLOSED** — TRANS_QUAD formally validated on Poco F6 (20/20 swipe accuracy, 100%). Easing locked. Artifact: `production/sprints/sprint-02.md` § S2-07 Mobile Swipe Accuracy Test Results. |
 | R-02 | LevelDataFormat API changes after GridSystem is implemented — breaks level authoring mid-sprint         | Tech dependency     | Medium      | High   | HIGH   | GridSystem must be finalised and reviewed before LevelDataFormat authoring begins (dependency enforced in sprint task order) | **CLOSED** — GridSystem API stable and reviewed; 33 LevelData integration tests lock the contract. |
 | R-03 | BFS Solver not delivered in Sprint 1 — level authors cannot verify solvability of hand-authored levels  | Scope               | Medium      | Medium | MEDIUM | 3 tutorial levels can be manually verified for Sprint 1; BFS Solver is Sprint 1 NTH — deprioritised but not dropped          | **CLOSED** — BFS Solver (S1-09) delivered in Sprint 1. `tools/level_solver.gd`, 19 tests.          |
 | R-04 | Mobile validation not possible (no test device available) — easing decision blocked                     | Logistics           | Low         | High   | MEDIUM | Defer to Sprint 2 if blocked; document as known gap; do not lock easing without device confirmation                          | **CLOSED** — Mobile testing completed in prototype phase.                                          |

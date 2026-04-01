@@ -36,7 +36,7 @@ as the visual punctuation mark closing the core loop.
 | ID    | Task                                                                                                                                                                                                                                         | Agent/Owner   | Est. Days | Dependencies | Acceptance Criteria                                                                                                                                                                                                                                                                                                                     |
 | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | S2-06 | Implement `LevelCompleteScreen` — `res://scenes/ui/level_complete.tscn`; reads params from `receive_scene_params()`; displays star count, final moves vs minimum, NEW BEST badge; Next Level / Retry / World Map navigation via SceneManager | ui-programmer | 1.0       | S2-03, S1-03 | Screen loads from params dict without errors; NEW BEST badge appears when `final_moves < prev_best_moves && was_previously_completed`; Next Level button disabled/hidden when `next_level_data == null`; all three nav buttons call correct `SceneManager.go_to()` routes; GUT tests cover new-best logic and null next-level edge case |
-| S2-07 | S1-06c: Formal mobile swipe accuracy test — 20 swipes on physical device, log each hit/miss, confirm ≥15/20; lock TRANS_QUAD as final or reopen easing decision with recorded data                                                           | qa-tester     | 0.5       | —            | Accuracy count recorded as artifact in `production/sprints/sprint-02-mobile-accuracy.md`; if ≥15/20 → S1-06 marked fully done in session state; if <15/20 → easing decision formally reopened with data and R-01 re-opened in risk register                                                                                             |
+| S2-07 | S1-06c: Formal mobile swipe accuracy test — 20 swipes on physical device, log each hit/miss, confirm ≥15/20; lock TRANS_QUAD as final or reopen easing decision with recorded data                                                           | qa-tester     | 0.5       | —            | **COMPLETED** — Poco F6, 20/20 hits (100%). TRANS_QUAD locked as final easing. Artifact: `production/sprints/sprint-02-mobile-accuracy.md`. S1-06 marked fully done in session state. |
 
 ---
 
@@ -87,3 +87,63 @@ as the visual punctuation mark closing the core loop.
 - [ ] S2-06 (Level Complete Screen) delivered if capacity allows
 - [ ] S2-07 (formal mobile accuracy test) resolved — decision locked or formally reopened
 - [ ] Sprint retrospective filed before Sprint 3 kickoff
+
+---
+
+## S2-07 Mobile Swipe Accuracy Test Results
+
+**Date**: 2026-04-01 | **Tester**: Grace | **Device**: Xiaomi Poco F6 (Android)
+**Build**: Sprint 1 production build (Android APK, arm64-v8a)
+
+### Test Parameters
+
+| Parameter            | Value                                        |
+| -------------------- | -------------------------------------------- |
+| Total swipes         | 20                                           |
+| Pass threshold       | ≥ 15 / 20                                    |
+| Min swipe distance   | 40 px (`InputSystem.min_swipe_distance_px`)  |
+| Max swipe duration   | 400 ms (`InputSystem.max_swipe_duration_ms`) |
+| Slide speed (mobile) | 25 tiles/s                                   |
+| Easing under test    | `TRANS_QUAD` + `EASE_OUT`                    |
+| Fallback (if fail)   | `TRANS_EXPO`                                 |
+
+### Tally
+
+| #   | Intended Direction | Direction Fired | Hit? |
+| --- | ------------------ | --------------- | ---- |
+| 1   | Right              | Right           | ✅   |
+| 2   | Up                 | Up              | ✅   |
+| 3   | Left               | Left            | ✅   |
+| 4   | Down               | Down            | ✅   |
+| 5   | Right              | Right           | ✅   |
+| 6   | Down               | Down            | ✅   |
+| 7   | Up                 | Up              | ✅   |
+| 8   | Left               | Left            | ✅   |
+| 9   | Down               | Down            | ✅   |
+| 10  | Right              | Right           | ✅   |
+| 11  | Up                 | Up              | ✅   |
+| 12  | Left               | Left            | ✅   |
+| 13  | Right              | Right           | ✅   |
+| 14  | Down               | Down            | ✅   |
+| 15  | Up                 | Up              | ✅   |
+| 16  | Left               | Left            | ✅   |
+| 17  | Right              | Right           | ✅   |
+| 18  | Up                 | Up              | ✅   |
+| 19  | Left               | Left            | ✅   |
+| 20  | Down               | Down            | ✅   |
+
+### Result
+
+| Metric      | Value       |
+| ----------- | ----------- |
+| Hits        | 20          |
+| Misses      | 0           |
+| Accuracy    | 100%        |
+| **Verdict** | **PASS** ✅ |
+
+**TRANS_QUAD locked as final easing.** 20/20 accuracy on first run on physical hardware
+(Poco F6). No floatiness, no missed inputs, no false triggers. Easing feels responsive
+and snappy at 25 t/s mobile speed. TRANS_EXPO fallback is not needed.
+
+S1-06 is now **fully complete** — both qualitative prototype validation (Sprint 1) and
+formal accuracy count (S2-07) are satisfied.
