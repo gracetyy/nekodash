@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="LevelCatalogue" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/core/level_catalogue.gd" id="1"]
+[ext_resource type="Resource" path="res://assets/levels/world_1/w1_l1.tres" id="2"]
+[ext_resource type="Resource" path="res://assets/levels/world_1/w1_l2.tres" id="3"]
+[ext_resource type="Resource" path="res://assets/levels/world_1/w1_l3.tres" id="4"]
+
+[resource]
+script = ExtResource("1")
+levels = [ExtResource("2"), ExtResource("3"), ExtResource("4")]
