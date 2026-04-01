@@ -28,13 +28,12 @@ signal restart_pressed
 # Child node references
 # —————————————————————————————————————————————
 
-## Set via initialize() or @onready — kept as member vars so tests can inject
-## mock Controls without a full scene tree.
-var _level_name_label: Control  # Label
-var _move_label: Control        # Label
-var _coverage_label: Control    # Label
-var _undo_btn: Control          # Button
-var _restart_btn: Control       # Button
+## Set via set_ui_nodes(), _ready() auto-discovery, or test injection.
+var _level_name_label: Control # Label
+var _move_label: Control # Label
+var _coverage_label: Control # Label
+var _undo_btn: Control # Button
+var _restart_btn: Control # Button
 
 
 # —————————————————————————————————————————————
@@ -58,6 +57,14 @@ var _initialized: bool = false
 
 ## Whether the level is complete (buttons locked).
 var _level_complete: bool = false
+
+
+# —————————————————————————————————————————————
+# Lifecycle
+# —————————————————————————————————————————————
+
+func _ready() -> void:
+	_auto_discover_ui_nodes()
 
 
 # —————————————————————————————————————————————
@@ -293,3 +300,27 @@ func _set_undo_button_visible(visible_flag: bool) -> void:
 func _set_restart_button_visible(visible_flag: bool) -> void:
 	if _restart_btn != null:
 		_restart_btn.visible = visible_flag
+
+
+## Auto-discovers child Controls by node path. Only sets references that
+## haven't already been injected via set_ui_nodes(). Wires button pressed
+## signals when buttons are found.
+func _auto_discover_ui_nodes() -> void:
+	if _level_name_label == null:
+		_level_name_label = get_node_or_null("MarginContainer/VBox/LevelNameLabel")
+	if _move_label == null:
+		_move_label = get_node_or_null("MarginContainer/VBox/StatsRow/MoveLabel")
+	if _coverage_label == null:
+		_coverage_label = get_node_or_null("MarginContainer/VBox/StatsRow/CoverageLabel")
+
+	if _undo_btn == null:
+		_undo_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/UndoBtn")
+	if _undo_btn != null and _undo_btn is BaseButton:
+		if not (_undo_btn as BaseButton).pressed.is_connected(on_undo_btn_pressed):
+			(_undo_btn as BaseButton).pressed.connect(on_undo_btn_pressed)
+
+	if _restart_btn == null:
+		_restart_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/RestartBtn")
+	if _restart_btn != null and _restart_btn is BaseButton:
+		if not (_restart_btn as BaseButton).pressed.is_connected(on_restart_btn_pressed):
+			(_restart_btn as BaseButton).pressed.connect(on_restart_btn_pressed)
