@@ -25,6 +25,7 @@ func before_each() -> void:
 	_level_restarted_count = 0
 	_level_completed_count = 0
 	_move_count_at_completion = -1
+	SaveManager.reset_all_progress()
 
 
 func after_each() -> void:
@@ -66,6 +67,28 @@ func _build_coordinator(level_data: LevelData) -> Node2D:
 	mc.name = "MoveCounter"
 	lc.add_child(mc)
 
+	# S2 child nodes
+	var ur: Node = load("res://src/gameplay/undo_restart.gd").new()
+	ur.name = "UndoRestart"
+	lc.add_child(ur)
+
+	var srs: Node = load("res://src/gameplay/star_rating_system.gd").new()
+	srs.name = "StarRatingSystem"
+	lc.add_child(srs)
+
+	var lp: Node = load("res://src/gameplay/level_progression.gd").new()
+	lp.name = "LevelProgression"
+	lc.add_child(lp)
+
+	var hud_node: HUD = HUD.new()
+	hud_node.name = "HUD"
+	lc.add_child(hud_node)
+
+	# Inject a LevelCatalogue containing the test level
+	var catalogue := LevelCatalogue.new()
+	catalogue.levels = [level_data]
+	lc.level_catalogue = catalogue
+
 	# Deliver params (before _ready)
 	lc.receive_scene_params({"level_data": level_data})
 
@@ -85,7 +108,7 @@ func _make_4x4_level() -> LevelData:
 	var ld := LevelData.new()
 	ld.level_id = "test_lc_4x4"
 	ld.world_id = 1
-	ld.level_index = 1
+	ld.level_index = 2
 	ld.display_name = "Test 4x4"
 	ld.grid_width = 4
 	ld.grid_height = 4
@@ -419,3 +442,160 @@ func test_level_coordinator_snapshots_previous_bests() -> void:
 	# Assert — stub SaveManager returns 0 / false
 	assert_eq(_lc.get_prev_best_moves(), 0)
 	assert_false(_lc.was_previously_completed())
+
+
+# —————————————————————————————————————————————
+# Tests — S2-05: Wiring integration
+# —————————————————————————————————————————————
+
+func test_undo_restart_captures_snapshot_on_slide() -> void:
+	# Arrange — 4x4 level: make a move but don't complete
+	var ld := _make_4x4_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	# Act — slide right (does NOT complete; 4 walkable tiles)
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+
+	# Assert — UndoRestart captured the snapshot (proves it was connected)
+	var ur: Node = _lc.get_node("UndoRestart")
+	assert_eq(ur.undo_count(), 1, "UndoRestart should have 1 snapshot after 1 slide")
+	assert_true(ur.can_undo())
+
+
+func test_star_rating_computed_on_level_complete() -> void:
+	# Arrange — 2-tile level: 1 move → 3 stars
+	var ld := _make_2_tile_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	var srs: Node = _lc.get_node("StarRatingSystem")
+
+	# Act
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+
+	# Assert — StarRatingSystem should have fired and have a rating
+	assert_eq(srs.get_current_rating(), 3, "1 move on a 1-min level = 3 stars")
+
+
+func test_level_progression_saves_on_level_complete() -> void:
+	# Arrange
+	var ld := _make_2_tile_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	# Act — complete the level
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+
+	# Assert — SaveManager should have the record (stub stores in memory)
+	assert_true(SaveManager.is_level_completed(ld.level_id))
+	assert_eq(SaveManager.get_best_stars(ld.level_id), 3)
+	assert_eq(SaveManager.get_best_moves(ld.level_id), 1)
+
+
+func test_scene_manager_goto_called_on_level_complete() -> void:
+	# Arrange
+	var ld := _make_2_tile_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	# Act
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+
+	# Assert — SceneManager stub tracks last go_to call
+	assert_eq(
+		SceneManager.get_current_screen(),
+		SceneManager.Screen.LEVEL_COMPLETE,
+	)
+
+
+func test_undo_works_through_coordinator() -> void:
+	# Arrange — 4x4 level, make one move
+	var ld := _make_4x4_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+
+	var mc: Node = _lc.get_node("MoveCounter")
+	var sm: Node2D = _lc.get_node("SlidingMovement")
+	assert_eq(mc.get_current_moves(), 1)
+
+	# Act — undo via UndoRestart
+	var ur: Node = _lc.get_node("UndoRestart")
+	ur.undo()
+
+	# Assert
+	assert_eq(mc.get_current_moves(), 0)
+	assert_eq(sm.get_cat_pos(), Vector2i(1, 1))
+
+
+func test_hud_initializes_on_coordinator_ready() -> void:
+	# Arrange / Act
+	var ld := _make_4x4_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	# Assert — HUD should report initialized
+	var hud_node: HUD = _lc.get_node("HUD")
+	assert_true(hud_node.is_initialized())
+
+
+func test_undo_restart_freezes_on_level_complete() -> void:
+	# Arrange
+	var ld := _make_2_tile_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	# Act
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+
+	# Assert — UndoRestart should be frozen (no undos possible)
+	var ur: Node = _lc.get_node("UndoRestart")
+	assert_false(ur.can_undo())
+
+
+func test_restart_resets_undo_history() -> void:
+	# Arrange
+	var ld := _make_4x4_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+	var ur: Node = _lc.get_node("UndoRestart")
+	assert_eq(ur.undo_count(), 1)
+
+	# Act — restart via coordinator
+	_lc.restart_level()
+
+	# Assert
+	assert_eq(ur.undo_count(), 0)
+	assert_false(ur.can_undo())
+
+
+func test_restart_re_snapshots_previous_bests() -> void:
+	# Arrange — complete a 2-tile level (writes to SaveManager)
+	var ld := _make_2_tile_level()
+	GridSystem.load_grid(ld)
+	_lc = _build_coordinator(ld)
+
+	assert_eq(_lc.get_prev_best_moves(), 0)
+	assert_false(_lc.was_previously_completed())
+
+	_send_input(Vector2i(1, 0))
+	await get_tree().create_timer(0.5).timeout
+	assert_eq(_lc.get_state(), _lc.State.TRANSITIONING)
+
+	# Act — restart after completion
+	_lc.restart_level()
+
+	# Assert — previous bests should now reflect the completed attempt
+	assert_true(_lc.was_previously_completed())
+	assert_eq(_lc.get_prev_best_moves(), 1)
