@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="NekoDash"
-run/main_scene="res://prototypes/gameplay-scene/GameplayPrototype.tscn"
+run/main_scene="res://scenes/gameplay/gameplay.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://icon.svg"
 
@@ -25,6 +25,7 @@ SaveManager="*res://src/core/save_manager.gd"
 SceneManager="*res://src/core/scene_manager.gd"
 GridSystem="*res://src/core/grid_system.gd"
 InputSystem="*res://src/core/input_system.gd"
+PlaytestCapture="*res://tools/playtest_capture.gd"
 
 [display]
 
