@@ -1,0 +1,31 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://prototypes/gameplay-scene/gameplay_scene.gd" id="1_main"]
+[ext_resource type="Script" path="res://prototypes/gameplay-scene/proto_grid_renderer.gd" id="2_grid"]
+[ext_resource type="Script" path="res://src/gameplay/sliding_movement.gd" id="3_slide"]
+[ext_resource type="Script" path="res://prototypes/gameplay-scene/proto_cat_sprite.gd" id="4_cat"]
+[ext_resource type="Script" path="res://src/gameplay/coverage_tracking.gd" id="5_cover"]
+[ext_resource type="Script" path="res://src/gameplay/move_counter.gd" id="6_move"]
+[ext_resource type="Script" path="res://prototypes/gameplay-scene/proto_hud.gd" id="7_hud"]
+
+[node name="GameplayScene" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="GridRenderer" type="Node2D" parent="."]
+script = ExtResource("2_grid")
+
+[node name="SlidingMovement" type="Node2D" parent="."]
+script = ExtResource("3_slide")
+
+[node name="CatSprite" type="Node2D" parent="SlidingMovement"]
+script = ExtResource("4_cat")
+
+[node name="CoverageTracking" type="Node" parent="."]
+script = ExtResource("5_cover")
+
+[node name="MoveCounter" type="Node" parent="."]
+script = ExtResource("6_move")
+
+[node name="HUD" type="Node2D" parent="."]
+z_index = 100
+script = ExtResource("7_hud")
