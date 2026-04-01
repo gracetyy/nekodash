@@ -49,6 +49,7 @@ enum State {
 @onready var _star_rating_system: Node = $StarRatingSystem
 @onready var _level_progression: Node = $LevelProgression
 @onready var _hud: HUD = $HUD
+@onready var _grid_renderer: Node2D = $GridRenderer
 
 
 # —————————————————————————————————————————————
@@ -86,6 +87,10 @@ func receive_scene_params(params: Dictionary) -> void:
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	# Fallback for direct scene launch (no SceneManager call)
+	if _current_level_data == null and level_catalogue != null and level_catalogue.levels.size() > 0:
+		_current_level_data = level_catalogue.levels[0]
+
 	if _current_level_data == null:
 		push_error("LevelCoordinator: _ready() with no LevelData — call receive_scene_params() first.")
 		return
@@ -155,6 +160,15 @@ func _initialize_systems() -> void:
 		_undo_restart,
 		_coverage_tracking,
 	)
+
+	# GridRenderer: redraw grid from current GridSystem state + compute centering
+	if _grid_renderer != null:
+		_grid_renderer.render_grid()
+		# Move the coordinator root (Node2D) so the grid is centered on screen.
+		# GridRenderer and SlidingMovement both draw relative to parent, so
+		# this single offset aligns everything. HUD is a CanvasLayer and ignores
+		# parent transforms.
+		position = _grid_renderer.get_grid_offset()
 
 
 ## Wires all inter-system signals. Order is critical — see
@@ -274,6 +288,10 @@ func _on_level_record_saved(level_id: String, stars: int, final_moves: int) -> v
 		"next_level_data": next_level,
 	}
 
+	# Show inline level-complete overlay (temporary until level_complete.tscn exists)
+	_show_level_complete_overlay(params)
+
+	# Track state in SceneManager (go_to is a stub but tests verify state)
 	SceneManager.go_to(SceneManager.Screen.LEVEL_COMPLETE, params)
 
 
@@ -296,9 +314,9 @@ func _on_coverage_updated(_covered: int, _total: int) -> void:
 	pass
 
 
-func _on_tile_covered(_coord: Vector2i) -> void:
-	# Reserved for CoverageVisualizer (S2-08 Nice to Have).
-	pass
+func _on_tile_covered(coord: Vector2i) -> void:
+	if _grid_renderer != null:
+		_grid_renderer.mark_covered(coord)
 
 
 # —————————————————————————————————————————————
@@ -341,3 +359,129 @@ func get_prev_best_moves() -> int:
 ## Returns whether the player has previously completed this level.
 func was_previously_completed() -> bool:
 	return _was_previously_completed
+
+
+# —————————————————————————————————————————————
+# Level complete overlay (temporary until level_complete.tscn exists)
+# —————————————————————————————————————————————
+var _overlay: CanvasLayer
+
+func _show_level_complete_overlay(params: Dictionary) -> void:
+	if _overlay != null:
+		_overlay.queue_free()
+
+	_overlay = CanvasLayer.new()
+	_overlay.layer = 10
+	add_child(_overlay)
+
+	# Semi-transparent background
+	var bg := ColorRect.new()
+	bg.color = Color(0.0, 0.0, 0.0, 0.6)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_overlay.add_child(bg)
+
+	# Center container
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_overlay.add_child(center)
+
+	# Opaque result card so gameplay does not bleed through text.
+	var card := PanelContainer.new()
+	card.custom_minimum_size = Vector2(360, 240)
+	var card_style := StyleBoxFlat.new()
+	card_style.bg_color = Color(0.08, 0.09, 0.12, 0.96)
+	card_style.border_color = Color(0.18, 0.2, 0.28, 1.0)
+	card_style.border_width_left = 2
+	card_style.border_width_top = 2
+	card_style.border_width_right = 2
+	card_style.border_width_bottom = 2
+	card_style.corner_radius_top_left = 10
+	card_style.corner_radius_top_right = 10
+	card_style.corner_radius_bottom_right = 10
+	card_style.corner_radius_bottom_left = 10
+	card.add_theme_stylebox_override("panel", card_style)
+	center.add_child(card)
+
+	var card_margin := MarginContainer.new()
+	card_margin.add_theme_constant_override("margin_left", 24)
+	card_margin.add_theme_constant_override("margin_top", 20)
+	card_margin.add_theme_constant_override("margin_right", 24)
+	card_margin.add_theme_constant_override("margin_bottom", 20)
+	card.add_child(card_margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 16)
+	card_margin.add_child(vbox)
+
+	# Stars
+	var stars: int = params.get("stars", 0)
+	var star_label := Label.new()
+	var star_text: String = ""
+	for i: int in range(3):
+		star_text += "★ " if i < stars else "☆ "
+	star_label.text = star_text.strip_edges()
+	star_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	star_label.add_theme_font_size_override("font_size", 48)
+	star_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	vbox.add_child(star_label)
+
+	# Title
+	var title := Label.new()
+	title.text = "Level Complete!"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 32)
+	title.add_theme_color_override("font_color", Color(0.97, 0.97, 0.97))
+	vbox.add_child(title)
+
+	# Moves
+	var moves_label := Label.new()
+	var final_m: int = params.get("final_moves", 0)
+	var level_d: LevelData = params.get("level_data")
+	var min_m: int = level_d.minimum_moves if level_d else 0
+	moves_label.text = "Moves: %d / %d" % [final_m, min_m]
+	moves_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	moves_label.add_theme_font_size_override("font_size", 20)
+	moves_label.add_theme_color_override("font_color", Color(0.86, 0.88, 0.96))
+	vbox.add_child(moves_label)
+
+	# Button row
+	var btn_row := HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 24)
+	vbox.add_child(btn_row)
+
+	# Retry button
+	var retry_btn := Button.new()
+	retry_btn.text = "Retry"
+	retry_btn.custom_minimum_size = Vector2(100, 44)
+	retry_btn.pressed.connect(_on_overlay_retry)
+	btn_row.add_child(retry_btn)
+
+	# Next Level button (only if there is a next level)
+	var next_level_data: LevelData = params.get("next_level_data")
+	if next_level_data != null:
+		var next_btn := Button.new()
+		next_btn.text = "Next Level"
+		next_btn.custom_minimum_size = Vector2(120, 44)
+		next_btn.pressed.connect(_on_overlay_next.bind(next_level_data))
+		btn_row.add_child(next_btn)
+
+
+func _on_overlay_retry() -> void:
+	if _overlay != null:
+		_overlay.queue_free()
+		_overlay = null
+	restart_level()
+
+
+func _on_overlay_next(next_level: LevelData) -> void:
+	if _overlay != null:
+		_overlay.queue_free()
+		_overlay = null
+	_current_level_data = next_level
+	_disconnect_signals()
+	_initialize_systems()
+	_connect_signals()
+	_sliding_movement.initialize_level(_current_level_data.cat_start)
+	_state = State.PLAYING
+	print("[LevelCoordinator] Loaded next level: " + _current_level_data.display_name)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dg4meplay5cen"]
+[gd_scene load_steps=12 format=3 uid="uid://dg4meplay5cen"]
 
 [ext_resource type="Script" path="res://src/gameplay/level_coordinator.gd" id="1"]
 [ext_resource type="Script" path="res://src/gameplay/sliding_movement.gd" id="2"]
@@ -9,13 +9,21 @@
 [ext_resource type="Script" path="res://src/gameplay/level_progression.gd" id="7"]
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="8"]
 [ext_resource type="Resource" path="res://assets/levels/level_catalogue.tres" id="9"]
+[ext_resource type="Script" path="res://src/ui/grid_renderer.gd" id="10"]
+[ext_resource type="Script" path="res://src/ui/cat_sprite.gd" id="11"]
 
 [node name="LevelCoordinator" type="Node2D"]
 script = ExtResource("1")
 level_catalogue = ExtResource("9")
 
+[node name="GridRenderer" type="Node2D" parent="."]
+script = ExtResource("10")
+
 [node name="SlidingMovement" type="Node2D" parent="."]
 script = ExtResource("2")
+
+[node name="CatSprite" type="Node2D" parent="SlidingMovement"]
+script = ExtResource("11")
 
 [node name="CoverageTracking" type="Node" parent="."]
 script = ExtResource("3")
@@ -34,3 +42,49 @@ script = ExtResource("7")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("8")
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 80.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="HUD/MarginContainer"]
+layout_mode = 2
+
+[node name="LevelNameLabel" type="Label" parent="HUD/MarginContainer/VBox"]
+layout_mode = 2
+text = "Level Name"
+horizontal_alignment = 1
+
+[node name="StatsRow" type="HBoxContainer" parent="HUD/MarginContainer/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="MoveLabel" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
+layout_mode = 2
+text = "0 / 0"
+
+[node name="Spacer" type="Control" parent="HUD/MarginContainer/VBox/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CoverageLabel" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
+layout_mode = 2
+text = "0 / 0"
+
+[node name="ButtonRow" type="HBoxContainer" parent="HUD/MarginContainer/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="UndoBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
+layout_mode = 2
+text = "Undo"
+
+[node name="RestartBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
+layout_mode = 2
+text = "Restart"

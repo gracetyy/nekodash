@@ -84,6 +84,11 @@ func _build_coordinator(level_data: LevelData) -> Node2D:
 	hud_node.name = "HUD"
 	lc.add_child(hud_node)
 
+	# Visual nodes (not tested directly but required by @onready)
+	var gr: Node2D = load("res://src/ui/grid_renderer.gd").new()
+	gr.name = "GridRenderer"
+	lc.add_child(gr)
+
 	# Inject a LevelCatalogue containing the test level
 	var catalogue := LevelCatalogue.new()
 	catalogue.levels = [level_data]
