@@ -1,0 +1,261 @@
+## LevelCompleteScreen — post-level results view.
+## Implements: design/gdd/level-complete-screen.md
+## Task: S2-06
+##
+## Shows star rating, final move count vs minimum, new personal best badge,
+## and navigation buttons (Next Level, Retry, World Map). Receives all context
+## via receive_scene_params() — owns no game state.
+##
+## Usage:
+##   SceneManager calls receive_scene_params(params) before _ready().
+##   The screen populates results in _ready() from the param data.
+class_name LevelCompleteScreen
+extends Control
+
+
+# —————————————————————————————————————————————
+# Constants
+# —————————————————————————————————————————————
+
+## Alpha for unearned star icons (dimmed).
+const DIMMED_STAR_ALPHA: float = 0.3
+
+
+# —————————————————————————————————————————————
+# Signals
+# —————————————————————————————————————————————
+
+## Emitted when player presses Next Level.
+signal next_level_requested(level_data: LevelData)
+
+## Emitted when player presses Retry.
+signal retry_requested(level_data: LevelData)
+
+## Emitted when player presses World Map.
+signal world_map_requested
+
+
+# —————————————————————————————————————————————
+# Child node references — set via set_ui_nodes() or @onready
+# —————————————————————————————————————————————
+
+var _level_name_label: Control   # Label
+var _moves_label: Control        # Label
+var _new_best_badge: Control     # Label / TextureRect
+var _next_btn: Control           # Button
+var _retry_btn: Control          # Button
+var _world_map_btn: Control      # Button
+
+## Star display nodes — array of 3 Controls (e.g. TextureRect or Label).
+## Filled stars are visible; empty stars are dimmed or hidden.
+var _star_nodes: Array[Control] = []
+
+## Optional sentinel display for stars == -1.
+var _star_sentinel_label: Control  # Label showing "?" when unsolved
+
+
+# —————————————————————————————————————————————
+# Scene params (set via receive_scene_params)
+# —————————————————————————————————————————————
+
+var _current_level_data: LevelData
+var _stars: int = 0
+var _final_moves: int = 0
+var _prev_best_moves: int = 0
+var _was_previously_completed: bool = false
+var _next_level_data: LevelData
+
+## Whether params have been received.
+var _params_received: bool = false
+
+## Whether results have been populated.
+var _populated: bool = false
+
+
+# —————————————————————————————————————————————
+# Lifecycle
+# —————————————————————————————————————————————
+
+func _ready() -> void:
+	if _params_received:
+		populate_results()
+
+
+# —————————————————————————————————————————————
+# SceneManager contract
+# —————————————————————————————————————————————
+
+## Called by SceneManager before _ready(). Stores all result data.
+func receive_scene_params(params: Dictionary) -> void:
+	_current_level_data = params.get("level_data") as LevelData
+	_stars = params.get("stars", 0) as int
+	_final_moves = params.get("final_moves", 0) as int
+	_prev_best_moves = params.get("prev_best_moves", 0) as int
+	_was_previously_completed = params.get("was_previously_completed", false) as bool
+	_next_level_data = params.get("next_level_data") as LevelData
+	_params_received = true
+
+
+# —————————————————————————————————————————————
+# Public API
+# —————————————————————————————————————————————
+
+## Populates the results display. Called automatically from _ready() if params
+## are received, or can be called manually for test setups.
+func populate_results() -> void:
+	if _current_level_data == null:
+		push_error("LevelCompleteScreen: populate_results() with no level_data.")
+		return
+
+	# Level name
+	if _level_name_label != null:
+		_level_name_label.text = _current_level_data.display_name
+
+	# Stars
+	_show_stars(_stars)
+
+	# Move count
+	_update_moves_label(_final_moves, _current_level_data.minimum_moves)
+
+	# New best badge
+	_update_new_best_badge()
+
+	# Next button visibility
+	_update_next_button()
+
+	_populated = true
+
+
+## Returns whether params have been received.
+func has_params() -> bool:
+	return _params_received
+
+
+## Returns whether results have been populated.
+func is_populated() -> bool:
+	return _populated
+
+
+## Returns the stored star count.
+func get_stars() -> int:
+	return _stars
+
+
+## Returns the stored final move count.
+func get_final_moves() -> int:
+	return _final_moves
+
+
+## Returns the stored level data.
+func get_level_data() -> LevelData:
+	return _current_level_data
+
+
+## Returns the stored next level data (null if last level).
+func get_next_level_data() -> LevelData:
+	return _next_level_data
+
+
+## Returns whether this is a new best.
+func is_new_best() -> bool:
+	var is_first: bool = not _was_previously_completed
+	var is_better: bool = _prev_best_moves > 0 and _final_moves < _prev_best_moves
+	return is_first or is_better
+
+
+## Assigns UI node references. Called by the scene or test setup before
+## populate_results().
+func set_ui_nodes(
+	level_name_label: Control,
+	moves_label: Control,
+	new_best_badge: Control,
+	next_btn: Control,
+	retry_btn: Control,
+	world_map_btn: Control,
+	star_nodes: Array[Control],
+	star_sentinel_label: Control = null,
+) -> void:
+	_level_name_label = level_name_label
+	_moves_label = moves_label
+	_new_best_badge = new_best_badge
+	_next_btn = next_btn
+	_retry_btn = retry_btn
+	_world_map_btn = world_map_btn
+	_star_nodes = star_nodes
+	_star_sentinel_label = star_sentinel_label
+
+
+# —————————————————————————————————————————————
+# Button handlers (connect from scene or test)
+# —————————————————————————————————————————————
+
+## Called when the Next Level button is pressed.
+func on_next_btn_pressed() -> void:
+	if _next_level_data == null:
+		return
+	next_level_requested.emit(_next_level_data)
+
+
+## Called when the Retry button is pressed.
+func on_retry_btn_pressed() -> void:
+	if _current_level_data == null:
+		return
+	retry_requested.emit(_current_level_data)
+
+
+## Called when the World Map button is pressed.
+func on_world_map_btn_pressed() -> void:
+	world_map_requested.emit()
+
+
+# —————————————————————————————————————————————
+# Display helpers
+# —————————————————————————————————————————————
+
+## Shows 0–3 filled stars or sentinel for unsolved levels.
+func _show_stars(stars: int) -> void:
+	# Handle sentinel (-1) for unsolved levels
+	if stars == -1:
+		for node: Control in _star_nodes:
+			node.visible = false
+		if _star_sentinel_label != null:
+			_star_sentinel_label.visible = true
+			_star_sentinel_label.text = "?"
+		return
+
+	# Hide sentinel if present
+	if _star_sentinel_label != null:
+		_star_sentinel_label.visible = false
+
+	# Normal star display: show filled for earned, dim for unearned
+	for i: int in range(_star_nodes.size()):
+		if i < stars:
+			_star_nodes[i].visible = true
+			_star_nodes[i].modulate = Color.WHITE  # filled
+		else:
+			_star_nodes[i].visible = true
+			_star_nodes[i].modulate = Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA)  # dimmed
+
+
+## Updates the move count label. Handles minimum_moves == 0.
+func _update_moves_label(final_moves: int, minimum_moves: int) -> void:
+	if _moves_label == null:
+		return
+	if minimum_moves == 0:
+		_moves_label.text = str(final_moves)
+	else:
+		_moves_label.text = "%d / %d" % [final_moves, minimum_moves]
+
+
+## Shows or hides the new best badge.
+func _update_new_best_badge() -> void:
+	if _new_best_badge == null:
+		return
+	_new_best_badge.visible = is_new_best()
+
+
+## Shows or hides the next level button based on next_level_data availability.
+func _update_next_button() -> void:
+	if _next_btn == null:
+		return
+	_next_btn.visible = _next_level_data != null
