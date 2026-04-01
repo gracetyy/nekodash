@@ -2,7 +2,7 @@
 
 > **Status**: Approved
 > **Created**: 2026-03-31
-> **Last Updated**: 2026-03-31
+> **Last Updated**: 2026-04-02
 > **System #**: 18 of 22
 > **Category**: UI
 > **Priority**: MVP-Polish
@@ -67,7 +67,9 @@ they just play.
 
 2. **Undo button enabled state**: The Undo button is enabled only when
    `UndoRestart.can_undo()` returns true. It is checked:
-   - On `undo_applied` (stack may now be empty)
+   - On `move_count_changed` (primary: UndoRestart snapshot is guaranteed to exist by
+     the time this fires, so the button reflects live state after every slide)
+   - On `undo_applied` (belt-and-suspenders: stack may now be empty)
    - On `level_restarted` (stack is empty after restart)
    - On `initialize()` (stack is empty at level load)
 
@@ -83,9 +85,11 @@ they just play.
    completion. The existing Undo/Restart GDD states: "restart still works, undo is a
    no-op after `level_completed`" — the HUD enforces this by simply hiding both buttons.
 
-5. **Coverage display format**: Tile count, not percentage, at MVP.
-   Format: `"X / Y"` (e.g. `"12 / 20"`). If the product owner decides percentage is
-   clearer, this is a one-line change in HUD; Coverage Tracking is unaffected.
+5. **Coverage display**: Hidden from player-facing HUD by default (decided post-playtest:
+   tile colours already communicate progress visually). The `CoverageLabel` node remains
+   in the scene but is set to `visible = false`. Coverage signals still flow to the HUD
+   for debug-mode use. If reinstated, the display format is tile count: `"X / Y"`
+   (e.g. `"12 / 20"`); no code changes are needed, only a visibility toggle.
 
 6. **No animation at MVP**: Labels update instantly on signal. Counter bump animations
    (scale pop, color flash) are a polish task for post-jam. The HUD layout must leave
@@ -103,13 +107,14 @@ they just play.
 
 ## Display Elements
 
-| Element              | Signal Source                                     | Content                                         | Notes                                               |
-| -------------------- | ------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
-| **Move label**       | `move_count_changed`                              | `"{current} / {min}"` or `"{current}"` if min=0 | Right-aligned; large; prominent                     |
-| **Coverage label**   | `coverage_updated`                                | `"{covered} / {total}"`                         | Smaller; secondary prominence                       |
-| **Undo button**      | `undo_applied`, `level_restarted`, `initialize()` | Icon + optional label "Undo"                    | Disabled (greyed) when `can_undo() == false`        |
-| **Restart button**   | `level_completed` (hide)                          | Icon + optional label "Restart"                 | Always enabled while playing; hidden after complete |
-| **Level name label** | Set once at `initialize()`                        | `level_data.display_name`                       | Static after init                                   |
+| Element              | Signal Source                                                           | Content                                         | Notes                                               |
+| -------------------- | ----------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| **Moves prefix**     | Static (set at init)                                                    | `"Moves: "` (trailing space)                    | Plain Label prepended to Move label                 |
+| **Move label**       | `move_count_changed`                                                    | `"{current} / {min}"` or `"{current}"` if min=0 | Right-aligned; large; prominent                     |
+| **Coverage label**   | `coverage_updated`                                                      | `"{covered} / {total}"`                         | Hidden by default (`visible = false`); debug only   |
+| **Undo button**      | `move_count_changed`, `undo_applied`, `level_restarted`, `initialize()` | Icon + optional label "Undo"                    | Disabled (greyed) when `can_undo() == false`        |
+| **Restart button**   | `level_completed` (hide)                                                | Icon + optional label "Restart"                 | Always enabled while playing; hidden after complete |
+| **Level name label** | Set once at `initialize()`                                              | `level_data.display_name`                       | Static after init                                   |
 
 ---
 
@@ -141,7 +146,13 @@ if minimum == 0:
     _move_label.text = str(current)
 else:
     _move_label.text = "%d / %d" % [current, minimum]
+_undo_btn.disabled = not _undo_restart_ref.can_undo()  # refresh after every slide
 ```
+
+> **Why here?** `UndoRestart` connects to `slide_completed` before `MoveCounter` (see
+> Level Coordinator GDD — Signal Connection Order), so its snapshot is already pushed
+> by the time `move_count_changed` fires. Reading `can_undo()` here gives a live,
+> correct result every time.
 
 ### `_on_coverage_updated(covered: int, total: int)`
 
