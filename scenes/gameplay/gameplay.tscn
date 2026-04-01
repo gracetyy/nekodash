@@ -1,0 +1,36 @@
+[gd_scene load_steps=10 format=3 uid="uid://dg4meplay5cen"]
+
+[ext_resource type="Script" uid="uid://b3wcn370674wt" path="res://src/gameplay/level_coordinator.gd" id="1"]
+[ext_resource type="Script" uid="uid://cc82vr8fufdhg" path="res://src/gameplay/sliding_movement.gd" id="2"]
+[ext_resource type="Script" uid="uid://b8axvc1why7du" path="res://src/gameplay/coverage_tracking.gd" id="3"]
+[ext_resource type="Script" uid="uid://blrt4xee1fcvj" path="res://src/gameplay/move_counter.gd" id="4"]
+[ext_resource type="Script" uid="uid://7dear1i1mhsd" path="res://src/gameplay/undo_restart.gd" id="5"]
+[ext_resource type="Script" uid="uid://e0l3gt47sch4" path="res://src/gameplay/star_rating_system.gd" id="6"]
+[ext_resource type="Script" path="res://src/gameplay/level_progression.gd" id="7"]
+[ext_resource type="Script" path="res://src/ui/hud.gd" id="8"]
+[ext_resource type="Resource" path="res://assets/levels/level_catalogue.tres" id="9"]
+
+[node name="LevelCoordinator" type="Node2D"]
+script = ExtResource("1")
+level_catalogue = ExtResource("9")
+
+[node name="SlidingMovement" type="Node2D" parent="."]
+script = ExtResource("2")
+
+[node name="CoverageTracking" type="Node" parent="."]
+script = ExtResource("3")
+
+[node name="MoveCounter" type="Node" parent="."]
+script = ExtResource("4")
+
+[node name="UndoRestart" type="Node" parent="."]
+script = ExtResource("5")
+
+[node name="StarRatingSystem" type="Node" parent="."]
+script = ExtResource("6")
+
+[node name="LevelProgression" type="Node" parent="."]
+script = ExtResource("7")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("8")
