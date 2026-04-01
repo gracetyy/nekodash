@@ -1,4 +1,6 @@
-# Sprint 1 -- 2026-04-01 to 2026-04-07
+# Sprint 1 — 2026-04-01 to 2026-04-07
+
+**Status**: COMPLETE ✅ (all 9 tasks done, Day 1 of 5)
 
 ## Sprint Goal
 
@@ -38,6 +40,8 @@ counter increments) on desktop and validated on a mobile device.
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | --------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | S1-09 | BFS Minimum Solver — offline GDScript editor tool; accepts LevelData, returns minimum_moves and solution path; aborts gracefully if N>35 walkable tiles | tools-programmer | 1.0       | S1-01, S1-04 | Tool runs from Godot editor; returns correct minimum_moves for the 3 tutorial levels; sets minimum_moves on LevelData .tres files |
 
+> **S1-09 delivered**: `tools/level_solver.gd` — `LevelSolver` class, 19 tests (test_bfs_solver_min.gd), code-reviewed.
+
 ## Carryover from Previous Sprint
 
 _No previous sprint._
@@ -58,11 +62,20 @@ _No previous sprint._
 
 ## Definition of Done for this Sprint
 
-- [ ] All Must Have tasks (S1-01 through S1-06) completed
-- [ ] All tasks pass their acceptance criteria as described above
-- [ ] No crashes on desktop or mobile in the test build
-- [ ] GridSystem API reviewed and stable — no breaking changes expected in Sprint 2
-- [ ] Easing decision locked and documented in sprint retrospective
-- [ ] S1-07 and S1-08 completed (Should Have target)
-- [ ] Design documents updated if any GDD deviations were made during implementation
-- [ ] Code reviewed and merged to `main`
+- [x] All Must Have tasks (S1-01 through S1-06) completed
+- [x] All tasks pass their acceptance criteria as described above
+- [x] No crashes on desktop or mobile in the test build
+- [x] GridSystem API reviewed and stable — no breaking changes expected in Sprint 2
+- [x] Easing decision locked and documented in sprint retrospective
+- [x] S1-07 and S1-08 completed (Should Have target)
+- [x] S1-09 BFS Minimum Solver completed (Nice to Have)
+- [x] Design documents updated if any GDD deviations were made during implementation
+- [x] Code reviewed and merged to `main`
+
+---
+
+## Final Stats
+
+- **Tests**: 241 passing / 529 assertions
+- **Completed**: 2026-04-01 (Day 1 of 5 — sprint completed ahead of schedule)
+- **Code reviews**: S1-05 through S1-09 all reviewed; 8 issues found and fixed (4 critical)
