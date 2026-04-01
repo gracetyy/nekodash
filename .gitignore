@@ -1,6 +1,4 @@
-# === Godot 4+ specific ignores ===
-.godot/
-/android/
+
 
 # === IDE and Editor ===
 .vs/
@@ -44,6 +42,8 @@ dist/
 *.translation
 export_presets.cfg
 *.import
+/android/
+addons/
 
 # === Compiled Shaders ===
 *.spv
