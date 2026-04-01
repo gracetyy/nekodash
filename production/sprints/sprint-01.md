@@ -46,6 +46,12 @@ counter increments) on desktop and validated on a mobile device.
 
 _No previous sprint._
 
+## Carryover to Sprint 2
+
+| ID     | Task                                                                                                                                           | Reason for Carryover                                                                                    |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| S1-06c | Formal mobile swipe accuracy test — record 20 swipes on device, verify ≥15/20 hit rate, lock TRANS_QUAD as final or reopen easing decision | Sprint 1 validated feel qualitatively; physical device timing prevented the formal accuracy count. Acceptance criterion not fully met. |
+
 ## Risks
 
 | Risk                                                                       | Probability | Impact | Mitigation                                                                                                              |

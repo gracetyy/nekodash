@@ -31,7 +31,7 @@ No UI polish, no audio, no skins required.
 | SceneManager (stub)          | ✅ Done (Sprint 1) — 14 tests                                 |
 | LevelDataFormat              | ✅ Done (Sprint 1) — 33 tests, 3 tutorial levels              |
 | SlidingMovement (production) | ✅ Done (Sprint 1) — 40 tests, code-reviewed                  |
-| CoverageTracking             | ✅ Done (Sprint 1) — 37 tests, code-reviewed                  |
+| CoverageTracking             | ✅ Done (Sprint 1) — 35 tests, code-reviewed                  |
 | MoveCounter                  | ✅ Done (Sprint 1) — 27 tests, code-reviewed                  |
 | BFS Minimum Solver           | ✅ Done (Sprint 1) — 19 tests, code-reviewed (NTH, delivered) |
 
