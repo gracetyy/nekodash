@@ -23,20 +23,25 @@ func _ready() -> void:
 	# 1. Load grid into autoload
 	GridSystem.load_grid(level_data)
 
-	# 2. Initialize gameplay systems
-	sliding_movement.initialize_level(level_data.cat_start)
+	# 2. Initialize state systems (before triggering events)
 	coverage_tracking.initialize_level()
 	move_counter.initialize_level(level_data)
 
-	# 3. Wire signals — bind gameplay trackers to sliding movement
-	coverage_tracking.bind_sliding_movement(sliding_movement)
+	# 3. Wire signals BEFORE sliding_movement init so spawn_position_set is received
+	# Order matters: MoveCounter BEFORE CoverageTracking so the count is correct
+	# when level_completed fires (see design/gdd/level-coordinator.md)
 	move_counter.bind_sliding_movement(sliding_movement)
+	coverage_tracking.bind_sliding_movement(sliding_movement)
+
+	# 4. Now initialize sliding — emits spawn_position_set, caught by coverage_tracking
+	sliding_movement.initialize_level(level_data.cat_start)
 
 	# 4. Listen for completion
 	coverage_tracking.level_completed.connect(_on_level_completed)
 
-	# 5. Listen for coverage updates to repaint grid overlay
+	# 5. Listen for coverage updates to repaint grid overlay + update HUD
 	coverage_tracking.tile_covered.connect(_on_tile_covered)
+	coverage_tracking.coverage_updated.connect(_on_coverage_updated)
 
 	# 6. Listen for move count changes to update HUD
 	move_counter.move_count_changed.connect(_on_move_count_changed)
@@ -51,7 +56,7 @@ func _ready() -> void:
 
 	# 9. HUD initial state
 	hud.update_moves(0, level_data.minimum_moves)
-	hud.update_coverage(1, coverage_tracking.get_total_walkable())
+	hud.update_coverage(coverage_tracking.get_covered_count(), coverage_tracking.get_total_walkable())
 
 	print("[GameplayScene] Level '%s' loaded — %d walkable tiles, %d minimum moves" % [
 		level_data.display_name,
@@ -64,12 +69,12 @@ func _on_tile_covered(coord: Vector2i) -> void:
 	grid_renderer.mark_covered(coord)
 
 
+func _on_coverage_updated(covered: int, total: int) -> void:
+	hud.update_coverage(covered, total)
+
+
 func _on_move_count_changed(current_moves: int, minimum_moves: int) -> void:
 	hud.update_moves(current_moves, minimum_moves)
-	hud.update_coverage(
-		coverage_tracking.get_covered_count(),
-		coverage_tracking.get_total_walkable()
-	)
 
 
 func _on_level_completed() -> void:
@@ -109,17 +114,18 @@ func _restart_level() -> void:
 		push_error("GameplayScene: Failed to load level: " + _level_path)
 		return
 	GridSystem.load_grid(level_data)
-	sliding_movement.initialize_level(level_data.cat_start)
 	coverage_tracking.initialize_level()
 	move_counter.initialize_level(level_data)
-	coverage_tracking.bind_sliding_movement(sliding_movement)
+	# Order matters: MoveCounter BEFORE CoverageTracking (see _ready)
 	move_counter.bind_sliding_movement(sliding_movement)
+	coverage_tracking.bind_sliding_movement(sliding_movement)
+	sliding_movement.initialize_level(level_data.cat_start)
 
 	grid_renderer.render_grid()
 	grid_renderer.mark_covered(level_data.cat_start)
 	hud.position = Vector2(0, level_data.grid_height * 64.0 + 20)
 	hud.update_moves(0, level_data.minimum_moves)
-	hud.update_coverage(1, coverage_tracking.get_total_walkable())
+	hud.update_coverage(coverage_tracking.get_covered_count(), coverage_tracking.get_total_walkable())
 	hud.hide_complete_message()
 
 	print("[GameplayScene] Restarted level: " + level_data.display_name)

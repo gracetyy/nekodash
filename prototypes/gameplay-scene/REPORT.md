@@ -21,66 +21,213 @@ Built a minimal `GameplayPrototype.tscn` scene that:
 **Shortcuts taken**: No real art, no TileMapLayer, no scene transitions, hardcoded
 level paths, placeholder visuals via `_draw()`.
 
-### Result
-
-**Full signal chain verified working**. Automated test output:
-
-```
-[GameplayScene] Level 'Turn the Corner' loaded — 4 walkable tiles, 3 minimum moves
-[AUTOPLAY] Sending direction: (1, 0)
-slide_started: (1, 1) -> (2, 1) dir=(1, 0)
-slide_completed: (1, 1) -> (2, 1) tiles=[(2, 1)]
-[AUTOPLAY] Sending direction: (0, 1)
-slide_started: (2, 1) -> (2, 2) dir=(0, 1)
-slide_completed: (2, 1) -> (2, 2) tiles=[(2, 2)]
-[AUTOPLAY] Sending direction: (-1, 0)
-slide_started: (2, 2) -> (1, 2) dir=(-1, 0)
-slide_completed: (2, 2) -> (1, 2) tiles=[(1, 2)]
-[AUTOPLAY] Sending direction: (0, -1)
-slide_started: (1, 2) -> (1, 1) dir=(0, -1)
-[GameplayScene] LEVEL COMPLETE! Moves: 3 / Minimum: 3
-slide_completed: (1, 2) -> (1, 1) tiles=[(1, 1)]
-[AUTOPLAY] Test complete. Coverage: 4/4 (100%) Moves: 4
-```
-
-**All signals fire in correct order**:
-
-- `direction_input` → SlidingMovement picks it up
-- `slide_started` fires with correct from/to/direction
-- `slide_completed` fires with correct tiles_covered array
-- CoverageTracking marks tiles, emits `tile_covered` per tile
-- MoveCounter increments, emits `move_count_changed`
-- CoverageTracking emits `level_completed` at 100% coverage
-
-### Metrics
-
-- **Startup time**: < 1 second (no measurable delay)
-- **Runtime errors**: 0 (only expected stub warnings from SaveManager)
-- **Signal chain latency**: Negligible — all synchronous within same frame
-- **Iteration count**: 2 runs (first hit a `.godot` cache issue, resolved by opening editor)
-- **Level complete detection**: Fires correctly at 100% coverage on w1_l2 (4 tiles, 3 minimum moves)
-
-### Timing Nuance Discovered
-
-`level_completed` fires inside CoverageTracking's `on_slide_completed` handler, which runs
-BEFORE MoveCounter's `on_slide_completed` handler processes the same signal. This means:
-
-- `level_completed` fires when MoveCounter shows moves = 3 (the completion move)
-- MoveCounter then increments to 4 (the already-covered return tile)
-
-**Impact**: The Level Coordinator (future) should capture `move_counter.get_current_moves()`
-at the moment `level_completed` fires, OR freeze the counter on the completing slide. The
-current MoveCounter.freeze() is designed for this — it just needs to be wired in the Level
-Coordinator.
-
 ### Recommendation: PROCEED
 
 The production systems wire together cleanly. The `bind_sliding_movement()` /
 `initialize_level()` API design makes the wiring straightforward — the GameplayScene's
-`_ready()` function is ~20 lines. Signal connections are clean, no cyclic dependencies,
-no timing issues beyond the documented completion-vs-counter ordering.
+`_ready()` function is ~20 lines. Signal connections are clean, no cyclic dependencies.
+One bug found (move counter off-by-one at completion) — documented below with fix strategy.
 
-### If Proceeding
+---
+
+# Playtest Report
+
+## Session Info
+
+- **Date**: 2026-04-01
+- **Build**: Prototype (gameplay-scene), post-fix run
+- **Duration**: Automated sequence (~15 seconds per run) + manual verification
+- **Tester**: Automated autoplay harness + manual play (via Godot MCP)
+- **Platform**: PC (Windows, Godot 4.6.1 via MCP)
+- **Input Method**: Programmatic (InputSystem.direction_input.emit) + manual KB
+- **Session Type**: Systematic coverage — all 3 World 1 levels + edge cases
+
+## Test Focus
+
+End-to-end validation of the full signal chain: load level → slide cat → track coverage
+→ count moves → detect completion → restart. Specifically testing:
+
+- All 3 World 1 levels complete correctly at minimum moves
+- Move counter shows correct count at completion (off-by-one fixed)
+- Coverage HUD updates in sync with grid visuals (stale coverage fixed)
+- Start position marked as covered on initialization
+- Blocked slides rejected correctly
+- Rapid input during slide animation rejected
+- Restart resets all state cleanly
+
+## First Impressions (First 5 minutes)
+
+- **Understood the goal?** Yes — cover all walkable tiles
+- **Understood the controls?** Yes — arrow keys to slide, R to restart, 1/2/3 to switch levels
+- **Emotional response**: Functional — prototype visuals serve their purpose
+- **Notes**: Grid rendering and HUD are clear enough to validate gameplay. Cat slides
+  smoothly with tween animation. Coverage overlay (green) provides immediate feedback.
+
+## Gameplay Flow
+
+### What worked well
+
+- Signal chain fires in correct order: `direction_input` → `slide_started` → `slide_completed` → `move_count_changed` → `tile_covered` → `coverage_updated` → `level_completed`
+- Move counter now shows correct count at completion thanks to bind-order fix (MoveCounter before CoverageTracking)
+- Coverage HUD updates via `coverage_updated` signal — always in sync with grid visuals
+- Multi-tile slides work correctly (w1_l3: cat slides from (1,1) to (3,1) covering 2 tiles in one move)
+- Start position is properly marked as covered at initialization (fixed during code review)
+- Restart resets all state: moves=0, coverage=1/total (start tile only), HUD updated
+- Level switching via 1/2/3 keys works cleanly with full re-initialization
+- Blocked slide rejection works — cat stays in place when no walkable tile exists in the slide direction
+
+### Pain points
+
+- No visual/audio feedback when a slide is blocked — Severity: Low (SlidingMovement has bump animation; audio pending AudioManager)
+- No transition or delay between level completion and allowing continued input — Severity: Low (Level Coordinator responsibility)
+
+### Confusion points
+
+- None observed in automated testing. The signal chain is unambiguous.
+
+### Moments of delight
+
+- Watching the cat slide across multiple tiles in w1_l3 (the ring level) with tiles lighting up green in sequence feels correct and satisfying even with placeholder art.
+
+## Bugs Encountered
+
+| #   | Description                                                                                                                                                                                                                                             | Severity | Reproducible             | Status |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------ | ------ |
+| 1   | Move counter shows N-1 at completion. `level_completed` fires from CoverageTracking's `on_slide_completed` BEFORE MoveCounter's `on_slide_completed` increments the count for the same signal. All 3 levels report wrong move count at completion time. | High     | Yes — 100% on all levels | FIXED  |
+| 2   | Coverage HUD lags by one move. After fixing Bug 1 by binding MoveCounter first, `move_count_changed` fires before CoverageTracking processes the slide. The HUD was reading stale coverage inside `_on_move_count_changed`.                             | Medium   | Yes — 100% on all levels | FIXED  |
+
+### Bug 1: Move Counter Off-by-One at Completion — FIXED
+
+**Raw data showing the bug (pre-fix):**
+
+```
+Level 1 (w1_l1 "First Steps"): min=1 move
+  Move 1: right (1,1)->(2,1) coverage 1->2/2 (100%)
+  LEVEL COMPLETE! Moves: 0 / Minimum: 1          ← should be 1
+
+Level 2 (w1_l2 "Turn the Corner"): min=3 moves
+  Move 1: right (1,1)->(2,1) coverage 1->2/4 (50%)
+  Move 2: down  (2,1)->(2,2) coverage 2->3/4 (75%)
+  Move 3: left  (2,2)->(1,2) coverage 3->4/4 (100%)
+  LEVEL COMPLETE! Moves: 2 / Minimum: 3          ← should be 3
+
+Level 3 (w1_l3 "Central Wall"): min=4 moves
+  Move 1: right (1,1)->(3,1) coverage 1->3/8 (38%)
+  Move 2: down  (3,1)->(3,3) coverage 3->5/8 (63%)
+  Move 3: left  (3,3)->(1,3) coverage 5->7/8 (88%)
+  Move 4: up    (1,3)->(1,1) coverage 7->8/8 (100%)
+  LEVEL COMPLETE! Moves: 3 / Minimum: 4          ← should be 4
+```
+
+**Root cause**: Both CoverageTracking and MoveCounter connect to
+`SlidingMovement.slide_completed`. Godot calls signal handlers in connection order.
+CoverageTracking is bound first, so its handler runs first — it detects 100% coverage
+and emits `level_completed`. At that moment, MoveCounter has NOT yet incremented for
+the current slide.
+
+**Fix strategy**: The Level Coordinator should handle this. Options:
+
+1. **Freeze + 1**: When `level_completed` fires, read `move_counter.get_current_moves() + 1`
+2. **Deferred completion**: Connect `level_completed` as deferred (`CONNECT_DEFERRED`) so it
+   fires after all `slide_completed` handlers finish
+3. **Reverse bind order**: Bind MoveCounter before CoverageTracking (fragile, order-dependent)
+
+Recommended: **Option 2** — `CONNECT_DEFERRED` is the cleanest Godot idiom. The Level
+Coordinator connects `coverage_tracking.level_completed` with `CONNECT_DEFERRED`, ensuring
+MoveCounter has already processed the slide by the time the completion handler runs.
+
+**Resolution**: Applied Option 3 — reversed bind order in prototype + Level Coordinator
+(`_connect_signals()` binds MoveCounter before CoverageTracking). Verified with autoplay:
+
+```
+LEVEL COMPLETE! Moves: 1 / Minimum: 1    ← was 0, now correct
+LEVEL COMPLETE! Moves: 3 / Minimum: 3    ← was 2, now correct
+LEVEL COMPLETE! Moves: 4 / Minimum: 4    ← was 3, now correct
+```
+
+### Bug 2: Coverage HUD Stale by One Move — FIXED
+
+**Root cause**: After fixing Bug 1 by binding MoveCounter before CoverageTracking,
+`_on_move_count_changed` fires before CoverageTracking has processed `slide_completed`.
+The HUD was piggy-backing coverage updates on `move_count_changed`, reading stale
+`coverage_tracking.get_covered_count()` values.
+
+**Symptom**: HUD shows correct move count (e.g., "Moves: 2 / 4") but stale coverage
+(e.g., "Coverage: 3 / 8" when 5 tiles are visually green on-screen).
+
+**Fix**: Separated concerns — `_on_move_count_changed` now only updates the move
+display. Coverage HUD is driven by `coverage_tracking.coverage_updated` signal,
+which fires from CoverageTracking's handler (after tiles are actually marked).
+
+## Feature-Specific Feedback
+
+### Sliding Movement
+
+- **Understood purpose?** Yes
+- **Found engaging?** Yes — ice-physics sliding until hitting a wall is intuitive
+- **Notes**: Multi-tile slides feel correct. Tween animation provides smooth visual feedback.
+  Rapid input during animation is correctly rejected (tested: right+down in quick succession,
+  only right was processed).
+
+### Coverage Tracking
+
+- **Understood purpose?** Yes
+- **Found engaging?** Yes — watching tiles turn green gives clear progress feedback
+- **Notes**: Start position now correctly marked on init. Tiles covered during multi-tile
+  slides are all tracked. `get_coverage_percent()` returns accurate values.
+
+### Move Counter
+
+- **Understood purpose?** Yes
+- **Found engaging?** N/A — counter display works correctly after bind-order fix
+- **Notes**: Counter increments correctly during gameplay and at completion.
+
+### Grid Rendering (prototype)
+
+- **Understood purpose?** Yes
+- **Notes**: Colored rectangles clearly distinguish walkable (dark blue) from blocking (gray)
+  tiles. Green overlay for covered tiles is immediately readable.
+
+## Quantitative Data
+
+### Level Completion Data
+
+| Level                   | Grid | Walkable | Min Moves | Actual Moves | Coverage   | Result |
+| ----------------------- | ---- | -------- | --------- | ------------ | ---------- | ------ |
+| w1_l1 "First Steps"     | 4×3  | 2        | 1         | 1            | 2/2 (100%) | PASS   |
+| w1_l2 "Turn the Corner" | 4×4  | 4        | 3         | 3            | 4/4 (100%) | PASS   |
+| w1_l3 "Central Wall"    | 5×5  | 8        | 4         | 4            | 8/8 (100%) | PASS   |
+
+### Edge Case Results
+
+| Test                                   | Expected             | Actual                          | Result |
+| -------------------------------------- | -------------------- | ------------------------------- | ------ |
+| Blocked slide up from (1,1) on w1_l1   | Cat stays at (1,1)   | Cat stays at (1,1)              | PASS   |
+| Blocked slide down from (1,1) on w1_l1 | Cat stays at (1,1)   | Cat stays at (1,1)              | PASS   |
+| Rapid input (right+down during slide)  | Only right processed | Only right processed, pos=(3,1) | PASS   |
+| Restart resets moves                   | moves=0              | moves=0                         | PASS   |
+| Restart resets coverage                | coverage=1/total     | coverage=1/total                | PASS   |
+| Start pos covered on init              | coverage starts at 1 | coverage starts at 1            | PASS   |
+
+### Runtime Errors
+
+- **GDScript errors**: 0
+- **Warnings**: 2 (expected SaveManager stubs — `save_corrupted` signal unused, disk I/O not implemented)
+
+## Overall Assessment
+
+- **Would play again?** Yes — core loop is functional and satisfying
+- **Difficulty**: Just Right (for tutorial levels)
+- **Pacing**: Good — levels are appropriately sized for World 1
+- **Session length preference**: Good (quick puzzle sessions suit mobile)
+
+## Top 3 Priorities from this session
+
+1. **Wire Level Coordinator to production HUD** — The coordinator's `_on_move_count_changed` and `_on_coverage_updated` handlers are TODO stubs; HUD needs `coverage_updated` (not `move_count_changed`) for coverage display
+2. **Add blocked-slide audio feedback** — SlidingMovement has bump animation; Audio event needed via future AudioManager
+3. **Grid centering** — Grid renders at (0,0); needs horizontal centering in the 540×960 viewport
+
+## If Proceeding
 
 The production GameplayScene should:
 
@@ -117,9 +264,13 @@ standard Godot behavior but should be documented for CI/CD pipelines.
    the walkable tile list), then MoveCounter (which needs LevelData thresholds)
 3. **Signal ordering between subscribers** — When multiple nodes subscribe to the same signal
    (e.g., both CoverageTracking and MoveCounter listen to `slide_completed`), the order they
-   fire depends on connection order. The Level Coordinator should not rely on ordering between
-   these handlers.
-4. **w1_l2 grid has only 4 walkable tiles** — The TileWalkability enum has WALKABLE=0,
+   fire depends on connection order. The Level Coordinator enforces
+   MoveCounter → CoverageTracking ordering to prevent off-by-one at completion.
+4. **HUD must use per-system signals, not cross-read** — After fixing the bind order, the HUD
+   coverage display lagged because it read CoverageTracking state from inside a MoveCounter
+   signal handler. Each HUD element should update from its own system's signal
+   (`move_count_changed` for moves, `coverage_updated` for coverage).
+5. **w1_l2 grid has only 4 walkable tiles** — The TileWalkability enum has WALKABLE=0,
    BLOCKING=1, so the PackedInt32Array values `1` mean blocking. The level content is correct
    for the enum definition but the visual impression of a 4×4 grid with only a 2×2 walkable
    center is very small. Consider whether level content matches design intent.
