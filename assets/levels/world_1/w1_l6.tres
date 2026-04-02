@@ -14,6 +14,6 @@ walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1
 obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 cat_start = Vector2i(1, 1)
 minimum_moves = 6
-star_3_moves = 6
+star_3_moves = 8
 star_2_moves = 10
 star_1_moves = 18
