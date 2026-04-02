@@ -89,6 +89,10 @@ func _build_coordinator(level_data: LevelData) -> Node2D:
 	gr.name = "GridRenderer"
 	lc.add_child(gr)
 
+	var cv: CoverageVisualizer = CoverageVisualizer.new()
+	cv.name = "CoverageVisualizer"
+	lc.add_child(cv)
+
 	# Inject a LevelCatalogue containing the test level
 	var catalogue := LevelCatalogue.new()
 	catalogue.levels = [level_data]
