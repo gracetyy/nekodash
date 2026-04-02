@@ -132,7 +132,7 @@ func load_grid(level_data: LevelData) -> void:
 			var coord := Vector2i(col, row)
 			_tiles[coord] = tile
 
-			if walk_val == TileWalkability.WALKABLE:
+			if walk_val == TileWalkability.WALKABLE and obs_val == ObstacleType.NONE:
 				_walkable_cache.append(coord)
 
 	if _walkable_cache.is_empty():
@@ -146,7 +146,8 @@ func load_grid(level_data: LevelData) -> void:
 func is_walkable(coord: Vector2i) -> bool:
 	if not _tiles.has(coord):
 		return false
-	return _tiles[coord].walkability == TileWalkability.WALKABLE
+	var tile: GridTileData = _tiles[coord]
+	return tile.walkability == TileWalkability.WALKABLE and tile.obstacle_type == ObstacleType.NONE
 
 
 ## Returns the GridTileData for coord. Out-of-bounds -> default BLOCKING/NONE.
