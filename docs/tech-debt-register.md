@@ -2,7 +2,7 @@
 
 **Project**: NekoDash
 **Last Updated**: 2026-04-02 (post-Sprint-2 scan — pre-M2 baseline)
-**Total Items**: 6 | **Estimated Total Effort**: S + S + M + M + S + S = ~3–4 days
+**Total Items**: 6 (2 open, 4 resolved) | **Estimated Total Effort**: S + S + M + M + S + S = ~3–4 days
 
 > **Policy**: Every item explains _why_ the debt was accepted. Items older than
 > 3 sprints without action must be fixed or explicitly re-accepted with a new reason.
@@ -26,6 +26,10 @@
 
 | ID  | Resolution                                                                 | Resolved   | Sprint       |
 | --- | -------------------------------------------------------------------------- | ---------- | ------------ |
+| TD-001 | Type annotation fix in `test_level_data.gd:243`                       | 2026-04-02 | S3-01        |
+| TD-002 | Dead overlay code removed from `level_coordinator.gd`                 | 2026-04-02 | S3-02        |
+| TD-003 | SaveManager disk I/O implemented                                      | 2026-04-02 | S3-03        |
+| TD-006 | Ownership headers added to `playtest_capture.gd` and `playtest_runner.gd` | 2026-04-02 | S3-11    |
 | —   | 15 LevelCoordinator TODO placeholders closed                               | 2026-04-02 | S2-05        |
 | —   | GridRenderer coverage duplication removed (R-11)                           | 2026-04-02 | S2-08        |
 | —   | Dead code after `SceneManager.go_to()` removed                             | 2026-04-02 | S2-06 review |
@@ -41,9 +45,10 @@
 | ------ | ---------- | ----- | ---------- | --- |
 | S1     | 2          | 2     | 0          | +2  |
 | S2     | 6          | 6     | 6 (ad-hoc) | +4  |
+| S3     | 2          | 0     | 4          | −4  |
 
-**Direction**: Growing — expected for active early production. All Sprint 2 additions
-are bounded and understood. No item is a runaway or surprise.
+**Direction**: Shrinking — Sprint 3 resolved 4 items with 0 added. 2 items remain
+(TD-004 structural debt, TD-005 test coverage for visual code).
 
 ---
 
