@@ -86,10 +86,15 @@ func initialize_level() -> void:
 
 
 ## Reinitializes coverage from GridSystem, clearing all progress. No-op if
-## UNINITIALIZED (defensive for error recovery paths).
+## UNINITIALIZED (defensive for error recovery paths). Emits tile_uncovered
+## for every currently-covered tile so visual subscribers (CoverageVisualizer)
+## can clear themselves before spawn_position_set fires.
 func reset_coverage() -> void:
 	if _state == State.UNINITIALIZED:
 		return
+	for coord: Vector2i in _coverage_map:
+		if _coverage_map[coord]:
+			tile_uncovered.emit(coord)
 	initialize_level()
 
 

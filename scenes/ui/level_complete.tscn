@@ -98,14 +98,14 @@ layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 16
 
-[node name="NextLevelBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
+[node name="WorldMapBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "Next Level"
+text = "World Map"
 
 [node name="RetryBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
 text = "Retry"
 
-[node name="WorldMapBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
+[node name="NextLevelBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "World Map"
+text = "Next Level"

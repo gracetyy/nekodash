@@ -23,6 +23,9 @@ signal undo_pressed
 ## Emitted when player presses the Restart button.
 signal restart_pressed
 
+## Emitted when player presses the Exit button (abandon level, no save).
+signal exit_pressed
+
 
 # —————————————————————————————————————————————
 # Child node references
@@ -34,6 +37,7 @@ var _move_label: Control # Label
 var _coverage_label: Control # Label
 var _undo_btn: Control # Button
 var _restart_btn: Control # Button
+var _exit_btn: Control # Button
 
 
 # —————————————————————————————————————————————
@@ -121,6 +125,7 @@ func initialize(
 	# Ensure buttons are visible
 	_set_undo_button_visible(true)
 	_set_restart_button_visible(true)
+	_set_exit_button_visible(true)
 
 	_initialized = true
 
@@ -143,12 +148,14 @@ func set_ui_nodes(
 	coverage_label: Control,
 	undo_btn: Control,
 	restart_btn: Control,
+	exit_btn: Control = null,
 ) -> void:
 	_level_name_label = level_name_label
 	_move_label = move_label
 	_coverage_label = coverage_label
 	_undo_btn = undo_btn
 	_restart_btn = restart_btn
+	_exit_btn = exit_btn
 
 
 # —————————————————————————————————————————————
@@ -240,6 +247,7 @@ func _on_level_restarted() -> void:
 	_set_undo_button_disabled(true)
 	_set_undo_button_visible(true)
 	_set_restart_button_visible(true)
+	_set_exit_button_visible(true)
 	_level_complete = false
 
 
@@ -247,6 +255,7 @@ func _on_level_restarted() -> void:
 func _on_level_completed() -> void:
 	_set_undo_button_visible(false)
 	_set_restart_button_visible(false)
+	_set_exit_button_visible(false)
 	_level_complete = true
 
 
@@ -272,6 +281,13 @@ func on_restart_btn_pressed() -> void:
 		return
 	_undo_restart_ref.restart()
 	restart_pressed.emit()
+
+
+## Called when the Exit button is pressed. Navigates to World Map without saving.
+func on_exit_btn_pressed() -> void:
+	if _level_complete:
+		return
+	exit_pressed.emit()
 
 
 # —————————————————————————————————————————————
@@ -306,6 +322,12 @@ func _set_restart_button_visible(visible_flag: bool) -> void:
 		_restart_btn.visible = visible_flag
 
 
+## Sets exit button visibility with null safety.
+func _set_exit_button_visible(visible_flag: bool) -> void:
+	if _exit_btn != null:
+		_exit_btn.visible = visible_flag
+
+
 ## Auto-discovers child Controls by node path. Only sets references that
 ## haven't already been injected via set_ui_nodes(). Wires button pressed
 ## signals when buttons are found.
@@ -328,3 +350,9 @@ func _auto_discover_ui_nodes() -> void:
 	if _restart_btn != null and _restart_btn is BaseButton:
 		if not (_restart_btn as BaseButton).pressed.is_connected(on_restart_btn_pressed):
 			(_restart_btn as BaseButton).pressed.connect(on_restart_btn_pressed)
+
+	if _exit_btn == null:
+		_exit_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/ExitBtn")
+	if _exit_btn != null and _exit_btn is BaseButton:
+		if not (_exit_btn as BaseButton).pressed.is_connected(on_exit_btn_pressed):
+			(_exit_btn as BaseButton).pressed.connect(on_exit_btn_pressed)
