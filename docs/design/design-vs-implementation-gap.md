@@ -1,0 +1,59 @@
+# Design System vs Implementation Gap Analysis
+
+## Draft Asset Overview
+
+The draft assets are far more polished than expected, there are:
+
+- **Cat sprite** (white, kawaii — matches reference exactly)
+- **Floor tiles** (ver1 = rounded tile pair unvisited/visited, ver2 = full-board with border frame)
+- **Furniture sets**: Living room (sofa, armchair, bookshelf, plant, box, carpet, rug — two versions), Bedroom (bed, wardrobe, drawers, bookshelf, mirror, pet basket), Kitchen (fridge, stove, microwave, AC, sink, bins, coffee maker)
+- **Wall tilesets**: Wooden panelled (ver1), Lavender paw-print wallpaper (ver2), Kitchen tile (ver3), Kawaii bedroom wallpaper pink (ver4)
+- **UI components**: Buttons (pill primary/secondary/tertiary, icon circles, disabled), popups (3 sizes including speech bubble), stars (full/half/empty/NEW BEST badge), level cards (4 states), skin cards (3 states), misc (padlock, paw coin, progress bar, Back label, NEW BEST pill)
+
+---
+
+### 🔴 Critical Gaps (wrong or placeholder — must fix before any visual work lands)
+
+| #   | Location             | Issue                                                                                                                                                                                                   |
+| --- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | main_menu.tscn       | Background is `Color(0.08, 0.08, 0.12)` — near-black. Design system: `#F5EDCC` cream. Entire screen is the wrong aesthetic.                                                                             |
+| 2   | world_map.tscn       | Same black background. Should be cream + paw watermark.                                                                                                                                                 |
+| 3   | level_complete.tscn  | Same black background. Should be cream + scrim overlay for modal.                                                                                                                                       |
+| 4   | `GridRenderer`       | `COLOR_FLOOR = Color(0.15, 0.18, 0.35)` (dark blue-purple), `COLOR_WALL = Color(0.25, 0.25, 0.25)` (grey). These are dev placeholder — must be replaced by tileset art per art-direction-grid.md.       |
+| 5   | `CoverageVisualizer` | Trail is `Color(0.2, 0.7, 0.3, 0.6)` (flat green). Design spec: warm amber glow over floor texture. The `design/draft/thumb_tileset-floor-ver1` shows the correct visited tile (golden with paw stamp). |
+| 6   | `CatSprite`          | Drawn in GDScript as an orange circle-cat. You now have `sprite-cat.png` — the white kawaii cat. The code-drawn sprite must be replaced with the actual asset.                                          |
+
+### 🟡 Missing Screens / Nodes
+
+| #   | What's Missing                                                                | Notes                                                                                                                                                       |
+| --- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7   | **Pause screen** — not implemented at all                                     | Referenced in design-system.md §6.6. Needs scene + script.                                                                                                  |
+| 8   | **Skin Selection screen** — not in ui                                         | `skin_select_screen.gd` exists in GDD but no `.tscn` seen. Draft has `ui-skins` asset ready.                                                                |
+| 9   | **Tutorial overlay** — no implementation                                      | First-level speech bubble + arrow animation per §6.5.                                                                                                       |
+| 10  | **HUD: star strip** is absent                                                 | Current HUD only has move counter label + undo/restart buttons. The 3-star strip (center of HUD bar) is missing entirely. Draft has `ui-stars` asset ready. |
+| 11  | **HUD: move counter is a plain label**                                        | Design spec: dark pill (`#2A2436`) with cat icon. Draft `ui-misc` shows the progress bar `12/15` format.                                                    |
+| 12  | **Level complete: "Can you do it in X?" sub-hint** (2-star case)              | `_populate_results()` doesn't render this.                                                                                                                  |
+| 13  | **Level complete: UNDO LAST button** (2-star case)                            | Per §6.7 — lets player back up one move. Not in scene.                                                                                                      |
+| 14  | **World Map: world cards** render as a flat `GridContainer` of `Button` nodes | Should be styled world cards per Component 3.7.                                                                                                             |
+
+### 🟢 Things That Are Correct / Aligned
+
+| #   | What                             | Status                                                                                                                                                     |
+| --- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15  | `LevelCompleteScreen` logic      | Star colouring (`STAR_EARNED_COLOR`, `STAR_UNEARNED_COLOR`), new best badge, next/retry/world-map nav — all structurally correct, just needs visual polish |
+| 16  | Button node names                | `PlayBtn`, `BackBtn`, `UndoBtn`, `RestartBtn` — match what `_auto_discover_ui_nodes()` expects                                                             |
+| 17  | HUD margins                      | `margin_left/right = 16`, `margin_top = 12` — matches §4 layout spec                                                                                       |
+| 18  | Level complete margins           | `margin_top/bottom = 64` gives correct modal-style centering                                                                                               |
+| 19  | GridRenderer centering           | HUD `100px` top margin + center calc is correct for the layout spec                                                                                        |
+| 20  | `LevelCompleteScreen` node names | `Star1/2/3`, `MovesLabel`, `NewBestBadge`, `RetryBtn`, `NextLevelBtn`, `WorldMapBtn` all match spec                                                        |
+
+### 🔵 Design System Updates Needed (draft assets reveal new decisions)
+
+| #   | Finding from Drafts                                                                                                                                                    | Update needed in design-system.md                                                                                                        |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 21  | **Wall tiles are a separate visual concept** from obstacle furniture (ver1–ver4 show distinct wall background tiles, not just border treatment)                        | §3 (Component library) needs a "Wall Tile" component and §6.4 grid layer spec needs to separate "room wall bg" from "furniture obstacle" |
+| 22  | **Floor ver2 shows the entire grid has a unified border frame** — the whole grid sits in a purple-outlined rounded rect, not individual border tiles                   | Art direction doc §3 border spec needs updating                                                                                          |
+| 23  | **Icon circle buttons** (ui-button-3): 6 variants seen — undo (left), undo (grey), restart, back `<`, settings gear, close `×`. Design system only listed undo+restart | Add settings and close circular buttons to Component 3.2                                                                                 |
+| 24  | **Skin cards** use a portrait card shape (not square tiles) with silhouette cat + name label + unlock condition at bottom                                              | Component 3.8 spec matches ver1 grid — update to reflect the single-card portrait format from draft                                      |
+| 25  | **Star sizes**: draft shows 3 scale tiers — large (HUD strip), medium (level cards), small (world card aggregate)                                                      | §3.4 currently only defines 2 sizes; add small (16px) tier for world cards                                                               |
+| 26  | **"NEW BEST" as a pill button** (not just a badge label)                                                                                                               | The draft `ui-misc` shows it as an orange pill — update Component description                                                            |
