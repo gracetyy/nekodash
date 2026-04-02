@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/core/level_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+level_id = "w1_l5"
+world_id = 1
+level_index = 5
+display_name = "Double S"
+grid_width = 6
+grid_height = 6
+walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+cat_start = Vector2i(1, 1)
+minimum_moves = 5
+star_3_moves = 5
+star_2_moves = 9
+star_1_moves = 15
