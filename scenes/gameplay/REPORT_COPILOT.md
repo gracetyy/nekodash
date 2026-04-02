@@ -2,23 +2,22 @@
 
 ## Session Info
 
-- **Date**: 2026-04-01
+- **Date**: 2026-04-02
 - **Scene Under Test**: `res://scenes/gameplay/gameplay.tscn`
-- **Build**: main branch (local working tree after S2-05/S2-06 visual and UX fixes)
-- **Duration**: ~12 minutes (automated run + screenshot review)
+- **Build**: main branch (post-M1, all Sprint 2 tasks complete)
+- **Duration**: ~40 seconds wall-clock (automated run, all 6 levels)
 - **Tester**: GitHub Copilot (automated MCP playtest)
-- **Platform**: Windows PC (Godot 4.3)
-- **Input Method**: Scripted directional inputs via `PlaytestRunner`
-- **Session Type**: Targeted regression test (UI layout, completion flow, visual polish)
+- **Platform**: Windows PC (Godot 4.3, Intel Iris Xe)
+- **Input Method**: Scripted directional inputs via `PlaytestRunner` (rewritten for 6-level coverage)
+- **Session Type**: Full World 1 regression test — visual coverage + scene transitions, all 6 levels
 
 ## Test Focus
 
-- Validate fixes for three reported issues:
-  - Grid overlapping HUD controls
-  - Level complete flow appearing stuck
-  - Cat player sprite visual quality
-- Validate end-to-end progression through all tutorial levels in `gameplay.tscn`
-- Verify screenshot capture workflow and post-fix test stability
+- Verify visual coverage overlay (CoverageVisualizer) renders correctly across all 6 levels
+- Verify LevelCompleteScreen scene transition fires correctly for every level
+- Verify 3-star optimal solutions for new levels w1_l4–w1_l6 (Side Step, Double S, Three Turn)
+- Verify Next Level button advances progression end-to-end through w1_l1 → w1_l6
+- Verify "Three Turn" (w1_l6) correctly shows no Next Level button (last level) and runner terminates
 
 ## First Impressions (First 5 minutes)
 
@@ -26,93 +25,102 @@
 - **Understood the controls?** Yes
 - **Emotional response**: Engaged
 - **Notes**:
-  - HUD is now visually separated from the puzzle grid.
-  - Level complete card is readable, centered, and no longer visually muddled by gameplay elements behind text.
-  - Cat style is now consistent with a kawaii-friendly visual direction.
+  - Grid correctly centered in viewport on all 6 grid sizes (4×3 through 6×7).
+  - CoverageVisualizer green overlay visibly expands with each move — clearly communicates progress.
+  - Level Complete screen consistently shows name, 3 stars, move count vs minimum, "NEW BEST!" badge, and navigation buttons.
+  - w1_l6 (last level) correctly omits the Next Level button and shows only Retry + World Map.
 
 ## Gameplay Flow
 
 ### What worked well
 
-- Grid placement now respects vertical spacing and no longer collides with top HUD controls.
-- Completion UX now has clear progression controls (`Retry`, `Next Level`) and avoids dead-end states.
-- Multi-level progression path (`w1_l1` -> `w1_l2` -> `w1_l3`) completes reliably in one automated pass.
-- Screenshot instrumentation is reliable and captures meaningful checkpoints.
+- All 6 levels complete in one uninterrupted automated pass — no crashes, no stuck states.
+- CoverageVisualizer renders correctly: spawn tile pre-covered green at level load; each slide paints the path green; walls remain dark. Verified visually on w1_l6 (6×7 S-shape).
+- Scene transition chain fires reliably: `CoverageTracking.level_completed` → `StarRatingSystem` → `LevelProgression.level_record_saved` → `SceneManager.go_to(LEVEL_COMPLETE)` → `LevelCompleteScreen.on_next_btn_pressed()` → `SceneManager.go_to(GAMEPLAY)`.
+- `PlaytestRunner` correctly survives between-scene gaps as a persistent autoload, reconnecting to the new coordinator via `SceneManager.transition_completed` signal.
+- Undo button activates after first move (correctly disabled at level start).
+- Move counter increments correctly and matches minimum on 3-star completions for all levels.
 
 ### Pain points
 
-- Overlay capture timing for non-final levels can occur after transition, so some files show the next level state instead of the completion card. **Severity: Low**
+- Last-move screenshot sometimes captures the LevelCompleteScreen rather than the final gameplay state, because the level-complete chain fires faster than the 0.6s screenshot timer. **Severity: Low — cosmetic only, no functional impact.**
 
 ### Confusion points
 
-- None during core gameplay flow after fixes.
+- None. All level solutions executed as designed.
 
 ### Moments of delight
 
-- Final completion card presentation (stars + moves + action buttons) feels clear and polished.
-- Updated cat sprite reads much better at gameplay scale.
+- w1_l6 mid-play (move 4): green CoverageVisualizer paint clearly separates the solved top-half S-arm from the uncovered dark-blue bottom — visually communicates puzzle progress at a glance.
+- "NEW BEST!" badge appears on every level (first-time completions). Reads cleanly against the dark LevelCompleteScreen background.
 
 ## Bugs Encountered
 
-| #   | Description                                                                                   | Severity | Reproducible                     |
-| --- | --------------------------------------------------------------------------------------------- | -------- | -------------------------------- |
-| 1   | Grid rendered in space that competed with HUD controls                                        | High     | Yes (before fix)                 |
-| 2   | Completion flow appeared stuck after level completion due to non-swapping scene stub behavior | High     | Yes (before fix)                 |
-| 3   | Cat sprite quality/style did not meet desired aesthetic                                       | Medium   | Yes (before fix)                 |
-| 4   | Completion card text initially had gameplay visual bleed-through                              | Medium   | Yes (during this session, fixed) |
-| 5   | Some mid-run overlay screenshots captured post-transition state (timing artifact)             | Low      | Yes (current, non-blocking)      |
+| #   | Description                                                                                                                                                                                     | Severity | Reproducible              |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------- |
+| 1   | Last-move screenshot captures LevelCompleteScreen instead of final gameplay frame (timing race between level_complete chain and 0.6s timer)                                                     | Low      | Yes — non-blocking        |
+| 2   | Three pre-existing script warnings in debug output: `save_corrupted` signal unused (SaveManager), `swapped` var unused (SceneManager), `name` param shadows Node property (LevelCompleteScreen) | Low      | Yes — tracked as TD items |
+
+No High or Medium severity bugs found. All previously reported bugs (grid/HUD overlap, stuck completion flow, cat sprite quality) remain resolved.
 
 ## Feature-Specific Feedback
+
+### CoverageVisualizer (visual overlay)
+
+- **Understood purpose?** Yes
+- **Found engaging?** Yes
+- **Verified**: Initializes correctly on level load; `on_tile_covered` and `on_spawn_position_set` update the overlay per-move; `queue_redraw()` triggers correctly; all covered tiles rendered green by end of solution.
+- **Suggestions**:
+  - Consider a subtle fill animation (brief alpha pulse) when a tile is first covered to amplify the "paint the board" satisfaction loop.
+
+### Level Complete Screen
+
+- **Understood purpose?** Yes
+- **Found engaging?** Yes
+- **Verified**: Stars, move count, NEW BEST badge, and navigation buttons all populate correctly. Next Level button absent on w1_l6 (last level). `on_next_btn_pressed()` correctly triggers `next_level_requested` → SceneManager navigation.
+- **Suggestions**:
+  - If analytics are added, track `Retry` vs `Next Level` tap rate — useful signal for difficulty calibration.
 
 ### Grid + HUD Composition
 
 - **Understood purpose?** Yes
 - **Found engaging?** Yes
+- **Verified**: Grid centers correctly across all 5 distinct grid dimensions in World 1 (4×3, 4×4, 5×5, 5×4, 6×6, 6×7). HUD remains at top, no overlap with any grid size.
 - **Suggestions**:
-  - Keep a fixed top safe area budget for future HUD growth.
-  - Consider a visual separator (subtle gradient/band) between HUD and board if HUD gains more controls.
+  - Maintain current 100px top HUD margin as a safety budget for future HUD additions.
 
-### Level Complete Overlay
+### Scene Transition Flow
 
 - **Understood purpose?** Yes
 - **Found engaging?** Yes
-- **Suggestions**:
-  - Keep opaque card styling as baseline for readability.
-  - If analytics are added, track `Retry` vs `Next Level` usage as completion intent signals.
+- **Verified**: SceneManager correctly frees old scene and instantiates new one before `_ready()`. `receive_scene_params()` contract honoured for both GAMEPLAY and LEVEL_COMPLETE screens across all 6 transitions.
+- **Suggestions**: None — flow is robust.
 
-### Cat Sprite (Player Avatar)
+## Quantitative Data
 
-- **Understood purpose?** Yes
-- **Found engaging?** Yes
-- **Suggestions**:
-  - Optionally tune line thickness and mouth contrast for very small screens.
-  - Consider variant skins reusing this expression language for consistency.
-
-## Quantitative Data (if available)
-
-- **Levels tested**: 3/3 tutorial levels
-- **Completion status**: 3/3 passed
-- **Stars achieved**: 3 stars on all tested levels
-- **Moves**:
-  - `w1_l1`: 1/1
-  - `w1_l2`: 3/3
-  - `w1_l3`: 4/4
-- **Coverage at completion**:
-  - `w1_l1`: 2/2
-  - `w1_l2`: 4/4
-  - `w1_l3`: 8/8
-- **Screenshots captured**: 21
-- **Regression tests**: 455/455 passing (GUT)
+- **Levels tested**: 6/6 (all World 1 levels)
+- **Completion status**: 6/6 PASS
+- **Stars achieved**: ★★★ on all 6 levels
+- **Moves vs minimum**:
+  - `w1_l1` First Steps: 1 / 1
+  - `w1_l2` Turn the Corner: 3 / 3
+  - `w1_l3` Central Wall: 4 / 4
+  - `w1_l4` Side Step: 4 / 4
+  - `w1_l5` Double S: 5 / 5
+  - `w1_l6` Three Turn: 6 / 6
+- **Screenshots captured**: 37 (session `20260402_112853`)
+- **Scene transitions fired**: 11 (6× GAMEPLAY, 5× LEVEL_COMPLETE)
+- **Regression tests**: 464/464 passing (GUT, pre-run)
 
 ## Overall Assessment
 
 - **Would play again?** Yes
-- **Difficulty**: Just Right (for current tutorial set)
-- **Pacing**: Good
+- **Difficulty**: Just Right (World 1 as tutorial ramp)
+- **Pacing**: Good — slide animation speed feels satisfying, level-complete chain snappy
 - **Session length preference**: Good
 
 ## Top 3 Priorities from this session
 
-1. Keep completion flow robust without depending on scene swap implementation details.
-2. Preserve board/HUD spacing constraints as UI evolves.
-3. Improve screenshot timing for non-final overlay capture to better document transitions.
+1. **SaveManager disk I/O (TD-003)** — all 6 levels show "NEW BEST!" because saves are in-memory only; progress is lost on restart. This is the highest-impact correctness gap before any real playtesting with humans.
+2. **Screenshot timing for last move** — tighten capture before the level-complete chain fires (reduce post-move wait from 0.6s to 0.3s, or capture on `slide_completed` signal directly) to preserve in-game final state documentation.
+3. **Fix TD-001 script warning** — `test_level_data.gd:243` SCRIPT ERROR fires on every GUT run; one-line fix (`var tile: Node` → `var tile: GridSystem.GridTileData`).
