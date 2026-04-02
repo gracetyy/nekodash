@@ -490,3 +490,58 @@ func test_sliding_movement_double_initialize() -> void:
 	_sm.initialize_level(Vector2i(3, 3))
 	assert_eq(_sm.get_cat_pos(), Vector2i(3, 3))
 	assert_eq(_spawn_position_log.size(), 2)
+
+
+# —————————————————————————————————————————————
+# Tests — STATIC_WALL obstacle stops slides
+# —————————————————————————————————————————————
+
+## Builds a 5×5 bordered grid where tile (2,2) is WALKABLE floor
+## but carries a STATIC_WALL obstacle (no walkability change).
+func _make_5x5_obstacle_at_center() -> LevelData:
+	var w: int = 5
+	var h: int = 5
+	var walk := PackedInt32Array()
+	walk.resize(w * h)
+	for row in range(h):
+		for col in range(w):
+			walk[col + row * w] = 1 if (row == 0 or row == h - 1 or col == 0 or col == w - 1) else 0
+	# Center tile is WALKABLE in walkability_tiles but has STATIC_WALL obstacle
+	# (obstacle blocks movement even though the tile type is floor)
+	var obs := PackedInt32Array()
+	obs.resize(w * h)
+	obs.fill(0)
+	obs[2 + 2 * w] = 1 # (2,2) = STATIC_WALL
+	return _make_level(w, h, walk, obs)
+
+
+func test_sliding_movement_resolve_slide_stops_before_static_wall_obstacle() -> void:
+	# Arrange — 5×5 grid, center (2,2) is WALKABLE but has STATIC_WALL obstacle
+	# Cat at (1,2), sliding right — should stop at (1,2) because (2,2) is blocked by obstacle
+	GridSystem.load_grid(_make_5x5_obstacle_at_center())
+
+	var landing: Vector2i = _sm.resolve_slide(Vector2i(1, 2), Vector2i(1, 0))
+
+	assert_eq(landing, Vector2i(1, 2), "Cat must stop before STATIC_WALL obstacle tile")
+
+
+func test_sliding_movement_resolve_slide_past_column_with_static_wall_obstacle() -> void:
+	# Arrange — center (2,2) has STATIC_WALL, but row 1 above it is clear
+	# Sliding right from (1,1) should reach (3,1) unimpeded
+	GridSystem.load_grid(_make_5x5_obstacle_at_center())
+
+	var landing: Vector2i = _sm.resolve_slide(Vector2i(1, 1), Vector2i(1, 0))
+
+	assert_eq(landing, Vector2i(3, 1), "STATIC_WALL on row 2 must not affect slides on row 1")
+
+
+func test_sliding_movement_blocked_signal_emitted_at_static_wall_obstacle() -> void:
+	# Arrange — cat at (1,2), obstacle at (2,2), slide right is immediately blocked
+	GridSystem.load_grid(_make_5x5_obstacle_at_center())
+	_sm.initialize_level(Vector2i(1, 2))
+
+	_sm._on_direction_input(Vector2i(1, 0))
+
+	assert_eq(_slide_blocked_log.size(), 1, "slide_blocked must fire when obstacle stops slide")
+	assert_eq(_slide_blocked_log[0]["pos"], Vector2i(1, 2))
+	assert_eq(_slide_blocked_log[0]["dir"], Vector2i(1, 0))
