@@ -106,6 +106,10 @@ func go_to(screen: Screen, params: Dictionary = {}) -> void:
 				tree.root.add_child(new_root)
 				tree.current_scene = new_root
 				swapped = true
+		else:
+			push_warning("SceneManager.go_to(): no .tscn at '%s' for Screen %d — stub route." % [path, screen])
+	else:
+		push_warning("SceneManager.go_to(): Screen %d has no SCREEN_PATHS entry." % screen)
 
 	# Emit world_changed when navigating to GAMEPLAY with level data.
 	if screen == Screen.GAMEPLAY and params.has("level_data"):
