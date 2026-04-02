@@ -1,6 +1,6 @@
 ## SceneManager — autoload singleton owning all screen-level navigation.
 ## Implements: design/gdd/scene-manager.md
-## Task: S1-03 (stub)
+## Task: S1-03
 ##
 ## Maintains the current screen state, emits transition signals, and provides
 ## a parameter-handoff contract for incoming scenes. No other node should call
@@ -72,8 +72,9 @@ var _transitioning: bool = false
 # Public API — Navigation
 # —————————————————————————————————————————————
 
-## The single public navigation method. Stub: tracks state and emits signals
-## but does not actually swap scenes.
+## The single public navigation method. Tracks state, emits signals, and
+## swaps the active scene when a scene file exists for the target screen.
+## Calls receive_scene_params() on the new scene root before _ready().
 func go_to(screen: Screen, params: Dictionary = {}) -> void:
 	if _transitioning:
 		push_warning("SceneManager.go_to(): transition already in progress; call dropped.")
@@ -87,7 +88,24 @@ func go_to(screen: Screen, params: Dictionary = {}) -> void:
 	_previous_screen = from
 	_current_screen = screen
 
-	push_warning("SceneManager.go_to(%s): stub — scene swap not implemented." % Screen.keys()[Screen.values().find(screen)])
+	# Attempt real scene swap if a path is registered and the file exists.
+	var swapped: bool = false
+	if SCREEN_PATHS.has(screen):
+		var path: String = SCREEN_PATHS[screen]
+		if ResourceLoader.exists(path):
+			var packed: PackedScene = load(path)
+			if packed != null:
+				var new_root: Node = packed.instantiate()
+				# Deliver params before adding to tree (contract: before _ready).
+				_deliver_params(new_root, params)
+				# Replace the current scene in the tree.
+				var tree: SceneTree = get_tree()
+				var old_scene: Node = tree.current_scene
+				if old_scene != null:
+					old_scene.queue_free()
+				tree.root.add_child(new_root)
+				tree.current_scene = new_root
+				swapped = true
 
 	# Emit world_changed when navigating to GAMEPLAY with level data.
 	if screen == Screen.GAMEPLAY and params.has("level_data"):
@@ -134,3 +152,16 @@ func get_previous_screen() -> Screen:
 ## Returns true if a transition is currently in progress.
 func is_transitioning() -> bool:
 	return _transitioning
+
+
+# —————————————————————————————————————————————
+# Internal
+# —————————————————————————————————————————————
+
+## Calls receive_scene_params() on a scene root if it implements the method.
+## Silently skips scenes that don't need params (SM-8).
+func _deliver_params(scene_root: Node, params: Dictionary) -> void:
+	if params.is_empty():
+		return
+	if scene_root.has_method("receive_scene_params"):
+		scene_root.receive_scene_params(params)
