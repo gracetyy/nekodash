@@ -39,19 +39,19 @@ signal world_map_requested
 # Child node references — set via set_ui_nodes() or @onready
 # —————————————————————————————————————————————
 
-var _level_name_label: Control   # Label
-var _moves_label: Control        # Label
-var _new_best_badge: Control     # Label / TextureRect
-var _next_btn: Control           # Button
-var _retry_btn: Control          # Button
-var _world_map_btn: Control      # Button
+var _level_name_label: Control # Label
+var _moves_label: Control # Label
+var _new_best_badge: Control # Label / TextureRect
+var _next_btn: Control # Button
+var _retry_btn: Control # Button
+var _world_map_btn: Control # Button
 
 ## Star display nodes — array of 3 Controls (e.g. TextureRect or Label).
 ## Filled stars are visible; empty stars are dimmed or hidden.
 var _star_nodes: Array[Control] = []
 
 ## Optional sentinel display for stars == -1.
-var _star_sentinel_label: Control  # Label showing "?" when unsolved
+var _star_sentinel_label: Control # Label showing "?" when unsolved
 
 
 # —————————————————————————————————————————————
@@ -77,6 +77,12 @@ var _populated: bool = false
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	_auto_discover_ui_nodes()
+	# Self-connect navigation only when running in the real scene (auto-discover
+	# found buttons). Tests use set_ui_nodes() after _ready(), so _next_btn is
+	# still null here and these connections are skipped.
+	if _next_btn != null:
+		_connect_navigation()
 	if _params_received:
 		populate_results()
 
@@ -231,10 +237,10 @@ func _show_stars(stars: int) -> void:
 	for i: int in range(_star_nodes.size()):
 		if i < stars:
 			_star_nodes[i].visible = true
-			_star_nodes[i].modulate = Color.WHITE  # filled
+			_star_nodes[i].modulate = Color.WHITE # filled
 		else:
 			_star_nodes[i].visible = true
-			_star_nodes[i].modulate = Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA)  # dimmed
+			_star_nodes[i].modulate = Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA) # dimmed
 
 
 ## Updates the move count label. Handles minimum_moves == 0.
@@ -259,3 +265,66 @@ func _update_next_button() -> void:
 	if _next_btn == null:
 		return
 	_next_btn.visible = _next_level_data != null
+
+
+## Connects screen signals to SceneManager navigation. Only called when
+## running as a standalone scene (auto-discovered buttons present). Tests
+## skip this because _next_btn is null at _ready() time.
+func _connect_navigation() -> void:
+	if not next_level_requested.is_connected(_navigate_to_next_level):
+		next_level_requested.connect(_navigate_to_next_level)
+	if not retry_requested.is_connected(_navigate_to_retry):
+		retry_requested.connect(_navigate_to_retry)
+	if not world_map_requested.is_connected(_navigate_to_world_map):
+		world_map_requested.connect(_navigate_to_world_map)
+
+
+func _navigate_to_next_level(level_data: LevelData) -> void:
+	SceneManager.go_to_level(level_data)
+
+
+func _navigate_to_retry(level_data: LevelData) -> void:
+	SceneManager.go_to_level(level_data)
+
+
+func _navigate_to_world_map() -> void:
+	SceneManager.go_to(SceneManager.Screen.WORLD_MAP)
+
+
+## Discovers child UI nodes by path when running inside the .tscn scene.
+## Skipped if set_ui_nodes() was already called (e.g. from tests).
+func _auto_discover_ui_nodes() -> void:
+	if _level_name_label == null:
+		_level_name_label = get_node_or_null("MarginContainer/VBox/LevelNameLabel")
+	if _moves_label == null:
+		_moves_label = get_node_or_null("MarginContainer/VBox/ScoreRow/MovesLabel")
+	if _new_best_badge == null:
+		_new_best_badge = get_node_or_null("MarginContainer/VBox/ScoreRow/NewBestBadge")
+
+	if _star_nodes.is_empty():
+		var s1: Control = get_node_or_null("MarginContainer/VBox/StarRow/Star1")
+		var s2: Control = get_node_or_null("MarginContainer/VBox/StarRow/Star2")
+		var s3: Control = get_node_or_null("MarginContainer/VBox/StarRow/Star3")
+		if s1 != null and s2 != null and s3 != null:
+			_star_nodes = [s1, s2, s3]
+
+	if _star_sentinel_label == null:
+		_star_sentinel_label = get_node_or_null("MarginContainer/VBox/StarRow/StarSentinel")
+
+	if _next_btn == null:
+		_next_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/NextLevelBtn")
+	if _next_btn != null and _next_btn is BaseButton:
+		if not (_next_btn as BaseButton).pressed.is_connected(on_next_btn_pressed):
+			(_next_btn as BaseButton).pressed.connect(on_next_btn_pressed)
+
+	if _retry_btn == null:
+		_retry_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/RetryBtn")
+	if _retry_btn != null and _retry_btn is BaseButton:
+		if not (_retry_btn as BaseButton).pressed.is_connected(on_retry_btn_pressed):
+			(_retry_btn as BaseButton).pressed.connect(on_retry_btn_pressed)
+
+	if _world_map_btn == null:
+		_world_map_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/WorldMapBtn")
+	if _world_map_btn != null and _world_map_btn is BaseButton:
+		if not (_world_map_btn as BaseButton).pressed.is_connected(on_world_map_btn_pressed):
+			(_world_map_btn as BaseButton).pressed.connect(on_world_map_btn_pressed)
