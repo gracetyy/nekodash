@@ -58,6 +58,7 @@ enum State {
 # —————————————————————————————————————————————
 
 ## The level catalogue resource — injected from the scene inspector.
+## Canonical path: res://assets/levels/level_catalogue.tres (shared with WorldMap).
 @export var level_catalogue: LevelCatalogue
 
 
