@@ -1,6 +1,6 @@
 ## SaveManager — autoload singleton persisting all player progress.
 ## Implements: design/gdd/save-load-system.md
-## Task: S1-03 (stub)
+## Task: S3-03 (real disk I/O)
 ##
 ## Owns a single save file on disk (user://nekodash_save.json). Exposes
 ## read/write APIs consumed by Level Progression, Star Rating, Skin systems.
@@ -19,6 +19,7 @@ extends Node
 # —————————————————————————————————————————————
 
 const SAVE_FILE_PATH: String = "user://nekodash_save.json"
+const CORRUPT_FILE_PATH: String = "user://nekodash_save.corrupt.json"
 const SAVE_VERSION: int = 1
 const DEFAULT_SKIN_ID: String = "cat_default"
 
@@ -53,27 +54,69 @@ var _is_loaded: bool = false
 # —————————————————————————————————————————————
 
 func _ready() -> void:
-	_init_default_data()
-	_is_loaded = true
-	push_warning("SaveManager: stub — disk I/O not yet implemented; using in-memory defaults.")
-	save_loaded.emit()
+	load_game()
 
 
 # —————————————————————————————————————————————
 # Public API — Persistence
 # —————————————————————————————————————————————
 
-## Loads save data from disk. Stub: initialises in-memory defaults only.
+## Loads save data from disk. If file is missing, initialises defaults. If file
+## is corrupt or has a version mismatch, renames to .corrupt.json and resets.
 func load_game() -> void:
-	_init_default_data()
+	if not FileAccess.file_exists(SAVE_FILE_PATH):
+		_init_default_data()
+		_write_to_disk()
+		_is_loaded = true
+		save_loaded.emit()
+		return
+
+	var file: FileAccess = FileAccess.open(SAVE_FILE_PATH, FileAccess.READ)
+	if file == null:
+		push_error("SaveManager: cannot open save file — error %d." % FileAccess.get_open_error())
+		_init_default_data()
+		_is_loaded = true
+		save_loaded.emit()
+		return
+
+	var json_text: String = file.get_as_text()
+	file.close()
+
+	var json: JSON = JSON.new()
+	var parse_error: int = json.parse(json_text)
+	if parse_error != OK:
+		push_warning("SaveManager: save file has malformed JSON — recovering.")
+		_handle_corruption()
+		return
+
+	var parsed = json.data
+	if not parsed is Dictionary:
+		push_warning("SaveManager: save file root is not a Dictionary — recovering.")
+		_handle_corruption()
+		return
+
+	var parsed_dict: Dictionary = parsed as Dictionary
+	if not parsed_dict.has("version") or parsed_dict["version"] != SAVE_VERSION:
+		push_warning("SaveManager: version mismatch (expected %d) — recovering." % SAVE_VERSION)
+		_handle_corruption()
+		return
+
+	_data = parsed_dict
+	# Ensure all required top-level keys exist (forward-compat for partial files).
+	if not _data.has("levels"):
+		_data["levels"] = {}
+	if not _data.has("equipped_skin_id"):
+		_data["equipped_skin_id"] = DEFAULT_SKIN_ID
+	if not _data.has("unlocked_skin_ids"):
+		_data["unlocked_skin_ids"] = [DEFAULT_SKIN_ID]
+
 	_is_loaded = true
-	push_warning("SaveManager.load_game(): stub — disk read not implemented.")
 	save_loaded.emit()
 
 
-## Writes _data to disk immediately. Stub: no-op.
+## Writes _data to disk immediately as JSON.
 func save_game() -> void:
-	push_warning("SaveManager.save_game(): stub — disk write not implemented.")
+	_write_to_disk()
 
 
 # —————————————————————————————————————————————
@@ -208,3 +251,28 @@ func _default_level_record() -> Dictionary:
 		"best_stars": 0,
 		"best_moves": 0,
 	}
+
+
+## Serializes _data to JSON and writes to SAVE_FILE_PATH.
+func _write_to_disk() -> void:
+	var json_text: String = JSON.stringify(_data, "\t")
+	var file: FileAccess = FileAccess.open(SAVE_FILE_PATH, FileAccess.WRITE)
+	if file == null:
+		push_error("SaveManager: cannot write save file — error %d." % FileAccess.get_open_error())
+		return
+	file.store_string(json_text)
+	file.close()
+
+
+## Renames the corrupt save file, initialises defaults, and writes a clean file.
+func _handle_corruption() -> void:
+	# Preserve the corrupt file for debugging.
+	if FileAccess.file_exists(CORRUPT_FILE_PATH):
+		DirAccess.remove_absolute(CORRUPT_FILE_PATH)
+	DirAccess.rename_absolute(SAVE_FILE_PATH, CORRUPT_FILE_PATH)
+
+	_init_default_data()
+	_write_to_disk()
+	_is_loaded = true
+	save_corrupted.emit()
+	save_loaded.emit()

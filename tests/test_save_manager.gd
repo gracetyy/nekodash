@@ -1,6 +1,6 @@
-## Unit tests for SaveManager autoload stub.
-## Task: S1-03
-## Covers: default state, level records, skin management, signals, reset.
+## Unit tests for SaveManager autoload.
+## Task: S1-03 (stub), S3-03 (disk I/O)
+## Covers: default state, level records, skin management, signals, reset, disk persistence.
 extends GutTest
 
 var _save: Node
@@ -11,8 +11,21 @@ var _save: Node
 # —————————————————————————————————————————————
 
 func before_each() -> void:
+	# Remove any save file left by a previous test so each test starts clean.
+	_remove_save_files()
 	_save = load("res://src/core/save_manager.gd").new()
 	add_child_autofree(_save)
+
+
+func after_all() -> void:
+	_remove_save_files()
+
+
+func _remove_save_files() -> void:
+	if FileAccess.file_exists("user://nekodash_save.json"):
+		DirAccess.remove_absolute("user://nekodash_save.json")
+	if FileAccess.file_exists("user://nekodash_save.corrupt.json"):
+		DirAccess.remove_absolute("user://nekodash_save.corrupt.json")
 
 
 # —————————————————————————————————————————————
