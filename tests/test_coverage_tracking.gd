@@ -442,6 +442,30 @@ func test_coverage_tracking_reset_from_uninitialized_is_noop() -> void:
 	assert_eq(_ct.get_covered_count(), 0)
 
 
+func test_coverage_tracking_reset_emits_tile_uncovered_for_covered_tiles() -> void:
+	_ct.initialize_level()
+	_ct.on_spawn_position_set(Vector2i(1, 1))
+	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
+	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	assert_eq(_ct.get_covered_count(), 2)
+
+	var uncovered: Array[Vector2i] = []
+	_ct.tile_uncovered.connect(func(coord: Vector2i) -> void: uncovered.append(coord))
+	_ct.reset_coverage()
+	assert_eq(uncovered.size(), 2, "Should emit tile_uncovered for each covered tile")
+	assert_true(uncovered.has(Vector2i(1, 1)))
+	assert_true(uncovered.has(Vector2i(2, 1)))
+
+
+func test_coverage_tracking_reset_does_not_emit_uncovered_for_empty_tiles() -> void:
+	_ct.initialize_level()
+	# No moves — only unvisited tiles
+	var uncovered: Array[Vector2i] = []
+	_ct.tile_uncovered.connect(func(coord: Vector2i) -> void: uncovered.append(coord))
+	_ct.reset_coverage()
+	assert_eq(uncovered.size(), 0, "No tile_uncovered when nothing was covered")
+
+
 # —————————————————————————————————————————————
 # Tests — State transitions
 # —————————————————————————————————————————————

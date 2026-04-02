@@ -111,3 +111,39 @@ func test_cover_then_uncover_all_returns_to_zero() -> void:
 	_vis.on_tile_uncovered(Vector2i(2, 0))
 	_vis.on_tile_uncovered(Vector2i(1, 0))
 	assert_eq(_vis.get_covered_tile_count(), 1, "Only spawn tile remains")
+
+
+# —————————————————————————————————————————————
+# Restart scenario (via tile_uncovered signals from reset_coverage)
+# CoverageTracking.reset_coverage() emits tile_uncovered for each covered
+# tile, which CoverageVisualizer handles via the existing on_tile_uncovered.
+# spawn_position_set then re-colors the spawn tile.
+# —————————————————————————————————————————————
+
+func test_tile_uncovered_clears_all_covered_tiles() -> void:
+	_vis.initialize_level(4, 4)
+	_vis.on_spawn_position_set(Vector2i(0, 0))
+	_vis.on_tile_covered(Vector2i(1, 0))
+	_vis.on_tile_covered(Vector2i(2, 0))
+	assert_eq(_vis.get_covered_tile_count(), 3)
+
+	_vis.on_tile_uncovered(Vector2i(0, 0))
+	_vis.on_tile_uncovered(Vector2i(1, 0))
+	_vis.on_tile_uncovered(Vector2i(2, 0))
+	assert_eq(_vis.get_covered_tile_count(), 0, "All tiles cleared via tile_uncovered")
+
+
+func test_restart_flow_spawn_only_after_uncover_all() -> void:
+	# Simulates: tile_uncovered × N (from reset_coverage) → spawn_position_set
+	_vis.initialize_level(4, 4)
+	_vis.on_spawn_position_set(Vector2i(0, 0))
+	_vis.on_tile_covered(Vector2i(1, 0))
+	_vis.on_tile_covered(Vector2i(2, 0))
+
+	# reset_coverage emits tile_uncovered for each covered tile
+	_vis.on_tile_uncovered(Vector2i(0, 0))
+	_vis.on_tile_uncovered(Vector2i(1, 0))
+	_vis.on_tile_uncovered(Vector2i(2, 0))
+	# spawn_position_set re-fires for the spawn tile
+	_vis.on_spawn_position_set(Vector2i(0, 0))
+	assert_eq(_vis.get_covered_tile_count(), 1, "Only spawn tile colored after restart")

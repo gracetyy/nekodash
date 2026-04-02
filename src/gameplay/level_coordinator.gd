@@ -215,6 +215,9 @@ func _connect_signals() -> void:
 	_coverage_tracking.tile_covered.connect(_on_tile_covered)
 	_coverage_tracking.tile_uncovered.connect(_on_tile_uncovered)
 
+	# HUD exit button → abandon level (no save)
+	_hud.exit_pressed.connect(_on_exit_pressed)
+
 	# CoverageVisualizer: visual overlay driven by coverage signals
 	if _coverage_visualizer != null:
 		_coverage_tracking.tile_covered.connect(_coverage_visualizer.on_tile_covered)
@@ -263,6 +266,10 @@ func _disconnect_signals() -> void:
 		_coverage_tracking.tile_covered.disconnect(_on_tile_covered)
 	if _coverage_tracking.tile_uncovered.is_connected(_on_tile_uncovered):
 		_coverage_tracking.tile_uncovered.disconnect(_on_tile_uncovered)
+
+	# HUD exit
+	if _hud.exit_pressed.is_connected(_on_exit_pressed):
+		_hud.exit_pressed.disconnect(_on_exit_pressed)
 
 	# CoverageVisualizer
 	if _coverage_visualizer != null:
@@ -321,6 +328,14 @@ func _on_slide_blocked(pos: Vector2i, direction: Vector2i) -> void:
 	# SlidingMovement already plays bump animation.
 	# Re-emit for HUD/audio subscribers.
 	blocked_slide.emit(pos, direction)
+
+
+## Navigates to World Map without saving. Called when the player taps Exit
+## mid-level. No save write is performed — progress is discarded.
+func _on_exit_pressed() -> void:
+	if _state != State.PLAYING:
+		return
+	SceneManager.go_to(SceneManager.Screen.WORLD_MAP)
 
 
 func _on_move_count_changed(_current_moves: int, _minimum_moves: int) -> void:

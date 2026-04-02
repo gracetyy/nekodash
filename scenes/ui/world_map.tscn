@@ -51,6 +51,10 @@ text = "NekoDash"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="HeaderSpacer" type="Control" parent="MarginContainer/VBox/Header"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+
 [node name="WorldTabs" type="TabBar" parent="MarginContainer/VBox"]
 layout_mode = 2
 
