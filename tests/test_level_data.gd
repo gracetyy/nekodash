@@ -240,7 +240,7 @@ func test_level_w1_l3_center_wall_is_blocking() -> void:
 func test_level_w1_l3_center_wall_has_obstacle_type() -> void:
 	var level: LevelData = _load_level(W1_L3_PATH)
 	_grid.load_grid(level)
-	var tile: Node = _grid.get_tile(Vector2i(2, 2))
+	var tile: GridSystem.GridTileData = _grid.get_tile(Vector2i(2, 2))
 	assert_eq(tile.obstacle_type, 1, "Center wall should be STATIC_WALL (1)")
 
 
