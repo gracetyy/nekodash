@@ -6,12 +6,12 @@
 ## Acceptance criteria cross-ref: design/gdd/hud.md
 extends GutTest
 
-var _hud: Node  # HUD instance under test
+var _hud: Node # HUD instance under test
 
 # Mock systems
-var _mc: Node   # Mock MoveCounter
-var _ur: Node   # Mock UndoRestart
-var _ct: Node   # Mock CoverageTracking
+var _mc: Node # Mock MoveCounter
+var _ur: Node # Mock UndoRestart
+var _ct: Node # Mock CoverageTracking
 
 # Mock UI nodes
 var _level_name_label: Label
@@ -19,10 +19,12 @@ var _move_label: Label
 var _coverage_label: Label
 var _undo_btn: Button
 var _restart_btn: Button
+var _exit_btn: Button
 
 # Signal tracking
 var _undo_pressed_count: int = 0
 var _restart_pressed_count: int = 0
+var _exit_pressed_count: int = 0
 
 # Mock UndoRestart tracking
 var _ur_undo_count: int = 0
@@ -53,7 +55,7 @@ class MockMoveCounter extends Node:
 
 ## Minimal mock of UndoRestart with the signals and API the HUD needs.
 class MockUndoRestart extends Node:
-	var test_ref  # reference to test instance for logging
+	var test_ref # reference to test instance for logging
 	var _can_undo: bool = false
 
 	signal undo_applied(moves_in_history: int)
@@ -129,6 +131,9 @@ func before_each() -> void:
 	_restart_btn = Button.new()
 	add_child_autofree(_restart_btn)
 
+	_exit_btn = Button.new()
+	add_child_autofree(_exit_btn)
+
 	# Inject UI nodes into HUD
 	_hud.set_ui_nodes(
 		_level_name_label,
@@ -136,16 +141,19 @@ func before_each() -> void:
 		_coverage_label,
 		_undo_btn,
 		_restart_btn,
+		_exit_btn,
 	)
 
 	# Reset tracking
 	_undo_pressed_count = 0
 	_restart_pressed_count = 0
+	_exit_pressed_count = 0
 	_ur_undo_count = 0
 	_ur_restart_count = 0
 
 	_hud.undo_pressed.connect(_on_undo_pressed)
 	_hud.restart_pressed.connect(_on_restart_pressed)
+	_hud.exit_pressed.connect(_on_exit_pressed)
 
 
 # —————————————————————————————————————————————
@@ -158,6 +166,10 @@ func _on_undo_pressed() -> void:
 
 func _on_restart_pressed() -> void:
 	_restart_pressed_count += 1
+
+
+func _on_exit_pressed() -> void:
+	_exit_pressed_count += 1
 
 
 # —————————————————————————————————————————————
@@ -235,6 +247,11 @@ func test_initialize_undo_button_visible() -> void:
 func test_initialize_restart_button_visible() -> void:
 	_init_hud()
 	assert_true(_restart_btn.visible)
+
+
+func test_initialize_exit_button_visible() -> void:
+	_init_hud()
+	assert_true(_exit_btn.visible)
 
 
 func test_initialize_level_complete_false() -> void:
@@ -396,10 +413,12 @@ func test_level_restarted_shows_buttons() -> void:
 	_ct.level_completed.emit()
 	assert_false(_undo_btn.visible)
 	assert_false(_restart_btn.visible)
+	assert_false(_exit_btn.visible)
 	# Restart restores them
 	_ur.level_restarted.emit()
 	assert_true(_undo_btn.visible)
 	assert_true(_restart_btn.visible)
+	assert_true(_exit_btn.visible)
 
 
 func test_level_restarted_clears_level_complete_flag() -> void:
@@ -424,6 +443,12 @@ func test_level_completed_hides_restart_button() -> void:
 	_init_hud()
 	_ct.level_completed.emit()
 	assert_false(_restart_btn.visible)
+
+
+func test_level_completed_hides_exit_button() -> void:
+	_init_hud()
+	_ct.level_completed.emit()
+	assert_false(_exit_btn.visible)
 
 
 func test_level_completed_sets_flag() -> void:
@@ -497,6 +522,26 @@ func test_multiple_undo_presses() -> void:
 	assert_eq(_undo_pressed_count, 3)
 
 
+func test_exit_btn_pressed_emits_signal() -> void:
+	_init_hud()
+	_hud.on_exit_btn_pressed()
+	assert_eq(_exit_pressed_count, 1)
+
+
+func test_exit_btn_noop_after_level_complete() -> void:
+	_init_hud()
+	_ct.level_completed.emit()
+	_hud.on_exit_btn_pressed()
+	assert_eq(_exit_pressed_count, 0)
+
+
+func test_exit_btn_noop_without_initialize() -> void:
+	# exit_pressed fires regardless of init state — the coordinator's PLAYING
+	# state guard is the authoritative gate. HUD just emits.
+	_hud.on_exit_btn_pressed()
+	assert_eq(_exit_pressed_count, 1)
+
+
 # —————————————————————————————————————————————
 # Edge Cases
 # —————————————————————————————————————————————
@@ -512,7 +557,7 @@ func test_signals_not_connected_before_initialize() -> void:
 	# Emit signals before initialize — should not crash
 	_mc.set_test_state(5, 10)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "")  # unchanged from default
+	assert_eq(_move_label.text, "") # unchanged from default
 
 
 func test_initialize_with_nonzero_coverage() -> void:
