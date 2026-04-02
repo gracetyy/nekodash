@@ -1,5 +1,5 @@
 ## Unit tests for SaveManager autoload.
-## Task: S1-03 (stub), S3-03 (disk I/O)
+## Task: S1-03 (stub), S3-03 (disk I/O), S3-08 (disk persistence)
 ## Covers: default state, level records, skin management, signals, reset, disk persistence.
 extends GutTest
 
@@ -188,3 +188,131 @@ func test_load_game_emits_save_loaded() -> void:
 	watch_signals(_save)
 	_save.load_game()
 	assert_signal_emitted(_save, "save_loaded")
+
+
+# —————————————————————————————————————————————
+# Disk Persistence — save/load roundtrip
+# —————————————————————————————————————————————
+
+func test_roundtrip_level_record_survives_reload() -> void:
+	_save.set_level_record("w1_l3", true, 3, 5)
+	# Create a fresh SaveManager instance that reads from the same file.
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(save2.is_level_completed("w1_l3"), "Level record should survive reload")
+	assert_eq(save2.get_best_stars("w1_l3"), 3)
+	assert_eq(save2.get_best_moves("w1_l3"), 5)
+
+
+func test_roundtrip_skin_unlock_survives_reload() -> void:
+	_save.unlock_skin("cat_cozy")
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_has(save2.get_unlocked_skins(), "cat_cozy")
+
+
+func test_roundtrip_equipped_skin_survives_reload() -> void:
+	_save.unlock_skin("cat_cozy")
+	_save.set_equipped_skin("cat_cozy")
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_eq(save2.get_equipped_skin(), "cat_cozy")
+
+
+# —————————————————————————————————————————————
+# Missing file — fresh init
+# —————————————————————————————————————————————
+
+func test_missing_file_initialises_defaults() -> void:
+	_remove_save_files()
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(save2._is_loaded)
+	assert_eq(save2.get_equipped_skin(), "cat_default")
+	assert_false(save2.is_level_completed("w1_l1"))
+
+
+func test_missing_file_creates_save_on_disk() -> void:
+	_remove_save_files()
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(FileAccess.file_exists("user://nekodash_save.json"), "Save file should be created on first load")
+
+
+# —————————————————————————————————————————————
+# Corrupted file — recovery
+# —————————————————————————————————————————————
+
+func test_corrupt_json_recovers_to_defaults() -> void:
+	# Write garbage to the save file.
+	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	file.store_string("NOT VALID JSON {{{{")
+	file.close()
+
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(save2._is_loaded, "Should recover after corrupt file")
+	assert_eq(save2.get_equipped_skin(), "cat_default")
+	assert_false(save2.is_level_completed("w1_l1"))
+
+
+func test_corrupt_json_renames_to_corrupt_file() -> void:
+	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	file.store_string("{{GARBAGE}}")
+	file.close()
+
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(FileAccess.file_exists("user://nekodash_save.corrupt.json"), "Corrupt file should be renamed")
+
+
+func test_corrupt_json_emits_save_corrupted() -> void:
+	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	file.store_string("NOT JSON!")
+	file.close()
+
+	# Must watch BEFORE add_child, because _ready() triggers load_game().
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	watch_signals(save2)
+	add_child_autofree(save2)
+	assert_signal_emitted(save2, "save_corrupted")
+
+
+func test_non_dict_root_recovers() -> void:
+	# Valid JSON but root is an array instead of a dictionary.
+	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	file.store_string("[1, 2, 3]")
+	file.close()
+
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(save2._is_loaded)
+	assert_eq(save2.get_equipped_skin(), "cat_default")
+
+
+# —————————————————————————————————————————————
+# Version mismatch
+# —————————————————————————————————————————————
+
+func test_version_mismatch_recovers() -> void:
+	var bad_data: Dictionary = {"version": 999, "levels": {}, "equipped_skin_id": "cat_default", "unlocked_skin_ids": ["cat_default"]}
+	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(bad_data))
+	file.close()
+
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(save2._is_loaded, "Version mismatch should recover to defaults")
+	assert_eq(save2.get_equipped_skin(), "cat_default")
+
+
+func test_missing_version_key_recovers() -> void:
+	var bad_data: Dictionary = {"levels": {}, "equipped_skin_id": "cat_default"}
+	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(bad_data))
+	file.close()
+
+	var save2: Node = load("res://src/core/save_manager.gd").new()
+	add_child_autofree(save2)
+	assert_true(save2._is_loaded)
+	assert_true(FileAccess.file_exists("user://nekodash_save.corrupt.json"))
