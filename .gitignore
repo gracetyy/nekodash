@@ -89,6 +89,7 @@ secrets.json
 # *.tga
 # *.exr
 # *.hdr
+assets/
 
 # === OS Generated ===
 ehthumbs.db
