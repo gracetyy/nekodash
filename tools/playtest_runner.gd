@@ -1,4 +1,7 @@
 ## PlaytestRunner — automated playtest across all World 1 levels.
+## Owner: tools-programmer (qa-tester secondary)
+## Maintenance: Internal dev tool — not shipped. Update LEVEL_SOLUTIONS when levels change.
+## Task: Unplanned (S2 ad-hoc), ownership recorded S3-11.
 ##
 ## Persistent autoload. Hooks into SceneManager.transition_completed so it
 ## survives scene swaps. On each GAMEPLAY scene it plays the optimal solution
