@@ -432,3 +432,65 @@ func test_grid_system_walkable_cache_contains_correct_coords() -> void:
 	# Border tiles absent
 	assert_false(walkable.has(Vector2i(0, 0)))
 	assert_false(walkable.has(Vector2i(4, 4)))
+
+
+# —————————————————————————————————————————————
+# Tests: ObstacleType blocks is_walkable
+# —————————————————————————————————————————————
+
+func test_grid_system_static_wall_obstacle_on_walkable_tile_is_not_walkable() -> void:
+	# Arrange — 3×3 all-walkable grid with a STATIC_WALL obstacle at (1,1)
+	var walk := PackedInt32Array()
+	walk.resize(9)
+	walk.fill(0) # all WALKABLE
+	var obs := PackedInt32Array()
+	obs.resize(9)
+	obs.fill(0) # all NONE
+	obs[4] = 1  # (1,1) index=4 = STATIC_WALL
+	var ld := _make_level(3, 3, walk, obs)
+
+	# Act
+	_grid.load_grid(ld)
+
+	# Assert — WALKABLE floor + STATIC_WALL obstacle must count as not-walkable
+	assert_false(_grid.is_walkable(Vector2i(1, 1)), "STATIC_WALL tile must not be walkable")
+	# Other interior tiles unchanged
+	assert_true(_grid.is_walkable(Vector2i(0, 0)))
+	assert_true(_grid.is_walkable(Vector2i(2, 2)))
+
+
+func test_grid_system_static_wall_tile_excluded_from_walkable_cache() -> void:
+	# Arrange — 5×5 bordered grid with a STATIC_WALL at (2,2) which is otherwise walkable
+	var ld: LevelData = _make_5x5_bordered()
+	var obs: PackedInt32Array = ld.obstacle_tiles
+	obs[2 + 2 * 5] = 1  # (2,2) = STATIC_WALL
+	ld.obstacle_tiles = obs
+
+	# Act
+	_grid.load_grid(ld)
+
+	# Assert — 9 interior tiles minus 1 STATIC_WALL = 8 tiles in cache
+	var walkable: Array[Vector2i] = _grid.get_all_walkable_tiles()
+	assert_eq(walkable.size(), 8, "STATIC_WALL tile must not appear in walkable cache")
+	assert_false(walkable.has(Vector2i(2, 2)), "STATIC_WALL coord must be absent from cache")
+	# Remaining interior tiles still present
+	assert_true(walkable.has(Vector2i(1, 1)))
+	assert_true(walkable.has(Vector2i(3, 3)))
+
+
+func test_grid_system_walkable_tile_with_no_obstacle_is_still_walkable() -> void:
+	# Arrange — confirm that a WALKABLE + NONE tile is correctly walkable (regression)
+	var walk := PackedInt32Array()
+	walk.resize(9)
+	walk.fill(0) # all WALKABLE
+	var obs := PackedInt32Array()
+	obs.resize(9)
+	obs.fill(0) # all NONE
+	var ld := _make_level(3, 3, walk, obs)
+
+	# Act
+	_grid.load_grid(ld)
+
+	# Assert
+	assert_true(_grid.is_walkable(Vector2i(1, 1)))
+	assert_true(_grid.is_walkable(Vector2i(0, 0)))
