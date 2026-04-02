@@ -1,4 +1,7 @@
 ## PlaytestCapture — autoload for automated playtesting with screenshots.
+## Owner: tools-programmer (qa-tester secondary)
+## Maintenance: Internal dev tool — not shipped. Update when game signals change.
+## Task: Unplanned (S2 ad-hoc), ownership recorded S3-11.
 ##
 ## When loaded, captures screenshots at key game events and logs game state
 ## to the console. Screenshots are saved to user://playtest_screenshots/.
