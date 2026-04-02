@@ -43,7 +43,8 @@ const WARN_STATE_THRESHOLD: int = 1_000_000
 
 ## Walkability enum value — matches GridSystem.TileWalkability.WALKABLE.
 const TILE_WALKABLE: int = 0
-
+## Obstacle-free enum value — matches GridSystem.ObstacleType.NONE.
+const OBSTACLE_NONE: int = 0
 
 # —————————————————————————————————————————————
 # Result container
@@ -91,6 +92,9 @@ var _grid_height: int = 0
 ## Flat walkability array copied from LevelData.
 var _walkability: PackedInt32Array = PackedInt32Array()
 
+## Flat obstacle array copied from LevelData.
+var _obstacle_tiles: PackedInt32Array = PackedInt32Array()
+
 
 # —————————————————————————————————————————————
 # Public API
@@ -112,6 +116,7 @@ func solve(level_data: LevelData) -> SolveResult:
 	_grid_width = level_data.grid_width
 	_grid_height = level_data.grid_height
 	_walkability = level_data.walkability_tiles
+	_obstacle_tiles = level_data.obstacle_tiles
 
 	if _walkability.is_empty():
 		result.error = "walkability_tiles is empty"
@@ -240,6 +245,7 @@ func _reset_state() -> void:
 	_grid_width = 0
 	_grid_height = 0
 	_walkability = PackedInt32Array()
+	_obstacle_tiles = PackedInt32Array()
 
 
 ## Local walkability check operating on LevelData arrays — does not call
@@ -250,7 +256,11 @@ func _is_walkable(coord: Vector2i) -> bool:
 	var index: int = coord.x + coord.y * _grid_width
 	if index >= _walkability.size():
 		return false
-	return _walkability[index] == TILE_WALKABLE
+	if _walkability[index] != TILE_WALKABLE:
+		return false
+	if index < _obstacle_tiles.size() and _obstacle_tiles[index] != OBSTACLE_NONE:
+		return false
+	return true
 
 
 ## Slide resolution — mirrors SlidingMovement.resolve_slide() but uses
