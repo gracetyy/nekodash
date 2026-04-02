@@ -1,6 +1,6 @@
 # Sprint 2 — 2026-04-02 to 2026-04-08
 
-**Status**: In Progress (Day 1 of 5 — ahead of schedule)
+**Status**: Complete (Day 1 of 5 — all 9/9 tasks done)
 **Last Updated**: 2026-04-02
 
 ## Sprint Goal
@@ -34,19 +34,19 @@ as the visual punctuation mark closing the core loop.
 
 ### Should Have
 
-| ID    | Task                                                                                                                                                                                                                                         | Agent/Owner   | Est. Days | Dependencies | Acceptance Criteria                                                                                                                                                                                                                                                        |
-| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| S2-06 | Implement `LevelCompleteScreen` — `res://scenes/ui/level_complete.tscn`; reads params from `receive_scene_params()`; displays star count, final moves vs minimum, NEW BEST badge; Next Level / Retry / World Map navigation via SceneManager | ui-programmer | 1.0       | S2-03, S1-03 | 🔶 **PARTIAL** — `src/ui/level_complete_screen.gd` and `tests/test_level_complete_screen.gd` complete and passing. `res://scenes/ui/level_complete.tscn` scene file not yet created. Inline overlay in `level_coordinator.gd` covers the player experience in the interim. |
-| S2-07 | S1-06c: Formal mobile swipe accuracy test — 20 swipes on physical device, log each hit/miss, confirm ≥15/20; lock TRANS_QUAD as final or reopen easing decision with recorded data                                                           | qa-tester     | 0.5       | —            | ✅ **DONE** — Poco F6, 20/20 hits (100%). TRANS_QUAD locked as final easing. Artifact: `production/sprints/sprint-02-mobile-accuracy.md`. S1-06 marked fully done in session state.                                                                                        |
+| ID    | Task                                                                                                                                                                                                                                         | Agent/Owner   | Est. Days | Dependencies | Acceptance Criteria                                                                                                                                                                                                                                                                                           |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S2-06 | Implement `LevelCompleteScreen` — `res://scenes/ui/level_complete.tscn`; reads params from `receive_scene_params()`; displays star count, final moves vs minimum, NEW BEST badge; Next Level / Retry / World Map navigation via SceneManager | ui-programmer | 1.0       | S2-03, S1-03 | ✅ **DONE** — `src/ui/level_complete_screen.gd` + `tests/test_level_complete_screen.gd` complete. `res://scenes/ui/level_complete.tscn` created. `SceneManager.go_to()` promoted from stub to real scene swapper. Navigation self-connected. Code-reviewed: dead dead-code removed, navigation signals wired. |
+| S2-07 | S1-06c: Formal mobile swipe accuracy test — 20 swipes on physical device, log each hit/miss, confirm ≥15/20; lock TRANS_QUAD as final or reopen easing decision with recorded data                                                           | qa-tester     | 0.5       | —            | ✅ **DONE** — Poco F6, 20/20 hits (100%). TRANS_QUAD locked as final easing. Artifact: `production/sprints/sprint-02-mobile-accuracy.md`. S1-06 marked fully done in session state.                                                                                                                           |
 
 ---
 
 ### Nice to Have
 
-| ID    | Task                                                                                                                                             | Agent/Owner         | Est. Days | Dependencies | Acceptance Criteria                                                                                                                                                   |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- | --------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| S2-08 | `CoverageVisualizer` placeholder — `TileMapLayer`-based tile highlight overlay; subscribes to `tile_covered` signal; resets on `level_restarted` | technical-artist    | 0.5       | S2-05        | ⬜ **NOT STARTED** — Visual coverage is currently handled by `GridRenderer._draw()` (workaround). S2-08 as specified (TileMapLayer-based, no `_draw()`) remains open. |
-| S2-09 | Author World 1 expansion levels 4–6 as `.tres` LevelData resources; run `tools/level_solver.gd` on each to verify and bake `minimum_moves`       | gameplay-programmer | 0.5       | S1-09, S1-04 | ⬜ **NOT STARTED** — Only 3 levels currently in `assets/levels/world_1/` (w1_l1, w1_l2, w1_l3).                                                                       |
+| ID    | Task                                                                                                                                             | Agent/Owner         | Est. Days | Dependencies | Acceptance Criteria                                                                                                                                                                                                                                                         |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- | --------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S2-08 | `CoverageVisualizer` placeholder — `TileMapLayer`-based tile highlight overlay; subscribes to `tile_covered` signal; resets on `level_restarted` | technical-artist    | 0.5       | S2-05        | ✅ **DONE** — `src/ui/coverage_visualizer.gd` implemented as `Node2D` signal-driven overlay. `tile_covered` / `tile_uncovered` / `spawn_position_set` wired in coordinator. `GridRenderer` coverage overlay removed (R-11 resolved). 9 GUT tests added (464 total passing). |
+| S2-09 | Author World 1 expansion levels 4–6 as `.tres` LevelData resources; run `tools/level_solver.gd` on each to verify and bake `minimum_moves`       | gameplay-programmer | 0.5       | S1-09, S1-04 | ✅ **DONE** — w1_l4 "Side Step" (5×4, min=4), w1_l5 "Double S" (6×6, min=5), w1_l6 "Three Turn" (6×7, min=6). All BFS-verified. `level_catalogue.tres` updated (6 levels).                                                                                                  |
 
 ---
 
@@ -85,9 +85,9 @@ as the visual punctuation mark closing the core loop.
 - [x] Zero TODO comments remain in `src/gameplay/level_coordinator.gd`
 - [x] All new systems are code-reviewed before S2-05 wiring begins
 - [x] `test_level_coordinator.gd` passes with all new wiring in place
-- [ ] S2-06 (Level Complete Screen) delivered if capacity allows — PARTIAL (gd + tests done; .tscn pending)
+- [x] S2-06 (Level Complete Screen) delivered — `.gd` + tests + `.tscn` + SceneManager wiring complete
 - [x] S2-07 (formal mobile accuracy test) resolved — TRANS_QUAD locked
-- [ ] Sprint retrospective filed before Sprint 3 kickoff
+- [x] Sprint retrospective filed — `production/sprints/sprint-02-retrospective.md`
 
 ---
 
@@ -211,3 +211,54 @@ Remaining capacity plan:
 
 - **R-11 (NEW)**: `GridRenderer` uses `_draw()` for coverage overlay — this conflicts with S2-08's explicit requirement of no `_draw()` placeholder in production. If S2-08 is pursued this sprint, `GridRenderer` rendering approach needs to be superseded, not layered. Patch: treat S2-08 as a replacement (remove `_draw()` coverage path when TileMapLayer is wired). Probability: Medium. Impact: Medium.
 - **R-12 (NEW)**: `level_complete.tscn` scene absent — `SceneManager.go_to(Screen.LEVEL_COMPLETE, ...)` is registered synchronously in tests but the scene route has no scene to load. If integration testing or a real SceneManager is wired in future, this will error. Low probability now (stub SceneManager), but closes when S2-06 scene file is created.
+
+---
+
+## Status Report — 2026-04-02 (Final — Sprint Complete)
+
+## Progress: 9/9 tasks complete (100%) — Sprint 2 DONE on Day 1 of 5
+
+### All Tasks Delivered
+
+| Task  | Completed By        | Notes                                                                                                                                                      |
+| ----- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S2-01 | gameplay-programmer | UndoRestart fully implemented and code-reviewed.                                                                                                           |
+| S2-02 | gameplay-programmer | StarRatingSystem fully implemented. All threshold cases + sentinel tested.                                                                                 |
+| S2-03 | gameplay-programmer | LevelProgression fully implemented. Unlock chain, world completion tested.                                                                                 |
+| S2-04 | ui-programmer       | HUD fully implemented and code-reviewed. 4 post-playtest UX fixes applied.                                                                                 |
+| S2-05 | godot-specialist    | `gameplay.tscn` wired end-to-end. Code-reviewed.                                                                                                           |
+| S2-06 | ui-programmer       | `level_complete_screen.gd` + `level_complete.tscn` + SceneManager promoted from stub. Code-reviewed: dead code removed, navigation signals self-connected. |
+| S2-07 | qa-tester           | TRANS_QUAD locked. 20/20 swipe accuracy on Poco F6.                                                                                                        |
+| S2-08 | technical-artist    | `CoverageVisualizer` Node2D implemented. GridRenderer coverage overlay removed. R-11 resolved. 9 GUT tests added (464 total passing).                      |
+| S2-09 | gameplay-programmer | w1_l4 "Side Step" (5×4, min=4), w1_l5 "Double S" (6×6, min=5), w1_l6 "Three Turn" (6×7, min=6). BFS-verified. Level catalogue updated (6 levels).          |
+
+### Additional Unplanned Work Completed
+
+| Item                                            | Trigger          | Outcome                                                                                    |
+| ----------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------ |
+| Automated playtest (3 levels, 455 tests)        | Post-delivery QA | 3/3 PASS, ★★★ each. `REPORT_COPILOT.md` filed.                                             |
+| Player playtest report                          | Player feedback  | 4 issues identified and prioritized.                                                       |
+| Bug: Undo button disabled after first move      | Playtest finding | Fixed in `hud.gd`.                                                                         |
+| Bug: Instant level-complete transition          | Playtest finding | Fixed: 0.6s delay + constant.                                                              |
+| Bug: Missing "Moves:" HUD label                 | Playtest finding | Fixed: `MovesPrefix` node added.                                                           |
+| Bug: Undo doesn't roll back tile colors         | Playtest finding | Fixed via CoverageVisualizer signal pass-through.                                          |
+| SceneManager promoted from stub to real swapper | S2-06 dependency | `go_to()` loads PackedScene, delivers params before `_ready()`, replaces `current_scene`.  |
+| Code review: S2-06 + SceneManager               | Post-delivery QA | Dead code removed after go_to(), navigation signals self-connected on LevelCompleteScreen. |
+| Code review: S2-08 + S2-09                      | Post-delivery QA | Stale docstring fixed, unused fields removed from CoverageVisualizer, temp script deleted. |
+
+### Final Metrics
+
+| Metric               | Value                   |
+| -------------------- | ----------------------- |
+| Tasks complete       | 9 / 9 (100%)            |
+| Days used            | 1 of 5                  |
+| GUT tests            | 464 / 464 passing       |
+| Levels in catalogue  | 6 (w1_l1 through w1_l6) |
+| Open TODO comments   | 0                       |
+| New risks opened     | 2 (R-11, R-12)          |
+| Risks closed         | 2 (R-11, R-12)          |
+| Unplanned work items | 9                       |
+
+### Open DoD Item
+
+- [x] Sprint retrospective — `production/sprints/sprint-02-retrospective.md` filed ✅
