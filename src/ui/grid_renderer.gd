@@ -1,8 +1,8 @@
 ## GridRenderer — visual grid drawing for the gameplay scene.
 ## Task: S2-05 (visual layer)
 ##
-## Pure display node. Reads from GridSystem autoload to draw the grid,
-## subscribes to CoverageTracking.tile_covered to overlay covered tiles.
+## Pure display node. Reads from GridSystem autoload to draw the grid.
+## Coverage overlay is handled by CoverageVisualizer (S2-08).
 ## Owns no game state.
 extends Node2D
 
@@ -13,7 +13,6 @@ extends Node2D
 
 const COLOR_FLOOR: Color = Color(0.15, 0.18, 0.35)
 const COLOR_WALL: Color = Color(0.25, 0.25, 0.25)
-const COLOR_COVERED: Color = Color(0.2, 0.7, 0.3, 0.6)
 const COLOR_GRID_LINE: Color = Color(0.3, 0.3, 0.4, 0.4)
 
 
@@ -21,7 +20,6 @@ const COLOR_GRID_LINE: Color = Color(0.3, 0.3, 0.4, 0.4)
 # State
 # —————————————————————————————————————————————
 
-var _covered_tiles: Dictionary = {}
 var _tile_size: int = 64
 
 ## Pixel offset applied to center the grid on screen, below the HUD.
@@ -32,10 +30,8 @@ var _grid_offset: Vector2 = Vector2.ZERO
 # Public API
 # —————————————————————————————————————————————
 
-## Clears coverage overlay and redraws grid from GridSystem.
-## Computes an offset to center the grid horizontally and push it below the HUD.
+## Redraws the grid from GridSystem state and computes centering offset.
 func render_grid() -> void:
-	_covered_tiles.clear()
 	_tile_size = GridSystem.DEFAULT_TILE_SIZE_PX
 
 	# Compute centering offset
@@ -56,24 +52,6 @@ func render_grid() -> void:
 ## Returns the computed grid offset for the parent coordinator to position itself.
 func get_grid_offset() -> Vector2:
 	return _grid_offset
-
-
-## Marks a single tile as covered and redraws.
-func mark_covered(coord: Vector2i) -> void:
-	_covered_tiles[coord] = true
-	queue_redraw()
-
-
-## Marks a single tile as uncovered and redraws (used by undo).
-func mark_uncovered(coord: Vector2i) -> void:
-	_covered_tiles.erase(coord)
-	queue_redraw()
-
-
-## Clears all coverage overlays without redrawing grid structure.
-func clear_coverage() -> void:
-	_covered_tiles.clear()
-	queue_redraw()
 
 
 # —————————————————————————————————————————————
@@ -97,10 +75,6 @@ func _draw() -> void:
 				draw_rect(rect, COLOR_FLOOR, true)
 			else:
 				draw_rect(rect, COLOR_WALL, true)
-
-			# Coverage overlay
-			if _covered_tiles.has(coord):
-				draw_rect(rect, COLOR_COVERED, true)
 
 	# Draw rounded border around the grid
 	var grid_rect := Rect2(0, 0, w * _tile_size, h * _tile_size)

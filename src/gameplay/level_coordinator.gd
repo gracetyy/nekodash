@@ -50,6 +50,7 @@ enum State {
 @onready var _level_progression: Node = $LevelProgression
 @onready var _hud: HUD = $HUD
 @onready var _grid_renderer: Node2D = $GridRenderer
+@onready var _coverage_visualizer: CoverageVisualizer = $CoverageVisualizer
 
 
 # —————————————————————————————————————————————
@@ -182,6 +183,10 @@ func _initialize_systems() -> void:
 		# parent transforms.
 		position = _grid_renderer.get_grid_offset()
 
+	# CoverageVisualizer: reset visual state for the new level
+	if _coverage_visualizer != null:
+		_coverage_visualizer.initialize_level(GridSystem.get_width(), GridSystem.get_height())
+
 
 ## Wires all inter-system signals. Order is critical — see
 ## design/gdd/level-coordinator.md "Signal Connection Order".
@@ -221,6 +226,12 @@ func _connect_signals() -> void:
 	_coverage_tracking.coverage_updated.connect(_on_coverage_updated)
 	_coverage_tracking.tile_covered.connect(_on_tile_covered)
 	_coverage_tracking.tile_uncovered.connect(_on_tile_uncovered)
+
+	# CoverageVisualizer: visual overlay driven by coverage signals
+	if _coverage_visualizer != null:
+		_coverage_tracking.tile_covered.connect(_coverage_visualizer.on_tile_covered)
+		_coverage_tracking.tile_uncovered.connect(_coverage_visualizer.on_tile_uncovered)
+		_sliding_movement.spawn_position_set.connect(_coverage_visualizer.on_spawn_position_set)
 
 
 ## Disconnects all inter-system signals. Called before restart.
@@ -265,6 +276,15 @@ func _disconnect_signals() -> void:
 	if _coverage_tracking.tile_uncovered.is_connected(_on_tile_uncovered):
 		_coverage_tracking.tile_uncovered.disconnect(_on_tile_uncovered)
 
+	# CoverageVisualizer
+	if _coverage_visualizer != null:
+		if _coverage_tracking.tile_covered.is_connected(_coverage_visualizer.on_tile_covered):
+			_coverage_tracking.tile_covered.disconnect(_coverage_visualizer.on_tile_covered)
+		if _coverage_tracking.tile_uncovered.is_connected(_coverage_visualizer.on_tile_uncovered):
+			_coverage_tracking.tile_uncovered.disconnect(_coverage_visualizer.on_tile_uncovered)
+		if _sliding_movement.spawn_position_set.is_connected(_coverage_visualizer.on_spawn_position_set):
+			_sliding_movement.spawn_position_set.disconnect(_coverage_visualizer.on_spawn_position_set)
+
 
 # —————————————————————————————————————————————
 # Signal handlers
@@ -303,17 +323,10 @@ func _on_level_record_saved(level_id: String, stars: int, final_moves: int) -> v
 		"next_level_data": next_level,
 	}
 
-	# Track state in SceneManager immediately — tests verify this synchronously.
+	# Navigate to the Level Complete screen. SceneManager performs a real scene
+	# swap — the gameplay scene (this coordinator) is queue_free()d, so no code
+	# after this call will execute.
 	SceneManager.go_to(SceneManager.Screen.LEVEL_COMPLETE, params)
-
-	# Brief pause so the player can see the completed grid before the overlay
-	# appears. State guard prevents a stale overlay if restarted during the delay.
-	await get_tree().create_timer(LEVEL_COMPLETE_OVERLAY_DELAY_SEC).timeout
-	if _state != State.TRANSITIONING:
-		return
-
-	# Show inline level-complete overlay (temporary until level_complete.tscn exists)
-	_show_level_complete_overlay(params)
 
 
 func _on_slide_blocked(pos: Vector2i, direction: Vector2i) -> void:
@@ -335,14 +348,16 @@ func _on_coverage_updated(_covered: int, _total: int) -> void:
 	pass
 
 
-func _on_tile_covered(coord: Vector2i) -> void:
-	if _grid_renderer != null:
-		_grid_renderer.mark_covered(coord)
+func _on_tile_covered(_coord: Vector2i) -> void:
+	# CoverageVisualizer is wired directly to tile_covered.
+	# Coordinator retains this connection for future use (audio/VFX).
+	pass
 
 
-func _on_tile_uncovered(coord: Vector2i) -> void:
-	if _grid_renderer != null:
-		_grid_renderer.mark_uncovered(coord)
+func _on_tile_uncovered(_coord: Vector2i) -> void:
+	# CoverageVisualizer is wired directly to tile_uncovered.
+	# Coordinator retains this connection for future use (audio/VFX).
+	pass
 
 
 # —————————————————————————————————————————————
