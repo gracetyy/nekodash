@@ -17,8 +17,11 @@ extends Control
 # Constants
 # —————————————————————————————————————————————
 
-## Alpha for unearned star icons (dimmed).
-const DIMMED_STAR_ALPHA: float = 0.3
+## Gold color for earned stars.
+const STAR_EARNED_COLOR: Color = Color(1.0, 0.85, 0.2, 1.0)
+
+## Grey color for unearned stars.
+const STAR_UNEARNED_COLOR: Color = Color(0.5, 0.5, 0.5, 1.0)
 
 
 # —————————————————————————————————————————————
@@ -237,10 +240,10 @@ func _show_stars(stars: int) -> void:
 	for i: int in range(_star_nodes.size()):
 		if i < stars:
 			_star_nodes[i].visible = true
-			_star_nodes[i].modulate = Color.WHITE # filled
+			_star_nodes[i].modulate = STAR_EARNED_COLOR
 		else:
 			_star_nodes[i].visible = true
-			_star_nodes[i].modulate = Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA) # dimmed
+			_star_nodes[i].modulate = STAR_UNEARNED_COLOR
 
 
 ## Updates the move count label. Handles minimum_moves == 0.

@@ -7,11 +7,11 @@
 ## Acceptance criteria cross-ref: design/gdd/level-complete-screen.md
 extends GutTest
 
-## Matches LevelCompleteScreen.DIMMED_STAR_ALPHA — duplicated here because
-## GUT may load test scripts before Godot registers the class_name.
-const DIMMED_STAR_ALPHA: float = 0.3
+## Matches LevelCompleteScreen star color constants.
+const STAR_EARNED_COLOR: Color = Color(1.0, 0.85, 0.2, 1.0)
+const STAR_UNEARNED_COLOR: Color = Color(0.5, 0.5, 0.5, 1.0)
 
-var _screen: Control  # LevelCompleteScreen instance under test
+var _screen: Control # LevelCompleteScreen instance under test
 
 # Mock UI nodes
 var _level_name_label: Label
@@ -221,48 +221,48 @@ func test_populate_sets_level_name() -> void:
 
 func test_three_stars_all_bright() -> void:
 	_init_screen({"stars": 3})
-	assert_eq(_star_1.modulate, Color.WHITE)
-	assert_eq(_star_2.modulate, Color.WHITE)
-	assert_eq(_star_3.modulate, Color.WHITE)
+	assert_eq(_star_1.modulate, STAR_EARNED_COLOR)
+	assert_eq(_star_2.modulate, STAR_EARNED_COLOR)
+	assert_eq(_star_3.modulate, STAR_EARNED_COLOR)
 
 
 func test_two_stars_two_bright_one_dim() -> void:
 	_init_screen({"stars": 2})
-	assert_eq(_star_1.modulate, Color.WHITE)
-	assert_eq(_star_2.modulate, Color.WHITE)
-	assert_eq(_star_3.modulate, Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA))
+	assert_eq(_star_1.modulate, STAR_EARNED_COLOR)
+	assert_eq(_star_2.modulate, STAR_EARNED_COLOR)
+	assert_eq(_star_3.modulate, STAR_UNEARNED_COLOR)
 
 
 func test_one_star_one_bright_two_dim() -> void:
 	_init_screen({"stars": 1})
-	assert_eq(_star_1.modulate, Color.WHITE)
-	assert_eq(_star_2.modulate, Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA))
-	assert_eq(_star_3.modulate, Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA))
+	assert_eq(_star_1.modulate, STAR_EARNED_COLOR)
+	assert_eq(_star_2.modulate, STAR_UNEARNED_COLOR)
+	assert_eq(_star_3.modulate, STAR_UNEARNED_COLOR)
 
 
 func test_zero_stars_all_dim() -> void:
 	_init_screen({"stars": 0})
-	assert_eq(_star_1.modulate, Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA))
-	assert_eq(_star_2.modulate, Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA))
-	assert_eq(_star_3.modulate, Color(1.0, 1.0, 1.0, DIMMED_STAR_ALPHA))
+	assert_eq(_star_1.modulate, STAR_UNEARNED_COLOR)
+	assert_eq(_star_2.modulate, STAR_UNEARNED_COLOR)
+	assert_eq(_star_3.modulate, STAR_UNEARNED_COLOR)
 
 
 func test_sentinel_stars_hides_star_nodes() -> void:
-	_init_screen({"stars": -1})
+	_init_screen({"stars": - 1})
 	assert_false(_star_1.visible)
 	assert_false(_star_2.visible)
 	assert_false(_star_3.visible)
 
 
 func test_sentinel_stars_shows_question_mark() -> void:
-	_init_screen({"stars": -1})
+	_init_screen({"stars": - 1})
 	assert_true(_star_sentinel.visible)
 	assert_eq(_star_sentinel.text, "?")
 
 
 func test_normal_stars_hides_sentinel() -> void:
 	# First show sentinel
-	_init_screen({"stars": -1})
+	_init_screen({"stars": - 1})
 	assert_true(_star_sentinel.visible)
 	# Then normal stars
 	_screen.receive_scene_params(_standard_params({"stars": 2}))
