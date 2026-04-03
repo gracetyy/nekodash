@@ -7,33 +7,33 @@ Generated: 2026-04-03
 
 ### Metrics
 
-| Metric                        | Planned              | Actual                   | Delta    |
-| ----------------------------- | -------------------- | ------------------------ | -------- |
-| Tasks — Must Have             | 10                   | 10                       | 0        |
-| Tasks — Should Have           | 7                    | 6 (1 deferred)           | −1       |
-| Tasks — Nice to Have          | 9                    | 3 completed + 4 deferred | −2 net   |
-| Total Tasks Completed         | 26                   | 19 committed             | −7       |
-| Completion Rate (Must Have)   | —                    | 100%                     | —        |
-| Completion Rate (All Planned) | —                    | 73%                      | —        |
-| Effort Days Allocated         | 5 (4 net + 1 buffer) | ~0.44 actual             | −4.56d   |
-| GUT Tests at Sprint Close     | —                    | 610                      | —        |
-| Tests Delta vs Sprint 3       | —                    | +107 (503 → 610)         | +107     |
-| Bugs Introduced               | —                    | 2 (code review)          | —        |
-| Bugs Fixed in Sprint          | —                    | 2 (S4-24 UID, S4-28 parity) | —     |
-| Fix Commits (post-review)     | —                    | 2                        | —        |
-| Total Commits (sprint tasks)  | —                    | 20 (18 feat/docs + 2 fix) | —       |
-| Tasks With No Commit (absorbed) | —                  | 2 (S4-05, S4-06)         | —        |
+| Metric                          | Planned              | Actual                      | Delta  |
+| ------------------------------- | -------------------- | --------------------------- | ------ |
+| Tasks — Must Have               | 10                   | 10                          | 0      |
+| Tasks — Should Have             | 7                    | 6 (1 deferred)              | −1     |
+| Tasks — Nice to Have            | 9                    | 3 completed + 4 deferred    | −2 net |
+| Total Tasks Completed           | 26                   | 19 committed                | −7     |
+| Completion Rate (Must Have)     | —                    | 100%                        | —      |
+| Completion Rate (All Planned)   | —                    | 73%                         | —      |
+| Effort Days Allocated           | 5 (4 net + 1 buffer) | ~0.44 actual                | −4.56d |
+| GUT Tests at Sprint Close       | —                    | 610                         | —      |
+| Tests Delta vs Sprint 3         | —                    | +107 (503 → 610)            | +107   |
+| Bugs Introduced                 | —                    | 2 (code review)             | —      |
+| Bugs Fixed in Sprint            | —                    | 2 (S4-24 UID, S4-28 parity) | —      |
+| Fix Commits (post-review)       | —                    | 2                           | —      |
+| Total Commits (sprint tasks)    | —                    | 20 (18 feat/docs + 2 fix)   | —      |
+| Tasks With No Commit (absorbed) | —                    | 2 (S4-05, S4-06)            | —      |
 
 ---
 
 ### Velocity Trend
 
-| Sprint        | Planned Tasks | Completed (committed) | Rate     |
-| ------------- | ------------- | --------------------- | -------- |
-| Sprint 1      | 9             | 11 (+2 unplanned)     | 100%     |
-| Sprint 2      | 9             | 18 (+9 unplanned)     | 100%     |
-| Sprint 3      | 16            | 16                    | 100%     |
-| Sprint 4      | 26            | 19 committed (+ 7 intentionally deferred or absorbed) | 73% committed |
+| Sprint   | Planned Tasks | Completed (committed)                                 | Rate          |
+| -------- | ------------- | ----------------------------------------------------- | ------------- |
+| Sprint 1 | 9             | 11 (+2 unplanned)                                     | 100%          |
+| Sprint 2 | 9             | 18 (+9 unplanned)                                     | 100%          |
+| Sprint 3 | 16            | 16                                                    | 100%          |
+| Sprint 4 | 26            | 19 committed (+ 7 intentionally deferred or absorbed) | 73% committed |
 
 **Trend**: Stable delivery of Must Have; Nice-to-Have completion rate drops when external
 blockers (asset availability) prevent completion.
@@ -67,7 +67,7 @@ documentation work that was straightforwardly not reached within the session.
   deliverables (level data, docs, BFS reconstruction) — appropriate, not a violation.
 - **S4-05 and S4-06 were pre-validated by prior work**: Pre-sprint commits
   (`fix: obstacle STATIC_WALL tiles now block is_walkable`, `test: add STATIC_WALL obstacle
-  tests`) had already established the collision model. S4-04 built on a verified foundation
+tests`) had already established the collision model. S4-04 built on a verified foundation
   rather than starting from scratch.
 - **S4-03 retro action item #3 delivered**: SfxManager was scaffolded with a proper null
   guard (`warn + return`) as explicitly requested in the Sprint 3 action items.
@@ -97,22 +97,22 @@ documentation work that was straightforwardly not reached within the session.
 
 ### Blockers Encountered
 
-| Blocker                                   | Duration   | Resolution                                        | Prevention                                                     |
-| ----------------------------------------- | ---------- | ------------------------------------------------- | -------------------------------------------------------------- |
-| Asset availability for UI tasks S4-21–23, S4-26 | Full sprint | Explicitly deferred per user instruction        | Flag asset dependencies at plan creation; add "pending assets" status |
-| Hand-crafted UID in sfx_library.tres       | ~5 min     | Code review catch; immediate fix commit           | Reference actual Godot UID format before hand-authoring .tres files |
-| S4-05/S4-06 missing feat commits           | No delay   | Functionality absorbed in S4-04 and pre-sprint    | Require explicit `feat: S4-0X` commit even if "trivially verified" |
+| Blocker                                         | Duration    | Resolution                                     | Prevention                                                            |
+| ----------------------------------------------- | ----------- | ---------------------------------------------- | --------------------------------------------------------------------- |
+| Asset availability for UI tasks S4-21–23, S4-26 | Full sprint | Explicitly deferred per user instruction       | Flag asset dependencies at plan creation; add "pending assets" status |
+| Hand-crafted UID in sfx_library.tres            | ~5 min      | Code review catch; immediate fix commit        | Reference actual Godot UID format before hand-authoring .tres files   |
+| S4-05/S4-06 missing feat commits                | No delay    | Functionality absorbed in S4-04 and pre-sprint | Require explicit `feat: S4-0X` commit even if "trivially verified"    |
 
 ---
 
 ### Estimation Accuracy
 
-| Task                              | Estimated | Actual   | Variance | Likely Cause                                                        |
-| --------------------------------- | --------- | -------- | -------- | ------------------------------------------------------------------- |
-| S4-04 ObstacleSystem              | 0.1d      | ~0.06d   | −40%     | GridTileData `obstacle_type` field was already partially scaffolded |
-| S4-10 New levels w1_l7 + w1_l8   | 0.1d      | ~0.1d    | ~0%      | Level authoring time matched estimate closely                       |
-| S4-11 SfxManager                  | 0.1d      | ~0.03d   | −70%     | AudioStreamPlayer pool is a well-understood Godot pattern           |
-| All tasks (aggregate)             | 1.3d (26×0.05d) | ~0.44d | −66% | Design well-specified; implementation mechanical                    |
+| Task                           | Estimated       | Actual | Variance | Likely Cause                                                        |
+| ------------------------------ | --------------- | ------ | -------- | ------------------------------------------------------------------- |
+| S4-04 ObstacleSystem           | 0.1d            | ~0.06d | −40%     | GridTileData `obstacle_type` field was already partially scaffolded |
+| S4-10 New levels w1_l7 + w1_l8 | 0.1d            | ~0.1d  | ~0%      | Level authoring time matched estimate closely                       |
+| S4-11 SfxManager               | 0.1d            | ~0.03d | −70%     | AudioStreamPlayer pool is a well-understood Godot pattern           |
+| All tasks (aggregate)          | 1.3d (26×0.05d) | ~0.44d | −66%     | Design well-specified; implementation mechanical                    |
 
 **Overall estimation accuracy**: ~1 task within ±20% of estimate (S4-10). All others
 remain significantly overestimated. However, Sprint 4 used the 0.05d/task model (double
@@ -125,15 +125,15 @@ tasks per slot — or adopt a task-size categorisation (XS/S/M) rather than a fl
 
 ### Carryover Analysis
 
-| Task                          | Original Sprint | Times Carried | Reason                               | Action                                           |
-| ----------------------------- | --------------- | ------------- | ------------------------------------ | ------------------------------------------------ |
-| S4-19 Automated Playtest      | Sprint 4        | 1             | Not reached within session           | Complete as S5-01 or pre-sprint gate task        |
-| S4-21 Background Color Fix    | Sprint 4        | 1             | Asset dependency (user deferred)     | Resume when design assets finalized              |
-| S4-22 CatSprite Asset Swap    | Sprint 4        | 1             | Asset dependency (sprite PNG needed) | Resume when `sprite-cat.png` is final            |
-| S4-23 CoverageVisualizer Color| Sprint 4        | 1             | Asset dependency (user deferred)     | Resume when design system passes asset review    |
-| S4-25 M2 Gate Check Report    | Sprint 4        | 1             | Process task not reached             | Complete as first Sprint 5 task; gates M2 close  |
-| S4-26 World Map Level Cards   | Sprint 4        | 1             | Asset dependency (UI visual upgrade) | Resume when assets ready                         |
-| S4-29 Commit Hygiene Audit    | Sprint 4        | 1             | Process task not reached             | Complete in Sprint 5 kickoff; S4-05/06 gap noted |
+| Task                           | Original Sprint | Times Carried | Reason                               | Action                                           |
+| ------------------------------ | --------------- | ------------- | ------------------------------------ | ------------------------------------------------ |
+| S4-19 Automated Playtest       | Sprint 4        | 1             | Not reached within session           | Complete as S5-01 or pre-sprint gate task        |
+| S4-21 Background Color Fix     | Sprint 4        | 1             | Asset dependency (user deferred)     | Resume when design assets finalized              |
+| S4-22 CatSprite Asset Swap     | Sprint 4        | 1             | Asset dependency (sprite PNG needed) | Resume when `sprite-cat.png` is final            |
+| S4-23 CoverageVisualizer Color | Sprint 4        | 1             | Asset dependency (user deferred)     | Resume when design system passes asset review    |
+| S4-25 M2 Gate Check Report     | Sprint 4        | 1             | Process task not reached             | Complete as first Sprint 5 task; gates M2 close  |
+| S4-26 World Map Level Cards    | Sprint 4        | 1             | Asset dependency (UI visual upgrade) | Resume when assets ready                         |
+| S4-29 Commit Hygiene Audit     | Sprint 4        | 1             | Process task not reached             | Complete in Sprint 5 kickoff; S4-05/06 gap noted |
 
 ---
 
@@ -151,23 +151,23 @@ tasks per slot — or adopt a task-size categorisation (XS/S/M) rather than a fl
 
 ### Previous Action Items Follow-Up
 
-| Action Item (from Sprint 3)                                                                   | Status         | Notes                                                                                                  |
-| --------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------ |
-| Rethink sprint planning: shift to 40–80 tasks or milestone-driven continuous delivery         | ✅ Done        | Sprint 4 planned with 26 tasks at 0.05d/task; gap narrowed from 10× to 3×                             |
-| Verify acceptance criteria end-to-end before committing; confirm commit ID matches task ID    | ⚠️ Partial     | Code review caught sfx_library.tres UID issue post-commit; S4-05/06 have no feat commits              |
-| Scaffold SfxManager as proper stub with null-guard before audio implementation                | ✅ Done        | S4-11 delivered null guard + graceful warn; no crashes on null streams confirmed by 10 GUT tests      |
-| Add pre-commit checklist item for sprint subtask ID                                           | ⚠️ Not Done    | S4-29 (commit hygiene audit) not completed; S4-05/06 gap shows the problem persists                   |
+| Action Item (from Sprint 3)                                                                | Status      | Notes                                                                                            |
+| ------------------------------------------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------ |
+| Rethink sprint planning: shift to 40–80 tasks or milestone-driven continuous delivery      | ✅ Done     | Sprint 4 planned with 26 tasks at 0.05d/task; gap narrowed from 10× to 3×                        |
+| Verify acceptance criteria end-to-end before committing; confirm commit ID matches task ID | ⚠️ Partial  | Code review caught sfx_library.tres UID issue post-commit; S4-05/06 have no feat commits         |
+| Scaffold SfxManager as proper stub with null-guard before audio implementation             | ✅ Done     | S4-11 delivered null guard + graceful warn; no crashes on null streams confirmed by 10 GUT tests |
+| Add pre-commit checklist item for sprint subtask ID                                        | ⚠️ Not Done | S4-29 (commit hygiene audit) not completed; S4-05/06 gap shows the problem persists              |
 
 ---
 
 ### Action Items for Next Iteration
 
-| #   | Action                                                                                                           | Owner             | Priority | Deadline              |
-| --- | ---------------------------------------------------------------------------------------------------------------- | ----------------- | -------- | --------------------- |
-| 1   | Complete S4-19: run full M2 automated playtest (Main Menu → World Map 8 levels → gameplay → Level Complete → return) | qa-tester      | High     | Sprint 5 Day 1        |
-| 2   | Complete S4-25: produce `docs/m2-gate-check.md` with PASS/CONCERNS/FAIL against all M2 exit criteria              | qa-lead           | High     | Sprint 5 Day 1        |
-| 3   | Resolve S4-05/S4-06 audit trail: add a retrospective note in git or a follow-up docs commit acknowledging these tasks were absorbed pre-sprint; prevents future bisect confusion | devops-engineer | Medium | Sprint 5 kickoff |
-| 4   | Add task-size classification (XS = 0.02d, S = 0.05d, M = 0.1d) to sprint template — flat 0.05d estimate is still overestimating XS tasks 5×; the model needs a second tier | producer | Low | Sprint 5 plan |
+| #   | Action                                                                                                                                                                           | Owner           | Priority | Deadline         |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | -------- | ---------------- |
+| 1   | Complete S4-19: run full M2 automated playtest (Main Menu → World Map 8 levels → gameplay → Level Complete → return)                                                             | qa-tester       | High     | Sprint 5 Day 1   |
+| 2   | Complete S4-25: produce `docs/m2-gate-check.md` with PASS/CONCERNS/FAIL against all M2 exit criteria                                                                             | qa-lead         | High     | Sprint 5 Day 1   |
+| 3   | Resolve S4-05/S4-06 audit trail: add a retrospective note in git or a follow-up docs commit acknowledging these tasks were absorbed pre-sprint; prevents future bisect confusion | devops-engineer | Medium   | Sprint 5 kickoff |
+| 4   | Add task-size classification (XS = 0.02d, S = 0.05d, M = 0.1d) to sprint template — flat 0.05d estimate is still overestimating XS tasks 5×; the model needs a second tier       | producer        | Low      | Sprint 5 plan    |
 
 ---
 
@@ -202,9 +202,9 @@ is validated in a running build with all 8 levels loaded.
 
 These tasks are intentionally held pending asset readiness — not velocity failures:
 
-| Task  | Description                        | Blocked By                          |
-| ----- | ---------------------------------- | ----------------------------------- |
-| S4-21 | Background color fix (3 scenes)    | Design system asset review          |
-| S4-22 | CatSprite asset swap               | `design/draft/sprite-cat.png` final |
-| S4-23 | CoverageVisualizer trail color     | Design system amber token confirmed |
+| Task  | Description                         | Blocked By                          |
+| ----- | ----------------------------------- | ----------------------------------- |
+| S4-21 | Background color fix (3 scenes)     | Design system asset review          |
+| S4-22 | CatSprite asset swap                | `design/draft/sprite-cat.png` final |
+| S4-23 | CoverageVisualizer trail color      | Design system amber token confirmed |
 | S4-26 | World Map level card visual upgrade | UI component assets ready           |
