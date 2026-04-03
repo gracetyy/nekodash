@@ -289,3 +289,73 @@ func test_solver_reuse_across_different_levels_returns_correct_results() -> void
 	var r3 := solver.solve(null)
 	assert_eq(r3.minimum_moves, -1, "Null should return -1 after previous valid solves")
 	assert_string_contains(r3.error, "null")
+
+
+# —————————————————————————————————————————————
+# Path reconstruction — result.path matches move count
+# —————————————————————————————————————————————
+
+func test_solver_path_length_matches_minimum_moves() -> void:
+	# 3×3 ring: 4 moves expected.
+	var walk := PackedInt32Array([0, 0, 0, 0, 1, 0, 0, 0, 0])
+	var ld := _make_level(3, 3, walk, Vector2i(0, 0))
+	var solver := LevelSolver.new()
+	var result := solver.solve(ld)
+	assert_eq(result.path.size(), result.minimum_moves,
+		"Path length should equal minimum_moves")
+
+
+func test_solver_path_contains_valid_directions() -> void:
+	var walk := PackedInt32Array([0, 0, 0, 0, 1, 0, 0, 0, 0])
+	var ld := _make_level(3, 3, walk, Vector2i(0, 0))
+	var solver := LevelSolver.new()
+	var result := solver.solve(ld)
+	var valid_dirs: Array[Vector2i] = [
+		Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0),
+	]
+	for dir: Vector2i in result.path:
+		assert_has(valid_dirs, dir, "Each path direction must be a cardinal direction")
+
+
+func test_solver_single_tile_path_is_empty() -> void:
+	# 0 moves → empty path.
+	var walk := PackedInt32Array([1, 1, 1, 1, 0, 1, 1, 1, 1])
+	var ld := _make_level(3, 3, walk, Vector2i(1, 1))
+	var solver := LevelSolver.new()
+	var result := solver.solve(ld)
+	assert_eq(result.path.size(), 0, "Trivial level should have empty path")
+
+
+func test_solver_unsolvable_path_is_empty() -> void:
+	var walk := PackedInt32Array([0, 1, 0, 1, 1, 1, 1, 1, 1])
+	var ld := _make_level(3, 3, walk, Vector2i(0, 0))
+	var solver := LevelSolver.new()
+	var result := solver.solve(ld)
+	assert_eq(result.path.size(), 0, "Unsolvable level should have empty path")
+
+
+# —————————————————————————————————————————————
+# WASD conversion helpers
+# —————————————————————————————————————————————
+
+func test_dir_to_wasd_maps_all_four_directions() -> void:
+	assert_eq(LevelSolver.dir_to_wasd(Vector2i(0, -1)), "W")
+	assert_eq(LevelSolver.dir_to_wasd(Vector2i(0, 1)), "S")
+	assert_eq(LevelSolver.dir_to_wasd(Vector2i(-1, 0)), "A")
+	assert_eq(LevelSolver.dir_to_wasd(Vector2i(1, 0)), "D")
+
+
+func test_dir_to_wasd_unknown_returns_question_mark() -> void:
+	assert_eq(LevelSolver.dir_to_wasd(Vector2i(1, 1)), "?")
+
+
+func test_path_to_wasd_formats_correctly() -> void:
+	var path: Array[Vector2i] = [
+		Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1),
+	]
+	assert_eq(LevelSolver.path_to_wasd(path), "D S A W")
+
+
+func test_path_to_wasd_empty_returns_empty_string() -> void:
+	var path: Array[Vector2i] = []
+	assert_eq(LevelSolver.path_to_wasd(path), "")

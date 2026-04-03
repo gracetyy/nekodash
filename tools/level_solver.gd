@@ -60,6 +60,8 @@ class SolveResult:
 	var solve_time_msec: int = 0
 	## Human-readable error, empty string on success.
 	var error: String = ""
+	## Optimal move sequence as direction vectors. Empty if unsolvable or trivial.
+	var path: Array[Vector2i] = []
 
 
 # —————————————————————————————————————————————
@@ -71,11 +73,15 @@ class _BFSState:
 	var pos: Vector2i
 	var mask: int
 	var depth: int
+	var parent_key: String
+	var direction: Vector2i
 
-	func _init(p_pos: Vector2i, p_mask: int, p_depth: int) -> void:
+	func _init(p_pos: Vector2i, p_mask: int, p_depth: int, p_parent_key: String = "", p_dir: Vector2i = Vector2i.ZERO) -> void:
 		pos = p_pos
 		mask = p_mask
 		depth = p_depth
+		parent_key = p_parent_key
+		direction = p_dir
 
 
 # —————————————————————————————————————————————
@@ -178,10 +184,13 @@ func solve(level_data: LevelData) -> SolveResult:
 	# ——— BFS ———
 	var queue: Array[_BFSState] = []
 	var visited: Dictionary = {}
+	# Maps state_key → _BFSState for path reconstruction.
+	var parent_map: Dictionary = {}
 
 	var init_state := _BFSState.new(cat_start, init_mask, 0)
 	var init_key: String = _state_key(cat_start, init_mask)
 	visited[init_key] = true
+	parent_map[init_key] = init_state
 	queue.push_back(init_state)
 
 	var head: int = 0 # Queue front pointer (avoids pop_front O(n))
@@ -218,17 +227,25 @@ func solve(level_data: LevelData) -> SolveResult:
 				result.minimum_moves = current.depth + 1
 				result.states_explored = states_explored
 				result.solve_time_msec = Time.get_ticks_msec() - start_tick
+				# Reconstruct path by walking parent_map back to root.
+				var path_dirs: Array[Vector2i] = []
+				path_dirs.append(dir)
+				var cur_key: String = _state_key(current.pos, current.mask)
+				while parent_map.has(cur_key) and parent_map[cur_key].depth > 0:
+					var par: _BFSState = parent_map[cur_key]
+					path_dirs.append(par.direction)
+					cur_key = par.parent_key
+				path_dirs.reverse()
+				result.path = path_dirs
 				return result
 
 			# Visited check
 			var key: String = _state_key(landing, new_mask)
 			if not visited.has(key):
 				visited[key] = true
-				queue.push_back(_BFSState.new(landing, new_mask, current.depth + 1))
-
-	# Queue exhausted — unsolvable
-	result.minimum_moves = -1
-	result.states_explored = states_explored
+				var new_state := _BFSState.new(landing, new_mask, current.depth + 1, _state_key(current.pos, current.mask), dir)
+				parent_map[key] = new_state
+				queue.push_back(new_state)
 	result.solve_time_msec = Time.get_ticks_msec() - start_tick
 	result.error = "Level is unsolvable"
 	push_error("[LevelSolver] ERROR: %s is unsolvable!" % level_data.level_id)
@@ -277,3 +294,22 @@ func _resolve_slide(start: Vector2i, direction: Vector2i) -> Vector2i:
 ## Builds the BFS visited-set key string per design doc specification.
 func _state_key(pos: Vector2i, mask: int) -> String:
 	return "%d,%d|%d" % [pos.x, pos.y, mask]
+
+
+## Converts a direction vector to its WASD character.
+static func dir_to_wasd(dir: Vector2i) -> String:
+	match dir:
+		Vector2i(0, -1): return "W"
+		Vector2i(0, 1): return "S"
+		Vector2i(-1, 0): return "A"
+		Vector2i(1, 0): return "D"
+	return "?"
+
+
+## Returns the optimal solution as a WASD string, e.g. "D S W A D".
+## Returns empty string if the level is unsolvable or has no path.
+static func path_to_wasd(path: Array[Vector2i]) -> String:
+	var chars: PackedStringArray = []
+	for dir: Vector2i in path:
+		chars.append(dir_to_wasd(dir))
+	return " ".join(chars)
