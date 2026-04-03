@@ -1,9 +1,9 @@
-## MainMenu — title screen with navigation to World Map.
-## Task: S3-04 (bug fix — back button target)
+## MainMenu — title screen with navigation to World Map and Skins.
+## Task: S3-04 (bug fix — back button target), S4-14 (Skins + CatSprite wiring)
 ##
 ## Simple title screen that lets the player start the game by navigating
 ## to the World Map. Acts as the landing screen and the back-button target
-## from WorldMap.
+## from WorldMap. Shows CatSprite using the equipped skin placeholder.
 class_name MainMenu
 extends Control
 
@@ -21,6 +21,7 @@ signal play_requested
 # —————————————————————————————————————————————
 
 var _play_btn: BaseButton
+var _skins_btn: BaseButton
 
 
 # —————————————————————————————————————————————
@@ -38,6 +39,7 @@ func _ready() -> void:
 
 func _auto_discover_ui_nodes() -> void:
 	_play_btn = _find_child_safe("PlayBtn", "BaseButton") as BaseButton
+	_skins_btn = _find_child_safe("SkinsBtn", "BaseButton") as BaseButton
 
 
 func _find_child_safe(child_name: String, expected_type: String) -> Node:
@@ -50,11 +52,17 @@ func _find_child_safe(child_name: String, expected_type: String) -> Node:
 func _connect_signals() -> void:
 	if _play_btn != null:
 		_play_btn.pressed.connect(_on_play_btn_pressed)
+	if _skins_btn != null:
+		_skins_btn.pressed.connect(_on_skins_btn_pressed)
 
 
 func _on_play_btn_pressed() -> void:
 	play_requested.emit()
 	_navigate_to_world_map()
+
+
+func _on_skins_btn_pressed() -> void:
+	SceneManager.go_to(SceneManager.Screen.SKIN_SELECT)
 
 
 func _navigate_to_world_map() -> void:
