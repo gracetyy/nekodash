@@ -71,6 +71,9 @@ var _current_level_data: LevelData
 var _prev_best_moves: int = 0
 var _was_previously_completed: bool = false
 
+## Stub SFX stream for level completion (replace with real audio asset later).
+var _sfx_level_complete: AudioStream = AudioStreamWAV.new()
+
 
 # —————————————————————————————————————————————
 # SceneManager contract
@@ -311,6 +314,7 @@ func _on_level_completed() -> void:
 	print("[LevelCoordinator] LEVEL COMPLETE — moves: %d / minimum: %d" % [
 		final_moves, minimum,
 	])
+	SfxManager.play(_sfx_level_complete, SfxManager.SfxBus.SFX)
 
 	# StarRatingSystem.on_level_completed() computes stars and emits
 	# rating_computed → LevelProgression writes to SaveManager and emits
