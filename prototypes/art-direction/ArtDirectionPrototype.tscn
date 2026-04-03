@@ -1,0 +1,985 @@
+[gd_scene load_steps=29 format=3 uid="uid://bg8e47o7d0by8"]
+
+[ext_resource type="Script" path="res://prototypes/art-direction/art_direction_prototype.gd" id="1_main"]
+[ext_resource type="Texture2D" uid="uid://dgqf7bs3orrdg" path="res://assets/art/ui/headers/headerBow_pink.png" id="2_header_pink"]
+[ext_resource type="Texture2D" uid="uid://uhbmd5lbpwof" path="res://assets/art/ui/headers/header_purple.png" id="3_header_purple"]
+[ext_resource type="Texture2D" uid="uid://drv626euc001w" path="res://assets/art/ui/headers/notebook_cream.png" id="4_notebook_cream"]
+[ext_resource type="Texture2D" uid="uid://dt585o10ewe2w" path="res://assets/art/ui/stars/star_gold.png" id="5_star_gold"]
+[ext_resource type="Texture2D" uid="uid://1toifv523ifo" path="res://assets/art/ui/stars/star_grey.png" id="6_star_grey"]
+[ext_resource type="Texture2D" uid="uid://cu3x7vyradnys" path="res://assets/art/ui/hud/move-counter-bg.png" id="7_hud_bg"]
+[ext_resource type="Texture2D" uid="uid://cvvm5306fxnqq" path="res://assets/art/ui/overlay/effect_pink.png" id="8_overlay_pink"]
+[ext_resource type="Texture2D" uid="uid://dlwxjngakxexo" path="res://assets/art/ui/headers/headerAsim_cyan.png" id="9_header_cyan"]
+[ext_resource type="Texture2D" uid="uid://hy5vl4qercuu" path="res://assets/art/ui/headers/headerBow_purple.png" id="10_header_bow_purple"]
+[ext_resource type="Texture2D" uid="uid://d03bqrxnq7r61" path="res://assets/art/ui/headers/notebook_pink.png" id="11_notebook_pink"]
+[ext_resource type="Texture2D" uid="uid://djenm77t4fxgn" path="res://assets/art/ui/headers/header_cream.png" id="13_header_cream"]
+[ext_resource type="Script" path="res://prototypes/art-direction/proto_main_menu.gd" id="14_menu_script"]
+[ext_resource type="Texture2D" uid="uid://ddfeew4u61sf8" path="res://design/draft/sprite-cat.png" id="15_cat_sprite"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 42
+outline_size = 4
+outline_color = Color(0.2, 0.1, 0.15, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_btn"]
+font_size = 28
+outline_size = 3
+outline_color = Color(0.15, 0.05, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_gridwall"]
+bg_color = Color(0.62, 0.45, 0.75, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.28, 0.58, 0.8)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_gridempty"]
+bg_color = Color(0.13, 0.16, 0.3, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.36, 0.55, 0.3)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_gridcat"]
+bg_color = Color(1, 0.82, 0.87, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.6, 0.7, 0.8)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="LabelSettings" id="LabelSettings_hud"]
+font_color = Color(0.25, 0.2, 0.15, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_moves"]
+font_size = 22
+outline_size = 2
+outline_color = Color(0.3, 0.15, 0.25, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_btnsm"]
+font_size = 18
+outline_size = 2
+outline_color = Color(0.15, 0.1, 0.2, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_btndark"]
+font_size = 18
+font_color = Color(0.35, 0.2, 0.25, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_tab"]
+font_size = 14
+font_color = Color(0.3, 0.2, 0.25, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_lvltile"]
+bg_color = Color(0.92, 0.85, 0.95, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.75, 0.6, 0.85, 0.5)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="LabelSettings" id="LabelSettings_lvlnum"]
+font_size = 24
+font_color = Color(0.4, 0.25, 0.5, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_lvltile_locked"]
+bg_color = Color(0.88, 0.85, 0.9, 0.5)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7, 0.65, 0.75, 0.3)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="LabelSettings" id="LabelSettings_nav"]
+font_size = 11
+font_color = Color(1, 1, 1, 0.6)
+
+[node name="ArtDirectionPrototype" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="MainMenu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("14_menu_script")
+
+[node name="Background" type="ColorRect" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.95, 0.92, 0.88, 1)
+
+[node name="VBox" type="VBoxContainer" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Spacer1" type="Control" parent="MainMenu/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="TitleHeader" type="TextureRect" parent="MainMenu/VBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+texture = ExtResource("2_header_pink")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TitleLabel" type="Label" parent="MainMenu/VBox/TitleHeader"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "NekoDash"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer2" type="Control" parent="MainMenu/VBox"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="CatArea" type="CenterContainer" parent="MainMenu/VBox"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CatSprite" type="TextureRect" parent="MainMenu/VBox/CatArea"]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+texture = ExtResource("15_cat_sprite")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonArea" type="VBoxContainer" parent="MainMenu/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="PlayBtnBg" type="TextureButton" parent="MainMenu/VBox/ButtonArea"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("3_header_purple")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="PlayLabel" type="Label" parent="MainMenu/VBox/ButtonArea/PlayBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "PLAY"
+label_settings = SubResource("LabelSettings_btn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SkinsBtnBg" type="TextureButton" parent="MainMenu/VBox/ButtonArea"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("9_header_cyan")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="SkinsLabel" type="Label" parent="MainMenu/VBox/ButtonArea/SkinsBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SKINS"
+label_settings = SubResource("LabelSettings_btn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer3" type="Control" parent="MainMenu/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="GameplayHUD" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridBg" type="ColorRect" parent="GameplayHUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.18, 0.35, 1)
+
+[node name="GridArea" type="CenterContainer" parent="GameplayHUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 110.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LevelGrid" type="GridContainer" parent="GameplayHUD/GridArea"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 5
+
+[node name="Tile_0_0" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_0_1" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_0_2" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_0_3" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_0_4" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_1_0" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_1_1" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_1_2" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_1_3" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_1_4" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_2_0" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_2_1" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_2_2" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridcat")
+
+[node name="CatImg" type="TextureRect" parent="GameplayHUD/GridArea/LevelGrid/Tile_2_2"]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("15_cat_sprite")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Tile_2_3" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_2_4" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_3_0" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_3_1" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_3_2" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_3_3" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_3_4" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_4_0" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_4_1" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_4_2" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridempty")
+
+[node name="Tile_4_3" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="Tile_4_4" type="PanelContainer" parent="GameplayHUD/GridArea/LevelGrid"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_gridwall")
+
+[node name="HUDTop" type="HBoxContainer" parent="GameplayHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 12.0
+offset_top = 30.0
+offset_right = -16.0
+offset_bottom = 110.0
+grow_horizontal = 2
+theme_override_constants/separation = 8
+
+[node name="LevelHeader" type="TextureRect" parent="GameplayHUD/HUDTop"]
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("4_notebook_cream")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="LevelLabel" type="Label" parent="GameplayHUD/HUDTop/LevelHeader"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "World 1 - Level 3"
+label_settings = SubResource("LabelSettings_hud")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MoveCounterArea" type="CenterContainer" parent="GameplayHUD/HUDTop"]
+layout_mode = 2
+
+[node name="MoveCounterBg" type="TextureRect" parent="GameplayHUD/HUDTop/MoveCounterArea"]
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+texture = ExtResource("7_hud_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MoveText" type="Label" parent="GameplayHUD/HUDTop/MoveCounterArea/MoveCounterBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "5 / 12"
+label_settings = SubResource("LabelSettings_moves")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HUDBottom" type="HBoxContainer" parent="GameplayHUD"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="UndoBtnBg" type="TextureButton" parent="GameplayHUD/HUDBottom"]
+custom_minimum_size = Vector2(120, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("9_header_cyan")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="UndoLabel" type="Label" parent="GameplayHUD/HUDBottom/UndoBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "UNDO"
+label_settings = SubResource("LabelSettings_btnsm")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartBtnBg" type="TextureButton" parent="GameplayHUD/HUDBottom"]
+custom_minimum_size = Vector2(120, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("10_header_bow_purple")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="RestartLabel" type="Label" parent="GameplayHUD/HUDBottom/RestartBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "RESTART"
+label_settings = SubResource("LabelSettings_btnsm")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ExitBtnBg" type="TextureButton" parent="GameplayHUD/HUDBottom"]
+custom_minimum_size = Vector2(80, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("13_header_cream")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="ExitLabel" type="Label" parent="GameplayHUD/HUDBottom/ExitBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "EXIT"
+label_settings = SubResource("LabelSettings_btndark")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LevelComplete" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="LevelComplete"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.95, 0.92, 0.88, 1)
+
+[node name="OverlayEffect" type="TextureRect" parent="LevelComplete"]
+modulate = Color(1, 1, 1, 0.3)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_overlay_pink")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VBox" type="VBoxContainer" parent="LevelComplete"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="CompleteHeader" type="TextureRect" parent="LevelComplete/VBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+texture = ExtResource("2_header_pink")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="CompleteLabel" type="Label" parent="LevelComplete/VBox/CompleteHeader"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Level Complete!"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StarsRow" type="HBoxContainer" parent="LevelComplete/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Star1" type="TextureRect" parent="LevelComplete/VBox/StarsRow"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("5_star_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="LevelComplete/VBox/StarsRow"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+texture = ExtResource("5_star_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="LevelComplete/VBox/StarsRow"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("6_star_grey")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MovesBg" type="TextureRect" parent="LevelComplete/VBox"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+texture = ExtResource("7_hud_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MovesLabel" type="Label" parent="LevelComplete/VBox/MovesBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Moves: 8 / 12"
+label_settings = SubResource("LabelSettings_moves")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonsVBox" type="VBoxContainer" parent="LevelComplete/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="NextBtnBg" type="TextureButton" parent="LevelComplete/VBox/ButtonsVBox"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("3_header_purple")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="NextLabel" type="Label" parent="LevelComplete/VBox/ButtonsVBox/NextBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "NEXT LEVEL"
+label_settings = SubResource("LabelSettings_btn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RetryBtnBg" type="TextureButton" parent="LevelComplete/VBox/ButtonsVBox"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("9_header_cyan")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="RetryLabel" type="Label" parent="LevelComplete/VBox/ButtonsVBox/RetryBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "RETRY"
+label_settings = SubResource("LabelSettings_btn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MapBtnBg" type="TextureButton" parent="LevelComplete/VBox/ButtonsVBox"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("13_header_cream")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="MapLabel" type="Label" parent="LevelComplete/VBox/ButtonsVBox/MapBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "WORLD MAP"
+label_settings = SubResource("LabelSettings_btndark")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WorldMap" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="WorldMap"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.92, 0.88, 0.95, 1)
+
+[node name="VBox" type="VBoxContainer" parent="WorldMap"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="MapMargin" type="MarginContainer" parent="WorldMap/VBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 16
+
+[node name="WorldHeader" type="TextureRect" parent="WorldMap/VBox/MapMargin"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+texture = ExtResource("10_header_bow_purple")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="WorldLabel" type="Label" parent="WorldMap/VBox/MapMargin/WorldHeader"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "World 1: Cozy Room"
+label_settings = SubResource("LabelSettings_btn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TabsRow" type="HBoxContainer" parent="WorldMap/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="Tab1Bg" type="TextureButton" parent="WorldMap/VBox/TabsRow"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("11_notebook_pink")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="Tab1Label" type="Label" parent="WorldMap/VBox/TabsRow/Tab1Bg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "World 1"
+label_settings = SubResource("LabelSettings_tab")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tab2Bg" type="TextureButton" parent="WorldMap/VBox/TabsRow"]
+modulate = Color(1, 1, 1, 0.5)
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("4_notebook_cream")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="Tab2Label" type="Label" parent="WorldMap/VBox/TabsRow/Tab2Bg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "World 2"
+label_settings = SubResource("LabelSettings_tab")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LevelGrid" type="GridContainer" parent="WorldMap/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 4
+
+[node name="Level1" type="PanelContainer" parent="WorldMap/VBox/LevelGrid"]
+custom_minimum_size = Vector2(110, 110)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_lvltile")
+
+[node name="VBox1" type="VBoxContainer" parent="WorldMap/VBox/LevelGrid/Level1"]
+layout_mode = 2
+alignment = 1
+
+[node name="Num" type="Label" parent="WorldMap/VBox/LevelGrid/Level1/VBox1"]
+layout_mode = 2
+text = "1"
+label_settings = SubResource("LabelSettings_lvlnum")
+horizontal_alignment = 1
+
+[node name="Stars1" type="HBoxContainer" parent="WorldMap/VBox/LevelGrid/Level1/VBox1"]
+layout_mode = 2
+alignment = 1
+
+[node name="S1" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level1/VBox1/Stars1"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("5_star_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S2" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level1/VBox1/Stars1"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("5_star_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S3" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level1/VBox1/Stars1"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("5_star_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Level2" type="PanelContainer" parent="WorldMap/VBox/LevelGrid"]
+custom_minimum_size = Vector2(110, 110)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_lvltile")
+
+[node name="VBox2" type="VBoxContainer" parent="WorldMap/VBox/LevelGrid/Level2"]
+layout_mode = 2
+alignment = 1
+
+[node name="Num" type="Label" parent="WorldMap/VBox/LevelGrid/Level2/VBox2"]
+layout_mode = 2
+text = "2"
+label_settings = SubResource("LabelSettings_lvlnum")
+horizontal_alignment = 1
+
+[node name="Stars2" type="HBoxContainer" parent="WorldMap/VBox/LevelGrid/Level2/VBox2"]
+layout_mode = 2
+alignment = 1
+
+[node name="S1" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level2/VBox2/Stars2"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("5_star_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S2" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level2/VBox2/Stars2"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("5_star_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S3" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level2/VBox2/Stars2"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("6_star_grey")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Level3" type="PanelContainer" parent="WorldMap/VBox/LevelGrid"]
+custom_minimum_size = Vector2(110, 110)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_lvltile")
+
+[node name="VBox3" type="VBoxContainer" parent="WorldMap/VBox/LevelGrid/Level3"]
+layout_mode = 2
+alignment = 1
+
+[node name="Num" type="Label" parent="WorldMap/VBox/LevelGrid/Level3/VBox3"]
+layout_mode = 2
+text = "3"
+label_settings = SubResource("LabelSettings_lvlnum")
+horizontal_alignment = 1
+
+[node name="Stars3" type="HBoxContainer" parent="WorldMap/VBox/LevelGrid/Level3/VBox3"]
+layout_mode = 2
+alignment = 1
+
+[node name="S1" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level3/VBox3/Stars3"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("6_star_grey")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S2" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level3/VBox3/Stars3"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("6_star_grey")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S3" type="TextureRect" parent="WorldMap/VBox/LevelGrid/Level3/VBox3/Stars3"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture = ExtResource("6_star_grey")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Level4" type="PanelContainer" parent="WorldMap/VBox/LevelGrid"]
+custom_minimum_size = Vector2(110, 110)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_lvltile_locked")
+
+[node name="VBox4" type="VBoxContainer" parent="WorldMap/VBox/LevelGrid/Level4"]
+layout_mode = 2
+alignment = 1
+
+[node name="LockLabel" type="Label" parent="WorldMap/VBox/LevelGrid/Level4/VBox4"]
+layout_mode = 2
+text = "🔒"
+label_settings = SubResource("LabelSettings_lvlnum")
+horizontal_alignment = 1
+
+[node name="BackBtnBg" type="TextureButton" parent="WorldMap/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("13_header_cream")
+ignore_texture_size = true
+stretch_mode = 6
+
+[node name="BackLabel" type="Label" parent="WorldMap/VBox/BackBtnBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "BACK"
+label_settings = SubResource("LabelSettings_btndark")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScreenLabelBg" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 24.0
+grow_horizontal = 2
+color = Color(0, 0, 0, 0.4)
+
+[node name="ScreenLabel" type="Label" parent="ScreenLabelBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "[1/4] Main Menu  (← → to navigate, ESC to quit)"
+label_settings = SubResource("LabelSettings_nav")
+horizontal_alignment = 1
+vertical_alignment = 1
