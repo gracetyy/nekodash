@@ -62,6 +62,9 @@ var _initialized: bool = false
 ## Whether the level is complete (buttons locked).
 var _level_complete: bool = false
 
+## Stub SFX stream for button taps (replace with real audio asset later).
+var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
+
 
 # —————————————————————————————————————————————
 # Lifecycle
@@ -271,6 +274,7 @@ func on_undo_btn_pressed() -> void:
 		return
 	_undo_restart_ref.undo()
 	undo_pressed.emit()
+	SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
 
 
 ## Called when the Restart button is pressed. Forwards to UndoRestart.
@@ -281,6 +285,7 @@ func on_restart_btn_pressed() -> void:
 		return
 	_undo_restart_ref.restart()
 	restart_pressed.emit()
+	SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
 
 
 ## Called when the Exit button is pressed. Navigates to World Map without saving.
@@ -288,6 +293,7 @@ func on_exit_btn_pressed() -> void:
 	if _level_complete:
 		return
 	exit_pressed.emit()
+	SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
 
 
 # —————————————————————————————————————————————
