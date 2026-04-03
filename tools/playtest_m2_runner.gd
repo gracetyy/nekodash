@@ -313,9 +313,9 @@ func _finish() -> void:
 func _dir_name(dir: Vector2i) -> String:
 	match dir:
 		Vector2i(0, -1): return "up"
-		Vector2i(0, 1):  return "down"
+		Vector2i(0, 1): return "down"
 		Vector2i(-1, 0): return "left"
-		Vector2i(1, 0):  return "right"
+		Vector2i(1, 0): return "right"
 	return "unknown"
 
 
