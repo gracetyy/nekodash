@@ -74,6 +74,9 @@ var _params_received: bool = false
 ## Whether results have been populated.
 var _populated: bool = false
 
+## Stub SFX stream for star earned (replace with real audio asset later).
+var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
+
 
 # —————————————————————————————————————————————
 # Lifecycle
@@ -244,6 +247,9 @@ func _show_stars(stars: int) -> void:
 		else:
 			_star_nodes[i].visible = true
 			_star_nodes[i].modulate = STAR_UNEARNED_COLOR
+
+	if stars > 0:
+		SfxManager.play(_sfx_star_earned, SfxManager.SfxBus.SFX)
 
 
 ## Updates the move count label. Handles minimum_moves == 0.

@@ -88,6 +88,9 @@ const MAX_SLIDE_DISTANCE: int = 20
 ## Current state machine state.
 var _state: State = State.IDLE
 
+## Stub SFX stream for slide movement (replace with real audio asset later).
+var _sfx_slide_move: AudioStream = AudioStreamWAV.new()
+
 ## Cat's logical grid coordinate — single source of truth for position.
 var _cat_pos: Vector2i = Vector2i.ZERO
 
@@ -242,6 +245,7 @@ func _play_slide(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
 	_slide_tween.tween_callback(_on_slide_finished.bind(old_pos, to, direction))
 
 	slide_started.emit(old_pos, to, direction)
+	SfxManager.play(_sfx_slide_move, SfxManager.SfxBus.SFX)
 
 
 func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
