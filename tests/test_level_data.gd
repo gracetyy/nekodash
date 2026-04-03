@@ -360,6 +360,13 @@ func test_level_w1_l5_grid_dimensions() -> void:
 	assert_eq(level.grid_height, 6)
 
 
+func test_level_w1_l5_populates_grid_system() -> void:
+	var level: LevelData = _load_level(W1_L5_PATH)
+	_grid.load_grid(level)
+	assert_eq(_grid.get_width(), 6)
+	assert_eq(_grid.get_height(), 6)
+
+
 func test_level_w1_l5_walkable_count() -> void:
 	var level: LevelData = _load_level(W1_L5_PATH)
 	_grid.load_grid(level)
@@ -423,6 +430,13 @@ func test_level_w1_l6_grid_dimensions() -> void:
 	var level: LevelData = _load_level(W1_L6_PATH)
 	assert_eq(level.grid_width, 6)
 	assert_eq(level.grid_height, 6)
+
+
+func test_level_w1_l6_populates_grid_system() -> void:
+	var level: LevelData = _load_level(W1_L6_PATH)
+	_grid.load_grid(level)
+	assert_eq(_grid.get_width(), 6)
+	assert_eq(_grid.get_height(), 6)
 
 
 func test_level_w1_l6_walkable_count() -> void:
@@ -490,6 +504,13 @@ func test_level_w1_l7_grid_dimensions() -> void:
 	assert_eq(level.grid_height, 7)
 
 
+func test_level_w1_l7_populates_grid_system() -> void:
+	var level: LevelData = _load_level(W1_L7_PATH)
+	_grid.load_grid(level)
+	assert_eq(_grid.get_width(), 7)
+	assert_eq(_grid.get_height(), 7)
+
+
 func test_level_w1_l7_walkable_count() -> void:
 	var level: LevelData = _load_level(W1_L7_PATH)
 	_grid.load_grid(level)
@@ -553,6 +574,13 @@ func test_level_w1_l8_grid_dimensions() -> void:
 	var level: LevelData = _load_level(W1_L8_PATH)
 	assert_eq(level.grid_width, 7)
 	assert_eq(level.grid_height, 7)
+
+
+func test_level_w1_l8_populates_grid_system() -> void:
+	var level: LevelData = _load_level(W1_L8_PATH)
+	_grid.load_grid(level)
+	assert_eq(_grid.get_width(), 7)
+	assert_eq(_grid.get_height(), 7)
 
 
 func test_level_w1_l8_walkable_count() -> void:
