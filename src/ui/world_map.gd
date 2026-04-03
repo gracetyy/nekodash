@@ -19,14 +19,23 @@ extends Control
 
 const CATALOGUE_PATH: String = "res://data/level_catalogue.tres"
 
-## Gold color for earned stars (matches LevelCompleteScreen).
-const STAR_EARNED_COLOR: Color = Color(1.0, 0.85, 0.2, 1.0)
+## Gold color for earned stars — star-filled #F5C842.
+const STAR_EARNED_COLOR: Color = Color(0.961, 0.784, 0.259, 1.0)
 
-## Grey color for unearned/empty stars.
-const STAR_UNEARNED_COLOR: Color = Color(0.5, 0.5, 0.5, 1.0)
+## Lavender-grey for unearned/empty stars — star-empty #C8C4D0.
+const STAR_UNEARNED_COLOR: Color = Color(0.784, 0.769, 0.816, 1.0)
 
-## Grey used for locked level buttons.
-const LOCKED_COLOR: Color = Color(0.4, 0.4, 0.4, 1.0)
+## Disabled button fill for locked levels — btn-disabled #C6C5C9.
+const LOCKED_COLOR: Color = Color(0.776, 0.773, 0.788, 1.0)
+
+## Cream card background for level cards — cream-card #FFF8F0.
+const CARD_BG_COLOR: Color = Color(1.0, 0.973, 0.941, 1.0)
+
+## Dark text for level card labels — text-dark #53314B.
+const TEXT_DARK_COLOR: Color = Color(0.325, 0.192, 0.294, 1.0)
+
+## Muted text for locked level labels — text-muted #8A7060.
+const TEXT_MUTED_COLOR: Color = Color(0.541, 0.439, 0.376, 1.0)
 
 
 # —————————————————————————————————————————————
@@ -196,16 +205,33 @@ func _make_level_button(level: LevelData) -> Button:
 	var btn: Button = Button.new()
 	var unlocked: bool = _is_level_unlocked(level)
 
+	# Card background style
+	var style_normal: StyleBoxFlat = StyleBoxFlat.new()
+	style_normal.corner_radius_top_left = 12
+	style_normal.corner_radius_top_right = 12
+	style_normal.corner_radius_bottom_right = 12
+	style_normal.corner_radius_bottom_left = 12
+
 	if not unlocked:
 		btn.text = "🔒"
 		btn.disabled = true
-		btn.modulate = LOCKED_COLOR
+		style_normal.bg_color = LOCKED_COLOR
+		btn.add_theme_color_override("font_color", TEXT_MUTED_COLOR)
+		btn.add_theme_color_override("font_disabled_color", TEXT_MUTED_COLOR)
 	else:
 		var stars: int = SaveManager.get_best_stars(level.level_id)
 		var completed: bool = SaveManager.is_level_completed(level.level_id)
 		var star_text: String = _build_star_text(stars, completed)
 		btn.text = "%d\n%s" % [level.level_index, star_text]
 		btn.pressed.connect(_on_level_pressed.bind(level))
+		style_normal.bg_color = CARD_BG_COLOR
+		btn.add_theme_color_override("font_color", TEXT_DARK_COLOR)
+
+	btn.add_theme_stylebox_override("normal", style_normal)
+	btn.add_theme_stylebox_override("hover", style_normal)
+	var style_pressed: StyleBoxFlat = style_normal.duplicate() as StyleBoxFlat
+	style_pressed.bg_color = style_normal.bg_color.darkened(0.08)
+	btn.add_theme_stylebox_override("pressed", style_pressed)
 
 	btn.custom_minimum_size = Vector2(80, 80)
 	return btn

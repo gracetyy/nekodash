@@ -17,8 +17,8 @@ extends Node2D
 # Constants
 # —————————————————————————————————————————————
 
-## Color drawn on covered tiles.
-const COLOR_COVERED: Color = Color(0.2, 0.7, 0.3, 0.6)
+## Color drawn on covered tiles — grid-trail #FBD490.
+const COLOR_COVERED: Color = Color(0.984, 0.831, 0.565, 0.6)
 
 
 # —————————————————————————————————————————————

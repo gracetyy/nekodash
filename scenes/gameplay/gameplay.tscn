@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dg4meplay5cen"]
+[gd_scene load_steps=18 format=3 uid="uid://dg4meplay5cen"]
 
 [ext_resource type="Script" path="res://src/gameplay/level_coordinator.gd" id="1"]
 [ext_resource type="Script" path="res://src/gameplay/sliding_movement.gd" id="2"]
@@ -8,10 +8,49 @@
 [ext_resource type="Script" path="res://src/gameplay/star_rating_system.gd" id="6"]
 [ext_resource type="Script" path="res://src/gameplay/level_progression.gd" id="7"]
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="8"]
-[ext_resource type="Resource" path="res://data/level_catalogue.tres" id="9"]
+[ext_resource type="Resource" uid="uid://c24k85an56w4c" path="res://data/level_catalogue.tres" id="9"]
 [ext_resource type="Script" path="res://src/ui/grid_renderer.gd" id="10"]
 [ext_resource type="Script" path="res://src/ui/cat_sprite.gd" id="11"]
 [ext_resource type="Script" path="res://src/ui/coverage_visualizer.gd" id="12"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_bg"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.451, 0.365, 0.42, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary"]
+bg_color = Color(0.647, 0.835, 0.741, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_pressed"]
+bg_color = Color(0.595, 0.768, 0.682, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tertiary"]
+bg_color = Color(0.753, 0.686, 0.886, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tertiary_pressed"]
+bg_color = Color(0.693, 0.631, 0.815, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
 
 [node name="LevelCoordinator" type="Node2D"]
 script = ExtResource("1")
@@ -47,23 +86,15 @@ script = ExtResource("7")
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("8")
 
-[node name="MarginContainer" type="MarginContainer" parent="HUD"]
+[node name="MarginContainer" type="PanelContainer" parent="HUD"]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 80.0
 grow_horizontal = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 12
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud_bg")
 
 [node name="VBox" type="VBoxContainer" parent="HUD/MarginContainer"]
 layout_mode = 2
-
-[node name="LevelNameLabel" type="Label" parent="HUD/MarginContainer/VBox"]
-layout_mode = 2
-text = "Level Name"
-horizontal_alignment = 1
 
 [node name="StatsRow" type="HBoxContainer" parent="HUD/MarginContainer/VBox"]
 layout_mode = 2
@@ -71,10 +102,12 @@ alignment = 1
 
 [node name="MovesPrefix" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.973, 0.922, 0.761, 1)
 text = "Moves: "
 
 [node name="MoveLabel" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.973, 0.922, 0.761, 1)
 text = "0 / 0"
 
 [node name="Spacer" type="Control" parent="HUD/MarginContainer/VBox/StatsRow"]
@@ -85,6 +118,7 @@ size_flags_horizontal = 3
 [node name="CoverageLabel" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
 visible = false
 layout_mode = 2
+theme_override_colors/font_color = Color(0.973, 0.922, 0.761, 1)
 text = "0 / 0"
 
 [node name="ButtonRow" type="HBoxContainer" parent="HUD/MarginContainer/VBox"]
@@ -93,12 +127,24 @@ alignment = 1
 
 [node name="UndoBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "Undo"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/hover = SubResource("StyleBoxFlat_secondary")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_secondary")
+text = "UNDO"
 
 [node name="RestartBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "Restart"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/hover = SubResource("StyleBoxFlat_secondary")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_secondary")
+text = "RESTART"
 
 [node name="ExitBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "Exit"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/hover = SubResource("StyleBoxFlat_tertiary")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tertiary_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_tertiary")
+text = "EXIT"
