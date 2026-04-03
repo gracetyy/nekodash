@@ -17,11 +17,11 @@ extends Control
 # Constants
 # —————————————————————————————————————————————
 
-## Gold color for earned stars.
-const STAR_EARNED_COLOR: Color = Color(1.0, 0.85, 0.2, 1.0)
+## Gold color for earned stars — star-filled #F5C842.
+const STAR_EARNED_COLOR: Color = Color(0.961, 0.784, 0.259, 1.0)
 
-## Grey color for unearned stars.
-const STAR_UNEARNED_COLOR: Color = Color(0.5, 0.5, 0.5, 1.0)
+## Lavender-grey for unearned stars — star-empty #C8C4D0.
+const STAR_UNEARNED_COLOR: Color = Color(0.784, 0.769, 0.816, 1.0)
 
 
 # —————————————————————————————————————————————

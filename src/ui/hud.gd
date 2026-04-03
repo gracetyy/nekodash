@@ -32,7 +32,6 @@ signal exit_pressed
 # —————————————————————————————————————————————
 
 ## Set via set_ui_nodes(), _ready() auto-discovery, or test injection.
-var _level_name_label: Control # Label
 var _move_label: Control # Label
 var _coverage_label: Control # Label
 var _undo_btn: Control # Button
@@ -108,10 +107,6 @@ func initialize(
 	# Disconnect previous signals (safe re-initialize)
 	_disconnect_signals()
 
-	# Set level name
-	if _level_name_label != null:
-		_level_name_label.text = level_data.display_name
-
 	# Connect signals
 	_connect_signals(move_counter, undo_restart, coverage_tracking)
 
@@ -146,14 +141,12 @@ func is_level_complete() -> bool:
 ## Assigns UI node references. Called by the scene or test setup to inject
 ## the actual Control nodes before initialize().
 func set_ui_nodes(
-	level_name_label: Control,
 	move_label: Control,
 	coverage_label: Control,
 	undo_btn: Control,
 	restart_btn: Control,
 	exit_btn: Control = null,
 ) -> void:
-	_level_name_label = level_name_label
 	_move_label = move_label
 	_coverage_label = coverage_label
 	_undo_btn = undo_btn
@@ -338,8 +331,6 @@ func _set_exit_button_visible(visible_flag: bool) -> void:
 ## haven't already been injected via set_ui_nodes(). Wires button pressed
 ## signals when buttons are found.
 func _auto_discover_ui_nodes() -> void:
-	if _level_name_label == null:
-		_level_name_label = get_node_or_null("MarginContainer/VBox/LevelNameLabel")
 	if _move_label == null:
 		_move_label = get_node_or_null("MarginContainer/VBox/StatsRow/MoveLabel")
 	if _coverage_label == null:

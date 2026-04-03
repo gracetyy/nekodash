@@ -1,7 +1,35 @@
-[gd_scene load_steps=3 format=3 uid="uid://cmainmenu5cene"]
+[gd_scene load_steps=7 format=3 uid="uid://cmainmenu5cene"]
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/cat_sprite.gd" id="2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.953, 0.757, 0.271, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
+bg_color = Color(0.877, 0.696, 0.249, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3"]
+bg_color = Color(0.753, 0.686, 0.886, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4"]
+bg_color = Color(0.693, 0.631, 0.815, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -19,7 +47,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.08, 0.08, 0.12, 1)
+color = Color(0.965, 0.945, 0.847, 1)
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -46,11 +74,20 @@ text = "NekoDash"
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 48
+theme_override_colors/font_color = Color(0.361, 0.29, 0.42, 1)
 
 [node name="PlayBtn" type="Button" parent="VBox"]
 layout_mode = 2
-text = "Play"
+text = "PLAY"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_1")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2")
 
 [node name="SkinsBtn" type="Button" parent="VBox"]
 layout_mode = 2
-text = "Skins"
+text = "SKINS"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_4")
