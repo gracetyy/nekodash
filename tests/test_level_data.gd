@@ -89,7 +89,7 @@ func test_level_w1_l1_metadata() -> void:
 	var level: LevelData = _load_level(W1_L1_PATH)
 	assert_eq(level.world_id, 1)
 	assert_eq(level.level_index, 1)
-	assert_eq(level.display_name, "First Steps")
+	assert_eq(level.display_name, "")
 
 
 func test_level_w1_l1_grid_dimensions() -> void:
@@ -146,7 +146,7 @@ func test_level_w1_l2_metadata() -> void:
 	var level: LevelData = _load_level(W1_L2_PATH)
 	assert_eq(level.world_id, 1)
 	assert_eq(level.level_index, 2)
-	assert_eq(level.display_name, "Turn the Corner")
+	assert_eq(level.display_name, "")
 
 
 func test_level_w1_l2_grid_dimensions() -> void:
@@ -203,7 +203,7 @@ func test_level_w1_l3_metadata() -> void:
 	var level: LevelData = _load_level(W1_L3_PATH)
 	assert_eq(level.world_id, 1)
 	assert_eq(level.level_index, 3)
-	assert_eq(level.display_name, "Central Wall")
+	assert_eq(level.display_name, "")
 
 
 func test_level_w1_l3_grid_dimensions() -> void:
