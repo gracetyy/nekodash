@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SfxLibrary" load_steps=2 format=3 uid="uid://csfxlibrary0001"]
+
+[ext_resource type="Script" path="res://src/core/sfx_library.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+slide_move = null
+level_complete = null
+star_earned = null
+button_tap = null
