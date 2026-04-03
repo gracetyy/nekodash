@@ -28,7 +28,7 @@ The Level Data Format has no direct player fantasy — the player never sees or 
    - Completing in > `star_1_moves` → 0 stars (level complete but no rating)
 6. `LevelData` contains level metadata: `level_id: String` (unique, e.g. `"w1_l1"`), `world_id: int` (1-based), `level_index: int` (1-based, within world), and `display_name: String`.
 7. Level files are read-only at runtime. The game never writes back to `.tres` level files. Player progress (stars earned, completion status) is stored separately by the Save/Load System.
-8. Level files are organized in `assets/levels/world_{n}/` subdirectories. The Level Progression system indexes them by scanning this directory structure at startup (or from a hand-maintained manifest — see Open Questions).
+8. Level files are organized in `data/levels/world{n}/` subdirectories (e.g. `res://data/levels/world1/w1_l1.tres`). The Level Progression system indexes them by scanning this directory structure at startup (or from a hand-maintained manifest — see Open Questions).
 
 ### `LevelData` Resource Schema
 
@@ -161,7 +161,7 @@ _These are suggestions only — designers override per level. The formulas here 
 The Level Data Format itself has no runtime tuning knobs — it is a data schema, not a system with live parameters. The following authoring parameters apply at level design time:
 
 > **Content Convention — Catalogue path**: The `LevelCatalogue` resource must be saved at
-> `res://assets/levels/level_catalogue.tres`. This exact path is hardcoded in World Map
+> `res://data/level_catalogue.tres`. This exact path is hardcoded in World Map
 > and used by Level Coordinator via `@export`. If the file is placed anywhere else,
 > both systems silently fail to load levels.
 
@@ -213,7 +213,7 @@ The Level Data Format does not own or render any of this UI itself.
 
 | #    | Question                                                                                                                                                                                                       | Priority | Owner                                                      |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------- |
-| OQ-1 | Should Level Progression discover level files by scanning `assets/levels/` at startup, or from a hand-maintained manifest array? Scanning is convenient; a manifest is more predictable and easier to order.   | Medium   | Resolve during Level Progression GDD                       |
+| OQ-1 | Should Level Progression discover level files by scanning `data/levels/` at startup, or from a hand-maintained manifest array? Scanning is convenient; a manifest is more predictable and easier to order.     | Medium   | Resolve during Level Progression GDD                       |
 | OQ-2 | Should `ObstacleType` remain an enum or migrate to a Godot `Resource` per obstacle for richer post-jam data? (flagged as open in Grid System GDD)                                                              | Medium   | Resolve before first art sprint; flagged in Grid System OQ |
 | OQ-3 | Should star thresholds be stored per-level in `LevelData` (current design) or in a separate balance data file shared across all levels? Per-level is flexible; a shared file is easier to re-balance globally. | Low      | Resolve during Star Rating System GDD                      |
 | OQ-4 | Does `LevelData` need a `version: int` field for forward-compatibility if the schema changes post-jam? Low risk for a jam scope but important for live updates.                                                | Low      | Resolve before first public release                        |

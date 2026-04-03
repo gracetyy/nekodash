@@ -7,9 +7,9 @@ extends GutTest
 var _grid: Node
 
 # Level paths
-const W1_L1_PATH: String = "res://assets/levels/world_1/w1_l1.tres"
-const W1_L2_PATH: String = "res://assets/levels/world_1/w1_l2.tres"
-const W1_L3_PATH: String = "res://assets/levels/world_1/w1_l3.tres"
+const W1_L1_PATH: String = "res://data/levels/world1/w1_l1.tres"
+const W1_L2_PATH: String = "res://data/levels/world1/w1_l2.tres"
+const W1_L3_PATH: String = "res://data/levels/world1/w1_l3.tres"
 
 
 # —————————————————————————————————————————————

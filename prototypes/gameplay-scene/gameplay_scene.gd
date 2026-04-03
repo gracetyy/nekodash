@@ -11,7 +11,7 @@ extends Node2D
 @onready var hud: Node2D = $HUD
 
 # Hardcoded level path for prototype
-var _level_path: String = "res://assets/levels/world_1/w1_l2.tres"
+var _level_path: String = "res://data/levels/world1/w1_l2.tres"
 
 
 func _ready() -> void:
@@ -95,13 +95,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_R:
 			_restart_level()
 		KEY_1:
-			_level_path = "res://assets/levels/world_1/w1_l1.tres"
+			_level_path = "res://data/levels/world1/w1_l1.tres"
 			_restart_level()
 		KEY_2:
-			_level_path = "res://assets/levels/world_1/w1_l2.tres"
+			_level_path = "res://data/levels/world1/w1_l2.tres"
 			_restart_level()
 		KEY_3:
-			_level_path = "res://assets/levels/world_1/w1_l3.tres"
+			_level_path = "res://data/levels/world1/w1_l3.tres"
 			_restart_level()
 
 
