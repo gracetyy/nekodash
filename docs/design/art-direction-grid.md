@@ -85,35 +85,40 @@ enum value and a real-world furniture analogue. Art must ship for all MVP types.
 These all share `ObstacleType.STATIC_WALL` in code. Art differentiates them visually
 by world theme and tile atlas cell ID:
 
-| Obstacle Art ID  | Object              | Tile Size | Visual Description (top-down)                                       | World | Draft Source              |
-| ---------------- | ------------------- | --------- | ------------------------------------------------------------------- | ----- | ------------------------- |
-| `OBS_BOX`        | Cardboard box       | 1×1       | Square box top, brown kraft paper texture, paw-print sticker on top | W1    | `tileset-livingroom-ver1` |
-| `OBS_STOOL`      | Round stool         | 1×1       | Circular seat cushion, wooden legs visible as dots                  | W1    | —                         |
-| `OBS_PLANT_SM`   | Small plant pot     | 1×1       | Round terracotta pot top, green leafy crown                         | W1    | `tileset-livingroom-ver1` |
-| `OBS_SHELF`      | Bookshelf           | 1×3       | Top-down strip: colourful pastel book spines                        | W1+W2 | `tileset-livingroom-ver1` |
-| `OBS_SOFA`       | Sofa / couch        | 1×2       | Lavender rounded back cushion + seat cushion visible                | W1    | `tileset-livingroom-ver1` |
-| `OBS_ARMCHAIR`   | Armchair            | 1×1       | Lavender cushion seat, smaller than sofa                            | W1    | `tileset-livingroom-ver2` |
-| `OBS_TABLE`      | Side table          | 1×1       | Square or round table top, small legs at corners/edge               | W1    | `tileset-livingroom-ver1` |
-| `OBS_TABLE_RND`  | Round coffee table  | 1×1       | Circular top, minimal legs                                          | W1    | `tileset-livingroom-ver2` |
-| `OBS_TV_STAND`   | TV on media unit    | 1×2       | TV screen top view on wood console unit                             | W1    | `tileset-livingroom-ver2` |
-| `OBS_OTTOMAN`    | Circular ottoman    | 1×1       | Round padded seat, top-down circle                                  | W1    | `tileset-livingroom-ver2` |
-| `OBS_WARDROBE`   | Wardrobe            | 1×2       | Two/three-door top, handles, walnut wood grain texture              | W4    | `tileset-bedroom`         |
-| `OBS_BED`        | Double bed          | 2×2       | Pink/rose duvet, heart-print pillows visible from top               | W4    | `tileset-bedroom`         |
-| `OBS_NIGHTSTAND` | Nightstand + lamp   | 1×1       | Small square unit, round lamp base on top                           | W4    | `tileset-bedroom`         |
-| `OBS_BEANBAG`    | Bean bag            | 1×1       | Peach/orange teardrop shape from top                                | W4    | `tileset-bedroom`         |
-| `OBS_DRAWERS`    | Chest of drawers    | 1×2       | Rectangular unit, drawer handle lines visible                       | W4    | `tileset-bedroom`         |
-| `OBS_MIRROR`     | Floor mirror        | 1×2       | Tall oval mirror, thin frame                                        | W4    | `tileset-bedroom`         |
-| `OBS_LAUNDRY`    | Laundry basket      | 1×1       | Round wicker basket from top                                        | W4    | `tileset-bedroom`         |
-| `OBS_CATBED`     | Round cat bed       | 1×1       | Small circle with padded rim                                        | W4    | `tileset-bedroom`         |
-| `OBS_FRIDGE`     | Fridge              | 1×1       | Tall/prominent rectangle, handle line on door                       | W3    | `tileset-kitchen`         |
-| `OBS_STOVE`      | Stove / cooktop     | 1×2       | 4 circular burner rings visible from top                            | W3    | `tileset-kitchen`         |
-| `OBS_MICROWAVE`  | Microwave           | 1×1       | Small rectangle, door latch detail                                  | W3    | `tileset-kitchen`         |
-| `OBS_WASHER`     | Washer / dishwasher | 1×1       | Square unit, round porthole window on door                          | W3    | `tileset-kitchen`         |
-| `OBS_SINK`       | Kitchen sink        | 1×1       | Rectangular sink unit, circular drain visible                       | W3    | `tileset-kitchen`         |
-| `OBS_BINS`       | Recycling bins      | 1×1 each  | Round mint-green bin tops, recycle symbol                           | W3    | `tileset-kitchen`         |
-| `OBS_COFFEE`     | Coffee maker        | 1×1       | Compact rounded top view                                            | W3    | `tileset-kitchen`         |
-| `OBS_CABINET`    | Wall cabinet        | 1×3       | Long horizontal white/cream unit                                    | W3    | `tileset-kitchen`         |
-| `OBS_COLUMN`     | Room support col    | 1×1       | Octagonal or round pillar top, stone/marble                         | All   | —                         |
+| Obstacle Art ID      | Object              | Tile Size | Visual Description (top-down)                                       | World       | Draft Source              |
+| -------------------- | ------------------- | --------- | ------------------------------------------------------------------- | ----------- | ------------------------- |
+| `OBS_BOX`            | Cardboard box       | 1×1       | Square box top, brown kraft paper texture, paw-print sticker on top | W3          | `tileset-livingroom-ver1` |
+| `OBS_STOOL`          | Round stool         | 1×1       | Circular seat cushion, wooden legs visible as dots                  | W3          | —                         |
+| `OBS_PLANT_SM`       | Small plant pot     | 1×1       | Round terracotta pot top, green leafy crown                         | W3          | `tileset-livingroom-ver1` |
+| `OBS_SHELF`          | Bookshelf           | 1×3       | Top-down strip: colourful pastel book spines                        | W3+post-jam | `tileset-livingroom-ver1` |
+| `OBS_SOFA`           | Sofa / couch        | 1×2       | Lavender rounded back cushion + seat cushion visible                | W3          | `tileset-livingroom-ver1` |
+| `OBS_ARMCHAIR`       | Armchair            | 1×1       | Lavender cushion seat, smaller than sofa                            | W3          | `tileset-livingroom-ver2` |
+| `OBS_TABLE`          | Side table          | 1×1       | Square or round table top, small legs at corners/edge               | W3          | `tileset-livingroom-ver1` |
+| `OBS_TABLE_RND`      | Round coffee table  | 1×1       | Circular top, minimal legs                                          | W3          | `tileset-livingroom-ver2` |
+| `OBS_TV_STAND`       | TV on media unit    | 1×2       | TV screen top view on wood console unit                             | W3          | `tileset-livingroom-ver2` |
+| `OBS_OTTOMAN`        | Circular ottoman    | 1×1       | Round padded seat, top-down circle                                  | W3          | `tileset-livingroom-ver2` |
+| `OBS_FLOOR_CUSHION`  | Floor cushion       | 1×1       | Round/square cushion on floor, soft patterned fabric from top       | W3          | —                         |
+| `OBS_CACTUS`         | Cactus              | 1×1       | Round ceramic pot, chunky green cactus from top                     | W3          | —                         |
+| `OBS_SCRATCHER`      | Cat scratcher post  | 1×1       | Circular base from above, wrapped sisal column top                  | W3          | —                         |
+| `OBS_WARDROBE`       | Wardrobe            | 1×3       | Two/three-door top, handles, walnut wood grain texture              | W1          | `tileset-bedroom`         |
+| `OBS_BED`            | Double bed          | 2×2       | Pink/rose duvet, heart-print pillows visible from top               | W1          | `tileset-bedroom`         |
+| `OBS_NIGHTSTAND`     | Nightstand + lamp   | 1×1       | Small square unit, round lamp base on top                           | W1          | `tileset-bedroom`         |
+| `OBS_BEANBAG`        | Bean bag            | 1×1       | Peach/orange teardrop shape from top                                | W1          | `tileset-bedroom`         |
+| `OBS_DRAWERS`        | Chest of drawers    | 1×2       | Rectangular unit, drawer handle lines visible                       | W1          | `tileset-bedroom`         |
+| `OBS_MIRROR`         | Floor mirror        | 1×2       | Tall oval mirror, thin frame                                        | W1          | `tileset-bedroom`         |
+| `OBS_LAUNDRY`        | Laundry basket      | 1×1       | Round wicker basket from top                                        | W1          | `tileset-bedroom`         |
+| `OBS_CATBED`         | Round cat bed       | 1×1       | Small circle with padded rim                                        | W1          | `tileset-bedroom`         |
+| `OBS_FRIDGE`         | Fridge              | 1×1       | Tall/prominent rectangle, handle line on door                       | W2          | `tileset-kitchen`         |
+| `OBS_STOVE`          | Stove / cooktop     | 1×2       | 4 circular burner rings visible from top                            | W2          | `tileset-kitchen`         |
+| `OBS_MICROWAVE`      | Microwave           | 1×1       | Small rectangle, door latch detail                                  | W2          | `tileset-kitchen`         |
+| `OBS_WASHER`         | Washer / dishwasher | 1×1       | Square unit, round porthole window on door                          | W2          | `tileset-kitchen`         |
+| `OBS_SINK`           | Kitchen sink        | 1×1       | Rectangular sink unit, circular drain visible                       | W2          | `tileset-kitchen`         |
+| `OBS_BINS`           | Recycling bins      | 1×1 each  | Round mint-green bin tops, recycle symbol                           | W2          | `tileset-kitchen`         |
+| `OBS_COFFEE`         | Coffee maker        | 1×1       | Compact rounded top view                                            | W2          | `tileset-kitchen`         |
+| `OBS_COUNTER`        | Kitchen counter     | 1×3       | Long horizontal white/cream counter unit                            | W2          | `tileset-kitchen`         |
+| `OBS_KITCHEN_ISLAND` | Kitchen island      | 1×2       | Freestanding counter island, two-tile wide, top-down                | W2          | —                         |
+| `OBS_CAT_BOWL`       | Cat food bowl       | 1×1       | Round bowl with food, cute paw print on bowl exterior               | W2          | —                         |
+| `OBS_COLUMN`         | Room support col    | 1×1       | Octagonal or round pillar top, stone/marble                         | All         | —                         |
 
 #### Post-Jam Obstacle Types (Dynamic)
 
@@ -165,12 +170,12 @@ sprites applied to blocking cells:
 
 **Wall tile sets by world:**
 
-| World             | Theme                        | Draft File              | Variants                                                                                 |
-| ----------------- | ---------------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
-| 1 — Living Room   | Brown wood log-cabin planks  | `tileset-wall-ver1.png` | 6: plain, corner, alt corner, shelf, clock, picture                                      |
-| 2 — Study/Library | Lavender paw-print wallpaper | `tileset-wall-ver2.png` | 8: plain, stripe, dense paw, corner, cat picture, switch, outlet, dark solid             |
-| 3 — Kitchen       | White/mint subway tile       | `tileset-wall-ver3.png` | 8: plain, mint accent, grout, corner, knife rack, calendar, window, outer corner         |
-| 4 — Bedroom       | Pastel pink kawaii wallpaper | `tileset-wall-ver4.png` | 8: plain pink, stars, hearts, corner, fairy lights, floating shelf, poster, outer corner |
+| World            | Theme                        | Draft File              | Variants                                                                                 |
+| ---------------- | ---------------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
+| 1 — Bedroom      | Pastel pink kawaii wallpaper | `tileset-wall-ver4.png` | 8: plain pink, stars, hearts, corner, fairy lights, floating shelf, poster, outer corner |
+| 2 — Kitchen      | White/mint subway tile       | `tileset-wall-ver3.png` | 8: plain, mint accent, grout, corner, knife rack, calendar, window, outer corner         |
+| 3 — Living Room  | Brown wood log-cabin planks  | `tileset-wall-ver1.png` | 6: plain, corner, alt corner, shelf, clock, picture                                      |
+| Post-jam — Study | Lavender paw-print wallpaper | `tileset-wall-ver2.png` | 8: plain, stripe, dense paw, corner, cat picture, switch, outlet, dark solid             |
 
 ---
 
@@ -182,79 +187,83 @@ rooms as they progress.
 
 ---
 
-### World 1 — Pastel Plains ("The Living Room")
+### World 1 — Dreamy Den ("The Bedroom") 🛏️
 
-**Room concept**: Bright, welcoming main living room. The first room the player sees.
-Safe, comfortable, beginner-friendly.
+**Room concept**: The cat's own bedroom — soft, cosy, personal. First world: larger grid,
+higher obstacle density. Sets the warm kawaii tone for the whole game.
+
+| Element               | Description                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Grid size range**   | 7×7 to 9×9                                                                                                                      |
+| **Obstacle density**  | 0.18–0.25 (more furniture = more challenge per move)                                                                            |
+| **Levels**            | 5–7 levels                                                                                                                      |
+| **Floor tile**        | Soft pale pink carpet — subtle fabric weave texture, dusky rose colour                                                          |
+| **Floor colour**      | Unvisited: `#FFE8EE` · Visited glow: `#FFD6E0`                                                                                  |
+| **Trail tint**        | Warm golden-amber glow over the carpet texture                                                                                  |
+| **Background colour** | `#FDE8EE`                                                                                                                       |
+| **Accent colour**     | `#F5C842` (gold)                                                                                                                |
+| **Wall border**       | Pastel pink kawaii wallpaper (`tileset-wall-ver4`) — 8 variants with fairy lights, floating shelf, poster                       |
+| **Furniture set**     | Double bed (2×2), wardrobe (1×3), chest of drawers, nightstand with lamp, floor mirror, bean bag, laundry basket, round cat bed |
+| **Furniture palette** | Warm rose/pink duvet, walnut brown wardrobe, peach soft furnishings                                                             |
+| **Colour mood**       | Dusky rose, mauve, soft warm pink, cream                                                                                        |
+| **Music mood**        | Dreamy, lullaby-adjacent, music box or gentle chime, soft synth                                                                 |
+
+---
+
+### World 2 — Cream Caverns ("The Kitchen") 🍳
+
+**Room concept**: Clean, bright kitchen. Unlocked after completing all World 1 levels.
+Medium grid, medium obstacle density. Introduces tighter spatial puzzles.
+
+| Element               | Description                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Grid size range**   | 6×6 to 8×8                                                                                                   |
+| **Obstacle density**  | 0.15–0.20                                                                                                    |
+| **Levels**            | 5–7 levels                                                                                                   |
+| **Floor tile**        | White ceramic square tiles with thin grey grout lines, slight gloss on tile centres                          |
+| **Floor colour**      | Unvisited: `#F8F8F8` · Grout: `#D8D8D8` · Visited glow: `#DCF3EA` (mint)                                     |
+| **Trail tint**        | Mint-green glow over tile surface                                                                            |
+| **Background colour** | `#EEF7F3`                                                                                                    |
+| **Wall border**       | White/mint subway tile (`tileset-wall-ver3`) — knife rack, window, calendar props                            |
+| **Furniture set**     | Refrigerator, stove/cooktop, microwave, kitchen counter, kitchen island, sink, recycling bins, cat food bowl |
+| **Furniture palette** | Clean white, stainless silver accents, mint green bins, cream cabinetry                                      |
+| **Colour mood**       | Clean white, sage, warm cream                                                                                |
+| **Music mood**        | Slightly upbeat, light percussion, playful melody, marimba or whistle                                        |
+
+---
+
+### World 3 — Pastel Plains ("The Living Room") 🛋️
+
+**Room concept**: Bright, welcoming living room. Unlocked after completing all World 2 levels.
+Smaller grid, lower obstacle density. All levels solvable ≤8 moves at 3-star, no dead-end traps.
 
 | Element               | Description                                                                                               |
 | --------------------- | --------------------------------------------------------------------------------------------------------- |
-| **Floor tile**        | Light oak hardwood planks — warm honey-beige, visible wood grain, parallel plank lines running horizontal |
-| **Floor variant**     | Planks have subtle edge shadow and alternating grain offset per row                                       |
+| **Grid size range**   | 5×5 to 7×7                                                                                                |
+| **Obstacle density**  | 0.10–0.15 (fewer obstacles, trickier placement)                                                           |
+| **Levels**            | 5–7 levels. All solvable ≤8 moves at 3-star, no dead-end traps.                                           |
+| **Floor tile**        | Warm oak hardwood planks — warm honey-beige, visible wood grain, horizontal plank lines                   |
+| **Floor colour**      | Unvisited: `#F5E6C8` · Visited glow: `#F5C842`                                                            |
 | **Trail tint**        | Warm amber glow over the plank texture                                                                    |
-| **Wall border**       | Cream painted wall, light baseboard trim                                                                  |
-| **Furniture set**     | Cardboard boxes, small potted plants, cute stools, side tables                                            |
-| **Furniture palette** | Soft oak wood tones, terracotta pots, cream cushions                                                      |
+| **Background colour** | `#F5EDE0`                                                                                                 |
+| **Accent colour**     | `#5C4A6B` (dark plum)                                                                                     |
+| **Wall border**       | Brown wood log-cabin planks (`tileset-wall-ver1`) — shelf, clock, picture props                           |
+| **Furniture set**     | Sofa, armchair, floor cushion, bookshelf, coffee table, TV stand, large plant, cactus, cat scratcher post |
+| **Furniture palette** | Lavender cushions, oak wood tones, terracotta for plants, warm cream                                      |
 | **Colour mood**       | Warm cream, honey, soft sage greenery                                                                     |
-| **HUD tint**          | No world-tint on HUD (default)                                                                            |
-
----
-
-### World 2 — Lilac Lanes ("The Study / Library")
-
-**Room concept**: Cosy reading nook. Slightly more enclosed. Intermediate difficulty.
-
-| Element               | Description                                                        |
-| --------------------- | ------------------------------------------------------------------ |
-| **Floor tile**        | Dark walnut hardwood planks — deeper brown, more pronounced grain  |
-| **Floor variant**     | Herringbone or chevron pattern (diagonal plank arrangement)        |
-| **Trail tint**        | Soft lavender-gold glow                                            |
-| **Wall border**       | Lilac-painted lower wall, white wainscoting cap                    |
-| **Furniture set**     | Bookshelves (1×3), armchair, side lamp (decorative), stacked books |
-| **Furniture palette** | Deep walnut, dusty lilac, cream, gold accents                      |
-| **Colour mood**       | Muted purple, warm brown, ivory                                    |
-
----
-
-### World 3 — Cream Caverns ("The Kitchen")
-
-**Room concept**: Clean, bright kitchen. Introduces more complex obstacle arrangements.
-
-| Element               | Description                                                        |
-| --------------------- | ------------------------------------------------------------------ |
-| **Floor tile**        | White/cream ceramic tile — square tiles with thin grey grout lines |
-| **Floor variant**     | Slight gloss/highlight on tile centres                             |
-| **Trail tint**        | Warm golden glow on tile surface                                   |
-| **Wall border**       | Cream tile trim with a subtle decorative band                      |
-| **Furniture set**     | Stools, boxes, small appliance tops (toaster, kettle), plant pots  |
-| **Furniture palette** | Clean white, stainless accents, cream, pastel green                |
-| **Colour mood**       | Clean white, sage, warm cream                                      |
+| **Music mood**        | Warm lo-fi acoustic, slow tempo, soft piano                                                               |
 
 ---
 
 ### Future Worlds (Post-Jam Concepts)
 
-| World # | Room           | Floor Concept                      | Dominant Colour  |
-| ------- | -------------- | ---------------------------------- | ---------------- |
-| 5       | The Greenhouse | Stone/terracotta tiles, mossy gaps | Deep green, clay |
-| 6       | The Hallway    | Black & white checkerboard         | Monochrome       |
-| 7       | The Attic      | Rough plank boards, dusty          | Sepia, aged oak  |
-
----
-
-### World 4 — Dreamy Den ("The Bedroom")
-
-**Room concept**: Soft, cosy bedroom. The most personal room. Introduces relaxed puzzle pacing.
-Full obstacle and wall tile sets confirmed in draft assets.
-
-| Element               | Description                                                                                                                     |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Floor tile**        | Plush carpet — subtle fabric weave texture, dusky rose / mauve colour                                                           |
-| **Trail tint**        | Warm golden-amber glow over the carpet texture                                                                                  |
-| **Wall border**       | Pastel pink kawaii wallpaper (`tileset-wall-ver4`) — 8 variants with fairy lights, floating shelf, poster                       |
-| **Furniture set**     | Double bed (2×2), wardrobe (1×3), chest of drawers, nightstand with lamp, floor mirror, bean bag, laundry basket, round cat bed |
-| **Furniture palette** | Warm rose/pink duvet, walnut brown wardrobe, peach soft furnishings                                                             |
-| **Colour mood**       | Dusky rose, mauve, soft warm pink, cream                                                                                        |
+| Room            | Floor Concept                      | Dominant Colour     |
+| --------------- | ---------------------------------- | ------------------- |
+| Study / Library | Dark walnut herringbone planks     | Walnut, dusty lilac |
+| Bathroom        | White hex tiles with blue grout    | White, sky blue     |
+| The Greenhouse  | Stone/terracotta tiles, mossy gaps | Deep green, clay    |
+| The Hallway     | Black & white checkerboard         | Monochrome          |
+| The Attic       | Rough plank boards, dusty          | Sepia, aged oak     |
 
 ---
 
@@ -349,10 +358,13 @@ within the correct row. The `world_id` parameter selects the column offset.
 
 ### Floor Tiles (per world × 3 worlds = 3 each)
 
-- [✅] Floor — unvisited (World 1: oak plank) — `tileset-floor-ver1`
-- [ ] Floor — unvisited (World 2: walnut herringbone) — not yet created
-- [ ] Floor — unvisited (World 3: white ceramic tile) — not yet created
-- [ ] Trail overlay (warm amber, tileable, works over all floors) — not yet created as standalone tile
+- [ ] Floor — unvisited (World 1: pale pink carpet `#FFE8EE`) — not yet created
+- [ ] Floor — visited/trail (World 1: carpet + golden glow `#FFD6E0` + paw stamp) — not yet created
+- [ ] Floor — unvisited (World 2: white ceramic tile `#F8F8F8`) — not yet created
+- [ ] Floor — visited/trail (World 2: ceramic + mint glow `#DCF3EA` + paw stamp) — not yet created
+- [✅] Floor — unvisited (World 3: warm oak plank `#F5E6C8`) — `tileset-floor-ver1`
+- [✅] Floor — visited/trail (World 3: plank + amber glow `#F5C842` + paw stamp) — `tileset-floor-ver1`
+- [ ] Trail overlay (world-specific glow, tileable) — not yet created as standalone tile
 - [✅] Paw stamp on trail tile — confirmed in `tileset-floor-ver1` (right tile has white paw stamp)
 
 ### Grid Container Frame
@@ -361,39 +373,14 @@ within the correct row. The `world_id` parameter selects the column offset.
 
 ### Wall Tile Sets (per world)
 
-- [✅] Wall tile set — World 1 (wood plank) — `tileset-wall-ver1.png` (6 variants)
-- [✅] Wall tile set — World 2 (lavender wallpaper) — `tileset-wall-ver2.png` (8 variants)
-- [✅] Wall tile set — World 3 (kitchen tile) — `tileset-wall-ver3.png` (8 variants)
-- [✅] Wall tile set — World 4 (bedroom pink) — `tileset-wall-ver4.png` (8 variants)
+- [✅] Wall tile set — World 1 / Bedroom (pink kawaii) — `tileset-wall-ver4.png` (8 variants)
+- [✅] Wall tile set — World 2 / Kitchen (white/mint subway) — `tileset-wall-ver3.png` (8 variants)
+- [✅] Wall tile set — World 3 / Living Room (wood plank) — `tileset-wall-ver1.png` (6 variants)
+- [✅] Wall tile set — Post-jam / Study (lavender paw) — `tileset-wall-ver2.png` (8 variants)
 
 ### Obstacles (MVP set — shared across worlds, palette-swapped per world)
 
-**World 1 (Living Room):**
-
-- [✅] `OBS_BOX` — cardboard box (1×1) — `tileset-livingroom-ver1`
-- [✅] `OBS_PLANT_SM` — small plant pot (1×1) — `tileset-livingroom-ver1`
-- [✅] `OBS_SHELF` — bookshelf (1×3) — `tileset-livingroom-ver1`
-- [✅] `OBS_SOFA` — sofa (1×2) — `tileset-livingroom-ver1`
-- [✅] `OBS_ARMCHAIR` — armchair (1×1) — `tileset-livingroom-ver2`
-- [✅] `OBS_TABLE` — side table (1×1) — `tileset-livingroom-ver1`
-- [✅] `OBS_TABLE_RND` — round coffee table (1×1) — `tileset-livingroom-ver2`
-- [✅] `OBS_TV_STAND` — TV on media unit (1×2) — `tileset-livingroom-ver2`
-- [✅] `OBS_OTTOMAN` — circular ottoman (1×1) — `tileset-livingroom-ver2`
-- [ ] `OBS_STOOL` — round stool (1×1) — not yet created
-- [ ] `OBS_COLUMN` — pillar (1×1) — not yet created
-
-**World 3 (Kitchen):**
-
-- [✅] `OBS_FRIDGE` — fridge (1×1) — `tileset-kitchen`
-- [✅] `OBS_STOVE` — stove/cooktop (1×2) — `tileset-kitchen`
-- [✅] `OBS_MICROWAVE` — microwave (1×1) — `tileset-kitchen`
-- [✅] `OBS_WASHER` — washer/dishwasher (1×1) — `tileset-kitchen`
-- [✅] `OBS_SINK` — kitchen sink (1×1) — `tileset-kitchen`
-- [✅] `OBS_BINS` — recycling bins (1×1 ×2) — `tileset-kitchen`
-- [✅] `OBS_COFFEE` — coffee maker (1×1) — `tileset-kitchen`
-- [✅] `OBS_CABINET` — wall cabinet (1×3) — `tileset-kitchen`
-
-**World 4 (Bedroom):**
+**World 1 (Bedroom):**
 
 - [✅] `OBS_BED` — double bed (2×2) — `tileset-bedroom`
 - [✅] `OBS_NIGHTSTAND` — nightstand + lamp (1×1) — `tileset-bedroom`
@@ -404,12 +391,42 @@ within the correct row. The `world_id` parameter selects the column offset.
 - [✅] `OBS_LAUNDRY` — laundry basket (1×1) — `tileset-bedroom`
 - [✅] `OBS_CATBED` — round cat bed (1×1) — `tileset-bedroom`
 
-**Missing — World 2 (Study/Library) full obstacle set not yet created.**
+**World 2 (Kitchen):**
+
+- [✅] `OBS_FRIDGE` — fridge (1×1) — `tileset-kitchen`
+- [✅] `OBS_STOVE` — stove/cooktop (1×2) — `tileset-kitchen`
+- [✅] `OBS_MICROWAVE` — microwave (1×1) — `tileset-kitchen`
+- [✅] `OBS_WASHER` — washer/dishwasher (1×1) — `tileset-kitchen`
+- [✅] `OBS_SINK` — kitchen sink (1×1) — `tileset-kitchen`
+- [✅] `OBS_BINS` — recycling bins (1×1) — `tileset-kitchen`
+- [✅] `OBS_COFFEE` — coffee maker (1×1) — `tileset-kitchen`
+- [✅] `OBS_COUNTER` — kitchen counter (1×3) — `tileset-kitchen`
+- [ ] `OBS_KITCHEN_ISLAND` — kitchen island (1×2) — not yet created
+- [ ] `OBS_CAT_BOWL` — cat food bowl (1×1) — not yet created
+
+**World 3 (Living Room):**
+
+- [✅] `OBS_BOX` — cardboard box (1×1) — `tileset-livingroom-ver1`
+- [✅] `OBS_PLANT_SM` — small plant pot (1×1) — `tileset-livingroom-ver1`
+- [✅] `OBS_SHELF` — bookshelf (1×3) — `tileset-livingroom-ver1`
+- [✅] `OBS_SOFA` — sofa (1×2) — `tileset-livingroom-ver1`
+- [✅] `OBS_ARMCHAIR` — armchair (1×1) — `tileset-livingroom-ver2`
+- [✅] `OBS_TABLE` — side table (1×1) — `tileset-livingroom-ver1`
+- [✅] `OBS_TABLE_RND` — round coffee table (1×1) — `tileset-livingroom-ver2`
+- [✅] `OBS_TV_STAND` — TV on media unit (1×2) — `tileset-livingroom-ver2`
+- [✅] `OBS_OTTOMAN` — circular ottoman (1×1) — `tileset-livingroom-ver2`
+- [ ] `OBS_FLOOR_CUSHION` — floor cushion (1×1) — not yet created
+- [ ] `OBS_CACTUS` — cactus (1×1) — not yet created
+- [ ] `OBS_SCRATCHER` — cat scratcher post (1×1) — not yet created
+- [ ] `OBS_STOOL` — round stool (1×1) — not yet created
+- [ ] `OBS_COLUMN` — pillar (1×1) — not yet created
+
+**Post-jam — Study/Library obstacle set not yet created.**
 
 ### Palette-Swap Variants
 
-Each obstacle needs a colour variant per world (World 1: oak tones, World 2: walnut/lilac,
-World 3: clean white/cream). This can be achieved via:
+Each obstacle needs a colour variant per world (World 1: rose/pink bedroom tones, World 2: white/mint kitchen,
+World 3: oak/cream living room). This can be achieved via:
 
 - Separate atlas tiles per world, OR
 - Godot `CanvasItemMaterial` modulate + palette shader (preferred for asset efficiency)
