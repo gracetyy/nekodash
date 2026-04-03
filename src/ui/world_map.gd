@@ -197,44 +197,71 @@ func _select_world(world_id: int) -> void:
 
 	var levels: Array = _world_index.get(world_id, [])
 	for level: LevelData in levels:
-		var btn: Button = _make_level_button(level)
+		var btn: Control = _make_level_card(level)
 		_level_grid.add_child(btn)
 
 
-func _make_level_button(level: LevelData) -> Button:
-	var btn: Button = Button.new()
-	var unlocked: bool = _is_level_unlocked(level)
-
-	# Card background style
+func _make_level_card(level: LevelData) -> Control:
+	var container: PanelContainer = PanelContainer.new()
+	container.custom_minimum_size = Vector2(80, 80)
+	
 	var style_normal: StyleBoxFlat = StyleBoxFlat.new()
 	style_normal.corner_radius_top_left = 12
 	style_normal.corner_radius_top_right = 12
 	style_normal.corner_radius_bottom_right = 12
 	style_normal.corner_radius_bottom_left = 12
-
+	
+	var unlocked: bool = _is_level_unlocked(level)
 	if not unlocked:
-		btn.text = "🔒"
-		btn.disabled = true
 		style_normal.bg_color = LOCKED_COLOR
-		btn.add_theme_color_override("font_color", TEXT_MUTED_COLOR)
-		btn.add_theme_color_override("font_disabled_color", TEXT_MUTED_COLOR)
 	else:
+		style_normal.bg_color = CARD_BG_COLOR
+		
+	container.add_theme_stylebox_override("panel", style_normal)
+	
+	var vbox: VBoxContainer = VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	container.add_child(vbox)
+	
+	if not unlocked:
+		var icon_label: Label = Label.new()
+		icon_label.text = "🔒"
+		icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_label.add_theme_color_override("font_color", TEXT_MUTED_COLOR)
+		vbox.add_child(icon_label)
+	else:
+		var num_label: Label = Label.new()
+		num_label.text = str(level.level_index)
+		num_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		num_label.add_theme_color_override("font_color", TEXT_DARK_COLOR)
+		vbox.add_child(num_label)
+		
 		var stars: int = SaveManager.get_best_stars(level.level_id)
 		var completed: bool = SaveManager.is_level_completed(level.level_id)
 		var star_text: String = _build_star_text(stars, completed)
-		btn.text = "%d\n%s" % [level.level_index, star_text]
+		
+		var star_label: Label = Label.new()
+		star_label.text = star_text
+		star_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		star_label.add_theme_color_override("font_color", TEXT_DARK_COLOR)
+		vbox.add_child(star_label)
+	
+	var btn: Button = Button.new()
+	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
+	btn.add_theme_stylebox_override("normal", empty_style)
+	btn.add_theme_stylebox_override("hover", empty_style)
+	btn.add_theme_stylebox_override("pressed", empty_style)
+	btn.add_theme_stylebox_override("disabled", empty_style)
+	btn.add_theme_stylebox_override("focus", empty_style)
+	btn.set_anchors_preset(Control.PRESET_FULL_RECT)
+	container.add_child(btn)
+	
+	if not unlocked:
+		btn.disabled = true
+	else:
 		btn.pressed.connect(_on_level_pressed.bind(level))
-		style_normal.bg_color = CARD_BG_COLOR
-		btn.add_theme_color_override("font_color", TEXT_DARK_COLOR)
-
-	btn.add_theme_stylebox_override("normal", style_normal)
-	btn.add_theme_stylebox_override("hover", style_normal)
-	var style_pressed: StyleBoxFlat = style_normal.duplicate() as StyleBoxFlat
-	style_pressed.bg_color = style_normal.bg_color.darkened(0.08)
-	btn.add_theme_stylebox_override("pressed", style_pressed)
-
-	btn.custom_minimum_size = Vector2(80, 80)
-	return btn
+	
+	return container
 
 
 func _build_star_text(stars: int, completed: bool) -> String:
