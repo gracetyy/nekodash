@@ -115,10 +115,21 @@ func _ready() -> void:
 	_state = State.PLAYING
 
 	print("[LevelCoordinator] Level '%s' ready — %d walkable tiles, %d minimum moves" % [
-		_current_level_data.display_name,
+		_current_level_data.level_id,
 		_coverage_tracking.get_total_walkable(),
 		_current_level_data.minimum_moves,
 	])
+
+	if OS.is_debug_build():
+		var solver_script: GDScript = load("res://tools/level_solver.gd")
+		if solver_script != null:
+			var solver: RefCounted = solver_script.new()
+			var solve_result: RefCounted = solver.solve(_current_level_data)
+			var wasd: String = solver_script.path_to_wasd(solve_result.path)
+			print("[LevelCoordinator] Optimal solution (%d moves): %s" % [
+				solve_result.minimum_moves,
+				wasd if wasd != "" else "(trivial/unsolvable)",
+			])
 
 
 # —————————————————————————————————————————————
