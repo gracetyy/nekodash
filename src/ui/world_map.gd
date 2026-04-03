@@ -17,7 +17,7 @@ extends Control
 # Constants
 # —————————————————————————————————————————————
 
-const CATALOGUE_PATH: String = "res://assets/levels/level_catalogue.tres"
+const CATALOGUE_PATH: String = "res://data/level_catalogue.tres"
 
 ## Gold color for earned stars (matches LevelCompleteScreen).
 const STAR_EARNED_COLOR: Color = Color(1.0, 0.85, 0.2, 1.0)
