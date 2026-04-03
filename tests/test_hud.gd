@@ -14,7 +14,6 @@ var _ur: Node # Mock UndoRestart
 var _ct: Node # Mock CoverageTracking
 
 # Mock UI nodes
-var _level_name_label: Label
 var _move_label: Label
 var _coverage_label: Label
 var _undo_btn: Button
@@ -116,9 +115,6 @@ func before_each() -> void:
 	add_child_autofree(_ct)
 
 	# Create mock UI nodes
-	_level_name_label = Label.new()
-	add_child_autofree(_level_name_label)
-
 	_move_label = Label.new()
 	add_child_autofree(_move_label)
 
@@ -136,7 +132,6 @@ func before_each() -> void:
 
 	# Inject UI nodes into HUD
 	_hud.set_ui_nodes(
-		_level_name_label,
 		_move_label,
 		_coverage_label,
 		_undo_btn,
@@ -209,11 +204,6 @@ func test_initialize_sets_initialized_flag() -> void:
 
 func test_initialize_not_initialized_by_default() -> void:
 	assert_false(_hud.is_initialized())
-
-
-func test_initialize_sets_level_name() -> void:
-	_init_hud(_make_level_data("Sunny Fields"))
-	assert_eq(_level_name_label.text, "Sunny Fields")
 
 
 func test_initialize_sets_move_display_with_minimum() -> void:
@@ -547,10 +537,10 @@ func test_exit_btn_noop_without_initialize() -> void:
 # —————————————————————————————————————————————
 
 func test_set_ui_nodes_before_initialize() -> void:
-	# Verify UI nodes are available before init
-	assert_eq(_level_name_label.text, "")
-	_init_hud(_make_level_data("Edge Case"))
-	assert_eq(_level_name_label.text, "Edge Case")
+	# Verify move label is empty before init
+	assert_eq(_move_label.text, "")
+	_init_hud(_make_level_data("Edge Case", 5))
+	assert_eq(_move_label.text, "0 / 5")
 
 
 func test_signals_not_connected_before_initialize() -> void:

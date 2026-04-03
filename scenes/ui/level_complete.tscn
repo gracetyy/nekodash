@@ -1,6 +1,48 @@
-[gd_scene load_steps=2 format=3 uid="uid://clvlcmplt5cen"]
+[gd_scene load_steps=8 format=3 uid="uid://clvlcmplt5cen"]
 
 [ext_resource type="Script" path="res://src/ui/level_complete_screen.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.953, 0.757, 0.271, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
+bg_color = Color(0.877, 0.696, 0.249, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3"]
+bg_color = Color(0.647, 0.835, 0.741, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4"]
+bg_color = Color(0.595, 0.768, 0.682, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5"]
+bg_color = Color(0.753, 0.686, 0.886, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6"]
+bg_color = Color(0.693, 0.631, 0.815, 1)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
 
 [node name="LevelCompleteScreen" type="Control"]
 layout_mode = 3
@@ -18,7 +60,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.08, 0.08, 0.12, 1)
+color = Color(0.965, 0.945, 0.847, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -42,6 +84,8 @@ layout_mode = 2
 text = "Level Complete!"
 horizontal_alignment = 1
 vertical_alignment = 1
+theme_override_colors/font_color = Color(0.361, 0.29, 0.42, 1)
+theme_override_font_sizes/font_size = 28
 
 [node name="StarRow" type="HBoxContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
@@ -53,21 +97,21 @@ layout_mode = 2
 text = "★"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1.0)
+theme_override_colors/font_color = Color(0.961, 0.784, 0.259, 1)
 
 [node name="Star2" type="Label" parent="MarginContainer/VBox/StarRow"]
 layout_mode = 2
 text = "★"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1.0)
+theme_override_colors/font_color = Color(0.961, 0.784, 0.259, 1)
 
 [node name="Star3" type="Label" parent="MarginContainer/VBox/StarRow"]
 layout_mode = 2
 text = "★"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1.0)
+theme_override_colors/font_color = Color(0.961, 0.784, 0.259, 1)
 
 [node name="StarSentinel" type="Label" parent="MarginContainer/VBox/StarRow"]
 visible = false
@@ -83,15 +127,19 @@ theme_override_constants/separation = 12
 [node name="MovesPrefix" type="Label" parent="MarginContainer/VBox/ScoreRow"]
 layout_mode = 2
 text = "Moves: "
+theme_override_colors/font_color = Color(0.325, 0.192, 0.294, 1)
 
 [node name="MovesLabel" type="Label" parent="MarginContainer/VBox/ScoreRow"]
 layout_mode = 2
 text = "0 / 0"
+theme_override_colors/font_color = Color(0.325, 0.192, 0.294, 1)
 
 [node name="NewBestBadge" type="Label" parent="MarginContainer/VBox/ScoreRow"]
 visible = false
 layout_mode = 2
 text = "NEW BEST!"
+theme_override_colors/font_color = Color(0.961, 0.651, 0.137, 1)
+theme_override_font_sizes/font_size = 12
 
 [node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
@@ -100,12 +148,24 @@ theme_override_constants/separation = 16
 
 [node name="WorldMapBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "World Map"
+text = "WORLD MAP"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_5")
+theme_override_styles/hover = SubResource("StyleBoxFlat_5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_6")
 
 [node name="RetryBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "Retry"
+text = "RETRY"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_4")
 
 [node name="NextLevelBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
 layout_mode = 2
-text = "Next Level"
+text = "NEXT LEVEL"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_1")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2")

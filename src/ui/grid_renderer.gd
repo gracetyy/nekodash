@@ -11,8 +11,11 @@ extends Node2D
 # Constants
 # —————————————————————————————————————————————
 
-const COLOR_FLOOR: Color = Color(0.15, 0.18, 0.35)
-const COLOR_WALL: Color = Color(0.25, 0.25, 0.25)
+## Grid floor tile — grid-floor #EEF9F1.
+const COLOR_FLOOR: Color = Color(0.933, 0.976, 0.945)
+## Grid wall/obstacle tile — grid-wall #CEB6E4.
+const COLOR_WALL: Color = Color(0.808, 0.714, 0.894)
+## Grid line — subtle overlay.
 const COLOR_GRID_LINE: Color = Color(0.3, 0.3, 0.4, 0.4)
 
 

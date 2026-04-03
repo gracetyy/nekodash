@@ -7,9 +7,9 @@
 ## Acceptance criteria cross-ref: design/gdd/level-complete-screen.md
 extends GutTest
 
-## Matches LevelCompleteScreen star color constants.
-const STAR_EARNED_COLOR: Color = Color(1.0, 0.85, 0.2, 1.0)
-const STAR_UNEARNED_COLOR: Color = Color(0.5, 0.5, 0.5, 1.0)
+## Matches LevelCompleteScreen star color constants (design system tokens).
+const STAR_EARNED_COLOR: Color = Color(0.961, 0.784, 0.259, 1.0)  # star-filled #F5C842
+const STAR_UNEARNED_COLOR: Color = Color(0.784, 0.769, 0.816, 1.0)  # star-empty #C8C4D0
 
 var _screen: Control # LevelCompleteScreen instance under test
 

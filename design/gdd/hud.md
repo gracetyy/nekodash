@@ -43,7 +43,6 @@ they just play.
 | Display live tile coverage (count or percentage)     | HUD ✅                           |
 | Display and enable/disable Undo button               | HUD ✅                           |
 | Display Restart button                               | HUD ✅                           |
-| Display level display name                           | HUD ✅                           |
 | Forward Undo button press to Undo/Restart            | HUD ✅                           |
 | Forward Restart button press to Undo/Restart         | HUD ✅                           |
 | Hide/lock interactive elements after level_completed | HUD ✅                           |
@@ -107,14 +106,13 @@ they just play.
 
 ## Display Elements
 
-| Element              | Signal Source                                                           | Content                                         | Notes                                               |
-| -------------------- | ----------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
-| **Moves prefix**     | Static (set at init)                                                    | `"Moves: "` (trailing space)                    | Plain Label prepended to Move label                 |
-| **Move label**       | `move_count_changed`                                                    | `"{current} / {min}"` or `"{current}"` if min=0 | Right-aligned; large; prominent                     |
-| **Coverage label**   | `coverage_updated`                                                      | `"{covered} / {total}"`                         | Hidden by default (`visible = false`); debug only   |
-| **Undo button**      | `move_count_changed`, `undo_applied`, `level_restarted`, `initialize()` | Icon + optional label "Undo"                    | Disabled (greyed) when `can_undo() == false`        |
-| **Restart button**   | `level_completed` (hide)                                                | Icon + optional label "Restart"                 | Always enabled while playing; hidden after complete |
-| **Level name label** | Set once at `initialize()`                                              | `level_data.display_name`                       | Static after init                                   |
+| Element            | Signal Source                                                           | Content                                         | Notes                                               |
+| ------------------ | ----------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| **Moves prefix**   | Static (set at init)                                                    | `"Moves: "` (trailing space)                    | Plain Label prepended to Move label                 |
+| **Move label**     | `move_count_changed`                                                    | `"{current} / {min}"` or `"{current}"` if min=0 | Right-aligned; large; prominent                     |
+| **Coverage label** | `coverage_updated`                                                      | `"{covered} / {total}"`                         | Hidden by default (`visible = false`); debug only   |
+| **Undo button**    | `move_count_changed`, `undo_applied`, `level_restarted`, `initialize()` | Icon + optional label "Undo"                    | Disabled (greyed) when `can_undo() == false`        |
+| **Restart button** | `level_completed` (hide)                                                | Icon + optional label "Restart"                 | Always enabled while playing; hidden after complete |
 
 ---
 
@@ -125,15 +123,14 @@ they just play.
 
 Called by Level Coordinator after all gameplay nodes are ready:
 
-1. Set `_level_name_label.text = level_data.display_name`
-2. Set `_move_minimum = level_data.minimum_moves`; cache for display logic
-3. Connect to `move_counter.move_count_changed`
-4. Connect to `coverage_tracking.coverage_updated` and `coverage_tracking.level_completed`
-5. Connect to `undo_restart.undo_applied` and `undo_restart.level_restarted`
-6. Store `_undo_restart_ref = undo_restart`
-7. Call `_refresh_all_displays()` with initial state (0 moves, initial coverage from
+1. Set `_move_minimum = level_data.minimum_moves`; cache for display logic
+2. Connect to `move_counter.move_count_changed`
+3. Connect to `coverage_tracking.coverage_updated` and `coverage_tracking.level_completed`
+4. Connect to `undo_restart.undo_applied` and `undo_restart.level_restarted`
+5. Store `_undo_restart_ref = undo_restart`
+6. Call `_refresh_all_displays()` with initial state (0 moves, initial coverage from
    `coverage_tracking.covered_count` / `coverage_tracking.total_walkable`)
-8. Update undo button: `_undo_btn.disabled = not undo_restart.can_undo()`
+7. Update undo button: `_undo_btn.disabled = not undo_restart.can_undo()`
 
 ---
 
@@ -201,17 +198,27 @@ Suggested layout zones:
 
 ```
 ┌───────────────────────────────────┐
-│  [Level Name]         [Restart]   │  ← Top bar
-│                       [Undo]      │
+│  [Undo]  [Restart]  [Exit]        │  ← Top bar (button row)
 │                                   │
 │         [ puzzle grid ]           │  ← Centre (HUD-free zone)
 │                                   │
-│  Tiles: 12/20      Moves: 4/8     │  ← Bottom bar
+│              Moves: 4/8           │  ← Bottom bar (stats row)
 └───────────────────────────────────┘
 ```
 
-Exact pixel sizes, fonts, and colours are owned by the Art Director's style guide. HUD
-GDD defines layout intent and element groupings only.
+Exact pixel sizes and fonts are owned by the Art Director's style guide. HUD GDD defines
+layout intent and element groupings only.
+
+### Color Tokens (from `docs/design/design-system.md`)
+
+| Element             | Token           | Hex       |
+| ------------------- | --------------- | --------- |
+| Pill background     | `hud-pill-bg`   | `#735D6B` |
+| Move counter text   | `hud-pill-text` | `#F8EBC2` |
+| Moves prefix text   | `hud-pill-text` | `#F8EBC2` |
+| Undo / Restart btns | `btn-secondary` | `#A5D5BD` |
+| Exit button         | `btn-tertiary`  | `#C0AFE2` |
+| Button labels       | `text-on-btn`   | `#FFFFFF` |
 
 ---
 
@@ -251,7 +258,6 @@ GDD defines layout intent and element groupings only.
 | HU-9  | Tapping Undo calls `UndoRestart.undo()`                                               |
 | HU-10 | Tapping Restart calls `UndoRestart.restart()` and all HUD displays reset              |
 | HU-11 | Both buttons are hidden after `level_completed` fires                                 |
-| HU-12 | Level name label shows `level_data.display_name` and does not change during play      |
 
 ---
 
@@ -268,7 +274,7 @@ None at MVP — all display is driven by incoming signals and `LevelData`. Post-
 | Move Counter      | `move_count_changed(current, minimum)` signal                                                                                         |
 | Coverage Tracking | `coverage_updated(covered, total)` signal; `level_completed` signal; `covered_count`, `total_walkable` properties (read once at init) |
 | Undo / Restart    | `undo_applied(moves_in_history)` signal; `level_restarted` signal; `can_undo() -> bool`; `undo() -> void`; `restart() -> void`        |
-| Level Data Format | `display_name: String`, `minimum_moves: int` (read once at init)                                                                      |
+| Level Data Format | `minimum_moves: int` (read once at init)                                                                                              |
 
 ---
 
