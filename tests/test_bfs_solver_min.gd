@@ -173,21 +173,21 @@ func test_solver_invalid_start_uses_fallback_position() -> void:
 # —————————————————————————————————————————————
 
 func test_solver_w1_l1_returns_1_move() -> void:
-	var ld: LevelData = load("res://assets/levels/world_1/w1_l1.tres")
+	var ld: LevelData = load("res://data/levels/world1/w1_l1.tres")
 	var solver := LevelSolver.new()
 	var result := solver.solve(ld)
 	assert_eq(result.minimum_moves, 1, "w1_l1 should be solvable in 1 move")
 
 
 func test_solver_w1_l2_returns_3_moves() -> void:
-	var ld: LevelData = load("res://assets/levels/world_1/w1_l2.tres")
+	var ld: LevelData = load("res://data/levels/world1/w1_l2.tres")
 	var solver := LevelSolver.new()
 	var result := solver.solve(ld)
 	assert_eq(result.minimum_moves, 3, "w1_l2 should be solvable in 3 moves")
 
 
 func test_solver_w1_l3_returns_4_moves() -> void:
-	var ld: LevelData = load("res://assets/levels/world_1/w1_l3.tres")
+	var ld: LevelData = load("res://data/levels/world1/w1_l3.tres")
 	var solver := LevelSolver.new()
 	var result := solver.solve(ld)
 	assert_eq(result.minimum_moves, 4, "w1_l3 should be solvable in 4 moves")
@@ -200,7 +200,7 @@ func test_solver_w1_l3_returns_4_moves() -> void:
 func test_solver_medium_level_completes_under_5_seconds() -> void:
 	# Use w1_l3 (8 walkable tiles) — known solvable shipped level.
 	# AC-5 says ≤ 28 tiles should complete in < 5 seconds.
-	var ld: LevelData = load("res://assets/levels/world_1/w1_l3.tres")
+	var ld: LevelData = load("res://data/levels/world1/w1_l3.tres")
 	var solver := LevelSolver.new()
 	var result := solver.solve(ld)
 	assert_gt(result.minimum_moves, 0, "Shipped level should be solvable")

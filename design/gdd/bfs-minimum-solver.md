@@ -18,7 +18,7 @@ The BFS Minimum Solver has no direct player fantasy — the player never sees th
 ### Core Rules
 
 1. The BFS Minimum Solver is implemented as a **Godot editor plugin** (`@tool` script) exposed via the Editor > Tools menu as "Solve All Levels". It can also be run headless from the command line: `godot --headless --script tools/solve_levels.gd`.
-2. The solver operates on `LevelData` resources. It loads each `.tres` file from `assets/levels/`, runs BFS, and writes `minimum_moves` back using `ResourceSaver.save()`.
+2. The solver operates on `LevelData` resources. It loads each `.tres` file from `data/levels/`, runs BFS, and writes `minimum_moves` back using `ResourceSaver.save()`.
 3. **State representation**: A BFS state is the pair `(cat_position: Vector2i, covered_mask: int)`. `covered_mask` is a bitmask where bit `i` is set when walkable tile `i` has been visited. The `move_count` is implicit in BFS depth.
 4. **Tile indexing**: Before BFS, all WALKABLE tiles are enumerated in row-major order (`col + row * grid_width`) and assigned bit indices 0 through `N-1`. A `pos_to_index: Dictionary` and `index_to_pos: Array[Vector2i]` are built once per level to translate between `Vector2i` and bitmask positions.
 5. **Bitmask constraint**: The bitmask uses GDScript's native `int` (64-bit signed). Bit 63 may cause sign issues, so the effective limit is **≤ 63 walkable tiles**. Levels exceeding this limit abort with an error. See Tuning Knobs for the recommended practical limit (35 tiles).
@@ -173,7 +173,7 @@ Terminal output format (per level):
 
 The solver surfaces to developers through the Godot Editor menu:
 
-- **Editor > Tools > Solve All Levels** — batch-solves all `.tres` files in `assets/levels/`
+- **Editor > Tools > Solve All Levels** — batch-solves all `.tres` files in `data/levels/`
 - **Editor > Tools > Solve Current Level** — solves only the currently selected `.tres` resource (stretch goal)
 
 No in-game UI. The player-visible output (`minimum_moves`) is displayed by the Move Counter HUD, not the solver itself.
