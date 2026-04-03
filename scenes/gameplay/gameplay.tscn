@@ -56,6 +56,17 @@ corner_radius_bottom_left = 26
 script = ExtResource("1")
 level_catalogue = ExtResource("9")
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Background" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.965, 0.945, 0.847, 1)
+
 [node name="GridRenderer" type="Node2D" parent="."]
 script = ExtResource("10")
 
