@@ -27,18 +27,18 @@ All colors referenced throughout this document use these named tokens.
 
 | Token           | Hex       | Usage                                     |
 | --------------- | --------- | ----------------------------------------- |
-| `cream-bg`      | `#F5EDCC` | Global page/screen background             |
-| `cream-card`    | `#FAF3E0` | Modals, cards, popup panels               |
-| `cream-dark`    | `#EDE0BA` | Subtle section dividers inside cards      |
-| `paw-watermark` | `#ECD9B0` | Paw-print watermark pattern on background |
+| `cream-bg`      | `#F6F1D8` | Global page/screen background             |
+| `cream-card`    | `#FFF8F0` | Modals, cards, popup panels               |
+| `cream-dark`    | `#CFC0B2` | Subtle section dividers inside cards      |
+| `paw-watermark` | `#F1DFCA` | Paw-print watermark pattern on background |
 
 ### Game Grid (floor/wall colors are overridden per world — see Art Direction doc)
 
 | Token        | Hex       | Usage                                    |
 | ------------ | --------- | ---------------------------------------- |
-| `grid-wall`  | `#BDA5D0` | Default walkable wall/obstacle tile tint |
-| `grid-floor` | `#B2D9C0` | Default open floor tile tint             |
-| `grid-trail` | `#F2C050` | Cat's visited/covered tile               |
+| `grid-wall`  | `#CEB6E4` | Default walkable wall/obstacle tile tint |
+| `grid-floor` | `#EEF9F1` | Default open floor tile tint             |
+| `grid-trail` | `#FBD490` | Cat's visited/covered tile               |
 
 ### Buttons — Action Mapping
 
@@ -46,18 +46,18 @@ Buttons use a **3-colour system** where colour signals intent, not just decorati
 
 | Token           | Hex           | Usage                                                  |
 | --------------- | ------------- | ------------------------------------------------------ |
-| `btn-primary`   | `#EFB034`     | Primary positive action (Play, Resume, Next Level, OK) |
-| `btn-secondary` | `#5ECBA8`     | Secondary progression action (Retry, Restart, Next)    |
-| `btn-tertiary`  | `#C4A5E8`     | Tertiary / neutral action (Quit, Close, World Map)     |
-| `btn-disabled`  | `#C8C0B4`     | Locked / unavailable state                             |
+| `btn-primary`   | `#F3C145`     | Primary positive action (Play, Resume, Next Level, OK) |
+| `btn-secondary` | `#A5D5BD`     | Secondary progression action (Retry, Restart, Next)    |
+| `btn-tertiary`  | `#C0AFE2`     | Tertiary / neutral action (Quit, Close, World Map)     |
+| `btn-disabled`  | `#C6C5C9`     | Locked / unavailable state                             |
 | `btn-shadow`    | (darken -20%) | Bottom-edge drop shadow for all pill buttons           |
 
 ### Text
 
 | Token          | Hex       | Usage                                                |
 | -------------- | --------- | ---------------------------------------------------- |
-| `text-dark`    | `#3E2810` | Body copy, labels, stat numbers                      |
-| `text-heading` | `#6B3C10` | Modal headings ("PAUSED", "LEVEL COMPLETE!")         |
+| `text-dark`    | `#53314B` | Body copy, labels, stat numbers                      |
+| `text-heading` | `#5C4A6B` | Modal headings ("PAUSED", "LEVEL COMPLETE!")         |
 | `text-gold`    | `#C87A00` | Highlighted numbers, "PERFECT!", move-count callouts |
 | `text-on-btn`  | `#FFFFFF` | All button labels                                    |
 | `text-muted`   | `#8A7060` | Sub-labels, unlock condition text on locked tiles    |
@@ -66,10 +66,10 @@ Buttons use a **3-colour system** where colour signals intent, not just decorati
 
 | Token           | Hex       | Usage                        |
 | --------------- | --------- | ---------------------------- |
-| `hud-pill-bg`   | `#2A2436` | Move counter pill background |
-| `hud-pill-text` | `#FFFFFF` | Move counter number          |
-| `star-filled`   | `#F5C030` | Earned star                  |
-| `star-empty`    | `#D4C490` | Unearned star slot           |
+| `hud-pill-bg`   | `#735D6B` | Move counter pill background |
+| `hud-pill-text` | `#F8EBC2` | Move counter number          |
+| `star-filled`   | `#F5C842` | Earned star                  |
+| `star-empty`    | `#C8C4D0` | Unearned star slot           |
 | `star-outline`  | `#C8A820` | Star border/stroke           |
 
 ### Semantic
@@ -334,7 +334,7 @@ Wider screens: add horizontal letterbox or scale up card width proportionally.
 Every screen uses a consistent background:
 
 ```
-Base fill   : cream-bg (#F5EDCC)
+Base fill   : cream-bg (#F6F1D8)
 Pattern     : Repeating subtle tile grid lines (very low opacity, ~8%)
               + scattered paw print watermarks (paw-watermark, opacity ~15%)
 Pattern tile: ~40×40px grid, matches the visual grid-square motif
