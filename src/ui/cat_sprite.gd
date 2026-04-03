@@ -29,7 +29,19 @@ const WHISKER_COLOR: Color = Color(0.6, 0.45, 0.3, 0.6) # Subtle whiskers
 # Drawing
 # —————————————————————————————————————————————
 
+const DEBUG_DRAW: bool = false
+const TEXTURE_PATH: String = "res://assets/art/cats/cat_default_idle.png"
+
+var _texture: Texture2D
+
+func _ready() -> void:
+	if not DEBUG_DRAW and ResourceLoader.exists(TEXTURE_PATH):
+		_texture = load(TEXTURE_PATH)
+
 func _draw() -> void:
+	if not DEBUG_DRAW and _texture != null:
+		var s = Vector2(80, 80); draw_texture_rect(_texture, Rect2(-s.x*0.5, -s.y*0.5-12, s.x, s.y), false)
+		return
 	# === Ears (behind body) ===
 	# Left ear outer
 	draw_polygon(
