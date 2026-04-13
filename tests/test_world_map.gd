@@ -164,3 +164,18 @@ func test_back_requested_signal_emitted() -> void:
 	watch_signals(_map)
 	_map._on_back_btn_pressed()
 	assert_signal_emitted(_map, "back_requested")
+
+
+func test_select_world_persists_last_world_id_to_app_settings() -> void:
+	var l1: LevelData = _make_level("w1_l1", 1, 1)
+	var l2: LevelData = _make_level("w2_l1", 2, 1)
+	_setup_catalogue([l1, l2] as Array[LevelData])
+
+	var list: VBoxContainer = VBoxContainer.new()
+	add_child_autofree(list)
+	_map._world_list = list
+
+	AppSettings.set_last_world_id(1)
+	_map._select_world(2)
+
+	assert_eq(AppSettings.get_last_world_id(), 2)
