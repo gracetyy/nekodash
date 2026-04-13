@@ -1,0 +1,88 @@
+[gd_scene load_steps=4 format=3 uid="uid://dqyjgmdsnqf5s"]
+
+[ext_resource type="Script" path="res://src/ui/credits_screen.gd" id="1"]
+[ext_resource type="Texture2D" path="res://design/draft/bg-kitchen.png" id="2"]
+[ext_resource type="Texture2D" path="res://design/draft/sprite-cat.png" id="3"]
+
+[node name="Credits" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Scrim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.988235, 0.941176, 0.78)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="CreditsCard" type="PanelContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CardMargin" type="MarginContainer" parent="MarginContainer/CreditsCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer/CreditsCard/CardMargin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="CatIllustration" type="TextureRect" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
+custom_minimum_size = Vector2(140, 140)
+layout_mode = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
+layout_mode = 2
+text = "Credits"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 42
+theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
+
+[node name="BodyLabel" type="Label" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Shell adaptation inspired by Maaack's Godot Game Template.\n\nNekoDash keeps its own SceneManager, SaveManager, MusicManager, and SfxManager while borrowing the cozy menu-stack cadence.\n\nDesign references and draft UI studies live in the project's design folder."
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
+vertical_alignment = 1
+
+[node name="BackBtn" type="Button" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
+layout_mode = 2
+text = "BACK TO MENU"
