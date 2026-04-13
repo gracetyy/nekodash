@@ -27,6 +27,14 @@ enum Screen {
 	LEVEL_COMPLETE = 3,
 	SKIN_SELECT = 4,
 	LOADING = 5,
+	OPENING = 6,
+	CREDITS = 7,
+}
+
+enum Overlay {
+	NONE = -1,
+	OPTIONS = 0,
+	PAUSE = 1,
 }
 
 
@@ -42,6 +50,13 @@ const SCREEN_PATHS: Dictionary = {
 	Screen.LEVEL_COMPLETE: "res://scenes/ui/level_complete.tscn",
 	Screen.SKIN_SELECT: "res://scenes/ui/skin_select.tscn",
 	Screen.LOADING: "res://scenes/ui/loading.tscn",
+	Screen.OPENING: "res://scenes/ui/opening.tscn",
+	Screen.CREDITS: "res://scenes/ui/credits.tscn",
+}
+
+const OVERLAY_PATHS: Dictionary = {
+	Overlay.OPTIONS: "res://scenes/ui/options_overlay.tscn",
+	Overlay.PAUSE: "res://scenes/ui/pause_overlay.tscn",
 }
 
 
@@ -58,6 +73,12 @@ signal transition_completed(to_screen: Screen)
 ## Fired when navigating to GAMEPLAY with a LevelData whose world_id differs.
 signal world_changed(world_id: String)
 
+## Fired when an overlay is displayed.
+signal overlay_opened(overlay: Overlay)
+
+## Fired when an overlay is closed.
+signal overlay_closed(overlay: Overlay)
+
 
 # —————————————————————————————————————————————
 # State
@@ -66,6 +87,11 @@ signal world_changed(world_id: String)
 var _current_screen: Screen = Screen.NONE
 var _previous_screen: Screen = Screen.NONE
 var _transitioning: bool = false
+var _pending_screen: Screen = Screen.NONE
+var _pending_params: Dictionary = {}
+var _active_overlay: Overlay = Overlay.NONE
+var _overlay_instance: Node
+var _overlay_paused_tree: bool = false
 
 
 # —————————————————————————————————————————————
@@ -80,50 +106,34 @@ func go_to(screen: Screen, params: Dictionary = {}) -> void:
 		push_warning("SceneManager.go_to(): transition already in progress; call dropped.")
 		return
 
-	_transitioning = true
-	var from: Screen = _current_screen
+	_begin_transition(screen)
+	_swap_scene(screen, params)
+	_finish_transition(screen, params)
 
-	transition_started.emit(from, screen)
 
-	_previous_screen = from
-	_current_screen = screen
+## Navigates through the loading screen before swapping to the target screen.
+func go_to_with_loading(screen: Screen, params: Dictionary = {}) -> void:
+	if _transitioning:
+		push_warning("SceneManager.go_to_with_loading(): transition already in progress; call dropped.")
+		return
 
-	# Attempt real scene swap if a path is registered and the file exists.
-	var swapped: bool = false
-	if SCREEN_PATHS.has(screen):
-		var path: String = SCREEN_PATHS[screen]
-		if ResourceLoader.exists(path):
-			var packed: PackedScene = load(path)
-			if packed != null:
-				var new_root: Node = packed.instantiate()
-				# Deliver params before adding to tree (contract: before _ready).
-				_deliver_params(new_root, params)
-				# Replace the current scene in the tree.
-				var tree: SceneTree = get_tree()
-				var old_scene: Node = tree.current_scene
-				if old_scene != null:
-					old_scene.queue_free()
-				tree.root.add_child(new_root)
-				tree.current_scene = new_root
-				swapped = true
-		else:
-			push_warning("SceneManager.go_to(): no .tscn at '%s' for Screen %d — stub route." % [path, screen])
-	else:
-		push_warning("SceneManager.go_to(): Screen %d has no SCREEN_PATHS entry." % screen)
-
-	# Emit world_changed when navigating to GAMEPLAY with level data.
-	if screen == Screen.GAMEPLAY and params.has("level_data"):
-		var level_data: Resource = params["level_data"]
-		if level_data and "world_id" in level_data:
-			world_changed.emit(str(level_data.world_id))
-
-	_transitioning = false
-	transition_completed.emit(screen)
+	_begin_transition(screen)
+	_pending_screen = screen
+	_pending_params = params.duplicate(true)
+	var loading_params: Dictionary = {
+		"target_screen_name": _screen_label(screen),
+		"progress": 0.0,
+	}
+	var loading_swapped: bool = _swap_scene(Screen.LOADING, loading_params)
+	if not loading_swapped:
+		_finish_transition(screen, params)
+		return
+	call_deferred("_complete_loading_transition")
 
 
 ## Convenience wrapper for navigating to GAMEPLAY with a LevelData resource.
 func go_to_level(level_data: Resource) -> void:
-	go_to(Screen.GAMEPLAY, {"level_data": level_data})
+	go_to_with_loading(Screen.GAMEPLAY, {"level_data": level_data})
 
 
 ## Navigates to _previous_screen with no params. No-op if no previous screen.
@@ -158,6 +168,59 @@ func is_transitioning() -> bool:
 	return _transitioning
 
 
+## Displays a shell overlay above the current scene without surrendering
+## navigation ownership to the overlay itself.
+func show_overlay(overlay: Overlay, params: Dictionary = {}) -> void:
+	if overlay == Overlay.NONE:
+		return
+
+	var should_pause: bool = params.get("pause_tree", overlay == Overlay.PAUSE or _active_overlay == Overlay.PAUSE) as bool
+	if _active_overlay != Overlay.NONE:
+		_remove_overlay(false)
+
+	if not OVERLAY_PATHS.has(overlay):
+		push_warning("SceneManager.show_overlay(): Overlay %d has no OVERLAY_PATHS entry." % overlay)
+		return
+
+	var path: String = OVERLAY_PATHS[overlay]
+	if not ResourceLoader.exists(path):
+		push_warning("SceneManager.show_overlay(): no .tscn at '%s' for Overlay %d." % [path, overlay])
+		return
+
+	var packed: PackedScene = load(path)
+	if packed == null:
+		push_warning("SceneManager.show_overlay(): failed to load overlay scene '%s'." % path)
+		return
+
+	var instance = packed.instantiate()
+	_deliver_params(instance, params)
+	if instance is Node:
+		instance.process_mode = Node.PROCESS_MODE_ALWAYS
+
+	var parent: Node = get_tree().current_scene if get_tree().current_scene != null else get_tree().root
+	parent.add_child(instance)
+
+	_active_overlay = overlay
+	_overlay_instance = instance
+	_overlay_paused_tree = should_pause
+	if should_pause:
+		get_tree().paused = true
+
+	overlay_opened.emit(overlay)
+
+
+func hide_overlay() -> void:
+	_remove_overlay(true)
+
+
+func get_active_overlay() -> Overlay:
+	return _active_overlay
+
+
+func has_active_overlay() -> bool:
+	return _active_overlay != Overlay.NONE
+
+
 # —————————————————————————————————————————————
 # Internal
 # —————————————————————————————————————————————
@@ -169,3 +232,87 @@ func _deliver_params(scene_root: Node, params: Dictionary) -> void:
 		return
 	if scene_root.has_method("receive_scene_params"):
 		scene_root.receive_scene_params(params)
+
+
+func _begin_transition(screen: Screen) -> void:
+	_transitioning = true
+	var from: Screen = _current_screen
+	transition_started.emit(from, screen)
+	_previous_screen = from
+	_current_screen = screen
+	if has_active_overlay():
+		_remove_overlay(true)
+
+
+func _finish_transition(screen: Screen, params: Dictionary) -> void:
+	if screen == Screen.GAMEPLAY and params.has("level_data"):
+		var level_data: Resource = params["level_data"]
+		if level_data and "world_id" in level_data:
+			world_changed.emit(str(level_data.world_id))
+	_transitioning = false
+	transition_completed.emit(screen)
+
+
+func _swap_scene(screen: Screen, params: Dictionary) -> bool:
+	if not SCREEN_PATHS.has(screen):
+		push_warning("SceneManager.go_to(): Screen %d has no SCREEN_PATHS entry." % screen)
+		return false
+
+	var path: String = SCREEN_PATHS[screen]
+	if not ResourceLoader.exists(path):
+		push_warning("SceneManager.go_to(): no .tscn at '%s' for Screen %d — stub route." % [path, screen])
+		return false
+
+	var packed: PackedScene = load(path)
+	if packed == null:
+		push_warning("SceneManager.go_to(): failed to load '%s'." % path)
+		return false
+
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		push_warning("SceneManager._swap_scene(): SceneTree unavailable during swap to %d." % screen)
+		return false
+
+	var new_root = packed.instantiate()
+	_deliver_params(new_root, params)
+	var old_scene: Node = tree.current_scene
+	if old_scene != null:
+		old_scene.queue_free()
+	tree.root.add_child(new_root)
+	tree.current_scene = new_root
+	return true
+
+
+func _complete_loading_transition() -> void:
+	if get_tree() == null:
+		return
+	var target_screen: Screen = _pending_screen
+	var target_params: Dictionary = _pending_params.duplicate(true)
+	_pending_screen = Screen.NONE
+	_pending_params = {}
+	_swap_scene(target_screen, target_params)
+	_finish_transition(target_screen, target_params)
+
+
+func _screen_label(screen: Screen) -> String:
+	for key: String in Screen.keys():
+		if Screen[key] == screen:
+			return key.capitalize()
+	return "Loading"
+
+
+func _remove_overlay(unpause_tree: bool) -> void:
+	if _active_overlay == Overlay.NONE:
+		return
+
+	var closed_overlay: Overlay = _active_overlay
+	if _overlay_instance != null and is_instance_valid(_overlay_instance):
+		_overlay_instance.queue_free()
+	_overlay_instance = null
+	_active_overlay = Overlay.NONE
+
+	if _overlay_paused_tree and unpause_tree:
+		get_tree().paused = false
+	_overlay_paused_tree = false
+
+	overlay_closed.emit(closed_overlay)

@@ -232,6 +232,7 @@ func _connect_signals() -> void:
 
 	# HUD exit button → abandon level (no save)
 	_hud.exit_pressed.connect(_on_exit_pressed)
+	_hud.pause_pressed.connect(_on_pause_pressed)
 
 	# CoverageVisualizer: visual overlay driven by coverage signals
 	if _coverage_visualizer != null:
@@ -285,6 +286,8 @@ func _disconnect_signals() -> void:
 	# HUD exit
 	if _hud.exit_pressed.is_connected(_on_exit_pressed):
 		_hud.exit_pressed.disconnect(_on_exit_pressed)
+	if _hud.pause_pressed.is_connected(_on_pause_pressed):
+		_hud.pause_pressed.disconnect(_on_pause_pressed)
 
 	# CoverageVisualizer
 	if _coverage_visualizer != null:
@@ -354,6 +357,16 @@ func _on_exit_pressed() -> void:
 	SceneManager.go_to(SceneManager.Screen.WORLD_MAP)
 
 
+func _on_pause_pressed() -> void:
+	if _state != State.PLAYING:
+		return
+	if SceneManager.has_active_overlay():
+		return
+	SceneManager.show_overlay(SceneManager.Overlay.PAUSE, {
+		"pause_tree": true,
+	})
+
+
 func _on_move_count_changed(_current_moves: int, _minimum_moves: int) -> void:
 	# HUD subscribes directly to MoveCounter.move_count_changed via its own
 	# _connect_signals(). Coordinator retains this connection for future use
@@ -419,3 +432,13 @@ func get_prev_best_moves() -> int:
 ## Returns whether the player has previously completed this level.
 func was_previously_completed() -> bool:
 	return _was_previously_completed
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _state != State.PLAYING:
+		return
+	if SceneManager.has_active_overlay():
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_on_pause_pressed()
+		get_viewport().set_input_as_handled()
