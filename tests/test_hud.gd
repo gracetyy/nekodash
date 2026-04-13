@@ -19,11 +19,13 @@ var _coverage_label: Label
 var _undo_btn: Button
 var _restart_btn: Button
 var _exit_btn: Button
+var _pause_btn: Button
 
 # Signal tracking
 var _undo_pressed_count: int = 0
 var _restart_pressed_count: int = 0
 var _exit_pressed_count: int = 0
+var _pause_pressed_count: int = 0
 
 # Mock UndoRestart tracking
 var _ur_undo_count: int = 0
@@ -130,6 +132,9 @@ func before_each() -> void:
 	_exit_btn = Button.new()
 	add_child_autofree(_exit_btn)
 
+	_pause_btn = Button.new()
+	add_child_autofree(_pause_btn)
+
 	# Inject UI nodes into HUD
 	_hud.set_ui_nodes(
 		_move_label,
@@ -137,18 +142,21 @@ func before_each() -> void:
 		_undo_btn,
 		_restart_btn,
 		_exit_btn,
+		_pause_btn,
 	)
 
 	# Reset tracking
 	_undo_pressed_count = 0
 	_restart_pressed_count = 0
 	_exit_pressed_count = 0
+	_pause_pressed_count = 0
 	_ur_undo_count = 0
 	_ur_restart_count = 0
 
 	_hud.undo_pressed.connect(_on_undo_pressed)
 	_hud.restart_pressed.connect(_on_restart_pressed)
 	_hud.exit_pressed.connect(_on_exit_pressed)
+	_hud.pause_pressed.connect(_on_pause_pressed)
 
 
 # —————————————————————————————————————————————
@@ -165,6 +173,10 @@ func _on_restart_pressed() -> void:
 
 func _on_exit_pressed() -> void:
 	_exit_pressed_count += 1
+
+
+func _on_pause_pressed() -> void:
+	_pause_pressed_count += 1
 
 
 # —————————————————————————————————————————————
@@ -242,6 +254,11 @@ func test_initialize_restart_button_visible() -> void:
 func test_initialize_exit_button_visible() -> void:
 	_init_hud()
 	assert_true(_exit_btn.visible)
+
+
+func test_initialize_pause_button_visible() -> void:
+	_init_hud()
+	assert_true(_pause_btn.visible)
 
 
 func test_initialize_level_complete_false() -> void:
@@ -530,6 +547,12 @@ func test_exit_btn_noop_without_initialize() -> void:
 	# state guard is the authoritative gate. HUD just emits.
 	_hud.on_exit_btn_pressed()
 	assert_eq(_exit_pressed_count, 1)
+
+
+func test_pause_btn_emits_signal() -> void:
+	_init_hud()
+	_hud.on_pause_btn_pressed()
+	assert_eq(_pause_pressed_count, 1)
 
 
 # —————————————————————————————————————————————

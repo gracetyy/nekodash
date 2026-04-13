@@ -24,6 +24,10 @@ CLAUDE.local.md
 production/session-logs/
 production/session-state/*.md
 
+# === Codex ===
+.codex
+smoke-test/
+
 # === Build Output ===
 build/
 builds/

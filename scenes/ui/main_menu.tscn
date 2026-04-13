@@ -1,35 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://cmainmenu5cene"]
+[gd_scene load_steps=4 format=3 uid="uid://cmainmenu5cene"]
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
-[ext_resource type="Script" path="res://src/ui/cat_sprite.gd" id="2"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
-bg_color = Color(0.953, 0.757, 0.271, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
-bg_color = Color(0.877, 0.696, 0.249, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3"]
-bg_color = Color(0.753, 0.686, 0.886, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4"]
-bg_color = Color(0.693, 0.631, 0.815, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
+[ext_resource type="Texture2D" path="res://design/draft/bg-livingroom.png" id="2"]
+[ext_resource type="Texture2D" path="res://design/draft/sprite-cat.png" id="3"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -40,54 +13,102 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.965, 0.945, 0.847, 1)
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="Scrim" type="ColorRect" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -120.0
-offset_right = 150.0
-offset_bottom = 120.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 24
+color = Color(1, 0.984314, 0.929412, 0.78)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="Content" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="CardBody" type="VBoxContainer" parent="MarginContainer/Content/HeroCard/CardMargin"]
+layout_mode = 2
+theme_override_constants/separation = 18
 alignment = 1
 
-[node name="CatSprite" type="Node2D" parent="VBox"]
-script = ExtResource("2")
-
-[node name="TitleLabel" type="Label" parent="VBox"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
 layout_mode = 2
-text = "NekoDash"
+text = "Neko Dash"
 horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(0.361, 0.29, 0.42, 1)
+theme_override_font_sizes/font_size = 54
+theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
 
-[node name="PlayBtn" type="Button" parent="VBox"]
+[node name="SubtitleLabel" type="Label" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
+layout_mode = 2
+text = "ネコダッシュ"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
+
+[node name="CatIllustration" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Buttons" type="VBoxContainer" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PlayBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
 layout_mode = 2
 text = "PLAY"
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_1")
-theme_override_styles/hover = SubResource("StyleBoxFlat_1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_2")
 
-[node name="SkinsBtn" type="Button" parent="VBox"]
+[node name="SkinsBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
 layout_mode = 2
 text = "SKINS"
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_3")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_4")
+
+[node name="OptionsBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
+layout_mode = 2
+text = "SETTINGS"
+
+[node name="CreditsBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
+layout_mode = 2
+text = "CREDITS"
+
+[node name="HintLabel" type="Label" parent="MarginContainer/Content"]
+layout_mode = 2
+text = "Use arrows, tab, or a controller to move focus."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)

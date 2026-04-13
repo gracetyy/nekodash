@@ -608,3 +608,35 @@ func test_restart_re_snapshots_previous_bests() -> void:
 	# Assert — previous bests should now reflect the completed attempt
 	assert_true(_lc.was_previously_completed())
 	assert_eq(_lc.get_prev_best_moves(), 1)
+
+
+func test_pause_requested_shows_pause_overlay() -> void:
+	var ld := _make_4x4_level()
+	GridSystem.load_grid(ld)
+	SceneManager.hide_overlay()
+	get_tree().paused = false
+	_lc = _build_coordinator(ld)
+
+	_lc._on_pause_pressed()
+
+	assert_eq(SceneManager.get_active_overlay(), SceneManager.Overlay.PAUSE)
+	assert_true(get_tree().paused)
+	SceneManager.hide_overlay()
+	get_tree().paused = false
+
+
+func test_ui_cancel_opens_pause_overlay_when_playing() -> void:
+	var ld := _make_4x4_level()
+	GridSystem.load_grid(ld)
+	SceneManager.hide_overlay()
+	get_tree().paused = false
+	_lc = _build_coordinator(ld)
+
+	var event: InputEventAction = InputEventAction.new()
+	event.action = "ui_cancel"
+	event.pressed = true
+	_lc._unhandled_input(event)
+
+	assert_eq(SceneManager.get_active_overlay(), SceneManager.Overlay.PAUSE)
+	SceneManager.hide_overlay()
+	get_tree().paused = false
