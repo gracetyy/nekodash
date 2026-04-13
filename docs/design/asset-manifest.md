@@ -231,43 +231,56 @@ The entire grid sits inside a single **nine-patch rounded-rect frame** (confirme
 
 ---
 
-## 6. UI — Buttons `assets/art/ui/buttons/`
+## 6. UI — Pill Button Backgrounds `assets/art/ui/buttons/pill_bases/`
 
-All pill buttons are **nine-patch** so they scale horizontally.
-Height: **56px** fixed. Design at 220×56px; nine-patch horizontal stretch region is the 1–2px centre strip.
-Style: Fully rounded pill, solid colour fill, 4px bottom-only drop shadow (darken –20%).
-Colours per `docs/design/design-system.md §1`.
+All pill buttons are **nine-patch** so they scale horizontally to fit dynamic text and icons.
+Height: **56px** fixed. Design at 220×56px; nine-patch horizontal stretch region is the 12px centre strip.
+Style: Fully rounded pill, solid colour fill, bottom-only drop shadow. Text and icons are NOT baked in; they are assembled dynamically in-engine.
 
-| File                          | Label / Intent                             | Fill Colour      | Size (px) | Software | Format | Status                               |
-| ----------------------------- | ------------------------------------------ | ---------------- | --------- | -------- | ------ | ------------------------------------ |
-| `btn_play.png`                | PLAY — primary action                      | `#EFB034` gold   | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-2`)             |
-| `btn_play_pressed.png`        | PLAY pressed state — slightly darker fill  | `#D49A20`        | 220×56    | Figma    | PNG    | ✅ draft (variant in `ui-button-2`)  |
-| `btn_next_level.png`          | NEXT LEVEL →                               | `#EFB034` gold   | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-2`)             |
-| `btn_next_level_disabled.png` | NEXT LEVEL (disabled/grey)                 | `#C8C0B4`        | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-2`, grey state) |
-| `btn_skins.png`               | SKINS                                      | `#C4A5E8` purple | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-2`)             |
-| `btn_retry.png`               | RETRY (with restart icon)                  | `#C4A5E8` purple | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-1`)             |
-| `btn_world_map.png`           | WORLD MAP (with home icon)                 | `#C4A5E8` purple | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-1`)             |
-| `btn_equip.png`               | EQUIP (with checkmark icon)                | `#EFB034` gold   | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-1`)             |
-| `btn_equipped.png`            | EQUIPPED ✓ (teal, confirms equipped state) | `#5ECBA8` teal   | 220×56    | Figma    | PNG    | ✅ draft (`ui-button-1`)             |
+| File                         | Intent            | State                 | Size (px) | Software | Format |
+| ---------------------------- | ----------------- | --------------------- | --------- | -------- | ------ | --- |
+| `pill_primary_normal.png`    | Primary (Gold)    | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
+| `pill_primary_hover.png`     | Primary (Gold)    | Hover                 | 220×56    | Figma    | PNG    |
+| `pill_primary_pressed.png`   | Primary (Gold)    | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
+| `pill_secondary_normal.png`  | Secondary (Mint)  | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
+| `pill_secondary_hover.png`   | Secondary (Mint)  | Hover                 | 220×56    | Figma    | PNG    |
+| `pill_secondary_pressed.png` | Secondary (Mint)  | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
+| `pill_tertiary_normal.png`   | Tertiary (Purple) | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
+| `pill_tertiary_hover.png`    | Tertiary (Purple) | Hover                 | 220×56    | Figma    | PNG    |
+| `pill_tertiary_pressed.png`  | Tertiary (Purple) | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
+| `pill_danger_normal.png`     | Danger (Plum)     | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
+| `pill_danger_hover.png`      | Danger (Plum)     | Hover                 | 220×56    | Figma    | PNG    |
+| `pill_danger_pressed.png`    | Danger (Plum)     | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
+| `pill_disabled.png`          | Disabled (Grey)   | Disabled (0px shadow) | 220×56    | Figma    | PNG    |     |
 
 ---
 
-## 7. UI — Icon Buttons `assets/art/ui/icons/`
+### 7. UI Buttons & Icons
 
-Circular icon buttons: **48×48px** circle, cream/white fill, subtle border ring, 2px shadow.
-Active: purple border ring. Disabled: grey border, desaturated icon.
-Standalone icons (padlock, paw coin) have transparent backgrounds.
+To prevent asset misuse in Godot, UI icons are split into two distinct directories based on their target node (`TextureButton` vs `TextureRect`).
 
-| File                     | Icon                                   | Active / Standalone             | Size (px) | Software | Format | Status                                         |
-| ------------------------ | -------------------------------------- | ------------------------------- | --------- | -------- | ------ | ---------------------------------------------- |
-| `icon_undo_active.png`   | Counter-clockwise arrow                | Purple ring border              | 48×48     | Figma    | PNG    | ⚑ generic `Undo.png` exists — needs restyling  |
-| `icon_undo_disabled.png` | Counter-clockwise arrow                | Grey border, desaturated        | 48×48     | Figma    | PNG    | ❌                                             |
-| `icon_restart.png`       | Full-circle clockwise arrow            | Purple ring border              | 48×48     | Figma    | PNG    | ⚑ generic `Rotate_Right.png` — needs restyling |
-| `icon_back.png`          | Left-facing < chevron                  | Default cream border            | 48×48     | Figma    | PNG    | ⚑ generic `Left_Arrow1.png` — needs restyling  |
-| `icon_settings.png`      | Cogwheel gear                          | Default cream border            | 48×48     | Figma    | PNG    | ⚑ generic `Settings1.png` — needs restyling    |
-| `icon_close.png`         | × cross                                | Default cream border            | 48×48     | Figma    | PNG    | ❌                                             |
-| `icon_lock.png`          | Padlock — standalone, transparent bg   | Brown/warm fill, chunky rounded | 44×44     | Figma    | PNG    | ❌ game-specific needed                        |
-| `icon_paw_coin.png`      | Gold circular coin with paw pad design | Gold fill, transparent bg       | 44×44     | Figma    | PNG    | ❌ (`ui-misc` has draft)                       |
+#### 7A. Circular UI Buttons (`res://assets/art/ui/buttons/circular/`)
+
+Fully baked 48x48px PNGs containing the background, icon, 3px plum stroke, and shadow. Designed for `TextureButton` nodes. Naming convention: `btn_circle_[name]_[state].png`.
+
+| File Example                     | Icon                    | State                       | Size (px) | Software | Format |
+| -------------------------------- | ----------------------- | --------------------------- | --------- | -------- | ------ |
+| `btn_circle_undo_normal.png`     | Counter-clockwise arrow | Normal                      | 48x48     | Figma    | PNG    |
+| `btn_circle_undo_pressed.png`    | Counter-clockwise arrow | Pressed (No shadow)         | 48x48     | Figma    | PNG    |
+| `btn_circle_undo_disabled.png`   | Counter-clockwise arrow | Disabled (Grey/Desaturated) | 48x48     | Figma    | PNG    |
+| `btn_circle_restart_normal.png`  | Clockwise full arrow    | Normal                      | 48x48     | Figma    | PNG    |
+| `btn_circle_settings_normal.png` | Cogwheel gear           | Normal                      | 48x48     | Figma    | PNG    |
+
+#### 7B. Pill Button Interior Icons (`res://assets/art/ui/icons/pill_interiors/`)
+
+Transparent vector icons centered inside a 36x36px frame (30x30px artwork with 3px padding). Designed for `TextureRect` nodes inside dynamically sizing pill buttons. Naming convention: `icon_pill_[name].png`.
+
+| File                    | Icon               | Usage                 | Size (px) | Software | Format |
+| ----------------------- | ------------------ | --------------------- | --------- | -------- | ------ |
+| `icon_pill_retry.png`   | White retry arrow  | Inside Secondary Pill | 36x36     | Figma    | PNG    |
+| `icon_pill_home.png`    | White home icon    | Inside Tertiary Pill  | 36x36     | Figma    | PNG    |
+| `icon_pill_equip.png`   | White checkmark    | Inside Primary Pill   | 36x36     | Figma    | PNG    |
+| `icon_pill_warning.png` | White warning sign | Inside Danger Pill    | 36x36     | Figma    | PNG    |
 
 ---
 
@@ -297,38 +310,31 @@ Colours: filled = `#F5C030`, empty = `#D4C490`, outline stroke = `#C8A820`.
 
 ## 10. UI — Panels / Popups `assets/art/ui/panels/`
 
-Panels are **nine-patch** — exported with transparent interior so content flows freely inside.
-
-| File                       | Description                                                                                              | Style Guide                                                                                      | Size (px) | Nine-Patch Regions                        | Software | Format | Status                               |
-| -------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------- | ----------------------------------------- | -------- | ------ | ------------------------------------ |
-| `panel_modal_large.png`    | Primary modal panel (PAUSED, LEVEL COMPLETE, etc.). Cream fill, dark purple border, soft drop shadow.    | Fill `#FAF3E0`, border `#6B3C80` 2–3px, corner radius 24px, shadow `0 8px 32px rgba(0,0,0,0.2)`. | 320×420   | 32px each edge                            | Figma    | PNG    | ✅ draft (`ui-popup`, large panel)   |
-| `panel_modal_medium.png`   | Shorter modal (e.g. 1–2 star level complete, simpler messages).                                          | Same as large.                                                                                   | 320×280   | 32px each edge                            | Figma    | PNG    | ✅ draft (`ui-popup`, medium panel)  |
-| `panel_tooltip_bubble.png` | Small speech bubble with downward-pointing triangle pointer. Used for tutorial overlays attached to cat. | Same cream/purple fill. Triangle pointer centred at bottom.                                      | 200×80    | 20px top/sides, 32px bottom (for pointer) | Figma    | PNG    | ✅ draft (`ui-popup`, speech bubble) |
+| File                       | Description          | Style Guide                                                                                            |
+| -------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `panel_modal_large.png`    | Primary modal panel. | Fill `card/normal-bg` (`#FAF7E7`), border `card/normal-outline` (`#5E4863`) 2–3px, corner radius 24px. |
+| `panel_modal_medium.png`   | Shorter modal.       | Same as large.                                                                                         |
+| `panel_tooltip_bubble.png` | Small speech bubble. | Same cream/purple fill. Triangle pointer centred at bottom.                                            |
 
 ---
 
 ## 11. UI — World Map / Level Cards `assets/art/ui/world_map/`
 
-Level cards are **fixed-size rounded squares**, not nine-patch — content is drawn by code over the card shape.
-
-| File                      | Description                                                               | Style Guide                                                    | Size (px) | Software | Format | Status                                                |
-| ------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------- | --------- | -------- | ------ | ----------------------------------------------------- |
-| `level_card_unlocked.png` | Card background — unplayed/unlocked state. Cream fill, no special border. | Fill `#FAF3E0`, corner radius 16px, subtle dropshadow.         | 90×90     | Figma    | PNG    | ✅ draft (`ui-level-cards`, State 1)                  |
-| `level_card_3star.png`    | Card background — 3-star completed. Gold/amber border treatment.          | Same fill, gold border `#E8A820` 3px.                          | 90×90     | Figma    | PNG    | ✅ draft (`ui-level-cards`, State 2)                  |
-| `level_card_partial.png`  | Card background — partially completed (1–2 stars). Same as unlocked.      | Identical to `level_card_unlocked.png` — may reuse same asset. | 90×90     | Figma    | PNG    | ✅ draft (`ui-level-cards`, State 3, same as State 1) |
-| `level_card_locked.png`   | Card background — locked. Full grey desaturated.                          | Fill `#C8C0B4`, corner radius 16px.                            | 90×90     | Figma    | PNG    | ✅ draft (`ui-level-cards`, State 4)                  |
+| File                      | Description                         | Style Guide                                                                      |
+| ------------------------- | ----------------------------------- | -------------------------------------------------------------------------------- |
+| `level_card_unlocked.png` | Card background — unlocked.         | Fill `card/normal-bg` (`#FAF7E7`), corner radius 16px, subtle drop shadow.       |
+| `level_card_3star.png`    | Card background — 3-star completed. | Fill `card/highlight-bg` (`#F3C145`), corner radius 16px.                        |
+| `level_card_locked.png`   | Card background — locked.           | Fill `card/disabled-bg` (`#BCB3B7`), border `card/disabled-outline` (`#7C777E`). |
 
 ---
 
 ## 12. UI — Skin Cards `assets/art/ui/skin_select/`
 
-Portrait-format cards (taller than wide). See `docs/design/design-system.md §3.8`.
-
-| File                     | Description                                                             | Style Guide                                                                                        | Size (px) | Software | Format | Status                         |
-| ------------------------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------- | -------- | ------ | ------------------------------ |
-| `skin_card_unlocked.png` | Unlocked skin card background. Cream, no border. Cat area + label area. | Fill `#FAF3E0`, corner radius 16px. Upper 70% = cat zone; lower 30% = label zone (subtle divider). | 96×128    | Figma    | PNG    | ✅ draft (`ui-skins`, State 1) |
-| `skin_card_equipped.png` | Equipped state — gold border card.                                      | Same fill, gold border `#E8A820` 3px.                                                              | 96×128    | Figma    | PNG    | ✅ draft (`ui-skins`, State 2) |
-| `skin_card_locked.png`   | Locked state — full grey.                                               | Fill `#C8C0B4`, corner radius 16px.                                                                | 96×128    | Figma    | PNG    | ✅ draft (`ui-skins`, State 3) |
+| File                     | Description                    | Style Guide                                                                |
+| ------------------------ | ------------------------------ | -------------------------------------------------------------------------- |
+| `skin_card_unlocked.png` | Unlocked skin card background. | Fill `card/normal-bg` (`#FAF7E7`), corner radius 16px. Upper 70% cat zone. |
+| `skin_card_equipped.png` | Equipped state.                | Fill `card/highlight-bg` (`#F3C145`), corner radius 16px.                  |
+| `skin_card_locked.png`   | Locked state.                  | Fill `card/disabled-bg` (`#BCB3B7`), border `card/disabled-outline`.       |
 
 ---
 
@@ -411,7 +417,7 @@ Style: lo-fi cosy — piano, soft percussion, warm synth pads. Calm, non-intrusi
 | Wall tiles   | 27          | 23              | 0             | 4 (Study inner corner, post-jam not MVP)    |
 | Furniture    | 31          | 23              | 0             | 8 (kitchen island, cat bowl, LR new, Study) |
 | Grid frame   | 1           | 1               | 0             | 0                                           |
-| Buttons      | 9           | 9               | 0             | 0                                           |
+| Buttons      | 13          | 9               | 0             | 0                                           |
 | Icon buttons | 8           | 0               | 5 (generic)   | 3                                           |
 | Stars        | 6           | 0               | 2 (size TBC)  | 4                                           |
 | HUD          | 1           | 0               | 1             | 0                                           |
@@ -423,4 +429,4 @@ Style: lo-fi cosy — piano, soft percussion, warm synth pads. Calm, non-intrusi
 | SFX          | 7           | 0               | 0             | 7                                           |
 | Music        | 5           | 0               | 0             | 5                                           |
 | Fonts        | 4           | 0               | 0             | 4                                           |
-| **TOTAL**    | **132**     | **78**          | **8**         | **47**                                      |
+| **TOTAL**    | **136**     | **78**          | **8**         | **47**                                      |
