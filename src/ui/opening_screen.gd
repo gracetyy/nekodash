@@ -1,0 +1,48 @@
+## OpeningScreen — first-run shell entry that hands off to Main Menu.
+extends Control
+
+const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
+
+var _continue_btn: BaseButton
+var _prompt_label: Label
+var _hero_card: PanelContainer
+
+
+func _ready() -> void:
+	_continue_btn = find_child("ContinueBtn", true, false) as BaseButton
+	_prompt_label = find_child("Prompt", true, false) as Label
+	_hero_card = find_child("HeroCard", true, false) as PanelContainer
+	ShellThemeUtil.apply_panel(_hero_card, ShellThemeUtil.CREAM)
+	ShellThemeUtil.apply_pill_button(_continue_btn, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
+	_refresh_prompt()
+	if _continue_btn != null and not _continue_btn.pressed.is_connected(_on_continue_btn_pressed):
+		_continue_btn.pressed.connect(_on_continue_btn_pressed)
+	if _continue_btn != null:
+		_continue_btn.grab_focus()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		_go_to_main_menu()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_go_to_main_menu()
+	elif event is InputEventScreenTouch and event.pressed:
+		_go_to_main_menu()
+
+
+func _on_continue_btn_pressed() -> void:
+	_go_to_main_menu()
+
+
+func _go_to_main_menu() -> void:
+	SceneManager.go_to(SceneManager.Screen.MAIN_MENU)
+
+
+func _refresh_prompt() -> void:
+	if _prompt_label == null:
+		return
+	match AppSettings.get_effective_input_hint_mode():
+		AppSettings.INPUT_HINT_TOUCH:
+			_prompt_label.text = "Tap anywhere or use CONTINUE to enter the house."
+		_:
+			_prompt_label.text = "Press Enter or click CONTINUE to enter the house."
