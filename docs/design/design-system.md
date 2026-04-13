@@ -7,18 +7,6 @@
 
 ---
 
-## Purpose
-
-This document is the single source of truth for every visual UI decision in NekoDash.
-It defines the color palette, typography, component library, spacing grammar, and
-per-screen layout specifications derived from the AI reference screenshots. Any UI
-work — implementation or new asset creation — must conform to these specs.
-
-The **Grid / World Art Direction** (floor tiles, obstacle furniture, room theming) is
-a separate document: `docs/design/art-direction-grid.md`.
-
----
-
 ## 1. Color Palette
 
 All colors referenced throughout this document use these named tokens.
@@ -28,129 +16,89 @@ All colors referenced throughout this document use these named tokens.
 | Token           | Hex       | Usage                                     |
 | --------------- | --------- | ----------------------------------------- |
 | `cream-bg`      | `#F6F1D8` | Global page/screen background             |
-| `cream-card`    | `#FFF8F0` | Modals, cards, popup panels               |
+| `cream-card`    | `#FAF7E7` | Modals, cards, popup panels               |
 | `cream-dark`    | `#CFC0B2` | Subtle section dividers inside cards      |
 | `paw-watermark` | `#F1DFCA` | Paw-print watermark pattern on background |
+| `text`          | `#55324B` | Global text token (Dark Plum)             |
+| `icon`          | `#FDFDFB` | Global icon token (White)                 |
 
-### Game Grid (floor/wall colors are overridden per world — see Art Direction doc)
+### Game Grid
 
-| Token        | Hex       | Usage                                    |
-| ------------ | --------- | ---------------------------------------- |
-| `grid-wall`  | `#CEB6E4` | Default walkable wall/obstacle tile tint |
-| `grid-floor` | `#EEF9F1` | Default open floor tile tint             |
-| `grid-trail` | `#FBD490` | Cat's visited/covered tile               |
+| Token          | Hex       | Usage                                    |
+| -------------- | --------- | ---------------------------------------- |
+| `grid/wall`    | `#CEB6E4` | Default walkable wall/obstacle tile tint |
+| `grid/floor`   | `#EFF9F1` | Default open floor tile tint             |
+| `grid/visited` | `#FBD490` | Cat's visited/covered tile               |
 
-### Buttons — Action Mapping
+### Buttons — Action Mapping & States
 
-Buttons use a **3-colour system** where colour signals intent, not just decoration:
+Buttons use a **4-colour system** with explicit tokens for states:
 
-| Token           | Hex           | Usage                                                  |
-| --------------- | ------------- | ------------------------------------------------------ |
-| `btn-primary`   | `#F3C145`     | Primary positive action (Play, Resume, Next Level, OK) |
-| `btn-secondary` | `#A5D5BD`     | Secondary progression action (Retry, Restart, Next)    |
-| `btn-tertiary`  | `#C0AFE2`     | Tertiary / neutral action (Quit, Close, World Map)     |
-| `btn-disabled`  | `#C6C5C9`     | Locked / unavailable state                             |
-| `btn-shadow`    | (darken -20%) | Bottom-edge drop shadow for all pill buttons           |
-
-### Text
-
-| Token          | Hex       | Usage                                                |
-| -------------- | --------- | ---------------------------------------------------- |
-| `text-dark`    | `#53314B` | Body copy, labels, stat numbers                      |
-| `text-heading` | `#5C4A6B` | Modal headings ("PAUSED", "LEVEL COMPLETE!")         |
-| `text-gold`    | `#C87A00` | Highlighted numbers, "PERFECT!", move-count callouts |
-| `text-on-btn`  | `#FFFFFF` | All button labels                                    |
-| `text-muted`   | `#8A7060` | Sub-labels, unlock condition text on locked tiles    |
-
-### HUD
-
-| Token           | Hex       | Usage                        |
-| --------------- | --------- | ---------------------------- |
-| `hud-pill-bg`   | `#735D6B` | Move counter pill background |
-| `hud-pill-text` | `#F8EBC2` | Move counter number          |
-| `star-filled`   | `#F5C842` | Earned star                  |
-| `star-empty`    | `#C8C4D0` | Unearned star slot           |
-| `star-outline`  | `#C8A820` | Star border/stroke           |
-
-### Semantic
-
-| Token            | Hex       | Usage                                                                                   |
-| ---------------- | --------- | --------------------------------------------------------------------------------------- |
-| `badge-new-best` | `#F5A623` | "NEW BEST" orange pill badge on level complete (was teal — corrected from draft assets) |
-| `lock-gold`      | `#E8A820` | Padlock icon colour on locked levels/skins                                              |
+| Intent        | State     | Token Name                       | Hex       |
+| :------------ | :-------- | :------------------------------- | :-------- |
+| **Primary**   | Normal    | `btn/primary-bg-normal`          | `#F3C145` |
+|               | Hover     | `btn/primary-bg-hover`           | `#F8D36A` |
+|               | Pressed   | `btn/primary-bg-pressed`         | `#E4AE31` |
+|               | Shadow    | `btn/primary-bg-normal-shadow`   | `#D19646` |
+|               | Text/Icon | `btn/primary-text-normal`        | `#55324B` |
+| **Secondary** | Normal    | `btn/secondary-bg-normal`        | `#A5D5BD` |
+|               | Hover     | `btn/secondary-bg-hover`         | `#BCE4D0` |
+|               | Pressed   | `btn/secondary-bg-pressed`       | `#90C4A8` |
+|               | Shadow    | `btn/secondary-bg-normal-shadow` | `#7FB499` |
+|               | Text/Icon | `btn/secondary-text-normal`      | `#55324B` |
+| **Tertiary**  | Normal    | `btn/tertiary-bg-normal`         | `#C0AFE2` |
+|               | Hover     | `btn/tertiary-bg-hover`          | `#DAC6F4` |
+|               | Pressed   | `btn/tertiary-bg-pressed`        | `#A58BCA` |
+|               | Shadow    | `btn/tertiary-bg-normal-shadow`  | `#A083BD` |
+|               | Text/Icon | `btn/tertiary-text-normal`       | `#55324B` |
+| **Danger**    | Normal    | `btn/danger-bg-normal`           | `#614C6A` |
+|               | Hover     | `btn/danger-bg-hover`            | `#7A6285` |
+|               | Pressed   | `btn/danger-bg-pressed`          | `#5E4863` |
+|               | Shadow    | `btn/danger-bg-normal-shadow`    | `#5E4863` |
+|               | Text/Icon | `btn/danger-text-normal`         | `#FDFDFB` |
+| **Disabled**  | Normal    | `btn/disabled-bg`                | `#C6C5C9` |
+|               | Shadow    | `btn/disabled-bg-shadow`         | `#ACA2AC` |
+|               | Text/Icon | `btn/disabled-text`              | `#ACA2AC` |
 
 ---
 
 ## 2. Typography
 
-NekoDash uses a single rounded sans-serif family throughout. The exact font is TBD
-by the Art Director, but it must be: rounded, approachable, not geometric/cold.
-**Candidate**: Nunito ExtraBold / Black, or Fredoka One.
-
 ### Scale
 
-| Role             | Size (mobile px) | Weight         | Example                                 |
-| ---------------- | ---------------- | -------------- | --------------------------------------- |
-| Logo             | 48–56            | Black + stroke | "NekoDash" header                       |
-| Screen Title     | 24–28            | ExtraBold      | "WORLD SELECTION", "SKINS"              |
-| Modal Heading    | 28–34            | Black          | "LEVEL COMPLETE!", "PAUSED", "PERFECT!" |
-| Button Label     | 18–20            | ExtraBold      | "PLAY", "RESUME", "NEXT LEVEL"          |
-| HUD Number       | 20–22            | Black          | Move counter, min-move display          |
-| Body / Sub-label | 13–15            | SemiBold       | "Can you do it in 6?", world names      |
-| Badge            | 11–12            | ExtraBold      | "NEW BEST", "Equipped"                  |
-
-### Text Treatment Rules
-
-- All button labels: **ALL CAPS**
-- Modal headings: **ALL CAPS**
-- Navigation titles (World Selection, Skins): **Title Case**
-- Body copy: Sentence case
-- Logo: custom lettering — follow reference exactly
-- Japanese subtitle on logo ("ネコダッシュ"): match reference scale (~16px, below main logo)
+| Role             | Size (mobile px) | Weight         | Example                            |
+| ---------------- | ---------------- | -------------- | ---------------------------------- |
+| Logo             | 48/56            | Black + stroke | "NekoDash" header                  |
+| Screen Title     | 24/28            | ExtraBold      | WORLD SELECTION, SKINS             |
+| Modal Heading    | 28/34            | Black          | LEVEL COMPLETE!, PAUSED, PERFECT!  |
+| Button Label     | 32               | ExtraBold      | PLAY, RESUME, NEXT LEVEL           |
+| HUD Number       | 20/22            | Black          | Move counter, min-move display     |
+| Body / Sub-label | 13/15            | SemiBold       | "Can you do it in 6?", world names |
+| Badge            | 11/12            | ExtraBold      | NEW BEST, Equipped                 |
 
 ---
 
 ## 3. Component Library
 
-### 3.1 Pill Button
+### 3.1 Pill Button (Dynamic Width)
 
-The primary interactive element across all screens.
+The primary interactive text element across all screens.
 
-```
-Shape     : Fully rounded (border-radius = height / 2)
-Height    : 52–56px (mobile)
-Width     : Full-width within card (with 20px margin each side) or fixed 180–220px
-Background: solid fill (colour per token above)
-Shadow    : 4px bottom-only drop shadow, colour = btn-shadow token
-Label     : centered, text-on-btn, Button Label type scale
-Icon      : optional, left or right of label with 8px gap
-```
+- **Shape:** Fully rounded (border-radius = height / 2)
+- **Height:** 56px (mobile base)
+- **Width:** Dynamic via `NinePatchRect` stretching.
+- **Background:** Solid fill colour (per token above).
+- **Shadow:** 4px bottom-only drop shadow.
+- **Label:** Centered, `Button Label` type scale (32px). Text color depends on variant (`#55324B` for Primary/Secondary/Tertiary; `#FDFDFB` for Danger).
+- **Icon:** Optional interior icon. 36x36px frame (containing 30x30px transparent vector), placed left or right of label with 8px gap using `HBoxContainer`.
 
-**States:**
+### 3.2 Icon Button (Circular / Fixed)
 
-- Default: full colour
-- Pressed: -8% brightness, shadow reduces to 2px
-- Disabled: `btn-disabled` fill, `text-muted` label, no shadow
+Used in the HUD and for screen navigation. Exported as fully baked PNGs including background, icon, border, and shadow.
 
-**Variants by intent:**
-
-| Variant   | Fill            | Used for                     |
-| --------- | --------------- | ---------------------------- |
-| Primary   | `btn-primary`   | PLAY, RESUME, NEXT LEVEL, OK |
-| Secondary | `btn-secondary` | RETRY, RESTART, NEXT ▶       |
-| Tertiary  | `btn-tertiary`  | QUIT, CLOSE, WORLD MAP       |
-
-### 3.2 Icon Button (Circular)
-
-Used in the HUD and for screen navigation. Six confirmed variants (from `design/draft/ui-button-3 1.png`):
-
-```
-Shape     : Circle, 44–48px diameter
-Background: white or cream-card with subtle border ring
-Icon      : 24–28px, centered
-Shadow    : 2px drop shadow, soft
-Label     : 11px text below circle (context-dependent)
-```
+- **Shape:** Circle, 48px diameter.
+- **Format:** Rendered 48x48px PNG states (Normal, Hover, Pressed, Disabled).
+- **Usage:** Plugged directly into Godot's `TextureButton` node.
 
 | Variant         | Icon                        | Active State                           | Disabled State                            |
 | --------------- | --------------------------- | -------------------------------------- | ----------------------------------------- |
