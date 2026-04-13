@@ -234,24 +234,26 @@ The entire grid sits inside a single **nine-patch rounded-rect frame** (confirme
 ## 6. UI — Pill Button Backgrounds `assets/art/ui/buttons/pill_bases/`
 
 All pill buttons are **nine-patch** so they scale horizontally to fit dynamic text and icons.
-Height: **56px** fixed. Design at 220×56px; nine-patch horizontal stretch region is the 12px centre strip.
+Height: **56px** fixed. Design at 220×56px; nine-patch horizontal stretch region is the 12px centre strip (24px for `@2x`).
 Style: Fully rounded pill, solid colour fill, bottom-only drop shadow. Text and icons are NOT baked in; they are assembled dynamically in-engine.
 
-| File                         | Intent            | State                 | Size (px) | Software | Format |
-| ---------------------------- | ----------------- | --------------------- | --------- | -------- | ------ | --- |
-| `pill_primary_normal.png`    | Primary (Gold)    | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
-| `pill_primary_hover.png`     | Primary (Gold)    | Hover                 | 220×56    | Figma    | PNG    |
-| `pill_primary_pressed.png`   | Primary (Gold)    | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
-| `pill_secondary_normal.png`  | Secondary (Mint)  | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
-| `pill_secondary_hover.png`   | Secondary (Mint)  | Hover                 | 220×56    | Figma    | PNG    |
-| `pill_secondary_pressed.png` | Secondary (Mint)  | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
-| `pill_tertiary_normal.png`   | Tertiary (Purple) | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
-| `pill_tertiary_hover.png`    | Tertiary (Purple) | Hover                 | 220×56    | Figma    | PNG    |
-| `pill_tertiary_pressed.png`  | Tertiary (Purple) | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
-| `pill_danger_normal.png`     | Danger (Plum)     | Normal (4px shadow)   | 220×56    | Figma    | PNG    |
-| `pill_danger_hover.png`      | Danger (Plum)     | Hover                 | 220×56    | Figma    | PNG    |
-| `pill_danger_pressed.png`    | Danger (Plum)     | Pressed (0px shadow)  | 220×56    | Figma    | PNG    |
-| `pill_disabled.png`          | Disabled (Grey)   | Disabled (0px shadow) | 220×56    | Figma    | PNG    |     |
+_Status: All 13 core button bases (26 files including @2x) have been exported and are ✅ Complete._
+
+| File                         | Intent            | State                 | Size (px)     | Format | Status |
+| ---------------------------- | ----------------- | --------------------- | ------------- | ------ | ------ |
+| `pill_primary_normal.png`    | Primary (Gold)    | Normal (4px shadow)   | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_primary_hover.png`     | Primary (Gold)    | Hover                 | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_primary_pressed.png`   | Primary (Gold)    | Pressed (0px shadow)  | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_secondary_normal.png`  | Secondary (Mint)  | Normal (4px shadow)   | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_secondary_hover.png`   | Secondary (Mint)  | Hover                 | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_secondary_pressed.png` | Secondary (Mint)  | Pressed (0px shadow)  | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_tertiary_normal.png`   | Tertiary (Purple) | Normal (4px shadow)   | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_tertiary_hover.png`    | Tertiary (Purple) | Hover                 | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_tertiary_pressed.png`  | Tertiary (Purple) | Pressed (0px shadow)  | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_danger_normal.png`     | Danger (Plum)     | Normal (4px shadow)   | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_danger_hover.png`      | Danger (Plum)     | Hover                 | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_danger_pressed.png`    | Danger (Plum)     | Pressed (0px shadow)  | 220×56 (+@2x) | PNG    | ✅     |
+| `pill_disabled.png`          | Disabled (Grey)   | Disabled (0px shadow) | 220×56 (+@2x) | PNG    | ✅     |
 
 ---
 
@@ -261,15 +263,46 @@ To prevent asset misuse in Godot, UI icons are split into two distinct directori
 
 #### 7A. Circular UI Buttons (`res://assets/art/ui/buttons/circular/`)
 
-Fully baked 48x48px PNGs containing the background, icon, 3px plum stroke, and shadow. Designed for `TextureButton` nodes. Naming convention: `btn_circle_[name]_[state].png`.
+Fully baked 48x48px PNGs (and 96x96px `@2x` Retina versions) containing the background, icon, 3px plum stroke, and shadow. Designed for `TextureButton` nodes. Naming convention: `btn_circle_[name]_[state].png`.
 
-| File Example                     | Icon                    | State                       | Size (px) | Software | Format |
-| -------------------------------- | ----------------------- | --------------------------- | --------- | -------- | ------ |
-| `btn_circle_undo_normal.png`     | Counter-clockwise arrow | Normal                      | 48x48     | Figma    | PNG    |
-| `btn_circle_undo_pressed.png`    | Counter-clockwise arrow | Pressed (No shadow)         | 48x48     | Figma    | PNG    |
-| `btn_circle_undo_disabled.png`   | Counter-clockwise arrow | Disabled (Grey/Desaturated) | 48x48     | Figma    | PNG    |
-| `btn_circle_restart_normal.png`  | Clockwise full arrow    | Normal                      | 48x48     | Figma    | PNG    |
-| `btn_circle_settings_normal.png` | Cogwheel gear           | Normal                      | 48x48     | Figma    | PNG    |
+_Status: All 26 button types (104 state files + 104 Retina @2x files) have been fully designed, batch-exported, and are ✅ Complete._
+
+| Base Filename Prefix            | Icon / Intent                                | Format      | Status |
+| ------------------------------- | -------------------------------------------- | ----------- | ------ |
+| `btn_circle_achievement`        | Trophy / Medal icon for achievements         | PNG (+ @2x) | ✅     |
+| `btn_circle_ad`                 | Play button with 'Ad' label for rewarded ads | PNG (+ @2x) | ✅     |
+| `btn_circle_arrow_down`         | Downward directional arrow                   | PNG (+ @2x) | ✅     |
+| `btn_circle_arrow_left`         | Left directional arrow / Back                | PNG (+ @2x) | ✅     |
+| `btn_circle_arrow_right`        | Right directional arrow / Forward            | PNG (+ @2x) | ✅     |
+| `btn_circle_arrow_up`           | Upward directional arrow                     | PNG (+ @2x) | ✅     |
+| `btn_circle_back`               | U-turn arrow / Return to previous            | PNG (+ @2x) | ✅     |
+| `btn_circle_bg`                 | Scenery/landscape icon for background select | PNG (+ @2x) | ✅     |
+| `btn_circle_calendar`           | Calendar icon for daily rewards              | PNG (+ @2x) | ✅     |
+| `btn_circle_cat`                | Cat head icon for skin select                | PNG (+ @2x) | ✅     |
+| `btn_circle_close`              | X cross for closing modals                   | PNG (+ @2x) | ✅     |
+| `btn_circle_confirm`            | Checkmark for confirming actions             | PNG (+ @2x) | ✅     |
+| `btn_circle_dark_mode`          | Moon/Sun icon for theme toggle               | PNG (+ @2x) | ✅     |
+| `btn_circle_double_arrow_left`  | Fast rewind / Skip back                      | PNG (+ @2x) | ✅     |
+| `btn_circle_double_arrow_right` | Fast forward / Skip ahead                    | PNG (+ @2x) | ✅     |
+| `btn_circle_exclaimation_mark`  | Warning / Important notice                   | PNG (+ @2x) | ✅     |
+| `btn_circle_exit`               | Door with arrow / Quit game                  | PNG (+ @2x) | ✅     |
+| `btn_circle_fullscreen`         | Expand arrows for fullscreen mode            | PNG (+ @2x) | ✅     |
+| `btn_circle_gift`               | Present box for rewards                      | PNG (+ @2x) | ✅     |
+| `btn_circle_home`               | House icon to return to Main Menu            | PNG (+ @2x) | ✅     |
+| `btn_circle_info`               | 'i' icon for credits / how to play           | PNG (+ @2x) | ✅     |
+| `btn_circle_map`                | Folded map icon for World Select             | PNG (+ @2x) | ✅     |
+| `btn_circle_pause`              | Two vertical bars to pause gameplay          | PNG (+ @2x) | ✅     |
+| `btn_circle_paw`                | Paw print icon (generic/misc)                | PNG (+ @2x) | ✅     |
+| `btn_circle_question_mark`      | Help / Hint icon                             | PNG (+ @2x) | ✅     |
+| `btn_circle_replay`             | Full circle arrow for level restart          | PNG (+ @2x) | ✅     |
+| `btn_circle_settings_ver1`      | Cogwheel gear (Variant 1)                    | PNG (+ @2x) | ✅     |
+| `btn_circle_settings_ver2`      | Cogwheel gear (Variant 2)                    | PNG (+ @2x) | ✅     |
+| `btn_circle_shop`               | Shopping cart / Store icon                   | PNG (+ @2x) | ✅     |
+| `btn_circle_sound_off`          | Speaker with X (Muted)                       | PNG (+ @2x) | ✅     |
+| `btn_circle_sound_on`           | Speaker with sound waves (Unmuted)           | PNG (+ @2x) | ✅     |
+| `btn_circle_undo`               | Counter-clockwise arrow to undo move         | PNG (+ @2x) | ✅     |
+
+> **Note on States**: Every prefix listed above includes four exact files in the repository: `_normal.png`, `_hover.png`, `_pressed.png`, and `_disabled.png` (plus their respective `@2x.png` variants).
 
 #### 7B. Pill Button Interior Icons (`res://assets/art/ui/icons/pill_interiors/`)
 
@@ -310,21 +343,25 @@ Colours: filled = `#F5C030`, empty = `#D4C490`, outline stroke = `#C8A820`.
 
 ## 10. UI — Panels / Popups `assets/art/ui/panels/`
 
-| File                       | Description          | Style Guide                                                                                            |
-| -------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `panel_modal_large.png`    | Primary modal panel. | Fill `card/normal-bg` (`#FAF7E7`), border `card/normal-outline` (`#5E4863`) 2–3px, corner radius 24px. |
-| `panel_modal_medium.png`   | Shorter modal.       | Same as large.                                                                                         |
-| `panel_tooltip_bubble.png` | Small speech bubble. | Same cream/purple fill. Triangle pointer centred at bottom.                                            |
+Panels are **nine-patch** — exported with a transparent interior so content flows freely inside.
+
+| File                       | Description                                          | Style Guide                                                                                                                                                                                                                   | Size (px) | Nine-Patch Regions (Godot) | Software | Format | Status                     |
+| -------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | -------------------------- | -------- | ------ | -------------------------- |
+| `panel_modal_normal.png`   | Universal modal base (PAUSED, LEVEL COMPLETE).       | Fill `card/normal-bg`, 10px stroke `card/normal-outline`, 10px bottom inner shadow `card/normal-bg-shadow`, 10px bottom-right drop shadow `card/normal-outline`. Corner radius 24px.                                          | 128×128   | L: 44, T: 44, R: 54, B: 54 | Figma    | PNG    | ✅ Consolidated to 9-patch |
+| `panel_tooltip_bubble.png` | Small speech bubble with downward-pointing triangle. | 50% scale of normal style: Fill `card/normal-bg`, 5px stroke `card/normal-outline`, 5px bottom inner shadow `card/normal-bg-shadow`, 3px bottom-right drop shadow `card/normal-outline`. Corner radius 10px, tail radius 2px. | 59×73     | L: 15, T: 15, R: 18, B: 26 | Figma    | PNG    | ✅ Scaled tactile style    |
 
 ---
 
 ## 11. UI — World Map / Level Cards `assets/art/ui/world_map/`
 
-| File                      | Description                         | Style Guide                                                                      |
-| ------------------------- | ----------------------------------- | -------------------------------------------------------------------------------- |
-| `level_card_unlocked.png` | Card background — unlocked.         | Fill `card/normal-bg` (`#FAF7E7`), corner radius 16px, subtle drop shadow.       |
-| `level_card_3star.png`    | Card background — 3-star completed. | Fill `card/highlight-bg` (`#F3C145`), corner radius 16px.                        |
-| `level_card_locked.png`   | Card background — locked.           | Fill `card/disabled-bg` (`#BCB3B7`), border `card/disabled-outline` (`#7C777E`). |
+Level cards are **nine-patch rounded squares** to allow for dynamic scaling.
+Style: 10px outside stroke, 10px bottom inner shadow, 8px bottom-only drop shadow.
+
+| File                      | Description              | Style Guide                                                                                                                                                                           | Size (px) | Nine-Patch Regions (Godot) | Software | Format | Status                  |
+| ------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | -------------------------- | -------- | ------ | ----------------------- |
+| `level_card_unlocked.png` | Unplayed/unlocked state. | Fill `card/normal-bg`, 10px stroke `card/normal-outline`, 10px inner shadow `card/normal-bg-shadow`, 8px bottom drop shadow `card/normal-outline-shadow`. Corner radius 16px.         | 72×90     | L: 26, T: 26, R: 26, B: 44 | Figma    | PNG    | ✅ Converted to 9-patch |
+| `level_card_3star.png`    | 3-star completed state.  | Fill `card/highlight-bg`, 10px stroke `card/highlight-outline`, 10px inner shadow `card/highlight-bg-shadow`, 8px bottom drop shadow `card/highlight-outline-shadow`.                 | 72×90     | L: 26, T: 26, R: 26, B: 44 | Figma    | PNG    | ✅ Converted to 9-patch |
+| `level_card_locked.png`   | Locked state.            | Fill `card/disabled-bg`, 10px stroke `card/disabled-outline`, 10px inner shadow `card/disabled-bg-shadow`, 8px bottom drop shadow `card/disabled-outline` (or disabled shadow token). | 72×90     | L: 26, T: 26, R: 26, B: 44 | Figma    | PNG    | ✅ Converted to 9-patch |
 
 ---
 
@@ -410,23 +447,24 @@ Style: lo-fi cosy — piano, soft percussion, warm synth pads. Calm, non-intrusi
 
 ## Summary
 
-| Category     | Total Files | ✅ Draft Exists | ⚑ Placeholder | ❌ Missing                                  |
-| ------------ | ----------- | --------------- | ------------- | ------------------------------------------- |
-| Cat sprites  | 7           | 1 (idle only)   | 0             | 6                                           |
-| Floor tiles  | 6           | 2 (World 3)     | 0             | 4 (Worlds 1 and 2)                          |
-| Wall tiles   | 27          | 23              | 0             | 4 (Study inner corner, post-jam not MVP)    |
-| Furniture    | 31          | 23              | 0             | 8 (kitchen island, cat bowl, LR new, Study) |
-| Grid frame   | 1           | 1               | 0             | 0                                           |
-| Buttons      | 13          | 9               | 0             | 0                                           |
-| Icon buttons | 8           | 0               | 5 (generic)   | 3                                           |
-| Stars        | 6           | 0               | 2 (size TBC)  | 4                                           |
-| HUD          | 1           | 0               | 1             | 0                                           |
-| Panels       | 3           | 3               | 0             | 0                                           |
-| Level cards  | 4           | 4               | 0             | 0                                           |
-| Skin cards   | 3           | 3               | 0             | 0                                           |
-| Badges       | 3           | 3               | 0             | 0                                           |
-| Backgrounds  | 5           | 3 (unverified)  | 0             | 2                                           |
-| SFX          | 7           | 0               | 0             | 7                                           |
-| Music        | 5           | 0               | 0             | 5                                           |
-| Fonts        | 4           | 0               | 0             | 4                                           |
-| **TOTAL**    | **136**     | **78**          | **8**         | **47**                                      |
+| Category              | Total Files | ✅ Draft Exists | ⚑ Placeholder | ❌ Missing                                  |
+| --------------------- | ----------- | --------------- | ------------- | ------------------------------------------- |
+| Cat sprites           | 7           | 1 (idle only)   | 0             | 6                                           |
+| Floor tiles           | 6           | 2 (World 3)     | 0             | 4 (Worlds 1 and 2)                          |
+| Wall tiles            | 27          | 23              | 0             | 4 (Study inner corner, post-jam not MVP)    |
+| Furniture             | 31          | 23              | 0             | 8 (kitchen island, cat bowl, LR new, Study) |
+| Grid frame            | 1           | 1               | 0             | 0                                           |
+| Pill Button Bases     | 13          | 13              | 0             | 0                                           |
+| Circular Icon Buttons | 32 (types)  | 32              | 0             | 0                                           |
+| Pill Button Interiors | 7           | 7               | 0             | 0                                           |
+| Stars                 | 6           | 0               | 2 (size TBC)  | 4                                           |
+| HUD                   | 1           | 0               | 1             | 0                                           |
+| Panels                | 3           | 3               | 0             | 0                                           |
+| Level cards           | 4           | 4               | 0             | 0                                           |
+| Skin cards            | 3           | 3               | 0             | 0                                           |
+| Badges                | 3           | 3               | 0             | 0                                           |
+| Backgrounds           | 5           | 3 (unverified)  | 0             | 2                                           |
+| SFX                   | 7           | 0               | 0             | 7                                           |
+| Music                 | 5           | 0               | 0             | 5                                           |
+| Fonts                 | 4           | 0               | 0             | 4                                           |
+| **TOTAL**             | **136**     | **78**          | **8**         | **47**                                      |

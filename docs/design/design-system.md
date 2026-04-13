@@ -60,6 +60,21 @@ Buttons use a **4-colour system** with explicit tokens for states:
 |               | Shadow    | `btn/disabled-bg-shadow`         | `#ACA2AC` |
 |               | Text/Icon | `btn/disabled-text`              | `#ACA2AC` |
 
+### HUD & Stars
+
+| Token                   | Hex       | Usage                                     |
+| ----------------------- | --------- | ----------------------------------------- |
+| `hud-pill-bg`           | `#735D6B` | Move counter pill background              |
+| `hud-pill-text`         | `#F8EBC2` | Move counter number                       |
+| `star-filled`           | `#F2C456` | Base fill for earned stars                |
+| `star-filled-highlight` | `#FDFDFB` | Glint/highlight on filled stars           |
+| `star-filled-shadow`    | `#EDB147` | Drop shadow/bottom bevel for filled stars |
+| `star-filled-outline`   | `#55324B` | Dark Plum outline for filled stars        |
+| `star-empty`            | `#BAB3B9` | Base fill for unearned/missed stars       |
+| `star-empty-outline`    | `#55324B` | Dark Plum outline for empty stars         |
+| `star-hollow`           | `#C5BFC2` | Background socket/hollow slot for stars   |
+| `star-hollow-shadow`    | `#A99BA2` | Inner shadow/bevel for the hollow socket  |
+
 ---
 
 ## 2. Typography
@@ -141,31 +156,40 @@ Container : pill-shaped background in HUD (cream-card, light border)
 
 The **aggregate pill** (confirmed in `design/draft/ui-stars 1.png` Row 3) is used on World Map cards to show total star count at a glance. It is a single cream pill sprite containing 3 small inline star icons.
 
-### 3.5 Modal / Popup Panel
+### 3.5 Panels & Modals
 
-Used for PAUSED, LEVEL COMPLETE, and similar overlays.
+The primary container for all popups, menus, and end-of-level screens.
 
-```
-Background  : cream-card
-Border-radius: 20–24px
-Padding     : 24px horizontal, 28px vertical
-Shadow      : 0 8px 32px rgba(0,0,0,0.2)
-Max-width   : 320px (mobile), centered
-Overlay     : semi-transparent dark scrim behind panel (rgba 0,0,0,0.35)
-Cat mascot  : peeks over the top edge of the panel (peeking/sitting sprite)
-Sparkles    : decorative ✦ sparkle sprites at panel corners / background
-```
+- **Shape:** Rounded rectangle (24px Corner Radius)
+- **Background:** `card/normal-bg`
+- **Border:** 10px Outside Stroke using `card/normal-outline`
+- **Inner Bevel:** 10px Bottom Inner Shadow using `card/normal-bg-shadow`
+- **Drop Shadow:** 10px Right & Bottom Drop Shadow using `card/normal-outline`
+- **Implementation:** Exported as a 128x128px `NinePatchRect` base. Godot margins: 44px Top/Left, 54px Bottom/Right.
 
-### 3.6 Level Tile (Level Select grid)
+### 3.5.1 Tooltip Bubbles
 
-```
-Shape       : Rounded square, ~90px
-Background  : cream-card (unlocked), btn-disabled (locked)
-Number      : Screen Title scale, text-dark (unlocked) / text-muted (locked)
-Stars       : 3-star strip below number, small (18px stars)
-Lock icon   : lock-gold padlock replaces number when locked
-Active level: highlighted with btn-tertiary border (current / "in progress" level)
-```
+Floating speech bubbles used for tutorials or contextual hints.
+
+- **Shape:** Rounded rectangle (10px Radius) with downward-pointing triangle tail (2px Radius on tip).
+- **Scale:** 50% scale of the primary Modal Panel style.
+- **Background:** `card/normal-bg`
+- **Border:** 5px Outside Stroke using `card/normal-outline`
+- **Inner Bevel:** 5px Bottom Inner Shadow using `card/normal-bg-shadow`
+- **Drop Shadow:** 3px Right & Bottom Drop Shadow using `card/normal-outline`
+- **Implementation:** Exported as a 59x73px `NinePatchRect` base. Godot margins must exactly protect the tail: 15px Left/Top, 18px Right, 26px Bottom. Anchor the tail to the left in Figma and use a larger Left Margin in Godot (e.g., 35px) to prevent horizontal tail stretching.
+
+### 3.6 World Map / Level Cards
+
+Cards representing individual levels on the World Map screen.
+
+- **Shape:** Rounded square (16px Corner Radius)
+- **States & Tokens:**
+  - **Unlocked:** `card/normal-bg` fill, `card/normal-outline` stroke, `card/normal-bg-shadow` inner bevel, `card/normal-outline-shadow` drop shadow.
+  - **3-Star Highlight:** `card/highlight-bg` fill, `card/highlight-outline` stroke, `card/highlight-bg-shadow` inner bevel, `card/highlight-outline-shadow` drop shadow.
+  - **Locked:** `card/disabled-bg` fill, `card/disabled-outline` stroke, `card/disabled-bg-shadow` inner bevel.
+- **Dimensions:** 10px Stroke, 10px Bottom Inner Shadow, 8px Bottom-Only Drop Shadow.
+- **Implementation:** Exported as a 72x90px `NinePatchRect` base. Godot margins: 26px Left/Top/Right, 44px Bottom.
 
 ### 3.7 World Card (World Map)
 
