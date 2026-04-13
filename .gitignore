@@ -93,7 +93,9 @@ secrets.json
 # *.tga
 # *.exr
 # *.hdr
-assets/
+assets/*/might_use/
+assets/*/*/might_use/
+assets/audio/
 
 # === OS Generated ===
 ehthumbs.db

@@ -1,0 +1,63 @@
+art\ui\buttons\circular - https://nieobie.itch.io/free-icons
+art\ui\icons\pill_interiors - https://nieobie.itch.io/free-icons
+
+
+
+
+art\ui\might_use\items\coins - https://ci.itch.io/puzzle-games-graphics-pack
+art\ui\might_use\items\gem_diamond.png - https://ci.itch.io/puzzle-games-graphics-pack
+art\ui\might_use\items\food_fish.png - https://ci.itch.io/inventory-icons-graphics-pack
+
+art\ui\might_use\items\Claquete.png - https://mandinhart.itch.io/garden-cozy-ui-kit-buttons-icons
+art\ui\might_use\items\Coin-1.png - https://mandinhart.itch.io/garden-cozy-ui-kit-buttons-icons
+art\ui\might_use\items\Coin-3.png - https://mandinhart.itch.io/garden-cozy-ui-kit-buttons-icons
+art\ui\might_use\items\Coin-9.png - https://mandinhart.itch.io/garden-cozy-ui-kit-buttons-icons
+art\ui\might_use\items\Flower-vase.png - https://mandinhart.itch.io/garden-cozy-ui-kit-buttons-icons
+
+art\ui\might_use\stars\star_gold.png - https://ci.itch.io/inventory-icons-graphics-pack
+art\ui\might_use\stars\star_grey.png - https://ci.itch.io/inventory-icons-graphics-pack
+art\ui\might_use\icons\other_gear.png - https://ci.itch.io/inventory-icons-graphics-pack
+art\ui\might_use\icons\gift_red.png - https://ci.itch.io/inventory-icons-graphics-pack
+art\ui\might_use\icons\stat_increase.png - https://ci.itch.io/inventory-icons-graphics-pack
+art\ui\might_use\icons\stat_reduction.png - https://ci.itch.io/inventory-icons-graphics-pack
+
+art\ui\might_use\stars\sprite - https://ci.itch.io/2d-platformer-pack
+art\ui\might_use\items\key_*.png - https://ci.itch.io/2d-platformer-pack
+art\ui\might_use\items\diamond - https://ci.itch.io/2d-platformer-pack
+
+art\ui\overlay\effect_*.png - https://dobo-ui.itch.io/vector-ui-pack
+art\ui\headers - https://dobo-ui.itch.io/vector-ui-pack
+
+art\ui\might_use\icons\white_icons - https://nieobie.itch.io/free-icons
+
+Licence: CC BY 4.0 to credit 'Nathan Gibson'
+audio\sfx\ui\button_tap.ogg - https://cyrex-studios.itch.io/universal-ui-soundpack
+audio\sfx\ui\toggle.ogg - https://cyrex-studios.itch.io/universal-ui-soundpack
+audio\sfx\ui\confirm.ogg - https://cyrex-studios.itch.io/universal-ui-soundpack
+audio\sfx\ui\soft_tap.ogg - https://cyrex-studios.itch.io/universal-ui-soundpack
+
+audio\sfx\env - https://ci.itch.io/400-sounds-pack
+audio\sfx\items - https://ci.itch.io/400-sounds-pack
+audio\sfx\match_three - https://ci.itch.io/400-sounds-pack
+audio\sfx\musical_effect - https://ci.itch.io/400-sounds-pack
+audio\sfx\ui\controller_button_press.wav - https://ci.itch.io/400-sounds-pack
+audio\sfx\ui\controller_button_press_2.wav - https://ci.itch.io/400-sounds-pack
+
+Music by Abstraction (https://abstractionmusic.com/)
+audio\music\bakery.ogg - https://tallbeard.itch.io/music-loop-bundle
+audio\music\cafe-ver2.ogg - https://tallbeard.itch.io/music-loop-bundle
+audio\music\skins-shop.ogg - https://tallbeard.itch.io/music-loop-bundle
+audio\music\thinking.ogg - https://tallbeard.itch.io/music-loop-bundle
+audio\music\cafe-ver1.ogg - https://tallbeard.itch.io/music-loop-bundle
+audio\music\slow-piano.ogg - https://tallbeard.itch.io/music-loop-bundle
+
+audio\music\piano.ogg - https://ci.itch.io/bumper-audio-pack
+
+audio\might_use\JDSherbert -*.ogg - Sounds by JDSherbert – https://jdsherbert.itch.io
+
+audio\might_use\JumpPack - FreeMusicLoops - v1.0 - *.ogg - https://dani-maccari.itch.io/jumppack-music-loops
+
+audio\sfx\ui\keystroke.wav - https://shapeforms.itch.io/shapeforms-audio-free-sfx
+audio\sfx\ui\swipe.wav - https://shapeforms.itch.io/shapeforms-audio-free-sfx
+
+C:\Users\Grace\Downloads\Browser\GB-BG-Pattern-Pack\Gameboy Background-Pattern Pack - https://2bitcrook.itch.io/gameboy-pattern-pack
