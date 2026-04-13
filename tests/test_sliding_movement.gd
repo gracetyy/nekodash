@@ -21,6 +21,7 @@ var _spawn_position_log: Array = []
 func before_each() -> void:
 	# Load a standard 5×5 bordered grid on the real autoload
 	GridSystem.load_grid(_make_5x5_bordered())
+	AppSettings.set_reduce_motion(false)
 
 	# Ensure InputSystem starts in accepting state
 	InputSystem.set_accepting_input(true)
@@ -45,6 +46,7 @@ func before_each() -> void:
 func after_each() -> void:
 	# Reset InputSystem to prevent test pollution if a slide was in-flight
 	InputSystem.set_accepting_input(true)
+	AppSettings.set_reduce_motion(false)
 
 
 # —————————————————————————————————————————————
@@ -418,6 +420,11 @@ func test_sliding_movement_duration_long_slide_uses_velocity() -> void:
 	var duration: float = _sm._compute_slide_duration(5)
 	var expected: float = 5.0 / _sm._slide_velocity
 	assert_almost_eq(duration, expected, 0.001)
+
+
+func test_sliding_movement_reduce_motion_uses_short_duration() -> void:
+	AppSettings.set_reduce_motion(true)
+	assert_almost_eq(_sm._compute_slide_duration(5), 0.02, 0.001)
 
 
 # —————————————————————————————————————————————
