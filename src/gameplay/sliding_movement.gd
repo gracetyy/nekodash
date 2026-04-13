@@ -263,6 +263,10 @@ func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> vo
 # —————————————————————————————————————————————
 
 func _play_squish() -> void:
+	if _is_reduce_motion_enabled():
+		scale = Vector2.ONE
+		return
+
 	if _squish_tween and _squish_tween.is_valid():
 		_squish_tween.kill()
 
@@ -280,6 +284,11 @@ func _play_squish() -> void:
 func _play_bump(direction: Vector2i) -> void:
 	var bump_offset: Vector2 = Vector2(direction) * blocked_bump_offset_px
 	var home_pixel: Vector2 = _grid_to_pixel(_cat_pos)
+
+	if _is_reduce_motion_enabled():
+		position = home_pixel
+		slide_blocked.emit(_cat_pos, direction)
+		return
 
 	if _bump_tween and _bump_tween.is_valid():
 		_bump_tween.kill()
@@ -302,6 +311,8 @@ func _grid_to_pixel(coord: Vector2i) -> Vector2:
 
 
 func _compute_slide_duration(tile_count: int) -> float:
+	if _is_reduce_motion_enabled():
+		return 0.02
 	return maxf(min_slide_duration_sec, tile_count / _slide_velocity)
 
 
@@ -312,3 +323,7 @@ func _kill_all_tweens() -> void:
 		_bump_tween.kill()
 	if _squish_tween and _squish_tween.is_valid():
 		_squish_tween.kill()
+
+
+func _is_reduce_motion_enabled() -> bool:
+	return AppSettings != null and AppSettings.get_reduce_motion()

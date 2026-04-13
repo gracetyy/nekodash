@@ -12,6 +12,8 @@
 class_name HUD
 extends CanvasLayer
 
+const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
+
 
 # —————————————————————————————————————————————
 # Signals
@@ -26,6 +28,9 @@ signal restart_pressed
 ## Emitted when player presses the Exit button (abandon level, no save).
 signal exit_pressed
 
+## Emitted when player presses the Pause button.
+signal pause_pressed
+
 
 # —————————————————————————————————————————————
 # Child node references
@@ -37,6 +42,9 @@ var _coverage_label: Control # Label
 var _undo_btn: Control # Button
 var _restart_btn: Control # Button
 var _exit_btn: Control # Button
+var _pause_btn: Control # Button
+var _chrome_panel: PanelContainer
+var _moves_prefix_label: Label
 
 
 # —————————————————————————————————————————————
@@ -71,6 +79,7 @@ var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
 
 func _ready() -> void:
 	_auto_discover_ui_nodes()
+	_apply_visual_style()
 
 
 # —————————————————————————————————————————————
@@ -124,6 +133,9 @@ func initialize(
 	_set_undo_button_visible(true)
 	_set_restart_button_visible(true)
 	_set_exit_button_visible(true)
+	_set_pause_button_visible(true)
+	if _coverage_label != null:
+		_coverage_label.visible = true
 
 	_initialized = true
 
@@ -146,12 +158,15 @@ func set_ui_nodes(
 	undo_btn: Control,
 	restart_btn: Control,
 	exit_btn: Control = null,
+	pause_btn: Control = null,
 ) -> void:
 	_move_label = move_label
 	_coverage_label = coverage_label
 	_undo_btn = undo_btn
 	_restart_btn = restart_btn
 	_exit_btn = exit_btn
+	_pause_btn = pause_btn
+	_apply_visual_style()
 
 
 # —————————————————————————————————————————————
@@ -244,6 +259,7 @@ func _on_level_restarted() -> void:
 	_set_undo_button_visible(true)
 	_set_restart_button_visible(true)
 	_set_exit_button_visible(true)
+	_set_pause_button_visible(true)
 	_level_complete = false
 
 
@@ -252,6 +268,7 @@ func _on_level_completed() -> void:
 	_set_undo_button_visible(false)
 	_set_restart_button_visible(false)
 	_set_exit_button_visible(false)
+	_set_pause_button_visible(false)
 	_level_complete = true
 
 
@@ -289,6 +306,15 @@ func on_exit_btn_pressed() -> void:
 	SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
 
 
+## Called when the Pause button is pressed. The coordinator owns the pause
+## transition; HUD only forwards the intent.
+func on_pause_btn_pressed() -> void:
+	if _level_complete:
+		return
+	pause_pressed.emit()
+	SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
+
+
 # —————————————————————————————————————————————
 # Display helpers
 # —————————————————————————————————————————————
@@ -299,6 +325,8 @@ func _refresh_all_displays(
 	covered: int,
 	total: int,
 ) -> void:
+	if _coverage_label != null:
+		_coverage_label.visible = true
 	_on_move_count_changed(current_moves, _minimum_moves)
 	_on_coverage_updated(covered, total)
 
@@ -327,10 +355,20 @@ func _set_exit_button_visible(visible_flag: bool) -> void:
 		_exit_btn.visible = visible_flag
 
 
+## Sets pause button visibility with null safety.
+func _set_pause_button_visible(visible_flag: bool) -> void:
+	if _pause_btn != null:
+		_pause_btn.visible = visible_flag
+
+
 ## Auto-discovers child Controls by node path. Only sets references that
 ## haven't already been injected via set_ui_nodes(). Wires button pressed
 ## signals when buttons are found.
 func _auto_discover_ui_nodes() -> void:
+	if _chrome_panel == null:
+		_chrome_panel = get_node_or_null("MarginContainer") as PanelContainer
+	if _moves_prefix_label == null:
+		_moves_prefix_label = get_node_or_null("MarginContainer/VBox/StatsRow/MovesPrefix") as Label
 	if _move_label == null:
 		_move_label = get_node_or_null("MarginContainer/VBox/StatsRow/MoveLabel")
 	if _coverage_label == null:
@@ -353,3 +391,30 @@ func _auto_discover_ui_nodes() -> void:
 	if _exit_btn != null and _exit_btn is BaseButton:
 		if not (_exit_btn as BaseButton).pressed.is_connected(on_exit_btn_pressed):
 			(_exit_btn as BaseButton).pressed.connect(on_exit_btn_pressed)
+
+	if _pause_btn == null:
+		_pause_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/PauseBtn")
+	if _pause_btn != null and _pause_btn is BaseButton:
+		if not (_pause_btn as BaseButton).pressed.is_connected(on_pause_btn_pressed):
+			(_pause_btn as BaseButton).pressed.connect(on_pause_btn_pressed)
+
+
+func _apply_visual_style() -> void:
+	if _chrome_panel != null:
+		_chrome_panel.add_theme_stylebox_override("panel", ShellThemeUtil.make_rounded_style(ShellThemeUtil.CREAM, ShellThemeUtil.PLUM, 24, 5))
+	if _moves_prefix_label != null:
+		_moves_prefix_label.add_theme_color_override("font_color", ShellThemeUtil.PLUM)
+	if _move_label != null and _move_label is Label:
+		(_move_label as Label).add_theme_color_override("font_color", ShellThemeUtil.PLUM)
+		(_move_label as Label).add_theme_font_size_override("font_size", 24)
+	if _coverage_label != null and _coverage_label is Label:
+		(_coverage_label as Label).add_theme_color_override("font_color", ShellThemeUtil.PLUM_SOFT)
+		(_coverage_label as Label).add_theme_font_size_override("font_size", 18)
+	if _undo_btn != null and _undo_btn is BaseButton:
+		ShellThemeUtil.apply_pill_button(_undo_btn as BaseButton, ShellThemeUtil.LILAC, ShellThemeUtil.LILAC_PRESSED, ShellThemeUtil.PLUM, 46.0)
+	if _restart_btn != null and _restart_btn is BaseButton:
+		ShellThemeUtil.apply_pill_button(_restart_btn as BaseButton, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED, ShellThemeUtil.PLUM, 46.0)
+	if _exit_btn != null and _exit_btn is BaseButton:
+		ShellThemeUtil.apply_pill_button(_exit_btn as BaseButton, ShellThemeUtil.BLUSH, ShellThemeUtil.LILAC_PRESSED, ShellThemeUtil.PLUM, 46.0)
+	if _pause_btn != null and _pause_btn is BaseButton:
+		ShellThemeUtil.apply_pill_button(_pause_btn as BaseButton, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED, ShellThemeUtil.PLUM, 46.0)
