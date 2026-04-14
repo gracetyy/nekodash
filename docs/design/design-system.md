@@ -13,14 +13,14 @@ All colors referenced throughout this document use these named tokens.
 
 ### Base
 
-| Token           | Hex       | Usage                                     |
-| --------------- | --------- | ----------------------------------------- |
-| `cream-bg`      | `#F6F1D8` | Global page/screen background             |
-| `cream-card`    | `#FAF7E7` | Modals, cards, popup panels               |
-| `cream-dark`    | `#CFC0B2` | Subtle section dividers inside cards      |
-| `paw-watermark` | `#F1DFCA` | Paw-print watermark pattern on background |
-| `text`          | `#55324B` | Global text token (Dark Plum)             |
-| `icon`          | `#FDFDFB` | Global icon token (White)                 |
+| Token           | Hex       | Usage                                              |
+| --------------- | --------- | -------------------------------------------------- |
+| `cream-bg`      | `#F6F1D8` | Global page/screen background                      |
+| `cream-card`    | `#FAF7E7` | Modals, cards, popup panels (see `card/normal-bg`) |
+| `cream-dark`    | `#CFC0B2` | Subtle section dividers inside cards               |
+| `paw-watermark` | `#F1DFCA` | Paw-print watermark pattern on background          |
+| `text`          | `#55324B` | Global text token (Dark Plum)                      |
+| `icon`          | `#FDFDFB` | Global icon token (White)                          |
 
 ### Game Grid
 
@@ -30,50 +30,96 @@ All colors referenced throughout this document use these named tokens.
 | `grid/floor`   | `#EFF9F1` | Default open floor tile tint             |
 | `grid/visited` | `#FBD490` | Cat's visited/covered tile               |
 
+### Cards
+
+| Token                           | Hex       | Usage                                    |
+| ------------------------------- | --------- | ---------------------------------------- |
+| `card/normal-bg`                | `#FAF7E7` | Normal card/panel background             |
+| `card/normal-bg-shadow`         | `#DDCBB7` | Drop shadow for normal card              |
+| `card/normal-outline`           | `#5E4863` | Border/outline for normal card           |
+| `card/normal-outline-shadow`    | `#BAB3B9` | Drop shadow for normal card outline      |
+| `card/disabled-bg`              | `#BAB3B9` | Background for disabled/locked card      |
+| `card/disabled-bg-shadow`       | `#9A8B94` | Drop shadow for disabled card            |
+| `card/disabled-outline`         | `#7C777E` | Border/outline for disabled card         |
+| `card/highlight-bg`             | `#F3C145` | Background for highlighted/selected card |
+| `card/highlight-bg-shadow`      | `#D19646` | Drop shadow for highlighted card         |
+| `card/highlight-outline`        | `#5E4863` | Border/outline for highlighted card      |
+| `card/highlight-outline-shadow` | `#BCB3B7` | Drop shadow for highlighted card outline |
+
 ### Buttons — Action Mapping & States
 
-Buttons use a **4-colour system** with explicit tokens for states:
+Buttons use a **4-colour system** with explicit tokens for all states including hover and pressed shadows:
 
-| Intent        | State     | Token Name                       | Hex       |
-| :------------ | :-------- | :------------------------------- | :-------- |
-| **Primary**   | Normal    | `btn/primary-bg-normal`          | `#F3C145` |
-|               | Hover     | `btn/primary-bg-hover`           | `#F8D36A` |
-|               | Pressed   | `btn/primary-bg-pressed`         | `#E4AE31` |
-|               | Shadow    | `btn/primary-bg-normal-shadow`   | `#D19646` |
-|               | Text/Icon | `btn/primary-text-normal`        | `#55324B` |
-| **Secondary** | Normal    | `btn/secondary-bg-normal`        | `#A5D5BD` |
-|               | Hover     | `btn/secondary-bg-hover`         | `#BCE4D0` |
-|               | Pressed   | `btn/secondary-bg-pressed`       | `#90C4A8` |
-|               | Shadow    | `btn/secondary-bg-normal-shadow` | `#7FB499` |
-|               | Text/Icon | `btn/secondary-text-normal`      | `#55324B` |
-| **Tertiary**  | Normal    | `btn/tertiary-bg-normal`         | `#C0AFE2` |
-|               | Hover     | `btn/tertiary-bg-hover`          | `#DAC6F4` |
-|               | Pressed   | `btn/tertiary-bg-pressed`        | `#A58BCA` |
-|               | Shadow    | `btn/tertiary-bg-normal-shadow`  | `#A083BD` |
-|               | Text/Icon | `btn/tertiary-text-normal`       | `#55324B` |
-| **Danger**    | Normal    | `btn/danger-bg-normal`           | `#614C6A` |
-|               | Hover     | `btn/danger-bg-hover`            | `#7A6285` |
-|               | Pressed   | `btn/danger-bg-pressed`          | `#5E4863` |
-|               | Shadow    | `btn/danger-bg-normal-shadow`    | `#5E4863` |
-|               | Text/Icon | `btn/danger-text-normal`         | `#FDFDFB` |
-| **Disabled**  | Normal    | `btn/disabled-bg`                | `#C6C5C9` |
-|               | Shadow    | `btn/disabled-bg-shadow`         | `#ACA2AC` |
-|               | Text/Icon | `btn/disabled-text`              | `#ACA2AC` |
+| Intent          | State                 | Token Name                         | Hex       |
+| :-------------- | :-------------------- | :--------------------------------- | :-------- |
+| **Primary**     | Normal                | `btn/primary-bg-normal`            | `#F3C145` |
+|                 | Hover                 | `btn/primary-bg-hover`             | `#F8D36A` |
+|                 | Pressed               | `btn/primary-bg-pressed`           | `#E4AE31` |
+|                 | Shadow (normal)       | `btn/primary-bg-normal-shadow`     | `#D19646` |
+|                 | Shadow (hover)        | `btn/primary-bg-hover-shadow`      | `#F3C145` |
+|                 | Shadow (pressed)      | `btn/primary-bg-pressed-shadow`    | `#D19646` |
+|                 | Text                  | `btn/primary-text-normal`          | `#55324B` |
+|                 | Icon                  | `btn/primary-icon-normal`          | `#FDFDFB` |
+| **Secondary**   | Normal                | `btn/secondary-bg-normal`          | `#A5D5BD` |
+|                 | Hover                 | `btn/secondary-bg-hover`           | `#BCE4D0` |
+|                 | Pressed               | `btn/secondary-bg-pressed`         | `#90C4A8` |
+|                 | Shadow (normal)       | `btn/secondary-bg-normal-shadow`   | `#7FB499` |
+|                 | Shadow (hover)        | `btn/secondary-bg-hover-shadow`    | `#A5D5BD` |
+|                 | Shadow (pressed)      | `btn/secondary-bg-pressed-shadow`  | `#7FB499` |
+|                 | Text                  | `btn/secondary-text-normal`        | `#55324B` |
+|                 | Icon                  | `btn/secondary-icon-normal`        | `#FDFDFB` |
+| **Tertiary**    | Normal                | `btn/tertiary-bg-normal`           | `#C0AFE2` |
+|                 | Hover                 | `btn/tertiary-bg-hover`            | `#DAC6F5` |
+|                 | Pressed               | `btn/tertiary-bg-pressed`          | `#A58BCA` |
+|                 | Shadow (normal)       | `btn/tertiary-bg-normal-shadow`    | `#A083BD` |
+|                 | Shadow (hover)        | `btn/tertiary-bg-hover-shadow`     | `#C0AFE2` |
+|                 | Shadow (pressed)      | `btn/tertiary-bg-pressed-shadow`   | `#7F649A` |
+|                 | Text                  | `btn/tertiary-text-normal`         | `#55324B` |
+|                 | Icon                  | `btn/tertiary-icon-normal`         | `#FDFDFB` |
+|                 | Icon Shadow (normal)  | `btn/tertiary-icon-normal-shadow`  | `#A083BD` |
+|                 | Icon Shadow (hover)   | `btn/tertiary-icon-hover-shadow`   | `#C0AFE2` |
+|                 | Icon Shadow (pressed) | `btn/tertiary-icon-pressed-shadow` | `#7F649A` |
+| **Danger**      | Normal                | `btn/danger-bg-normal`             | `#614C6A` |
+|                 | Hover                 | `btn/danger-bg-hover`              | `#7A6285` |
+|                 | Pressed               | `btn/danger-bg-pressed`            | `#5E4863` |
+|                 | Shadow (normal)       | `btn/danger-bg-normal-shadow`      | `#5E4863` |
+|                 | Shadow (hover)        | `btn/danger-bg-hover-shadow`       | `#614C6A` |
+|                 | Shadow (pressed)      | `btn/danger-bg-pressed-shadow`     | `#53405B` |
+|                 | Text                  | `btn/danger-text-normal`           | `#FDFDFB` |
+|                 | Icon                  | `btn/danger-icon-normal`           | `#FDFDFB` |
+| **Disabled**    | Normal                | `btn/disabled-bg`                  | `#C6C5C9` |
+|                 | Shadow                | `btn/disabled-bg-shadow`           | `#ACA2AC` |
+|                 | Outline               | `btn/disabled-outline`             | `#9B8B98` |
+|                 | Text                  | `btn/disabled-text`                | `#ACA2AC` |
+|                 | Icon                  | `btn/disabled-icon`                | `#ACA2AC` |
+| **Dropshadows** | Normal                | `btn/dropshadow`                   | `#BAB3B9` |
+|                 | Pressed               | `btn/dropshadow-pressed`           | `#9A8B94` |
 
 ### HUD & Stars
 
-| Token                   | Hex       | Usage                                     |
-| ----------------------- | --------- | ----------------------------------------- |
-| `hud-pill-bg`           | `#735D6B` | Move counter pill background              |
-| `hud-pill-text`         | `#F8EBC2` | Move counter number                       |
-| `star-filled`           | `#F2C456` | Base fill for earned stars                |
-| `star-filled-highlight` | `#FDFDFB` | Glint/highlight on filled stars           |
-| `star-filled-shadow`    | `#EDB147` | Drop shadow/bottom bevel for filled stars |
-| `star-filled-outline`   | `#55324B` | Dark Plum outline for filled stars        |
-| `star-empty`            | `#BAB3B9` | Base fill for unearned/missed stars       |
-| `star-empty-outline`    | `#55324B` | Dark Plum outline for empty stars         |
-| `star-hollow`           | `#C5BFC2` | Background socket/hollow slot for stars   |
-| `star-hollow-shadow`    | `#A99BA2` | Inner shadow/bevel for the hollow socket  |
+| Token                          | Hex       | Usage                                     |
+| ------------------------------ | --------- | ----------------------------------------- |
+| `hud-pill-bg`                  | `#735D6B` | Move counter pill background              |
+| `hud-pill-text`                | `#F8EBC2` | Move counter number                       |
+| `items/star-filled`            | `#F2C456` | Base fill for earned stars                |
+| `items/star-filled-highlight`  | `#FDFDFB` | Glint/highlight on filled stars           |
+| `items/star-filled-shadow`     | `#EDB147` | Drop shadow/bottom bevel for filled stars |
+| `items/star-filled-outline`    | `#55324B` | Dark Plum outline for filled stars        |
+| `items/star-filled-dropshadow` | `#D19646` | Drop shadow for filled stars              |
+| `items/star-empty`             | `#BAB3B9` | Base fill for unearned/missed stars       |
+| `items/star-empty-outline`     | `#55324B` | Dark Plum outline for empty stars         |
+| `items/star-empty-dropshadow`  | `#9A8B94` | Drop shadow for empty stars               |
+| `items/star-hollow`            | `#C5BFC2` | Background socket/hollow slot for stars   |
+| `items/star-hollow-shadow`     | `#A99BA2` | Inner shadow/bevel for the hollow socket  |
+| `items/star-hollow-outline`    | `#55324B` | Dark Plum outline for hollow socket       |
+| `items/star-hollow-dropshadow` | `#9A8B94` | Drop shadow for hollow socket             |
+
+### Semantic
+
+| Token            | Hex       | Usage                                          |
+| ---------------- | --------- | ---------------------------------------------- |
+| `badge-new-best` | `#F5A623` | "NEW BEST" orange pill badge on level complete |
+| `lock-gold`      | `#E8A820` | Padlock icon colour on locked levels/skins     |
 
 ---
 
@@ -100,14 +146,44 @@ Buttons use a **4-colour system** with explicit tokens for states:
 The primary interactive text element across all screens.
 
 - **Shape:** Fully rounded (border-radius = height / 2)
-- **Height:** 56px (mobile base)
+- **Visible face:** 56px high
+- **Exported asset:** 60px high total (56px face + 4px baked bottom shadow)
 - **Width:** Dynamic via `NinePatchRect` stretching.
 - **Background:** Solid fill colour (per token above).
-- **Shadow:** 4px bottom-only drop shadow.
+- **Shadow:** 4px bottom-only hard shadow/base, baked into export, colour matches button shadow token
 - **Label:** Centered, `Button Label` type scale (32px). Text color depends on variant (`#55324B` for Primary/Secondary/Tertiary; `#FDFDFB` for Danger).
 - **Icon:** Optional interior icon. 36x36px frame (containing 30x30px transparent vector), placed left or right of label with 8px gap using `HBoxContainer`.
 
-### 3.2 Icon Button (Circular / Fixed)
+**Construction model:**
+
+- The pill button is treated as a **two-layer object**:
+  1. top face (fill, outline, icon, text),
+  2. bottom base/shadow layer.
+- The shadow is part of the authored art asset, not added later as an engine effect.
+- The exported PNG must include the full shadow area inside its bounds.
+
+**States:**
+
+- Default: full colour, full 4px bottom shadow visible.
+- Hover / Focus: fill shifts to hover variant; shadow depth remains visually 4px.
+- Pressed: top face shifts downward by 2–4px; visible shadow depth reduces to 2px or 0px.
+- Disabled: `btn-disabled` fill, `text-on-btn` label/icon where readability needs it, muted overall contrast, `btn-disabled-shadow` base.
+
+**Interaction rule:**
+
+- Hover changes **colour**, not elevation.
+- Pressed changes **depth**, not hue family.
+
+**Variants by intent:**
+
+| Variant   | Fill            | Shadow token           | Used for                     |
+| --------- | --------------- | ---------------------- | ---------------------------- |
+| Primary   | `btn-primary`   | `btn-primary-shadow`   | PLAY, RESUME, NEXT LEVEL, OK |
+| Secondary | `btn-secondary` | `btn-secondary-shadow` | RETRY, RESTART, NEXT ▶       |
+| Tertiary  | `btn-tertiary`  | `btn-tertiary-shadow`  | QUIT, CLOSE, WORLD MAP       |
+| Danger    | `btn-danger`    | `btn-danger-shadow`    | Destructive actions          |
+
+### 3.2 Icon Button (Circular)
 
 Used in the HUD and for screen navigation. Exported as fully baked PNGs including background, icon, border, and shadow.
 

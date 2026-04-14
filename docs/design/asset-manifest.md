@@ -231,13 +231,39 @@ The entire grid sits inside a single **nine-patch rounded-rect frame** (confirme
 
 ---
 
-## 6. UI — Pill Button Backgrounds `assets/art/ui/buttons/pill_bases/`
+## 6. UI — Pill Buttons `assets/art/ui/buttons/pill_bases/`
 
-All pill buttons are **nine-patch** so they scale horizontally to fit dynamic text and icons.
-Height: **56px** fixed. Design at 220×56px; nine-patch horizontal stretch region is the 12px centre strip (24px for `@2x`).
-Style: Fully rounded pill, solid colour fill, bottom-only drop shadow. Text and icons are NOT baked in; they are assembled dynamically in-engine.
+Wide pill buttons are exported as **background-only raster assets** for Godot `NinePatchRect` use.
+Text is rendered in-engine using Fredoka. Icons may be rendered separately in-engine for icon+label buttons,
+or baked depending on the specific asset workflow, but the **background/base asset** always includes the
+bottom shadow inside the export bounds.
 
-_Status: All 13 core button bases (26 files including @2x) have been exported and are ✅ Complete._
+### Pill Button Export Spec
+
+```text
+Visible face height : 56px
+Bottom shadow/base  : 4px
+Exported asset size : 220×60px at 1x
+2x export           : 440×120px
+Corner shape        : Fully rounded pill
+Shadow style        : Bottom-only, hard/chunky, no blur-heavy web shadow
+Nine-patch use      : Horizontal stretch only
+Pressed offset      : The pressed state graphic is physically shifted down by 2px. Godot UI labels/icons overlaid on these buttons MUST be configured to shift down by 2px (e.g., using `theme_override_constants/icon_max_width` or margin overrides, or shifting a container's position) when the button is in the pressed state.
+```
+
+### Nine-Patch Margins
+
+At **1x (220×60)**:
+
+- Left fixed cap: 56px
+- Right fixed cap: 56px
+- Stretchable center strip: 108px total center region, with the original logic preserving the middle band for horizontal scaling
+- Vertical scaling: not intended; keep height fixed
+
+At **2x (440×120)**:
+
+- Left fixed cap: 112px
+- Right fixed cap: 112px
 
 | File                         | Intent            | State                 | Size (px)     | Format | Status |
 | ---------------------------- | ----------------- | --------------------- | ------------- | ------ | ------ |
@@ -371,7 +397,7 @@ Style: 10px outside stroke, 10px bottom inner shadow, 8px bottom-only drop shado
 | ------------------------ | ------------------------------ | -------------------------------------------------------------------------- |
 | `skin_card_unlocked.png` | Unlocked skin card background. | Fill `card/normal-bg` (`#FAF7E7`), corner radius 16px. Upper 70% cat zone. |
 | `skin_card_equipped.png` | Equipped state.                | Fill `card/highlight-bg` (`#F3C145`), corner radius 16px.                  |
-| `skin_card_locked.png`   | Locked state.                  | Fill `card/disabled-bg` (`#BCB3B7`), border `card/disabled-outline`.       |
+| `skin_card_locked.png`   | Locked state.                  | Fill `card/disabled-bg` (`#BAB3B9`), border `card/disabled-outline`.       |
 
 ---
 
