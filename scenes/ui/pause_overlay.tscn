@@ -1,73 +1,177 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1p7xihah4drw"]
+[gd_scene load_steps=5 format=3 uid="uid://d1p7xihah4drw"]
 
 [ext_resource type="Script" path="res://src/ui/pause_menu.gd" id="1"]
-[ext_resource type="Texture2D" path="res://design/draft/sprite-cat.png" id="2"]
+[ext_resource type="Shader" path="res://assets/shaders/ui/canvas_ui_overlay_blur.gdshader" id="2"]
+[ext_resource type="Texture2D" uid="uid://b2h2drorkunul" path="res://assets/art/cats/cat_head.png" id="3"]
+
+[sub_resource type="ShaderMaterial" id="1"]
+shader = ExtResource("2")
+shader_parameter/blur_strength = 1.05
+shader_parameter/dim_alpha = 0.4
+shader_parameter/dim_tint = Vector3(0.22, 0.18, 0.25)
 
 [node name="PauseOverlay" type="CanvasLayer"]
+layer = 41
 script = ExtResource("1")
 
 [node name="Backdrop" type="ColorRect" parent="."]
+material = SubResource("1")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.117647, 0.0862745, 0.141176, 0.62)
 
-[node name="Panel" type="PanelContainer" parent="Backdrop"]
-anchors_preset = 8
+[node name="CatPeek" type="TextureRect" parent="Backdrop"]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -176.0
-offset_top = -230.0
-offset_right = 176.0
-offset_bottom = 230.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Mascot" type="TextureRect" parent="Backdrop/Panel"]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 0
-offset_left = 126.0
-offset_top = -62.0
-offset_right = 226.0
-offset_bottom = 38.0
-texture = ExtResource("2")
+offset_left = -92.0
+offset_top = -430.0
+offset_right = 92.0
+offset_bottom = -298.0
+mouse_filter = 2
+texture = ExtResource("3")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="Panel" type="PanelContainer" parent="Backdrop"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -232.0
+offset_top = -318.0
+offset_right = 232.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="Margin" type="MarginContainer" parent="Backdrop/Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 22
-theme_override_constants/margin_top = 34
-theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 22
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
 
 [node name="VBox" type="VBoxContainer" parent="Backdrop/Panel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 10
 
 [node name="TitleLabel" type="Label" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
-text = "Paused"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 34
 theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
+theme_override_font_sizes/font_size = 34
+text = "PAUSED"
+horizontal_alignment = 1
 
-[node name="ResumeBtn" type="Button" parent="Backdrop/Panel/Margin/VBox"]
+[node name="AudioSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
-text = "RESUME"
+theme_override_constants/separation = 8
 
-[node name="RestartBtn" type="Button" parent="Backdrop/Panel/Margin/VBox"]
+[node name="AudioLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
 layout_mode = 2
-text = "RESTART"
+theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
+theme_override_font_sizes/font_size = 20
+text = "Audio"
 
-[node name="OptionsBtn" type="Button" parent="Backdrop/Panel/Margin/VBox"]
+[node name="MusicRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
 layout_mode = 2
-text = "OPTIONS"
+theme_override_constants/separation = 12
 
-[node name="MainMenuBtn" type="Button" parent="Backdrop/Panel/Margin/VBox"]
+[node name="MusicLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-text = "QUIT TO MENU"
+theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
+text = "Music"
+
+[node name="MusicSlider" type="HSlider" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
+custom_minimum_size = Vector2(186, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="MusicMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
+custom_minimum_size = Vector2(144, 0)
+layout_mode = 2
+text = "Mute"
+
+[node name="SfxRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SfxLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
+text = "SFX"
+
+[node name="SfxSlider" type="HSlider" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
+custom_minimum_size = Vector2(186, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="SfxMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
+custom_minimum_size = Vector2(144, 0)
+layout_mode = 2
+text = "Mute"
+
+[node name="DisplaySection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DisplayLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
+theme_override_font_sizes/font_size = 20
+text = "Display"
+
+[node name="ReduceMotionToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
+layout_mode = 2
+text = "Reduce Motion"
+
+[node name="LargeUiToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
+layout_mode = 2
+text = "Large Text"
+
+[node name="FullscreenToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="InputSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="InputLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/InputSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
+theme_override_font_sizes/font_size = 20
+text = "Input Hints"
+
+[node name="InputHintOption" type="OptionButton" parent="Backdrop/Panel/Margin/VBox/InputSection"]
+layout_mode = 2
+
+[node name="ButtonStack" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="IconRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/ButtonStack"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="ResumeBtn" type="TextureButton" parent="Backdrop/Panel/Margin/VBox/ButtonStack/IconRow"]
+custom_minimum_size = Vector2(74, 74)
+layout_mode = 2
+
+[node name="RestartBtn" type="TextureButton" parent="Backdrop/Panel/Margin/VBox/ButtonStack/IconRow"]
+custom_minimum_size = Vector2(74, 74)
+layout_mode = 2
+
+[node name="MainMenuBtn" type="TextureButton" parent="Backdrop/Panel/Margin/VBox/ButtonStack/IconRow"]
+custom_minimum_size = Vector2(74, 74)
+layout_mode = 2
