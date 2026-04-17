@@ -26,12 +26,16 @@ func before_each() -> void:
 	_level_completed_count = 0
 	_move_count_at_completion = -1
 	SaveManager.reset_all_progress()
+	SceneManager.hide_overlay()
+	get_tree().paused = false
 
 
 func after_each() -> void:
 	if _lc and is_instance_valid(_lc) and _lc.is_inside_tree():
 		_lc.queue_free()
 		_lc = null
+	SceneManager.hide_overlay()
+	get_tree().paused = false
 
 
 # —————————————————————————————————————————————
@@ -505,7 +509,7 @@ func test_level_progression_saves_on_level_complete() -> void:
 	assert_eq(SaveManager.get_best_moves(ld.level_id), 1)
 
 
-func test_scene_manager_goto_called_on_level_complete() -> void:
+func test_level_complete_overlay_shown_on_level_complete() -> void:
 	# Arrange
 	var ld := _make_2_tile_level()
 	GridSystem.load_grid(ld)
@@ -513,13 +517,13 @@ func test_scene_manager_goto_called_on_level_complete() -> void:
 
 	# Act
 	_send_input(Vector2i(1, 0))
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(1.6).timeout
 
-	# Assert — SceneManager stub tracks last go_to call
-	assert_eq(
-		SceneManager.get_current_screen(),
-		SceneManager.Screen.LEVEL_COMPLETE,
-	)
+	# Assert — completion now opens a modal overlay over gameplay
+	assert_eq(SceneManager.get_active_overlay(), SceneManager.Overlay.LEVEL_COMPLETE)
+	assert_true(get_tree().paused)
+	SceneManager.hide_overlay()
+	get_tree().paused = false
 
 
 func test_undo_works_through_coordinator() -> void:

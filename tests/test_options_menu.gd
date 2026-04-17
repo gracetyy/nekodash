@@ -101,9 +101,9 @@ func test_sync_controls_reads_injected_services() -> void:
 	var music_mute: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteToggle") as CheckButton
 	var sfx_slider: HSlider = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider") as HSlider
 	var sfx_mute: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteToggle") as CheckButton
-	var reduce_motion: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionToggle") as CheckButton
-	var large_ui: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiToggle") as CheckButton
-	var fullscreen: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenToggle") as CheckButton
+	var reduce_motion: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionToggle") as CheckButton
+	var large_ui: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiToggle") as CheckButton
+	var fullscreen: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenToggle") as CheckButton
 	var input_hint: OptionButton = _menu.get_node("Backdrop/Panel/Margin/VBox/InputSection/InputHintOption") as OptionButton
 
 	assert_eq(music_slider.value, 35.0)
