@@ -221,7 +221,7 @@ func test_initialize_not_initialized_by_default() -> void:
 func test_initialize_sets_move_display_with_minimum() -> void:
 	_mc.set_test_state(0, 8)
 	_init_hud(_make_level_data("Test", 8))
-	assert_eq(_move_label.text, "0 / 8")
+	assert_eq(_move_label.text, "0")
 
 
 func test_initialize_sets_move_display_without_minimum() -> void:
@@ -294,7 +294,7 @@ func test_move_count_changed_updates_display_with_minimum() -> void:
 	_init_hud(_make_level_data("Test", 10))
 	_mc.set_test_state(3, 10)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "3 / 10")
+	assert_eq(_move_label.text, "3")
 
 
 func test_move_count_changed_updates_display_without_minimum() -> void:
@@ -308,20 +308,20 @@ func test_move_count_changed_multiple_updates() -> void:
 	_init_hud(_make_level_data("Test", 8))
 	_mc.set_test_state(1, 8)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "1 / 8")
+	assert_eq(_move_label.text, "1")
 	_mc.set_test_state(4, 8)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "4 / 8")
+	assert_eq(_move_label.text, "4")
 	_mc.set_test_state(8, 8)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "8 / 8")
+	assert_eq(_move_label.text, "8")
 
 
 func test_move_count_changed_exceeds_minimum() -> void:
 	_init_hud(_make_level_data("Test", 5))
 	_mc.set_test_state(7, 5)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "7 / 5")
+	assert_eq(_move_label.text, "7")
 
 
 # —————————————————————————————————————————————
@@ -387,11 +387,11 @@ func test_level_restarted_resets_move_display() -> void:
 	_init_hud(_make_level_data("Test", 8))
 	_mc.set_test_state(5, 8)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "5 / 8")
+	assert_eq(_move_label.text, "5")
 	# Simulate reset that occurs before level_restarted fires
 	_mc.set_test_state(0, 8)
 	_ur.level_restarted.emit()
-	assert_eq(_move_label.text, "0 / 8")
+	assert_eq(_move_label.text, "0")
 
 
 func test_level_restarted_resets_coverage_display() -> void:
@@ -416,12 +416,12 @@ func test_level_restarted_disables_undo_button() -> void:
 
 func test_level_restarted_shows_buttons() -> void:
 	_init_hud()
-	# Simulate level complete hiding buttons
+	# Level complete no longer hides HUD controls; restart must preserve visibility.
 	_ct.level_completed.emit()
-	assert_false(_undo_btn.visible)
-	assert_false(_restart_btn.visible)
-	assert_false(_exit_btn.visible)
-	# Restart restores them
+	assert_true(_undo_btn.visible)
+	assert_true(_restart_btn.visible)
+	assert_true(_exit_btn.visible)
+	# Restart keeps them visible.
 	_ur.level_restarted.emit()
 	assert_true(_undo_btn.visible)
 	assert_true(_restart_btn.visible)
@@ -440,22 +440,22 @@ func test_level_restarted_clears_level_complete_flag() -> void:
 # Level Completed Signal Tests
 # —————————————————————————————————————————————
 
-func test_level_completed_hides_undo_button() -> void:
+func test_level_completed_keeps_undo_button_visible() -> void:
 	_init_hud()
 	_ct.level_completed.emit()
-	assert_false(_undo_btn.visible)
+	assert_true(_undo_btn.visible)
 
 
-func test_level_completed_hides_restart_button() -> void:
+func test_level_completed_keeps_restart_button_visible() -> void:
 	_init_hud()
 	_ct.level_completed.emit()
-	assert_false(_restart_btn.visible)
+	assert_true(_restart_btn.visible)
 
 
-func test_level_completed_hides_exit_button() -> void:
+func test_level_completed_keeps_exit_button_visible() -> void:
 	_init_hud()
 	_ct.level_completed.emit()
-	assert_false(_exit_btn.visible)
+	assert_true(_exit_btn.visible)
 
 
 func test_level_completed_sets_flag() -> void:
@@ -563,7 +563,7 @@ func test_set_ui_nodes_before_initialize() -> void:
 	# Verify move label is empty before init
 	assert_eq(_move_label.text, "")
 	_init_hud(_make_level_data("Edge Case", 5))
-	assert_eq(_move_label.text, "0 / 5")
+	assert_eq(_move_label.text, "0")
 
 
 func test_signals_not_connected_before_initialize() -> void:
@@ -584,7 +584,7 @@ func test_initialize_with_large_values() -> void:
 	_mc.set_test_state(0, 999)
 	_ct.set_test_state(0, 225)
 	_init_hud(_make_level_data("Big Level", 999))
-	assert_eq(_move_label.text, "0 / 999")
+	assert_eq(_move_label.text, "0")
 	assert_eq(_coverage_label.text, "0 / 225")
 
 
@@ -606,7 +606,7 @@ func test_initialize_twice_no_double_signal_handling() -> void:
 	# Signal should fire handler exactly once, not twice
 	_mc.set_test_state(3, 8)
 	_mc.emit_move_count_changed()
-	assert_eq(_move_label.text, "3 / 8")
+	assert_eq(_move_label.text, "3")
 	# Verify coverage also single-fires
 	_ct.set_test_state(5, 20)
 	_ct.emit_coverage_updated()

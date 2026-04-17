@@ -63,10 +63,16 @@ func test_large_ui_roundtrip() -> void:
 	assert_true(settings2.get_large_ui())
 
 
-func test_ui_scale_factor_reflects_large_ui_setting() -> void:
+func test_ui_scale_factor_stays_normal_with_large_text_enabled() -> void:
 	assert_eq(_settings.get_ui_scale_factor(), _settings.UI_SCALE_NORMAL)
 	_settings.set_large_ui(true)
-	assert_eq(_settings.get_ui_scale_factor(), _settings.UI_SCALE_LARGE)
+	assert_eq(_settings.get_ui_scale_factor(), _settings.UI_SCALE_NORMAL)
+
+
+func test_text_scale_factor_reflects_large_text_setting() -> void:
+	assert_eq(_settings.get_text_scale_factor(), _settings.TEXT_SCALE_NORMAL)
+	_settings.set_large_ui(true)
+	assert_eq(_settings.get_text_scale_factor(), _settings.TEXT_SCALE_LARGE)
 
 
 func test_input_hint_mode_roundtrip() -> void:

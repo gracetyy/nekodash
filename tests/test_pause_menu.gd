@@ -46,16 +46,15 @@ func test_restart_button_emits_restart_requested() -> void:
 	assert_signal_emitted(_menu, "restart_requested")
 
 
-func test_options_button_emits_options_requested() -> void:
-	watch_signals(_menu)
-	_menu.on_options_btn_pressed()
-	assert_signal_emitted(_menu, "options_requested")
-
-
 func test_main_menu_button_emits_main_menu_requested() -> void:
 	watch_signals(_menu)
 	_menu.on_main_menu_btn_pressed()
 	assert_signal_emitted(_menu, "main_menu_requested")
+
+
+func test_pause_menu_has_audio_sliders() -> void:
+	assert_not_null(_menu.get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicSlider"))
+	assert_not_null(_menu.get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider"))
 
 
 func test_restart_requested_calls_restart_level_on_current_scene() -> void:
