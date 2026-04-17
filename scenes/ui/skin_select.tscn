@@ -1,20 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://cskinselect5cen"]
+[gd_scene load_steps=2 format=3 uid="uid://m6qor75qd1pp"]
 
 [ext_resource type="Script" path="res://src/ui/skin_select.gd" id="1"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tertiary"]
-bg_color = Color(0.753, 0.686, 0.886, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tertiary_pressed"]
-bg_color = Color(0.693, 0.631, 0.815, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
 
 [node name="SkinSelect" type="Control"]
 layout_mode = 3
@@ -52,23 +38,19 @@ alignment = 1
 
 [node name="TitleLabel" type="Label" parent="VBox"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.361, 0.29, 0.42, 1)
+theme_override_font_sizes/font_size = 28
 text = "Skins"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.361, 0.29, 0.42, 1)
 
 [node name="ComingSoonLabel" type="Label" parent="VBox"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.541, 0.439, 0.376, 1)
 text = "Coming Soon!"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.541, 0.439, 0.376, 1)
 
 [node name="BackBtn" type="Button" parent="VBox"]
 layout_mode = 2
-text = "← BACK"
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_tertiary")
-theme_override_styles/hover = SubResource("StyleBoxFlat_tertiary")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_tertiary_pressed")
+text = "BACK"
