@@ -15,11 +15,14 @@ const SECTION_INPUT: String = "input"
 
 const KEY_FULLSCREEN: String = "fullscreen"
 const KEY_REDUCE_MOTION: String = "reduce_motion"
+# Kept for backward compatibility with existing user settings file.
 const KEY_LARGE_UI: String = "large_ui"
 const KEY_LAST_WORLD_ID: String = "last_world_id"
 const KEY_INPUT_HINT_MODE: String = "input_hint_mode"
 const UI_SCALE_NORMAL: float = 1.0
-const UI_SCALE_LARGE: float = 1.15
+const UI_SCALE_LARGE: float = 1.0
+const TEXT_SCALE_NORMAL: float = 1.0
+const TEXT_SCALE_LARGE: float = 1.16
 
 const INPUT_HINT_AUTO: String = "auto"
 const INPUT_HINT_TOUCH: String = "touch"
@@ -154,7 +157,12 @@ func get_effective_input_hint_mode() -> String:
 
 
 func get_ui_scale_factor() -> float:
-	return UI_SCALE_LARGE if get_large_ui() else UI_SCALE_NORMAL
+	# Large Text should not scale the full UI canvas.
+	return UI_SCALE_NORMAL
+
+
+func get_text_scale_factor() -> float:
+	return TEXT_SCALE_LARGE if get_large_ui() else TEXT_SCALE_NORMAL
 
 
 # —————————————————————————————————————————————
@@ -185,7 +193,7 @@ func _apply_runtime_settings() -> void:
 	if tree == null or tree.root == null:
 		return
 
-	tree.root.content_scale_factor = get_ui_scale_factor()
+	tree.root.content_scale_factor = UI_SCALE_NORMAL
 	if OS.has_feature("headless"):
 		return
 

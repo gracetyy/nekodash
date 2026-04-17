@@ -35,9 +35,10 @@ func _ready() -> void:
 	_connect_ui()
 	_apply_visual_style()
 	_sync_controls()
+	_play_intro_animation()
 	if not close_requested.is_connected(_handle_close_requested):
 		close_requested.connect(_handle_close_requested)
-	if _music_slider != null:
+	if _music_slider != null and _music_slider.editable:
 		_music_slider.grab_focus()
 
 
@@ -129,6 +130,7 @@ func _sync_controls() -> void:
 				_input_hint_option.select(2)
 			_:
 				_input_hint_option.select(0)
+	_refresh_audio_control_states()
 	_suppress_events = false
 
 
@@ -142,6 +144,7 @@ func _on_music_mute_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
 	_music_manager_ref.set_muted(button_pressed)
+	_refresh_audio_control_states()
 
 
 func _on_sfx_slider_changed(value: float) -> void:
@@ -154,6 +157,7 @@ func _on_sfx_mute_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
 	_sfx_manager_ref.set_muted(button_pressed)
+	_refresh_audio_control_states()
 
 
 func _on_reduce_motion_toggled(button_pressed: bool) -> void:
@@ -194,14 +198,73 @@ func _auto_discover_ui_nodes() -> void:
 	_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteToggle") as BaseButton
 	_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider") as Range
 	_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteToggle") as BaseButton
-	_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionToggle") as BaseButton
-	_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiToggle") as BaseButton
-	_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenToggle") as BaseButton
+	_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionToggle") as BaseButton
+	_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiToggle") as BaseButton
+	_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenToggle") as BaseButton
 	_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintOption") as OptionButton
-	_close_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonRow/CloseBtn") as BaseButton
+	_close_btn = get_node_or_null("Backdrop/CloseBtn") as BaseButton
 
 
 func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
 	ShellThemeUtil.apply_panel(_panel, ShellThemeUtil.CREAM)
-	ShellThemeUtil.apply_pill_button(_close_btn, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
+	if _title_label != null:
+		ShellThemeUtil.apply_title(_title_label, 36)
+	var section_headers: Array[NodePath] = [
+		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputLabel"),
+	]
+	var option_labels: Array[NodePath] = [
+		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicName"),
+		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxName"),
+		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenLabel"),
+	]
+	for path: NodePath in section_headers:
+		var label: Label = get_node_or_null(path) as Label
+		if label != null:
+			ShellThemeUtil.apply_title(label, 24)
+	for path: NodePath in option_labels:
+		var label: Label = get_node_or_null(path) as Label
+		if label != null:
+			ShellThemeUtil.apply_body(label, ShellThemeUtil.PLUM_SOFT, 20)
+	ShellThemeUtil.apply_circle_close_button(_close_btn, 58.0)
+	ShellThemeUtil.apply_slider(_music_slider)
+	ShellThemeUtil.apply_slider(_sfx_slider)
+	ShellThemeUtil.apply_checkbox(_music_mute_toggle)
+	ShellThemeUtil.apply_checkbox(_sfx_mute_toggle)
+	ShellThemeUtil.apply_checkbox(_reduce_motion_toggle)
+	ShellThemeUtil.apply_checkbox(_large_ui_toggle)
+	ShellThemeUtil.apply_checkbox(_fullscreen_toggle)
+	if _input_hint_option != null:
+		ShellThemeUtil.apply_option_button(_input_hint_option)
+
+
+func _play_intro_animation() -> void:
+	if _panel == null:
+		return
+	if AppSettings != null and AppSettings.get_reduce_motion():
+		_panel.scale = Vector2.ONE
+		_panel.modulate = Color.WHITE
+		return
+	_panel.pivot_offset = _panel.size * 0.5
+	_panel.scale = Vector2(0.95, 0.95)
+	_panel.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	var tween: Tween = create_tween()
+	tween.tween_property(_panel, "modulate:a", 1.0, 0.16) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(_panel, "scale", Vector2.ONE, 0.2) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _refresh_audio_control_states() -> void:
+	_set_slider_enabled(_music_slider, _music_mute_toggle == null or not _music_mute_toggle.button_pressed)
+	_set_slider_enabled(_sfx_slider, _sfx_mute_toggle == null or not _sfx_mute_toggle.button_pressed)
+
+
+func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
+	if slider_control == null or not slider_control is HSlider:
+		return
+	ShellThemeUtil.set_slider_interactive(slider_control as HSlider, is_enabled)
