@@ -70,6 +70,10 @@ var _state: State = State.LOADING
 var _current_level_data: LevelData
 var _prev_best_moves: int = 0
 var _was_previously_completed: bool = false
+var _entry_fade_layer: CanvasLayer
+var _entry_fade_rect: ColorRect
+var _entry_fade_tween: Tween
+const LEVEL_COMPLETE_MODAL_DELAY_SEC: float = 1.0
 
 ## Stub SFX stream for level completion (replace with real audio asset later).
 var _sfx_level_complete: AudioStream = AudioStreamWAV.new()
@@ -133,6 +137,8 @@ func _ready() -> void:
 				solve_result.minimum_moves,
 				wasd if wasd != "" else "(trivial/unsolvable)",
 			])
+
+	_play_level_entry_transition()
 
 
 # —————————————————————————————————————————————
@@ -336,11 +342,23 @@ func _on_level_record_saved(level_id: String, stars: int, final_moves: int) -> v
 		"was_previously_completed": _was_previously_completed,
 		"next_level_data": next_level,
 	}
+	await get_tree().create_timer(LEVEL_COMPLETE_MODAL_DELAY_SEC).timeout
+	if not is_inside_tree() or _state != State.TRANSITIONING:
+		return
+	_show_level_complete_overlay(params)
 
-	# Navigate to the Level Complete screen. SceneManager performs a real scene
-	# swap — the gameplay scene (this coordinator) is queue_free()d, so no code
-	# after this call will execute.
-	SceneManager.go_to(SceneManager.Screen.LEVEL_COMPLETE, params)
+
+func _show_level_complete_overlay(params: Dictionary) -> void:
+	# Keep gameplay visible and show the completion modal above it.
+	SceneManager.show_overlay(SceneManager.Overlay.LEVEL_COMPLETE, {
+		"pause_tree": true,
+		"level_data": params["level_data"],
+		"stars": params["stars"],
+		"final_moves": params["final_moves"],
+		"prev_best_moves": params["prev_best_moves"],
+		"was_previously_completed": params["was_previously_completed"],
+		"next_level_data": params["next_level_data"],
+	})
 
 
 func _on_slide_blocked(pos: Vector2i, direction: Vector2i) -> void:
@@ -392,6 +410,42 @@ func _on_tile_uncovered(_coord: Vector2i) -> void:
 	pass
 
 
+func _play_level_entry_transition() -> void:
+	if _is_reduce_motion_enabled():
+		return
+	if _entry_fade_layer != null and is_instance_valid(_entry_fade_layer):
+		_entry_fade_layer.queue_free()
+
+	_entry_fade_layer = CanvasLayer.new()
+	_entry_fade_layer.layer = 22
+	add_child(_entry_fade_layer)
+
+	_entry_fade_rect = ColorRect.new()
+	_entry_fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_entry_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_entry_fade_rect.color = Color(1.0, 0.984, 0.929, 0.95)
+	_entry_fade_layer.add_child(_entry_fade_rect)
+
+	if _entry_fade_tween != null and _entry_fade_tween.is_valid():
+		_entry_fade_tween.kill()
+	_entry_fade_tween = create_tween()
+	_entry_fade_tween.tween_property(_entry_fade_rect, "color:a", 0.0, 0.32) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_entry_fade_tween.tween_callback(_clear_level_entry_transition)
+
+
+func _clear_level_entry_transition() -> void:
+	if _entry_fade_layer != null and is_instance_valid(_entry_fade_layer):
+		_entry_fade_layer.queue_free()
+	_entry_fade_layer = null
+	_entry_fade_rect = null
+	_entry_fade_tween = null
+
+
+func _is_reduce_motion_enabled() -> bool:
+	return AppSettings != null and AppSettings.get_reduce_motion()
+
+
 # —————————————————————————————————————————————
 # Public API
 # —————————————————————————————————————————————
@@ -401,6 +455,11 @@ func _on_tile_uncovered(_coord: Vector2i) -> void:
 func restart_level() -> void:
 	if _current_level_data == null:
 		return
+
+	if SceneManager.has_active_overlay():
+		SceneManager.hide_overlay()
+	elif get_tree().paused:
+		get_tree().paused = false
 
 	_snapshot_previous_bests()
 	_disconnect_signals()
