@@ -12,6 +12,12 @@
 class_name LevelCompleteScreen
 extends Control
 
+const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
+const ICON_ARROW_RIGHT: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_arrow_right.png")
+const ICON_RETRY: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_retry.png")
+const ICON_HOME: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_home.png")
+const CAT_CURIOUS_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_curious.png")
+const CAT_EXCITED_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_excited.png")
 
 # —————————————————————————————————————————————
 # Constants
@@ -44,10 +50,14 @@ signal world_map_requested
 
 var _level_name_label: Control # Label
 var _moves_label: Control # Label
+var _min_label: Control # Label
+var _prompt_label: Control # Label
 var _new_best_badge: Control # Label / TextureRect
 var _next_btn: Control # Button
 var _retry_btn: Control # Button
 var _world_map_btn: Control # Button
+var _panel: PanelContainer
+var _cat_illustration: TextureRect
 
 ## Star display nodes — array of 3 Controls (e.g. TextureRect or Label).
 ## Filled stars are visible; empty stars are dimmed or hidden.
@@ -67,6 +77,7 @@ var _final_moves: int = 0
 var _prev_best_moves: int = 0
 var _was_previously_completed: bool = false
 var _next_level_data: LevelData
+var _use_internal_navigation: bool = true
 
 ## Whether params have been received.
 var _params_received: bool = false
@@ -84,10 +95,11 @@ var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
 
 func _ready() -> void:
 	_auto_discover_ui_nodes()
+	_apply_visual_style()
 	# Self-connect navigation only when running in the real scene (auto-discover
 	# found buttons). Tests use set_ui_nodes() after _ready(), so _next_btn is
 	# still null here and these connections are skipped.
-	if _next_btn != null:
+	if _next_btn != null and _use_internal_navigation:
 		_connect_navigation()
 	if _params_received:
 		populate_results()
@@ -105,6 +117,7 @@ func receive_scene_params(params: Dictionary) -> void:
 	_prev_best_moves = params.get("prev_best_moves", 0) as int
 	_was_previously_completed = params.get("was_previously_completed", false) as bool
 	_next_level_data = params.get("next_level_data") as LevelData
+	_use_internal_navigation = params.get("internal_navigation", true) as bool
 	_params_received = true
 
 
@@ -121,7 +134,13 @@ func populate_results() -> void:
 
 	# Level name
 	if _level_name_label != null:
-		_level_name_label.text = _current_level_data.display_name
+		var display_name: String = _current_level_data.display_name.strip_edges()
+		if display_name != "":
+			_level_name_label.text = display_name
+		elif _is_perfect_result(_final_moves, _current_level_data.minimum_moves):
+			_level_name_label.text = "Perfect!"
+		else:
+			_level_name_label.text = "Level Complete!"
 
 	# Stars
 	_show_stars(_stars)
@@ -131,6 +150,7 @@ func populate_results() -> void:
 
 	# New best badge
 	_update_new_best_badge()
+	_update_cat_illustration(_stars)
 
 	# Next button visibility
 	_update_next_button()
@@ -186,15 +206,20 @@ func set_ui_nodes(
 	world_map_btn: Control,
 	star_nodes: Array[Control],
 	star_sentinel_label: Control = null,
+	min_label: Control = null,
+	prompt_label: Control = null,
 ) -> void:
 	_level_name_label = level_name_label
 	_moves_label = moves_label
+	_min_label = min_label
+	_prompt_label = prompt_label
 	_new_best_badge = new_best_badge
 	_next_btn = next_btn
 	_retry_btn = retry_btn
 	_world_map_btn = world_map_btn
 	_star_nodes = star_nodes
 	_star_sentinel_label = star_sentinel_label
+	_apply_visual_style()
 
 
 # —————————————————————————————————————————————
@@ -241,32 +266,75 @@ func _show_stars(stars: int) -> void:
 
 	# Normal star display: show filled for earned, dim for unearned
 	for i: int in range(_star_nodes.size()):
-		if i < stars:
-			_star_nodes[i].visible = true
-			_star_nodes[i].modulate = STAR_EARNED_COLOR
+		var node: Control = _star_nodes[i]
+		node.visible = true
+		node.rotation_degrees = _star_rotation_for_index(i)
+		if node is TextureRect:
+			var star_rect: TextureRect = node as TextureRect
+			star_rect.texture = ShellThemeUtil.STAR_LARGE_FILLED_TEXTURE if i < stars else ShellThemeUtil.STAR_LARGE_EMPTY_TEXTURE
+			star_rect.modulate = Color.WHITE
+		elif i < stars:
+			node.modulate = STAR_EARNED_COLOR
 		else:
-			_star_nodes[i].visible = true
-			_star_nodes[i].modulate = STAR_UNEARNED_COLOR
+			node.modulate = STAR_UNEARNED_COLOR
 
 	if stars > 0:
 		SfxManager.play(_sfx_star_earned, SfxManager.SfxBus.SFX)
+	_animate_star_reveal(stars)
 
 
 ## Updates the move count label. Handles minimum_moves == 0.
 func _update_moves_label(final_moves: int, minimum_moves: int) -> void:
-	if _moves_label == null:
-		return
-	if minimum_moves == 0:
-		_moves_label.text = str(final_moves)
-	else:
-		_moves_label.text = "%d / %d" % [final_moves, minimum_moves]
+	if _moves_label != null:
+		if _min_label == null:
+			if minimum_moves == 0:
+				_moves_label.text = str(final_moves)
+			else:
+				_moves_label.text = "%d / %d" % [final_moves, minimum_moves]
+		else:
+			_moves_label.text = "Moves: %d" % final_moves
+
+	if _min_label != null:
+		_min_label.visible = false
+		_min_label.text = ""
+
+	if _prompt_label != null:
+		if minimum_moves == 0 or _is_perfect_result(final_moves, minimum_moves):
+			_prompt_label.text = ""
+		else:
+			_prompt_label.text = "Can you do that in %d?" % minimum_moves
+
+
+func _is_perfect_result(final_moves: int, minimum_moves: int) -> bool:
+	return minimum_moves > 0 and final_moves <= minimum_moves
 
 
 ## Shows or hides the new best badge.
 func _update_new_best_badge() -> void:
 	if _new_best_badge == null:
 		return
-	_new_best_badge.visible = is_new_best()
+	var show_badge: bool = is_new_best()
+	_new_best_badge.visible = show_badge
+	if not show_badge or _is_reduce_motion_enabled():
+		if _new_best_badge is Control:
+			(_new_best_badge as Control).scale = Vector2.ONE
+		return
+	if _new_best_badge is Control:
+		var badge: Control = _new_best_badge as Control
+		badge.pivot_offset = badge.size * 0.5
+		badge.scale = Vector2(0.72, 0.72)
+		var tween: Tween = create_tween()
+		tween.tween_property(badge, "scale", Vector2.ONE, 0.22) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _update_cat_illustration(stars: int) -> void:
+	if _cat_illustration == null:
+		return
+	if stars >= 3:
+		_cat_illustration.texture = CAT_EXCITED_TEXTURE
+	else:
+		_cat_illustration.texture = CAT_CURIOUS_TEXTURE
 
 
 ## Shows or hides the next level button based on next_level_data availability.
@@ -303,37 +371,121 @@ func _navigate_to_world_map() -> void:
 ## Discovers child UI nodes by path when running inside the .tscn scene.
 ## Skipped if set_ui_nodes() was already called (e.g. from tests).
 func _auto_discover_ui_nodes() -> void:
+	if _panel == null:
+		_panel = get_node_or_null("MarginContainer/ResultsCard") as PanelContainer
 	if _level_name_label == null:
-		_level_name_label = get_node_or_null("MarginContainer/VBox/LevelNameLabel")
+		_level_name_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/Ribbon/LevelNameLabel")
+		if _level_name_label == null:
+			_level_name_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/LevelNameLabel")
 	if _moves_label == null:
-		_moves_label = get_node_or_null("MarginContainer/VBox/ScoreRow/MovesLabel")
+		_moves_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MovesLabel")
+	if _min_label == null:
+		_min_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MinLabel")
+	if _prompt_label == null:
+		_prompt_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/PromptLabel")
+	if _cat_illustration == null:
+		_cat_illustration = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration") as TextureRect
 	if _new_best_badge == null:
-		_new_best_badge = get_node_or_null("MarginContainer/VBox/ScoreRow/NewBestBadge")
+		_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/Ribbon/NewBestBadge")
+		if _new_best_badge == null:
+			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/NewBestBadge")
+		if _new_best_badge == null:
+			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/NewBestBadge")
+		if _new_best_badge == null:
+			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/NewBestBadge")
 
 	if _star_nodes.is_empty():
-		var s1: Control = get_node_or_null("MarginContainer/VBox/StarRow/Star1")
-		var s2: Control = get_node_or_null("MarginContainer/VBox/StarRow/Star2")
-		var s3: Control = get_node_or_null("MarginContainer/VBox/StarRow/Star3")
+		var s1: Control = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star1")
+		var s2: Control = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star2")
+		var s3: Control = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star3")
 		if s1 != null and s2 != null and s3 != null:
 			_star_nodes = [s1, s2, s3]
 
 	if _star_sentinel_label == null:
-		_star_sentinel_label = get_node_or_null("MarginContainer/VBox/StarRow/StarSentinel")
+		_star_sentinel_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/StarSentinel")
 
 	if _next_btn == null:
-		_next_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/NextLevelBtn")
+		_next_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
 	if _next_btn != null and _next_btn is BaseButton:
 		if not (_next_btn as BaseButton).pressed.is_connected(on_next_btn_pressed):
 			(_next_btn as BaseButton).pressed.connect(on_next_btn_pressed)
 
 	if _retry_btn == null:
-		_retry_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/RetryBtn")
+		_retry_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/RetryBtn")
 	if _retry_btn != null and _retry_btn is BaseButton:
 		if not (_retry_btn as BaseButton).pressed.is_connected(on_retry_btn_pressed):
 			(_retry_btn as BaseButton).pressed.connect(on_retry_btn_pressed)
 
 	if _world_map_btn == null:
-		_world_map_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/WorldMapBtn")
+		_world_map_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/WorldMapBtn")
 	if _world_map_btn != null and _world_map_btn is BaseButton:
 		if not (_world_map_btn as BaseButton).pressed.is_connected(on_world_map_btn_pressed):
 			(_world_map_btn as BaseButton).pressed.connect(on_world_map_btn_pressed)
+
+
+func _apply_visual_style() -> void:
+	if _panel != null:
+		ShellThemeUtil.apply_panel(_panel)
+	if _level_name_label != null and _level_name_label is Label:
+		var title_label: Label = _level_name_label as Label
+		title_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
+		title_label.add_theme_font_size_override("font_size", 36)
+		title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
+		title_label.add_theme_color_override("font_outline_color", Color(1.0, 1.0, 1.0, 0.0))
+		title_label.add_theme_constant_override("outline_size", 0)
+	if _moves_label != null and _moves_label is Label:
+		ShellThemeUtil.apply_title(_moves_label as Label, 40)
+	if _min_label != null and _min_label is Label:
+		(_min_label as Label).visible = false
+	if _prompt_label != null and _prompt_label is Label:
+		ShellThemeUtil.apply_body(_prompt_label as Label, Color(0.651, 0.537, 0.424, 1.0), 28)
+	if _next_btn != null and _next_btn is BaseButton:
+		ShellThemeUtil.apply_pill_button(_next_btn as BaseButton, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED)
+		if _next_btn is Button:
+			(_next_btn as Button).icon = ICON_ARROW_RIGHT
+			(_next_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+			(_next_btn as Button).expand_icon = false
+	if _retry_btn != null and _retry_btn is BaseButton:
+		ShellThemeUtil.apply_pill_button(_retry_btn as BaseButton, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
+		if _retry_btn is Button:
+			(_retry_btn as Button).icon = ICON_RETRY
+			(_retry_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+			(_retry_btn as Button).expand_icon = false
+	if _world_map_btn != null and _world_map_btn is BaseButton:
+		ShellThemeUtil.apply_pill_button(_world_map_btn as BaseButton, ShellThemeUtil.LILAC, ShellThemeUtil.LILAC_PRESSED)
+		if _world_map_btn is Button:
+			(_world_map_btn as Button).icon = ICON_HOME
+			(_world_map_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+			(_world_map_btn as Button).expand_icon = false
+	if _new_best_badge != null:
+		_new_best_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if _new_best_badge is Control:
+			(_new_best_badge as Control).z_index = 5
+
+
+func _animate_star_reveal(stars: int) -> void:
+	if _is_reduce_motion_enabled():
+		for node: Control in _star_nodes:
+			node.scale = Vector2.ONE
+			node.rotation_degrees = _star_rotation_for_index(_star_nodes.find(node))
+		return
+	for i: int in range(_star_nodes.size()):
+		var node: Control = _star_nodes[i]
+		if node == null or not node.visible:
+			continue
+		node.pivot_offset = node.size * 0.5
+		node.rotation_degrees = _star_rotation_for_index(i)
+		node.scale = Vector2(0.72, 0.72) if i < stars else Vector2(0.9, 0.9)
+		var tween: Tween = create_tween()
+		tween.tween_property(node, "scale", Vector2.ONE, 0.2).set_delay(float(i) * 0.05) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _star_rotation_for_index(index: int) -> float:
+	if index < 0:
+		return 0.0
+	return 0.0
+
+
+func _is_reduce_motion_enabled() -> bool:
+	return AppSettings != null and AppSettings.get_reduce_motion()

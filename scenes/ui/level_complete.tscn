@@ -1,48 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://clvlcmplt5cen"]
+[gd_scene load_steps=7 format=3 uid="uid://clvlcmplt5cen"]
 
 [ext_resource type="Script" path="res://src/ui/level_complete_screen.gd" id="1"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
-bg_color = Color(0.953, 0.757, 0.271, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2"]
-bg_color = Color(0.877, 0.696, 0.249, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3"]
-bg_color = Color(0.647, 0.835, 0.741, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4"]
-bg_color = Color(0.595, 0.768, 0.682, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5"]
-bg_color = Color(0.753, 0.686, 0.886, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6"]
-bg_color = Color(0.693, 0.631, 0.815, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
+[ext_resource type="Texture2D" uid="uid://bp2mcctl2br23" path="res://assets/art/ui/stars/star_large_filled.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://u2qsy3qbhuw3" path="res://assets/art/ui/stars/star_large_empty.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://djhvglc163eql" path="res://assets/art/ui/badges/badge_new_best.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://b4jwiancqsh8n" path="res://assets/art/cats/cat_default_curious.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="6"]
 
 [node name="LevelCompleteScreen" type="Control"]
 layout_mode = 3
@@ -53,15 +16,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Background" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.965, 0.945, 0.847, 1)
-
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -69,103 +23,140 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 32
-theme_override_constants/margin_top = 64
-theme_override_constants/margin_right = 32
-theme_override_constants/margin_bottom = 64
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 36
 
-[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+[node name="ResultsCard" type="PanelContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 24
+size_flags_vertical = 4
+
+[node name="CardMargin" type="MarginContainer" parent="MarginContainer/ResultsCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer/ResultsCard/CardMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StarRow" type="HBoxContainer" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="LevelNameLabel" type="Label" parent="MarginContainer/VBox"]
+[node name="Star1" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
+custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
-text = "Level Complete!"
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_colors/font_color = Color(0.361, 0.29, 0.42, 1)
-theme_override_font_sizes/font_size = 28
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="StarRow" type="HBoxContainer" parent="MarginContainer/VBox"]
+[node name="Star2" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
+custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 16
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Star1" type="Label" parent="MarginContainer/VBox/StarRow"]
+[node name="Star3" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
+custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
-text = "★"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(0.961, 0.784, 0.259, 1)
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Star2" type="Label" parent="MarginContainer/VBox/StarRow"]
-layout_mode = 2
-text = "★"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(0.961, 0.784, 0.259, 1)
-
-[node name="Star3" type="Label" parent="MarginContainer/VBox/StarRow"]
-layout_mode = 2
-text = "★"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 48
-theme_override_colors/font_color = Color(0.961, 0.784, 0.259, 1)
-
-[node name="StarSentinel" type="Label" parent="MarginContainer/VBox/StarRow"]
+[node name="StarSentinel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
 visible = false
 layout_mode = 2
 text = "?"
 horizontal_alignment = 1
 
-[node name="ScoreRow" type="HBoxContainer" parent="MarginContainer/VBox"]
+[node name="Ribbon" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+custom_minimum_size = Vector2(344, 80)
 layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("6")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LevelNameLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/Ribbon"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.984, 0.957, 1)
+theme_override_font_sizes/font_size = 32
+text = "LEVEL COMPLETE!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NewBestBadge" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/Ribbon"]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -126.0
+offset_top = -8.0
+offset_right = 18.0
+offset_bottom = 40.0
+grow_horizontal = 0
+mouse_filter = 2
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CatIllustration" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ScoreColumn" type="VBoxContainer" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 2
 alignment = 1
-theme_override_constants/separation = 12
 
-[node name="MovesPrefix" type="Label" parent="MarginContainer/VBox/ScoreRow"]
+[node name="MovesLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn"]
 layout_mode = 2
-text = "Moves: "
-theme_override_colors/font_color = Color(0.325, 0.192, 0.294, 1)
+theme_override_colors/font_color = Color(0.592157, 0.490196, 0.788235, 1)
+theme_override_font_sizes/font_size = 26
+text = "Moves: 0"
+horizontal_alignment = 1
 
-[node name="MovesLabel" type="Label" parent="MarginContainer/VBox/ScoreRow"]
-layout_mode = 2
-text = "0 / 0"
-theme_override_colors/font_color = Color(0.325, 0.192, 0.294, 1)
-
-[node name="NewBestBadge" type="Label" parent="MarginContainer/VBox/ScoreRow"]
+[node name="MinLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn"]
 visible = false
 layout_mode = 2
-text = "NEW BEST!"
-theme_override_colors/font_color = Color(0.961, 0.651, 0.137, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.65098, 0.537255, 0.423529, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
 
-[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/VBox"]
+[node name="PromptLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn"]
 layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 16
+theme_override_colors/font_color = Color(0.65098, 0.537255, 0.423529, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
 
-[node name="WorldMapBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
+[node name="ButtonRow" type="VBoxContainer" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
 layout_mode = 2
-text = "WORLD MAP"
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_5")
-theme_override_styles/hover = SubResource("StyleBoxFlat_5")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_6")
+theme_override_constants/separation = 10
 
-[node name="RetryBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
+[node name="NextLevelBtn" type="Button" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow"]
 layout_mode = 2
+size_flags_horizontal = 3
+text = "NEXT"
+
+[node name="RetryBtn" type="Button" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "RETRY"
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_3")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_4")
 
-[node name="NextLevelBtn" type="Button" parent="MarginContainer/VBox/ButtonRow"]
+[node name="WorldMapBtn" type="Button" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow"]
 layout_mode = 2
-text = "NEXT LEVEL"
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_1")
-theme_override_styles/hover = SubResource("StyleBoxFlat_1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_2")
+size_flags_horizontal = 3
+text = "WORLD MAP"

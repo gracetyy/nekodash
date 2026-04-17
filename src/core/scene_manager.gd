@@ -35,6 +35,7 @@ enum Overlay {
 	NONE = -1,
 	OPTIONS = 0,
 	PAUSE = 1,
+	LEVEL_COMPLETE = 2,
 }
 
 
@@ -57,6 +58,7 @@ const SCREEN_PATHS: Dictionary = {
 const OVERLAY_PATHS: Dictionary = {
 	Overlay.OPTIONS: "res://scenes/ui/options_overlay.tscn",
 	Overlay.PAUSE: "res://scenes/ui/pause_overlay.tscn",
+	Overlay.LEVEL_COMPLETE: "res://scenes/ui/level_complete_overlay.tscn",
 }
 
 
@@ -133,7 +135,7 @@ func go_to_with_loading(screen: Screen, params: Dictionary = {}) -> void:
 
 ## Convenience wrapper for navigating to GAMEPLAY with a LevelData resource.
 func go_to_level(level_data: Resource) -> void:
-	go_to_with_loading(Screen.GAMEPLAY, {"level_data": level_data})
+	go_to(Screen.GAMEPLAY, {"level_data": level_data})
 
 
 ## Navigates to _previous_screen with no params. No-op if no previous screen.
