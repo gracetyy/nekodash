@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="NekoDash"
-run/main_scene="res://scenes/ui/opening.tscn"
+run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://icon.svg"
 
@@ -41,6 +41,10 @@ window/handheld/orientation=1
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[gui]
+
+theme/custom="res://assets/themes/global_ui_theme.tres"
 
 [physics]
 
