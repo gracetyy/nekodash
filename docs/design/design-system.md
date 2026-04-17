@@ -166,7 +166,7 @@ The primary interactive text element across all screens.
 
 - Default: full colour, full 4px bottom shadow visible.
 - Hover / Focus: fill shifts to hover variant; shadow depth remains visually 4px.
-- Pressed: top face shifts downward by 2–4px; visible shadow depth reduces to 2px or 0px.
+- Pressed: top face physically shifts downward by exactly 2px; Godot UI labels/icons overlaid on these buttons MUST be configured to shift down by 2px (e.g., using `theme_override_constants/icon_max_width` or margin overrides). Visible shadow depth reduces to 2px.
 - Disabled: `btn-disabled` fill, `text-on-btn` label/icon where readability needs it, muted overall contrast, `btn-disabled-shadow` base.
 
 **Interaction rule:**
@@ -189,6 +189,8 @@ Used in the HUD and for screen navigation. Exported as fully baked PNGs includin
 
 - **Shape:** Circle, 48px diameter.
 - **Format:** Rendered 48x48px PNG states (Normal, Hover, Pressed, Disabled).
+- **Dimension Rule:** Exact 48x48px boundary. Shadows must be baked inside this boundary without increasing the canvas size (to avoid jitter).
+- **Shadow Specs:** Hard bottom shadow (no blur). Normal state: 2px `RGB(70, 40, 110)`. Hover state: 3px `RGB(96, 56, 130)`.
 - **Usage:** Plugged directly into Godot's `TextureButton` node.
 
 | Variant         | Icon                        | Active State                           | Disabled State                            |
@@ -226,11 +228,13 @@ Container : pill-shaped background in HUD (cream-card, light border)
 | Size Tier      | Star Size           | Context                                                                    |
 | -------------- | ------------------- | -------------------------------------------------------------------------- |
 | Large          | 48–72px             | Level complete celebration (animated burst-in)                             |
-| Medium         | 24px                | HUD strip (3 stars inline, pill container)                                 |
-| Small          | ~16px               | Level tile card (below level number in `§3.6`)                             |
+| Medium         | 24–32px             | HUD strip and world-map level card rows                                    |
+| Small          | ~16px               | Compact aggregate indicators and micro badges                              |
 | Aggregate pill | 3-star compact pill | World card — 3 small inline stars in one cream pill (`ui-stars.png` Row 3) |
 
 The **aggregate pill** (confirmed in `design/draft/ui-stars 1.png` Row 3) is used on World Map cards to show total star count at a glance. It is a single cream pill sprite containing 3 small inline star icons.
+
+Level tiles now use the medium star assets to improve readability on mobile and desktop.
 
 ### 3.5 Panels & Modals
 
@@ -242,6 +246,13 @@ The primary container for all popups, menus, and end-of-level screens.
 - **Inner Bevel:** 10px Bottom Inner Shadow using `card/normal-bg-shadow`
 - **Drop Shadow:** 10px Right & Bottom Drop Shadow using `card/normal-outline`
 - **Implementation:** Exported as a 128x128px `NinePatchRect` base. Godot margins: 44px Top/Left, 54px Bottom/Right.
+
+### 3.5.2 Ribbon Banner (Level Complete)
+
+- **Asset Height:** 80px (updated from legacy 64–70px variants)
+- **Use:** Level-complete title banner and other modal callout ribbons
+- **Text Rule:** Ribbon title text is bold display type with no outline stroke
+- **Alignment Rule:** Center title text vertically inside the ribbon and anchor the "NEW BEST" badge at top-right overlap.
 
 ### 3.5.1 Tooltip Bubbles
 
@@ -280,6 +291,8 @@ Spacing     : 12px gap between cards
 ```
 
 ### 3.8 Skin Card (Skin Select)
+
+> **UPDATE (2026-04-15)**: The skins and shop functionality are deferred to post-jam. Sections 3.8 and 6.9 remain for future reference.
 
 Draft assets (`design/draft/ui-skins 1.png`) confirm a **portrait card format** (taller than wide).
 Each card shows: cat silhouette in card body + name label at bottom + optional state badge.
@@ -340,10 +353,17 @@ Thumb       : 24px circle, btn-primary fill, white center dot
 Label       : "Music" / "SFX" in Body scale, left-aligned above track
 ```
 
+Behavior rules:
+
+- Slider fill persists after focus loss and non-slider clicks.
+- Muted channels set slider to non-interactive state (no hover/click/focus).
+- Muted sliders use disabled assets (`slider_track_disabled`, `slider_fill_disabled`) and disabled knob treatment.
+- Checkbox controls use larger icon sizing for readability; disabled checkboxes use `checkbox_disabled`.
+
 ### 3.11 HUD Move Counter Pill
 
 ```
-Shape       : Rounded rectangle, ~80×52px
+Shape       : Cat shaped
 Background  : hud-pill-bg
 Layout      : cat icon (20px) top-left + number below in HUD Number scale
 Sub-label   : "Moves" in 11px below number
@@ -379,18 +399,27 @@ Wider screens: add horizontal letterbox or scale up card width proportionally.
 
 ## 5. Global Background
 
-Every screen uses a consistent background:
+Every screen uses a consistent background
 
-```
-Base fill   : cream-bg (#F6F1D8)
-Pattern     : Repeating subtle tile grid lines (very low opacity, ~8%)
-              + scattered paw print watermarks (paw-watermark, opacity ~15%)
-Pattern tile: ~40×40px grid, matches the visual grid-square motif
-Animation   : None (static background)
-```
+Base fill
 
-The background is the same across all screens including gameplay — it shows through
-around the game grid area.
+- cream-bg F6F1D8 (or the per-world background token e.g. w1-bg, w2-bg, w3-bg)
+
+Pattern
+
+- Repeating subtle tile made from a small paw-print watermark pattern
+- Pattern tile is a square PNG (128×128px) designed to tile seamlessly
+- Applied as a tiling image fill in Figma (Fill type = Image, Mode = Tile) so it repeats automatically to fill any frame size
+- No stretching or scaling per screen; the same tile is reused and repeated on all screen sizes
+
+Animation
+
+- None, static background
+
+Usage
+
+- The background is the same visual treatment across all non-gameplay UI screens (main menu, world map, skin select, level complete)
+- Gameplay screens may show the same tiling pattern in the margin area around the grid, or a world-specific room illustration, but the pattern is always implemented as a tiling image rather than a single large painted texture
 
 ---
 
@@ -526,6 +555,8 @@ teal — teal is used for EQUIPPED badge instead).
 ```
 
 ### 6.9 Skin Selection
+
+> **UPDATE (2026-04-15)**: Skin and shop functions are deferred to post-jam. This section remains for future reference.
 
 ```
 Layout:

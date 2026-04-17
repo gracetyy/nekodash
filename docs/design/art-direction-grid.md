@@ -62,7 +62,13 @@ additive glow, not a flat fill.
 
 ## 2. Obstacle Tiles (Blocking / Walls)
 
-### Core Design Rules
+> **UPDATE (2026-04-15)**: The idea of using complex furniture and detailed room walls as level grid obstacles is deferred to post-jam. For the MVP, we will simply use three distinct colored tile PNGs (yellow, purple, mint) to represent obstacles/walls.
+
+### MVP Design Rules (Simple Tiles)
+
+1. **Obstacles are simple colored tiles**, specifically yellow, purple, and mint.
+
+### Post-Jam Rules (Furniture)
 
 1. **Obstacles are furniture and household objects**, not abstract walls or bricks
 2. All objects are rendered as a **top-down (plan) view** — we see the top face
