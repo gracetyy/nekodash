@@ -12,11 +12,9 @@ extends Node2D
 # —————————————————————————————————————————————
 
 ## Grid floor tile — grid-floor #EEF9F1.
-const COLOR_FLOOR: Color = Color(0.933, 0.976, 0.945)
+const FLOOR_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_mint.png")
 ## Grid wall/obstacle tile — grid-wall #CEB6E4.
-const COLOR_WALL: Color = Color(0.808, 0.714, 0.894)
-## Grid line — subtle overlay.
-const COLOR_GRID_LINE: Color = Color(0.3, 0.3, 0.4, 0.4)
+const WALL_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_purple.png")
 
 
 # —————————————————————————————————————————————
@@ -73,20 +71,7 @@ func _draw() -> void:
 		for col: int in range(w):
 			var coord := Vector2i(col, row)
 			var rect := Rect2(col * _tile_size, row * _tile_size, _tile_size, _tile_size)
-
 			if GridSystem.is_walkable(coord):
-				draw_rect(rect, COLOR_FLOOR, true)
+				draw_texture_rect(FLOOR_TEXTURE, rect, false)
 			else:
-				draw_rect(rect, COLOR_WALL, true)
-
-	# Draw rounded border around the grid
-	var grid_rect := Rect2(0, 0, w * _tile_size, h * _tile_size)
-	draw_rect(grid_rect, COLOR_GRID_LINE, false, 2.0)
-
-	# Draw grid lines
-	for row: int in range(1, h):
-		var y: float = row * _tile_size
-		draw_line(Vector2(0, y), Vector2(w * _tile_size, y), COLOR_GRID_LINE, 1.0)
-	for col: int in range(1, w):
-		var x: float = col * _tile_size
-		draw_line(Vector2(x, 0), Vector2(x, h * _tile_size), COLOR_GRID_LINE, 1.0)
+				draw_texture_rect(WALL_TEXTURE, rect, false)

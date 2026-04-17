@@ -45,6 +45,7 @@ var _exit_btn: Control # Button
 var _pause_btn: Control # Button
 var _chrome_panel: PanelContainer
 var _moves_prefix_label: Label
+var _star_nodes: Array[TextureRect] = []
 
 
 # —————————————————————————————————————————————
@@ -62,6 +63,9 @@ var _coverage_tracking_ref: Node
 
 ## Cached minimum_moves from LevelData — used for display format.
 var _minimum_moves: int = 0
+var _star_3_moves: int = 0
+var _star_2_moves: int = 0
+var _star_1_moves: int = 0
 
 ## Whether the HUD has been initialized.
 var _initialized: bool = false
@@ -111,6 +115,9 @@ func initialize(
 	_move_counter_ref = move_counter
 	_coverage_tracking_ref = coverage_tracking
 	_minimum_moves = level_data.minimum_moves
+	_star_3_moves = level_data.star_3_moves
+	_star_2_moves = level_data.star_2_moves
+	_star_1_moves = level_data.star_1_moves
 	_level_complete = false
 
 	# Disconnect previous signals (safe re-initialize)
@@ -135,7 +142,7 @@ func initialize(
 	_set_exit_button_visible(true)
 	_set_pause_button_visible(true)
 	if _coverage_label != null:
-		_coverage_label.visible = true
+		_coverage_label.visible = false
 
 	_initialized = true
 
@@ -220,13 +227,11 @@ func _connect_signals(
 ## Updates the move display. Handles minimum_moves == 0 gracefully.
 ## Also refreshes undo button — UndoRestart has already pushed a snapshot by
 ## the time move_count_changed fires (connection order enforced by coordinator).
-func _on_move_count_changed(current: int, minimum: int) -> void:
+func _on_move_count_changed(current: int, _minimum: int) -> void:
 	if _move_label == null:
 		return
-	if minimum == 0:
-		_move_label.text = str(current)
-	else:
-		_move_label.text = "%d / %d" % [current, minimum]
+	_move_label.text = str(current)
+	_update_star_strip(current)
 	if _undo_restart_ref != null:
 		_set_undo_button_disabled(not _undo_restart_ref.can_undo())
 
@@ -265,10 +270,6 @@ func _on_level_restarted() -> void:
 
 ## Locks interactive elements after level completion.
 func _on_level_completed() -> void:
-	_set_undo_button_visible(false)
-	_set_restart_button_visible(false)
-	_set_exit_button_visible(false)
-	_set_pause_button_visible(false)
 	_level_complete = true
 
 
@@ -326,9 +327,46 @@ func _refresh_all_displays(
 	total: int,
 ) -> void:
 	if _coverage_label != null:
-		_coverage_label.visible = true
+		_coverage_label.visible = false
 	_on_move_count_changed(current_moves, _minimum_moves)
 	_on_coverage_updated(covered, total)
+
+
+func _update_star_strip(current_moves: int) -> void:
+	if _star_nodes.is_empty():
+		return
+
+	var star_3_threshold: int = _star_3_moves
+	if star_3_threshold <= 0 and _minimum_moves > 0:
+		star_3_threshold = _minimum_moves
+
+	var star_2_threshold: int = _star_2_moves
+	if star_2_threshold <= 0 and star_3_threshold > 0:
+		star_2_threshold = star_3_threshold + 2
+
+	var star_1_threshold: int = _star_1_moves
+	if star_1_threshold <= 0 and star_2_threshold > 0:
+		star_1_threshold = star_2_threshold + 2
+
+	if star_2_threshold > 0 and star_2_threshold < star_3_threshold:
+		star_2_threshold = star_3_threshold
+	if star_1_threshold > 0 and star_1_threshold < star_2_threshold:
+		star_1_threshold = star_2_threshold
+
+	var stars: int = 0
+	if star_3_threshold > 0:
+		if current_moves <= star_3_threshold:
+			stars = 3
+		elif current_moves <= star_2_threshold:
+			stars = 2
+		elif current_moves <= star_1_threshold:
+			stars = 1
+
+	for i: int in range(_star_nodes.size()):
+		var star: TextureRect = _star_nodes[i]
+		if star == null:
+			continue
+		star.texture = ShellThemeUtil.STAR_MEDIUM_FILLED_TEXTURE if i < stars else ShellThemeUtil.STAR_MEDIUM_EMPTY_TEXTURE
 
 
 ## Sets undo button disabled state with null safety.
@@ -366,55 +404,62 @@ func _set_pause_button_visible(visible_flag: bool) -> void:
 ## signals when buttons are found.
 func _auto_discover_ui_nodes() -> void:
 	if _chrome_panel == null:
-		_chrome_panel = get_node_or_null("MarginContainer") as PanelContainer
+		_chrome_panel = get_node_or_null("MarginContainer/TopRow/CenterPill") as PanelContainer
 	if _moves_prefix_label == null:
-		_moves_prefix_label = get_node_or_null("MarginContainer/VBox/StatsRow/MovesPrefix") as Label
+		_moves_prefix_label = get_node_or_null("MarginContainer/TopRow/MoveCounter/MovesPrefix") as Label
 	if _move_label == null:
-		_move_label = get_node_or_null("MarginContainer/VBox/StatsRow/MoveLabel")
+		_move_label = get_node_or_null("MarginContainer/TopRow/MoveCounter/MoveLabel")
 	if _coverage_label == null:
-		_coverage_label = get_node_or_null("MarginContainer/VBox/StatsRow/CoverageLabel")
+		_coverage_label = get_node_or_null("MarginContainer/TopRow/CenterPill/CoverageLabel")
+
+	if _star_nodes.is_empty():
+		var star_1: TextureRect = get_node_or_null("MarginContainer/TopRow/CenterPill/StarRow/Star1") as TextureRect
+		var star_2: TextureRect = get_node_or_null("MarginContainer/TopRow/CenterPill/StarRow/Star2") as TextureRect
+		var star_3: TextureRect = get_node_or_null("MarginContainer/TopRow/CenterPill/StarRow/Star3") as TextureRect
+		if star_1 != null and star_2 != null and star_3 != null:
+			_star_nodes = [star_1, star_2, star_3]
 
 	if _undo_btn == null:
-		_undo_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/UndoBtn")
+		_undo_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/UndoBtn")
 	if _undo_btn != null and _undo_btn is BaseButton:
 		if not (_undo_btn as BaseButton).pressed.is_connected(on_undo_btn_pressed):
 			(_undo_btn as BaseButton).pressed.connect(on_undo_btn_pressed)
 
 	if _restart_btn == null:
-		_restart_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/RestartBtn")
+		_restart_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/RestartBtn")
 	if _restart_btn != null and _restart_btn is BaseButton:
 		if not (_restart_btn as BaseButton).pressed.is_connected(on_restart_btn_pressed):
 			(_restart_btn as BaseButton).pressed.connect(on_restart_btn_pressed)
 
 	if _exit_btn == null:
-		_exit_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/ExitBtn")
+		_exit_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/ExitBtn")
 	if _exit_btn != null and _exit_btn is BaseButton:
 		if not (_exit_btn as BaseButton).pressed.is_connected(on_exit_btn_pressed):
 			(_exit_btn as BaseButton).pressed.connect(on_exit_btn_pressed)
 
 	if _pause_btn == null:
-		_pause_btn = get_node_or_null("MarginContainer/VBox/ButtonRow/PauseBtn")
+		_pause_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/PauseBtn")
 	if _pause_btn != null and _pause_btn is BaseButton:
 		if not (_pause_btn as BaseButton).pressed.is_connected(on_pause_btn_pressed):
 			(_pause_btn as BaseButton).pressed.connect(on_pause_btn_pressed)
 
 
 func _apply_visual_style() -> void:
-	if _chrome_panel != null:
-		_chrome_panel.add_theme_stylebox_override("panel", ShellThemeUtil.make_rounded_style(ShellThemeUtil.CREAM, ShellThemeUtil.PLUM, 24, 5))
 	if _moves_prefix_label != null:
-		_moves_prefix_label.add_theme_color_override("font_color", ShellThemeUtil.PLUM)
+		_moves_prefix_label.add_theme_color_override("font_color", Color(0.972, 0.922, 0.761, 1.0))
+		_moves_prefix_label.add_theme_font_size_override("font_size", 21)
+		_moves_prefix_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
 	if _move_label != null and _move_label is Label:
-		(_move_label as Label).add_theme_color_override("font_color", ShellThemeUtil.PLUM)
-		(_move_label as Label).add_theme_font_size_override("font_size", 24)
+		(_move_label as Label).add_theme_color_override("font_color", Color(0.972, 0.922, 0.761, 1.0))
+		(_move_label as Label).add_theme_font_size_override("font_size", 34)
+		(_move_label as Label).add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
 	if _coverage_label != null and _coverage_label is Label:
-		(_coverage_label as Label).add_theme_color_override("font_color", ShellThemeUtil.PLUM_SOFT)
-		(_coverage_label as Label).add_theme_font_size_override("font_size", 18)
-	if _undo_btn != null and _undo_btn is BaseButton:
+		(_coverage_label as Label).visible = false
+	if _undo_btn != null and _undo_btn is Button:
 		ShellThemeUtil.apply_pill_button(_undo_btn as BaseButton, ShellThemeUtil.LILAC, ShellThemeUtil.LILAC_PRESSED, ShellThemeUtil.PLUM, 46.0)
-	if _restart_btn != null and _restart_btn is BaseButton:
+	if _restart_btn != null and _restart_btn is Button:
 		ShellThemeUtil.apply_pill_button(_restart_btn as BaseButton, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED, ShellThemeUtil.PLUM, 46.0)
-	if _exit_btn != null and _exit_btn is BaseButton:
+	if _exit_btn != null and _exit_btn is Button:
 		ShellThemeUtil.apply_pill_button(_exit_btn as BaseButton, ShellThemeUtil.BLUSH, ShellThemeUtil.LILAC_PRESSED, ShellThemeUtil.PLUM, 46.0)
-	if _pause_btn != null and _pause_btn is BaseButton:
+	if _pause_btn != null and _pause_btn is Button:
 		ShellThemeUtil.apply_pill_button(_pause_btn as BaseButton, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED, ShellThemeUtil.PLUM, 46.0)

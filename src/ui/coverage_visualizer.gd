@@ -18,7 +18,7 @@ extends Node2D
 # —————————————————————————————————————————————
 
 ## Color drawn on covered tiles — grid-trail #FBD490.
-const COLOR_COVERED: Color = Color(0.984, 0.831, 0.565, 0.6)
+const COVERED_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_yellow.png")
 
 
 # —————————————————————————————————————————————
@@ -101,4 +101,4 @@ func _draw() -> void:
 				_tile_size,
 				_tile_size,
 			)
-			draw_rect(rect, COLOR_COVERED, true)
+			draw_texture_rect(COVERED_TEXTURE, rect, false)

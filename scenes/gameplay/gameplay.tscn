@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://dg4meplay5cen"]
+[gd_scene load_steps=34 format=3 uid="uid://dg4meplay5cen"]
 
 [ext_resource type="Script" path="res://src/gameplay/level_coordinator.gd" id="1"]
 [ext_resource type="Script" path="res://src/gameplay/sliding_movement.gd" id="2"]
@@ -12,34 +12,27 @@
 [ext_resource type="Script" path="res://src/ui/grid_renderer.gd" id="10"]
 [ext_resource type="Script" path="res://src/ui/cat_sprite.gd" id="11"]
 [ext_resource type="Script" path="res://src/ui/coverage_visualizer.gd" id="12"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary"]
-bg_color = Color(0.647, 0.835, 0.741, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_pressed"]
-bg_color = Color(0.595, 0.768, 0.682, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tertiary"]
-bg_color = Color(0.753, 0.686, 0.886, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tertiary_pressed"]
-bg_color = Color(0.693, 0.631, 0.815, 1)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
+[ext_resource type="Script" path="res://src/ui/paw_background.gd" id="13"]
+[ext_resource type="Texture2D" uid="uid://cddfl2cjbdj4x" path="res://assets/art/ui/hud/move-counter-bg.png" id="14"]
+[ext_resource type="Texture2D" uid="uid://wslh4ervsbug" path="res://assets/art/ui/hud/star_pill.png" id="15"]
+[ext_resource type="Texture2D" uid="uid://cgaflptilp1xs" path="res://assets/art/ui/buttons/circular/btn_circle_undo_normal.png" id="16"]
+[ext_resource type="Texture2D" uid="uid://bph4spk3uue3r" path="res://assets/art/ui/buttons/circular/btn_circle_undo_hover.png" id="17"]
+[ext_resource type="Texture2D" uid="uid://b48ki2bpf5cwn" path="res://assets/art/ui/buttons/circular/btn_circle_undo_pressed.png" id="18"]
+[ext_resource type="Texture2D" uid="uid://c25myu2pabkev" path="res://assets/art/ui/buttons/circular/btn_circle_undo_disabled.png" id="19"]
+[ext_resource type="Texture2D" uid="uid://ddn7mc1idqn3g" path="res://assets/art/ui/buttons/circular/btn_circle_replay_normal.png" id="20"]
+[ext_resource type="Texture2D" uid="uid://bmm57cn2b6t61" path="res://assets/art/ui/buttons/circular/btn_circle_replay_hover.png" id="21"]
+[ext_resource type="Texture2D" uid="uid://bjqrnd4w0co4c" path="res://assets/art/ui/buttons/circular/btn_circle_replay_pressed.png" id="22"]
+[ext_resource type="Texture2D" uid="uid://cq8uo87mpkw47" path="res://assets/art/ui/buttons/circular/btn_circle_replay_disabled.png" id="23"]
+[ext_resource type="Texture2D" uid="uid://c64kl4qfjfluh" path="res://assets/art/ui/buttons/circular/btn_circle_home_normal.png" id="24"]
+[ext_resource type="Texture2D" uid="uid://bx850tn70ekpw" path="res://assets/art/ui/buttons/circular/btn_circle_home_hover.png" id="25"]
+[ext_resource type="Texture2D" uid="uid://c5btud1408rom" path="res://assets/art/ui/buttons/circular/btn_circle_home_pressed.png" id="26"]
+[ext_resource type="Texture2D" uid="uid://82odb0gy7hnw" path="res://assets/art/ui/buttons/circular/btn_circle_home_disabled.png" id="27"]
+[ext_resource type="Texture2D" uid="uid://b3cxuw64v4b70" path="res://assets/art/ui/buttons/circular/btn_circle_pause_normal.png" id="28"]
+[ext_resource type="Texture2D" uid="uid://c2dmigqlgcyfw" path="res://assets/art/ui/buttons/circular/btn_circle_pause_hover.png" id="29"]
+[ext_resource type="Texture2D" uid="uid://dndcefjfmw1kh" path="res://assets/art/ui/buttons/circular/btn_circle_pause_pressed.png" id="30"]
+[ext_resource type="Texture2D" uid="uid://damarar7j78ji" path="res://assets/art/ui/buttons/circular/btn_circle_pause_disabled.png" id="31"]
+[ext_resource type="Texture2D" uid="uid://dhnuxmy02ea1q" path="res://assets/art/ui/stars/star_medium_filled.png" id="32"]
+[ext_resource type="Texture2D" uid="uid://gjgawtpqgggc" path="res://assets/art/ui/stars/star_medium_empty.png" id="33"]
 
 [node name="LevelCoordinator" type="Node2D"]
 script = ExtResource("1")
@@ -48,13 +41,14 @@ level_catalogue = ExtResource("9")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
 
-[node name="Background" type="ColorRect" parent="CanvasLayer"]
+[node name="Background" type="Control" parent="CanvasLayer"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.965, 0.945, 0.847, 1)
+script = ExtResource("13")
 
 [node name="GridRenderer" type="Node2D" parent="."]
 script = ExtResource("10")
@@ -86,77 +80,137 @@ script = ExtResource("7")
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("8")
 
-[node name="MarginContainer" type="PanelContainer" parent="HUD"]
+[node name="MarginContainer" type="MarginContainer" parent="HUD"]
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = 120.0
+offset_left = 24.0
+offset_top = 14.0
+offset_right = -24.0
+offset_bottom = 110.0
 grow_horizontal = 2
 
-[node name="VBox" type="VBoxContainer" parent="HUD/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="StatsRow" type="HBoxContainer" parent="HUD/MarginContainer/VBox"]
+[node name="TopRow" type="HBoxContainer" parent="HUD/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="MovesPrefix" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
+[node name="MoveCounter" type="Control" parent="HUD/MarginContainer/TopRow"]
+custom_minimum_size = Vector2(154, 100)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
+
+[node name="MoveCounterBg" type="TextureRect" parent="HUD/MarginContainer/TopRow/MoveCounter"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_right = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("14")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MovesPrefix" type="Label" parent="HUD/MarginContainer/TopRow/MoveCounter"]
+layout_mode = 0
+anchor_left = 0.1
+anchor_top = 0.16
+anchor_right = 0.9
+anchor_bottom = 0.44
 theme_override_font_sizes/font_size = 18
 text = "Moves"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="MoveLabel" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
+[node name="MoveLabel" type="Label" parent="HUD/MarginContainer/TopRow/MoveCounter"]
+layout_mode = 0
+anchor_left = 0.1
+anchor_top = 0.4
+anchor_right = 0.9
+anchor_bottom = 0.8
 theme_override_font_sizes/font_size = 24
-text = "0 / 0"
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Spacer" type="Control" parent="HUD/MarginContainer/VBox/StatsRow"]
+[node name="CenterPill" type="Control" parent="HUD/MarginContainer/TopRow"]
+custom_minimum_size = Vector2(132, 56)
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_vertical = 4
 
-[node name="CoverageLabel" type="Label" parent="HUD/MarginContainer/VBox/StatsRow"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-theme_override_font_sizes/font_size = 18
-text = "0 / 0"
+[node name="StarPillBg" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("15")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="ButtonRow" type="HBoxContainer" parent="HUD/MarginContainer/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
+[node name="StarRow" type="HBoxContainer" parent="HUD/MarginContainer/TopRow/CenterPill"]
+layout_mode = 0
+anchor_left = 0.12
+anchor_top = 0.18
+anchor_right = 0.88
+anchor_bottom = 0.82
+theme_override_constants/separation = 4
+alignment = 1
 
-[node name="UndoBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
+[node name="Star1" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill/StarRow"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/hover = SubResource("StyleBoxFlat_secondary")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
-theme_override_styles/normal = SubResource("StyleBoxFlat_secondary")
-text = "UNDO"
+texture = ExtResource("32")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="RestartBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
+[node name="Star2" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill/StarRow"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/hover = SubResource("StyleBoxFlat_secondary")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
-theme_override_styles/normal = SubResource("StyleBoxFlat_secondary")
-text = "RESTART"
+texture = ExtResource("32")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="ExitBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
+[node name="Star3" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill/StarRow"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/hover = SubResource("StyleBoxFlat_tertiary")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_tertiary_pressed")
-theme_override_styles/normal = SubResource("StyleBoxFlat_tertiary")
-text = "EXIT"
+texture = ExtResource("33")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="PauseBtn" type="Button" parent="HUD/MarginContainer/VBox/ButtonRow"]
+[node name="ButtonRow" type="HBoxContainer" parent="HUD/MarginContainer/TopRow"]
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/hover = SubResource("StyleBoxFlat_tertiary")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_tertiary_pressed")
-theme_override_styles/normal = SubResource("StyleBoxFlat_tertiary")
-text = "PAUSE"
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="UndoBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture_normal = ExtResource("16")
+texture_pressed = ExtResource("18")
+texture_hover = ExtResource("17")
+texture_disabled = ExtResource("19")
+
+[node name="RestartBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture_normal = ExtResource("20")
+texture_pressed = ExtResource("22")
+texture_hover = ExtResource("21")
+texture_disabled = ExtResource("23")
+
+[node name="ExitBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture_normal = ExtResource("24")
+texture_pressed = ExtResource("26")
+texture_hover = ExtResource("25")
+texture_disabled = ExtResource("27")
+
+[node name="PauseBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture_normal = ExtResource("28")
+texture_pressed = ExtResource("30")
+texture_hover = ExtResource("29")
+texture_disabled = ExtResource("31")
