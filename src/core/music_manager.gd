@@ -97,8 +97,8 @@ func play(stream: AudioStream) -> void:
 		push_warning("[MusicManager] play() called with null AudioStream — skipping.")
 		return
 
-	# Same-track guard: don't restart if already playing this stream.
-	if stream == _current_stream:
+	# Same-track guard: don't restart only if this stream is already active.
+	if stream == _current_stream and (_player_a.playing or _player_b.playing):
 		return
 
 	_current_stream = stream
@@ -165,10 +165,13 @@ func set_muted(muted: bool) -> void:
 			if player.playing:
 				player.volume_db = -80.0
 	else:
-		# Unmute: restore volume on the active player
+		# Unmute: restore active volume, or start pending stream if playback
+		# was requested while muted.
 		var active: AudioStreamPlayer = _get_active_player()
 		if active.playing:
 			active.volume_db = linear_to_db(_volume)
+		elif _current_stream != null:
+			play(_current_stream)
 	_save_settings()
 
 
