@@ -12,15 +12,42 @@ const WORLD_TITLES: Dictionary = {
 	2: "Lilac Lanes",
 	3: "Cream Caverns",
 }
-const GRID_MIN_COLUMNS: int = 2
-const GRID_MAX_COLUMNS: int = 6
-const LEVEL_CARD_MIN_WIDTH: float = 120.0
-const LEVEL_CARD_GAP: float = 10.0
-const LEVEL_CARD_HOVER_SCALE: float = 1.04
-const LEVEL_CARD_HOVER_DURATION_SEC: float = 0.1
+
+@export_category("World Card Layout")
+## Minimum columns the level grid should attempt to use.
+@export_range(1, 8, 1, "or_greater")
+var grid_min_columns: int = 2
+
+## Maximum columns the level grid is allowed to use.
+@export_range(1, 12, 1, "or_greater")
+var grid_max_columns: int = 6
+
+## Minimum width per generated level card.
+@export_range(80.0, 320.0, 1.0, "or_greater")
+var level_card_min_width: float = 120.0
+
+## Gap between generated level cards in the world grid.
+@export_range(0.0, 40.0, 1.0, "or_greater")
+var level_card_gap: float = 10.0
+
+## Horizontal padding reserved around world card grids.
+@export_range(0.0, 120.0, 1.0, "or_greater")
+var world_card_inner_horizontal_padding: float = 40.0
+
+@export_category("World Card Motion")
+## Hover scale multiplier for unlocked level cards.
+@export_range(1.0, 1.2, 0.01, "or_greater")
+var level_card_hover_scale: float = 1.04
+
+## Hover tween duration for level card scale transitions.
+@export_range(0.01, 0.5, 0.01, "or_greater")
+var level_card_hover_duration_sec: float = 0.1
+
+## Max lock icon jiggle angle when pressing a locked level.
+@export_range(0.0, 40.0, 0.1, "or_greater")
+var lock_jiggle_rotation_degrees: float = 14.0
+
 const LEVEL_CARD_HOVER_TWEEN_META: String = "_world_level_card_hover_tween"
-const WORLD_CARD_INNER_HORIZONTAL_PADDING: float = 40.0
-const LOCK_JIGGLE_ROTATION_DEGREES: float = 14.0
 
 signal level_selected(level_data: LevelData)
 signal back_requested
@@ -194,8 +221,8 @@ func _make_world_card(world_id: int, levels: Array[LevelData]) -> Control:
 	var grid: GridContainer = GridContainer.new()
 	grid.columns = _world_grid_columns(levels.size())
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	grid.add_theme_constant_override("h_separation", int(LEVEL_CARD_GAP))
-	grid.add_theme_constant_override("v_separation", int(LEVEL_CARD_GAP))
+	grid.add_theme_constant_override("h_separation", int(level_card_gap))
+	grid.add_theme_constant_override("v_separation", int(level_card_gap))
 	body.add_child(grid)
 
 	for level: LevelData in levels:
@@ -210,11 +237,11 @@ func _world_grid_columns(level_count: int) -> int:
 	var available_width: float = _estimate_world_card_grid_width()
 	var columns: int = mini(level_count, _target_world_grid_columns())
 	while columns > 1:
-		var required_width: float = (float(columns) * LEVEL_CARD_MIN_WIDTH) + (float(columns - 1) * LEVEL_CARD_GAP)
+		var required_width: float = (float(columns) * level_card_min_width) + (float(columns - 1) * level_card_gap)
 		if required_width <= available_width + 0.5:
 			break
 		columns -= 1
-	var two_columns_fit: bool = available_width >= ((2.0 * LEVEL_CARD_MIN_WIDTH) + LEVEL_CARD_GAP - 0.5)
+	var two_columns_fit: bool = available_width >= ((2.0 * level_card_min_width) + level_card_gap - 0.5)
 	if level_count >= 2 and two_columns_fit:
 		return maxi(2, columns)
 	return maxi(1, columns)
@@ -222,11 +249,13 @@ func _world_grid_columns(level_count: int) -> int:
 
 func _target_world_grid_columns() -> int:
 	var grid_width: float = _estimate_world_card_grid_width()
+	var min_columns: int = maxi(1, mini(grid_min_columns, grid_max_columns))
+	var max_columns: int = maxi(1, maxi(grid_min_columns, grid_max_columns))
 	if grid_width <= 0.0:
-		return GRID_MIN_COLUMNS
-	var slot_width: float = LEVEL_CARD_MIN_WIDTH + LEVEL_CARD_GAP
-	var estimated_columns: int = int(floor((grid_width + LEVEL_CARD_GAP) / slot_width))
-	return clampi(estimated_columns, GRID_MIN_COLUMNS, GRID_MAX_COLUMNS)
+		return min_columns
+	var slot_width: float = level_card_min_width + level_card_gap
+	var estimated_columns: int = int(floor((grid_width + level_card_gap) / slot_width))
+	return clampi(estimated_columns, min_columns, max_columns)
 
 
 func _estimate_world_card_grid_width() -> float:
@@ -252,7 +281,7 @@ func _estimate_world_card_grid_width() -> float:
 		var v_scroll: VScrollBar = _scroll_container.get_v_scroll_bar()
 		if v_scroll != null and v_scroll.visible:
 			width -= v_scroll.size.x
-	return maxf(0.0, width - WORLD_CARD_INNER_HORIZONTAL_PADDING)
+	return maxf(0.0, width - world_card_inner_horizontal_padding)
 
 
 func _on_world_map_resized() -> void:
@@ -281,7 +310,7 @@ func _make_level_card(level: LevelData) -> Control:
 	var stars: int = SaveManager.get_best_stars(level.level_id)
 
 	var card: PanelContainer = PanelContainer.new()
-	card.custom_minimum_size = Vector2(LEVEL_CARD_MIN_WIDTH, 132.0)
+	card.custom_minimum_size = Vector2(level_card_min_width, 132.0)
 	var card_state: String = "unlocked"
 	if not unlocked:
 		card_state = "locked"
@@ -539,7 +568,7 @@ func _play_locked_level_feedback(card: PanelContainer, lock_icon: TextureRect) -
 	if _is_reduce_motion_enabled():
 		if lock_icon != null:
 			lock_icon.modulate = Color(1.0, 0.92, 0.92, 1.0)
-			var tint_tween: Tween = create_tween()
+			var tint_tween: Tween = lock_icon.create_tween()
 			tint_tween.tween_property(lock_icon, "modulate", Color.WHITE, 0.12)
 		return
 
@@ -550,16 +579,16 @@ func _play_locked_level_feedback(card: PanelContainer, lock_icon: TextureRect) -
 		lock_icon.scale = Vector2.ONE
 		lock_icon.rotation_degrees = 0.0
 
-	var card_tween: Tween = create_tween()
+	var card_tween: Tween = card.create_tween()
 	card_tween.tween_property(card, "scale", Vector2(0.96, 0.96), 0.08) \
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	card_tween.tween_property(card, "scale", Vector2.ONE, 0.12) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	if lock_icon != null:
-		var lock_tween: Tween = create_tween()
-		lock_tween.tween_property(lock_icon, "rotation_degrees", -LOCK_JIGGLE_ROTATION_DEGREES, 0.06)
-		lock_tween.tween_property(lock_icon, "rotation_degrees", LOCK_JIGGLE_ROTATION_DEGREES * 0.7, 0.08)
+		var lock_tween: Tween = lock_icon.create_tween()
+		lock_tween.tween_property(lock_icon, "rotation_degrees", -lock_jiggle_rotation_degrees, 0.06)
+		lock_tween.tween_property(lock_icon, "rotation_degrees", lock_jiggle_rotation_degrees * 0.7, 0.08)
 		lock_tween.tween_property(lock_icon, "rotation_degrees", 0.0, 0.08)
 		lock_tween.parallel().tween_property(lock_icon, "scale", Vector2(1.12, 1.12), 0.08)
 		lock_tween.tween_property(lock_icon, "scale", Vector2.ONE, 0.14)
@@ -577,7 +606,7 @@ func _wire_level_card_hover(button: BaseButton, card: Control) -> void:
 
 
 func _on_level_card_hover_entered(card: Control) -> void:
-	_animate_level_card_hover(card, Vector2(LEVEL_CARD_HOVER_SCALE, LEVEL_CARD_HOVER_SCALE))
+	_animate_level_card_hover(card, Vector2(level_card_hover_scale, level_card_hover_scale))
 
 
 func _on_level_card_hover_exited(card: Control) -> void:
@@ -598,8 +627,8 @@ func _animate_level_card_hover(card: Control, target_scale: Vector2) -> void:
 	if prior_tween != null and prior_tween.is_valid():
 		prior_tween.kill()
 
-	var tween: Tween = create_tween()
-	tween.tween_property(card, "scale", target_scale, LEVEL_CARD_HOVER_DURATION_SEC) \
+	var tween: Tween = card.create_tween()
+	tween.tween_property(card, "scale", target_scale, level_card_hover_duration_sec) \
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	card.set_meta(LEVEL_CARD_HOVER_TWEEN_META, tween)
 
@@ -622,7 +651,7 @@ func _animate_world_card_entries() -> void:
 		card.pivot_offset = card.size * Vector2(0.5, 0.0)
 		card.modulate = Color(1.0, 1.0, 1.0, 0.0)
 		card.scale = Vector2(0.97, 0.97)
-		var tween: Tween = create_tween()
+		var tween: Tween = card.create_tween()
 		var delay_sec: float = float(card_index) * 0.04
 		tween.tween_property(card, "modulate:a", 1.0, 0.2).set_delay(delay_sec) \
 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
