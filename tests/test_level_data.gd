@@ -83,7 +83,7 @@ func _passes_slide_line_coverage(level: LevelData) -> bool:
 
 
 # —————————————————————————————————————————————
-# Level 1: First Steps (4×3, 2 walkable tiles)
+# Level 1: Promoted challenge opener (5×5, 8 walkable, 1 obstacle)
 # —————————————————————————————————————————————
 
 func test_level_w1_l1_loads_successfully() -> void:
@@ -100,21 +100,21 @@ func test_level_w1_l1_metadata() -> void:
 
 func test_level_w1_l1_grid_dimensions() -> void:
 	var level: LevelData = _load_level(W1_L1_PATH)
-	assert_eq(level.grid_width, 4)
-	assert_eq(level.grid_height, 3)
+	assert_eq(level.grid_width, 5)
+	assert_eq(level.grid_height, 5)
 
 
 func test_level_w1_l1_populates_grid_system() -> void:
 	var level: LevelData = _load_level(W1_L1_PATH)
 	_grid.load_grid(level)
-	assert_eq(_grid.get_width(), 4)
-	assert_eq(_grid.get_height(), 3)
+	assert_eq(_grid.get_width(), 5)
+	assert_eq(_grid.get_height(), 5)
 
 
 func test_level_w1_l1_walkable_count() -> void:
 	var level: LevelData = _load_level(W1_L1_PATH)
 	_grid.load_grid(level)
-	assert_eq(_grid.get_all_walkable_tiles().size(), 2)
+	assert_eq(_grid.get_all_walkable_tiles().size(), 8)
 
 
 func test_level_w1_l1_cat_start_is_walkable() -> void:
@@ -123,9 +123,22 @@ func test_level_w1_l1_cat_start_is_walkable() -> void:
 	assert_true(_grid.is_walkable(level.cat_start), "Cat start must be walkable")
 
 
+func test_level_w1_l1_center_wall_is_blocking() -> void:
+	var level: LevelData = _load_level(W1_L1_PATH)
+	_grid.load_grid(level)
+	assert_false(_grid.is_walkable(Vector2i(2, 2)), "Center tile (2,2) must be blocking wall")
+
+
+func test_level_w1_l1_center_wall_has_obstacle_type() -> void:
+	var level: LevelData = _load_level(W1_L1_PATH)
+	_grid.load_grid(level)
+	var tile: GridSystem.GridTileData = _grid.get_tile(Vector2i(2, 2))
+	assert_eq(tile.obstacle_type, 1, "Center wall should be STATIC_WALL (1)")
+
+
 func test_level_w1_l1_minimum_moves_set() -> void:
 	var level: LevelData = _load_level(W1_L1_PATH)
-	assert_eq(level.minimum_moves, 1)
+	assert_eq(level.minimum_moves, 4)
 
 
 func test_level_w1_l1_star_thresholds_ascending() -> void:
@@ -140,7 +153,7 @@ func test_level_w1_l1_passes_slide_line_coverage() -> void:
 
 
 # —————————————————————————————————————————————
-# Level 2: Turn the Corner (4×4, 4 walkable tiles)
+# Level 2: New opener variant (5×5, 8 walkable, 1 obstacle)
 # —————————————————————————————————————————————
 
 func test_level_w1_l2_loads_successfully() -> void:
@@ -157,21 +170,21 @@ func test_level_w1_l2_metadata() -> void:
 
 func test_level_w1_l2_grid_dimensions() -> void:
 	var level: LevelData = _load_level(W1_L2_PATH)
-	assert_eq(level.grid_width, 4)
-	assert_eq(level.grid_height, 4)
+	assert_eq(level.grid_width, 5)
+	assert_eq(level.grid_height, 5)
 
 
 func test_level_w1_l2_populates_grid_system() -> void:
 	var level: LevelData = _load_level(W1_L2_PATH)
 	_grid.load_grid(level)
-	assert_eq(_grid.get_width(), 4)
-	assert_eq(_grid.get_height(), 4)
+	assert_eq(_grid.get_width(), 5)
+	assert_eq(_grid.get_height(), 5)
 
 
 func test_level_w1_l2_walkable_count() -> void:
 	var level: LevelData = _load_level(W1_L2_PATH)
 	_grid.load_grid(level)
-	assert_eq(_grid.get_all_walkable_tiles().size(), 4)
+	assert_eq(_grid.get_all_walkable_tiles().size(), 8)
 
 
 func test_level_w1_l2_cat_start_is_walkable() -> void:
@@ -180,9 +193,18 @@ func test_level_w1_l2_cat_start_is_walkable() -> void:
 	assert_true(_grid.is_walkable(level.cat_start), "Cat start must be walkable")
 
 
+func test_level_w1_l2_has_single_obstacle() -> void:
+	var level: LevelData = _load_level(W1_L2_PATH)
+	var obs_count: int = 0
+	for i: int in range(level.obstacle_tiles.size()):
+		if level.obstacle_tiles[i] != 0:
+			obs_count += 1
+	assert_eq(obs_count, 1, "w1_l2 should have 1 obstacle tile")
+
+
 func test_level_w1_l2_minimum_moves_set() -> void:
 	var level: LevelData = _load_level(W1_L2_PATH)
-	assert_eq(level.minimum_moves, 3)
+	assert_eq(level.minimum_moves, 5)
 
 
 func test_level_w1_l2_star_thresholds_ascending() -> void:
@@ -197,7 +219,7 @@ func test_level_w1_l2_passes_slide_line_coverage() -> void:
 
 
 # —————————————————————————————————————————————
-# Level 3: Central Wall (5×5, 8 walkable tiles)
+# Level 3: New opener variant (5×5, 7 walkable, 2 obstacles)
 # —————————————————————————————————————————————
 
 func test_level_w1_l3_loads_successfully() -> void:
@@ -228,7 +250,7 @@ func test_level_w1_l3_populates_grid_system() -> void:
 func test_level_w1_l3_walkable_count() -> void:
 	var level: LevelData = _load_level(W1_L3_PATH)
 	_grid.load_grid(level)
-	assert_eq(_grid.get_all_walkable_tiles().size(), 8)
+	assert_eq(_grid.get_all_walkable_tiles().size(), 7)
 
 
 func test_level_w1_l3_cat_start_is_walkable() -> void:
@@ -237,22 +259,18 @@ func test_level_w1_l3_cat_start_is_walkable() -> void:
 	assert_true(_grid.is_walkable(level.cat_start), "Cat start must be walkable")
 
 
-func test_level_w1_l3_center_wall_is_blocking() -> void:
+func test_level_w1_l3_has_two_obstacles() -> void:
 	var level: LevelData = _load_level(W1_L3_PATH)
-	_grid.load_grid(level)
-	assert_false(_grid.is_walkable(Vector2i(2, 2)), "Center tile (2,2) must be blocking wall")
-
-
-func test_level_w1_l3_center_wall_has_obstacle_type() -> void:
-	var level: LevelData = _load_level(W1_L3_PATH)
-	_grid.load_grid(level)
-	var tile: GridSystem.GridTileData = _grid.get_tile(Vector2i(2, 2))
-	assert_eq(tile.obstacle_type, 1, "Center wall should be STATIC_WALL (1)")
+	var obs_count: int = 0
+	for i: int in range(level.obstacle_tiles.size()):
+		if level.obstacle_tiles[i] != 0:
+			obs_count += 1
+	assert_eq(obs_count, 2, "w1_l3 should have 2 obstacle tiles")
 
 
 func test_level_w1_l3_minimum_moves_set() -> void:
 	var level: LevelData = _load_level(W1_L3_PATH)
-	assert_eq(level.minimum_moves, 4)
+	assert_eq(level.minimum_moves, 6)
 
 
 func test_level_w1_l3_star_thresholds_ascending() -> void:

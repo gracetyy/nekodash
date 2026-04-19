@@ -20,29 +20,26 @@ extends Node
 # Constants
 # —————————————————————————————————————————————
 
-const MOVE_STEP_WAIT_SEC: float = 0.6      # Time for slide animation to settle
-const SCREENSHOT_WAIT_SEC: float = 0.25    # Frame settle before screenshot
-const LEVEL_SETTLE_WAIT_SEC: float = 1.0   # Wait after last move before checking state
-const SCENE_SETTLE_WAIT_SEC: float = 0.5   # Wait after scene loads before acting
+const MOVE_STEP_WAIT_SEC: float = 0.6 # Time for slide animation to settle
+const SCREENSHOT_WAIT_SEC: float = 0.25 # Frame settle before screenshot
+const LEVEL_SETTLE_WAIT_SEC: float = 1.0 # Wait after last move before checking state
+const SCENE_SETTLE_WAIT_SEC: float = 0.5 # Wait after scene loads before acting
 
 ## Optimal (minimum-move) solutions for every World 1 level.
 ## Verified against level_data.minimum_moves; all achieve 3-star.
 const LEVEL_SOLUTIONS: Dictionary = {
-	# w1_l1 "First Steps"   4×3  — min 1  — cat (1,1), 2 walkable tiles
-	"w1_l1": ["right"],
-	# w1_l2 "Turn the Corner" 4×4 — min 3  — cat (1,1), 4 walkable tiles
-	"w1_l2": ["right", "down", "left"],
-	# w1_l3 "Central Wall"  5×5  — min 4  — cat (1,1), 8 walkable tiles
-	"w1_l3": ["right", "down", "left", "up"],
-	# w1_l4 "Side Step"     5×4  — min 4  — cat (1,1), 5 walkable tiles
-	#   down→(1,2) | up→(1,1) | right→(3,1) | down→(3,2)
-	"w1_l4": ["down", "up", "right", "down"],
-	# w1_l5 "Double S"      6×6  — min 5  — cat (1,1), 8 walkable tiles
-	#   right→(3,1) | down→(3,3) | left→(2,3) | down→(2,4) | left→(1,4)
-	"w1_l5": ["right", "down", "left", "down", "left"],
-	# w1_l6 "Three Turn"    6×7  — min 6  — cat (1,1), 14 walkable tiles
-	#   right→(4,1) | left→(1,1) | down→(1,3) | right→(4,3) | down→(4,5) | left→(1,5)
-	"w1_l6": ["right", "left", "down", "right", "down", "left"],
+	# w1_l1 5×5 — min 4 — cat (1,1), 8 walkable tiles
+	"w1_l1": ["down", "right", "up", "left"],
+	# w1_l2 5×5 — min 5 — cat (1,1), 8 walkable tiles
+	"w1_l2": ["down", "right", "up", "right", "down"],
+	# w1_l3 5×5 — min 6 — cat (1,1), 7 walkable tiles
+	"w1_l3": ["down", "up", "right", "down", "right", "down"],
+	# w1_l4 6×6 — min 8 — cat (1,1), 14 walkable tiles
+	"w1_l4": ["down", "right", "up", "down", "left", "up", "right", "down"],
+	# w1_l5 6×6 — min 9 — cat (1,1), 14 walkable tiles
+	"w1_l5": ["down", "up", "right", "down", "right", "up", "down", "left", "up"],
+	# w1_l6 6×6 — min 11 — cat (1,1), 13 walkable tiles
+	"w1_l6": ["down", "right", "down", "up", "left", "up", "right", "down", "left", "down", "left"],
 }
 
 ## Total expected levels in the run.
@@ -53,7 +50,7 @@ const TOTAL_LEVELS: int = 6
 # State
 # —————————————————————————————————————————————
 
-var _results: Array[Dictionary] = []   # per-level PASS/FAIL records
+var _results: Array[Dictionary] = [] # per-level PASS/FAIL records
 var _visited_level_ids: Array[String] = []
 ## Set to the level_id currently being played; cleared when the level-complete
 ## screen records the result. Prevents double-recording the same level.
@@ -344,9 +341,9 @@ func _finish() -> void:
 
 func _dir(name: String) -> Vector2i:
 	match name.to_lower():
-		"up":    return Vector2i(0, -1)
-		"down":  return Vector2i(0, 1)
-		"left":  return Vector2i(-1, 0)
+		"up": return Vector2i(0, -1)
+		"down": return Vector2i(0, 1)
+		"left": return Vector2i(-1, 0)
 		"right": return Vector2i(1, 0)
 	return Vector2i.ZERO
 
