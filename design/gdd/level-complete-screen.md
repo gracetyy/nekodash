@@ -102,15 +102,16 @@ does **not** wait for any further signals — it populates results in `_ready()`
 
 ## Display Elements
 
-| Element               | Source                                                  | Content                                     | Notes                                                      |
-| --------------------- | ------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
-| **Level name**        | `_current_level_data.display_name`                      | Level title                                 | Set immediately in `_ready()`                              |
-| **Star display**      | `_stars` param (int, -1 to 3)                           | 0–3 filled star icons                       | Stars animate in one-by-one at MVP-Polish; instant at MVP  |
-| **Move count**        | `_final_moves` param                                    | `"{final} / {min}"` or `"{final}"` if min=0 | Same format rules as HUD                                   |
-| **New best badge**    | `_prev_best_moves` + `_was_previously_completed` params | "NEW BEST!" label                           | Shown if first completion or final_moves < prev_best_moves |
-| **Next Level button** | `_next_level_data` param                                | Enabled if `_next_level_data != null`       | Hidden if null (last level)                                |
-| **Retry button**      | Always visible                                          | Re-launches same level                      | Calls `SceneManager.go_to_level(_current_level_data)`      |
-| **World Map button**  | Always visible                                          | Returns to World Map                        | Calls `SceneManager.go_to(Screen.WORLD_MAP)`               |
+| Element               | Source                                                    | Content                                     | Notes                                                        |
+| --------------------- | --------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| **Level name**        | `_current_level_data.display_name`                        | Level title                                 | Set immediately in `_ready()`                                |
+| **Star display**      | `_stars` param (int, -1 to 3)                             | 0–3 filled star icons                       | Stars animate in one-by-one at MVP-Polish; instant at MVP    |
+| **Cat illustration**  | `_stars` + perfect check (`final_moves <= minimum_moves`) | Curious / Smile / Excited expression sprite | Smile is used for perfect clears; excited is fallback 3-star |
+| **Move count**        | `_final_moves` param                                      | `"{final} / {min}"` or `"{final}"` if min=0 | Same format rules as HUD                                     |
+| **New best badge**    | `_prev_best_moves` + `_was_previously_completed` params   | "NEW BEST!" label                           | Shown if first completion or final_moves < prev_best_moves   |
+| **Next Level button** | `_next_level_data` param                                  | Enabled if `_next_level_data != null`       | Hidden if null (last level)                                  |
+| **Retry button**      | Always visible                                            | Re-launches same level                      | Calls `SceneManager.go_to_level(_current_level_data)`        |
+| **World Map button**  | Always visible                                            | Returns to World Map                        | Calls `SceneManager.go_to(Screen.WORLD_MAP)`                 |
 
 ---
 
@@ -152,6 +153,10 @@ does **not** wait for any further signals — it populates results in `_ready()`
 
 8. **`minimum_moves == 0` handling**: When `_current_level_data.minimum_moves == 0`,
    the move display shows only the final count (no denominator), matching HUD behavior.
+
+9. **Perfect-clear cat expression**: Use `cat_default_smile` when
+   `final_moves <= minimum_moves` and `minimum_moves > 0`. Use `cat_default_excited`
+   for other 3-star non-perfect outcomes and `cat_default_curious` for lower outcomes.
 
 ---
 
