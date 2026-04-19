@@ -1,9 +1,245 @@
-[gd_scene load_steps=5 format=3 uid="uid://cyc8taatuavh3"]
+[gd_scene load_steps=40 format=3 uid="uid://cyc8taatuavh3"]
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="3"]
 [ext_resource type="Script" path="res://src/ui/cat_part_rig.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="5_y4nb7"]
+[ext_resource type="Texture2D" uid="uid://6jgkeoae2v48" path="res://assets/art/ui/buttons/pill_bases/disabled.png" id="6_5xyyy"]
+[ext_resource type="Texture2D" uid="uid://d3jj481kx355h" path="res://assets/art/ui/buttons/pill_bases/primary_hover.png" id="7_27bcv"]
+[ext_resource type="Texture2D" uid="uid://d0d1rtfonnn2c" path="res://assets/art/ui/buttons/pill_bases/primary_pressed.png" id="8_cgwl6"]
+[ext_resource type="Texture2D" uid="uid://fc3huxga0qgi" path="res://assets/art/ui/icons/pill_interiors/icon_pill_play.png" id="9_pakoq"]
+[ext_resource type="Texture2D" uid="uid://df1vy7d35l4x7" path="res://assets/art/ui/buttons/pill_bases/secondary_normal.png" id="10_1r2tm"]
+[ext_resource type="Texture2D" uid="uid://bm1rxtel0kral" path="res://assets/art/ui/buttons/pill_bases/secondary_hover.png" id="11_yk1oo"]
+[ext_resource type="Texture2D" uid="uid://by0k82stbbs3e" path="res://assets/art/ui/buttons/pill_bases/secondary_pressed.png" id="12_qbltc"]
+[ext_resource type="Texture2D" uid="uid://bcotrsgul8gy6" path="res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png" id="13_pgqpn"]
+[ext_resource type="Texture2D" uid="uid://dss1ovxjynsw7" path="res://assets/art/ui/buttons/pill_bases/tertiary_normal.png" id="14_11ecp"]
+[ext_resource type="Texture2D" uid="uid://bwqh1xuf4ojiy" path="res://assets/art/ui/buttons/pill_bases/tertiary_hover.png" id="15_m3tmq"]
+[ext_resource type="Texture2D" uid="uid://cw7g0dupphjw" path="res://assets/art/ui/buttons/pill_bases/tertiary_pressed.png" id="16_w4j5m"]
+[ext_resource type="Texture2D" uid="uid://bcune8t4wyux2" path="res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png" id="17_40dxg"]
+[ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_81smh"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rdd4a"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("5_y4nb7")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6bpxa"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("6_5xyyy")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_35t4a"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("7_27bcv")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1faes"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("8_cgwl6")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bivvs"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("5_y4nb7")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m2wm6"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("10_1r2tm")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5q1i5"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("6_5xyyy")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m2777"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("11_yk1oo")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pskre"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("12_qbltc")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2agwk"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("10_1r2tm")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4erqc"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("14_11ecp")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gpkqp"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("6_5xyyy")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3q7qm"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("15_m3tmq")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rm3e7"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("16_w4j5m")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5dxvl"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("14_11ecp")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wcjjv"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("14_11ecp")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5wt66"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("6_5xyyy")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tqb7y"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("15_m3tmq")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ifrrl"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("16_w4j5m")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7evma"]
+content_margin_left = 30.0
+content_margin_top = 14.0
+content_margin_right = 30.0
+content_margin_bottom = 18.0
+texture = ExtResource("14_11ecp")
+texture_margin_left = 52.0
+texture_margin_top = 24.0
+texture_margin_right = 52.0
+texture_margin_bottom = 24.0
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -51,6 +287,7 @@ alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_81smh")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2
@@ -86,32 +323,106 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="MenuCatRig" type="Node2D" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/CatIllustration"]
-position = Vector2(0, -16)
+position = Vector2(220, 119)
+scale = Vector2(1.8, 1.8)
 script = ExtResource("4")
+override_display_locally = true
+display_size_px = 168.0
+display_offset = Vector2(0, 0)
+idle_tail_swing_period_sec = 1.55
+idle_tail_swing_degrees = 8.0
 
 [node name="Buttons" type="VBoxContainer" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
 layout_mode = 2
 theme_override_constants/separation = 14
 
 [node name="PlayBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
+theme_override_font_sizes/font_size = 1
+theme_override_styles/focus = SubResource("StyleBoxTexture_rdd4a")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_6bpxa")
+theme_override_styles/hover = SubResource("StyleBoxTexture_35t4a")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_1faes")
+theme_override_styles/normal = SubResource("StyleBoxTexture_bivvs")
 text = "PLAY"
+icon = ExtResource("9_pakoq")
+metadata/_shell_pill_hover_wired = true
 
 [node name="SkinsBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
+theme_override_font_sizes/font_size = 1
+theme_override_styles/focus = SubResource("StyleBoxTexture_m2wm6")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_5q1i5")
+theme_override_styles/hover = SubResource("StyleBoxTexture_m2777")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_pskre")
+theme_override_styles/normal = SubResource("StyleBoxTexture_2agwk")
 text = "SKINS"
+icon = ExtResource("13_pgqpn")
+metadata/_shell_pill_hover_wired = true
 
 [node name="OptionsBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
+theme_override_font_sizes/font_size = 1
+theme_override_styles/focus = SubResource("StyleBoxTexture_4erqc")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_gpkqp")
+theme_override_styles/hover = SubResource("StyleBoxTexture_3q7qm")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_rm3e7")
+theme_override_styles/normal = SubResource("StyleBoxTexture_5dxvl")
 text = "SETTINGS"
+icon = ExtResource("17_40dxg")
+metadata/_shell_pill_hover_wired = true
 
 [node name="CreditsBtn" type="Button" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
+theme_override_font_sizes/font_size = 1
+theme_override_styles/focus = SubResource("StyleBoxTexture_wcjjv")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_5wt66")
+theme_override_styles/hover = SubResource("StyleBoxTexture_tqb7y")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_ifrrl")
+theme_override_styles/normal = SubResource("StyleBoxTexture_7evma")
 text = "CREDITS"
+icon = ExtResource("18_y1h30")
+metadata/_shell_pill_hover_wired = true
 
 [node name="HintLabel" type="Label" parent="MarginContainer/Content"]
 visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.467, 0.365, 0.506, 1)
+theme_override_font_sizes/font_size = 1
 horizontal_alignment = 1

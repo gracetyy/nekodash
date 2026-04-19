@@ -414,21 +414,12 @@ func _resolve_skin_id() -> String:
 		return skin_id_override
 
 	var fallback_skin_id: String = _effective_default_skin_id()
-
-	if SaveManager == null:
+	var equipped_skin_id: String = _call_save_manager_string("get_equipped_skin")
+	if equipped_skin_id.is_empty():
+		equipped_skin_id = _call_save_manager_string("get_equipped_skin_id")
+	if equipped_skin_id.is_empty():
 		return fallback_skin_id
-
-	if SaveManager.has_method("get_equipped_skin"):
-		var equipped_skin_value: Variant = SaveManager.call("get_equipped_skin")
-		if equipped_skin_value is String and not (equipped_skin_value as String).is_empty():
-			return equipped_skin_value as String
-
-	if SaveManager.has_method("get_equipped_skin_id"):
-		var equipped_skin_id_value: Variant = SaveManager.call("get_equipped_skin_id")
-		if equipped_skin_id_value is String and not (equipped_skin_id_value as String).is_empty():
-			return equipped_skin_id_value as String
-
-	return fallback_skin_id
+	return equipped_skin_id
 
 
 func _effective_profile() -> CatRigProfile:
@@ -509,4 +500,28 @@ func _effective_default_skin_id() -> String:
 func _is_reduce_motion_enabled() -> bool:
 	if Engine.is_editor_hint():
 		return false
-	return AppSettings != null and AppSettings.get_reduce_motion()
+	return _call_app_settings_bool("get_reduce_motion", false)
+
+
+func _call_save_manager_string(method_name: StringName, fallback: String = "") -> String:
+	if SaveManager == null:
+		return fallback
+	var method_callable: Callable = Callable(SaveManager, method_name)
+	if not method_callable.is_valid():
+		return fallback
+	var value: Variant = method_callable.call()
+	if value is String and not (value as String).is_empty():
+		return value as String
+	return fallback
+
+
+func _call_app_settings_bool(method_name: StringName, fallback: bool) -> bool:
+	if AppSettings == null:
+		return fallback
+	var method_callable: Callable = Callable(AppSettings, method_name)
+	if not method_callable.is_valid():
+		return fallback
+	var value: Variant = method_callable.call()
+	if value is bool:
+		return value as bool
+	return fallback

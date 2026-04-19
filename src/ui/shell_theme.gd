@@ -26,6 +26,8 @@ const CIRCLE_HOVER_SCALE: float = 1.08
 const CIRCLE_HOVER_DURATION_SEC: float = 0.1
 const CIRCLE_HOVER_WIRED_META: String = "_shell_circle_hover_wired"
 const CIRCLE_HOVER_TWEEN_META: String = "_shell_circle_hover_tween"
+const SLIDER_GROOVE_MARGIN_PX: int = 10
+const SLIDER_MIN_HEIGHT_PX: float = 22.0
 const FREDOKA_BODY_FONT_PATH: String = "res://assets/fonts/Fredoka-Body-SemiBold.tres"
 const FREDOKA_DISPLAY_FONT_PATH: String = "res://assets/fonts/Fredoka-Display-Bold.tres"
 const FREDOKA_VARIABLE_FALLBACK: FontFile = preload("res://assets/fonts/Fredoka-Variable.ttf")
@@ -246,11 +248,45 @@ static func _ensure_fonts_loaded() -> void:
 
 
 static func _text_scale_factor() -> float:
-	if AppSettings != null and AppSettings.has_method("get_text_scale_factor"):
-		return AppSettings.get_text_scale_factor() as float
-	if AppSettings != null and AppSettings.has_method("get_ui_scale_factor"):
-		return AppSettings.get_ui_scale_factor() as float
+	var text_scale: float = _call_app_settings_float("get_text_scale_factor", -1.0)
+	if text_scale > 0.0:
+		return text_scale
+
+	var ui_scale: float = _call_app_settings_float("get_ui_scale_factor", -1.0)
+	if ui_scale > 0.0:
+		return ui_scale
+
 	return 1.0
+
+
+static func _is_reduce_motion_enabled() -> bool:
+	return _call_app_settings_bool("get_reduce_motion", false)
+
+
+static func _call_app_settings_float(method_name: StringName, fallback: float) -> float:
+	if AppSettings == null:
+		return fallback
+	var method_callable: Callable = Callable(AppSettings, method_name)
+	if not method_callable.is_valid():
+		return fallback
+	var value: Variant = method_callable.call()
+	if value is float:
+		return value as float
+	if value is int:
+		return float(value)
+	return fallback
+
+
+static func _call_app_settings_bool(method_name: StringName, fallback: bool) -> bool:
+	if AppSettings == null:
+		return fallback
+	var method_callable: Callable = Callable(AppSettings, method_name)
+	if not method_callable.is_valid():
+		return fallback
+	var value: Variant = method_callable.call()
+	if value is bool:
+		return value as bool
+	return fallback
 
 
 static func _scaled_font_size(base_size: int) -> int:
@@ -322,7 +358,7 @@ static func _animate_pill_hover_scale(button: BaseButton, target_scale: Vector2)
 	if button == null or not is_instance_valid(button):
 		return
 	button.pivot_offset = button.size * 0.5
-	if AppSettings != null and AppSettings.get_reduce_motion():
+	if _is_reduce_motion_enabled():
 		button.scale = target_scale
 		return
 
@@ -491,7 +527,7 @@ static func apply_slider(range_control: Range) -> void:
 		return
 	var slider: HSlider = range_control as HSlider
 	var min_width: float = maxf(slider.custom_minimum_size.x, 186.0)
-	slider.custom_minimum_size = Vector2(min_width, 56.0)
+	slider.custom_minimum_size = Vector2(min_width, SLIDER_MIN_HEIGHT_PX)
 	set_slider_interactive(slider, slider.editable)
 
 
@@ -530,10 +566,10 @@ static func _make_slider_texture_style(texture: Texture2D) -> StyleBoxTexture:
 	# Do not force content margins to zero: HSlider groove rendering relies on default style content values.
 	var style: StyleBoxTexture = StyleBoxTexture.new()
 	style.texture = texture
-	style.texture_margin_left = 28
-	style.texture_margin_top = 28
-	style.texture_margin_right = 28
-	style.texture_margin_bottom = 28
+	style.texture_margin_left = SLIDER_GROOVE_MARGIN_PX
+	style.texture_margin_top = SLIDER_GROOVE_MARGIN_PX
+	style.texture_margin_right = SLIDER_GROOVE_MARGIN_PX
+	style.texture_margin_bottom = SLIDER_GROOVE_MARGIN_PX
 	return style
 
 

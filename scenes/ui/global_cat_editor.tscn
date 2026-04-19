@@ -1,48 +1,52 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://dwv4v31w8iywr"]
 
 [ext_resource type="Script" path="res://src/ui/global_cat_editor.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/cat_part_rig.gd" id="2"]
-[ext_resource type="Resource" path="res://data/cat_rig_defaults.tres" id="3"]
+[ext_resource type="Resource" uid="uid://cvuepstgae10s" path="res://data/cat_rig_defaults.tres" id="3"]
 
 [node name="GlobalCatEditor" type="Node2D"]
 script = ExtResource("1")
+preview_head_swing = null
+preview_head_swing_degrees = null
+preview_head_swing_period_sec = null
 
 [node name="AxisHorizontal" type="Line2D" parent="."]
 z_index = -20
-default_color = Color(0.4, 0.4, 0.4, 0.45)
-width = 2.0
 points = PackedVector2Array(-420, 0, 420, 0)
+width = 2.0
+default_color = Color(0.4, 0.4, 0.4, 0.45)
 
 [node name="AxisVertical" type="Line2D" parent="."]
 z_index = -20
-default_color = Color(0.4, 0.4, 0.4, 0.45)
-width = 2.0
 points = PackedVector2Array(0, -320, 0, 320)
+width = 2.0
+default_color = Color(0.4, 0.4, 0.4, 0.45)
 
 [node name="TailPivotGuide" type="Line2D" parent="."]
 z_index = -15
-default_color = Color(0.772549, 0.556863, 0.25098, 0.9)
+points = PackedVector2Array(0, -16, 14.915, 17.1)
 width = 2.0
-points = PackedVector2Array(0, -16, 36, 78)
+default_color = Color(0.772549, 0.556863, 0.25098, 0.9)
 
 [node name="HeadPivotGuide" type="Line2D" parent="."]
 z_index = -15
-default_color = Color(0.243137, 0.694118, 0.847059, 0.9)
-width = 2.0
 points = PackedVector2Array(0, -16, 0, 18)
+width = 2.0
+default_color = Color(0.243137, 0.694118, 0.847059, 0.9)
 
 [node name="GlobalCatRig" type="Node2D" parent="."]
+position = Vector2(0, -16)
 script = ExtResource("2")
 local_profile_override = ExtResource("3")
 skin_id_override = "cat_default"
-auto_refresh_in_editor = true
+idle_tail_swing_period_sec = 3.0
 
 [node name="DisplayOffsetHandle" type="Marker2D" parent="."]
 position = Vector2(0, -16)
 gizmo_extents = 14.0
 
 [node name="TailPivotHandle" type="Marker2D" parent="."]
-position = Vector2(36, 78)
+position = Vector2(14.915, 17.1)
 gizmo_extents = 12.0
 
 [node name="HeadPivotHandle" type="Marker2D" parent="."]

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CatRigProfile" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="CatRigProfile" load_steps=2 format=3 uid="uid://cvuepstgae10s"]
 
 [ext_resource type="Script" path="res://src/ui/cat_rig_profile.gd" id="1"]
 
@@ -8,7 +8,7 @@ default_skin_id = "cat_default"
 face_variant = "idle"
 display_size_px = 92.0
 display_offset = Vector2(0, -16)
-tail_pivot_source_px = Vector2(36, 94)
+tail_pivot_source_px = Vector2(14.915, 33.1)
 head_pivot_source_px = Vector2(0, 34)
 idle_enabled = true
 idle_tail_swing_period_sec = 1.45
