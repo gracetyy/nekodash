@@ -29,7 +29,7 @@ const COVERED_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_ye
 var _tile_states: Dictionary = {}
 
 ## Tile size in pixels — matches GridSystem.
-var _tile_size: int = 64
+var _tile_size: int = 72
 
 ## Whether the visualizer has been initialized for the current level.
 var _initialized: bool = false
