@@ -73,7 +73,7 @@ var _was_previously_completed: bool = false
 var _entry_fade_layer: CanvasLayer
 var _entry_fade_rect: ColorRect
 var _entry_fade_tween: Tween
-const LEVEL_COMPLETE_MODAL_DELAY_SEC: float = 1.0
+const LEVEL_COMPLETE_MODAL_DELAY_SEC: float = 0.34
 
 ## Stub SFX stream for level completion (replace with real audio asset later).
 var _sfx_level_complete: AudioStream = AudioStreamWAV.new()

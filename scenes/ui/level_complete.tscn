@@ -23,9 +23,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 34
+theme_override_constants/margin_left = 68
 theme_override_constants/margin_top = 36
-theme_override_constants/margin_right = 34
+theme_override_constants/margin_right = 68
 theme_override_constants/margin_bottom = 36
 
 [node name="ResultsCard" type="PanelContainer" parent="MarginContainer"]
@@ -34,68 +34,106 @@ size_flags_vertical = 4
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/ResultsCard"]
 layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 24
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = -87
+theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 18
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer/ResultsCard/CardMargin"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = -8
 
-[node name="StarRow" type="HBoxContainer" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+[node name="StarRow" type="Control" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+custom_minimum_size = Vector2(0, 122)
 layout_mode = 2
-theme_override_constants/separation = 10
-alignment = 1
+size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="Star1" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
-custom_minimum_size = Vector2(72, 72)
-layout_mode = 2
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -152.0
+offset_top = 8.0
+offset_right = -48.0
+offset_bottom = 112.0
 texture = ExtResource("2")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Star2" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
-custom_minimum_size = Vector2(72, 72)
-layout_mode = 2
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -58.0
+offset_top = -8.0
+offset_right = 58.0
+offset_bottom = 108.0
 texture = ExtResource("2")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Star3" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
-custom_minimum_size = Vector2(72, 72)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 48.0
+offset_top = 8.0
+offset_right = 152.0
+offset_bottom = 112.0
+grow_horizontal = 2
 texture = ExtResource("3")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="StarSentinel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
 visible = false
-layout_mode = 2
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
 text = "?"
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Ribbon" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
-custom_minimum_size = Vector2(344, 80)
+[node name="RibbonSlot" type="Control" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+custom_minimum_size = Vector2(0, 94)
 layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Ribbon" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_right = 80.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("6")
 expand_mode = 1
-stretch_mode = 5
 
-[node name="LevelNameLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/Ribbon"]
+[node name="LevelNameLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon"]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0.984, 0.957, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 38
 text = "LEVEL COMPLETE!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NewBestBadge" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/Ribbon"]
+[node name="NewBestBadge" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon"]
 visible = false
 layout_mode = 0
 anchor_left = 1.0
