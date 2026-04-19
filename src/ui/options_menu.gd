@@ -15,6 +15,7 @@ var _music_manager_ref: Node
 var _sfx_manager_ref: Node
 
 var _title_label: Label
+var _ribbon_title_label: Label
 var _panel: PanelContainer
 var _backdrop: ColorRect
 var _music_slider: Range
@@ -31,6 +32,7 @@ var _close_btn: BaseButton
 func _ready() -> void:
 	_auto_discover_ui_nodes()
 	_resolve_services()
+	_connect_settings_signal()
 	_populate_input_hint_options()
 	_connect_ui()
 	_apply_visual_style()
@@ -40,6 +42,10 @@ func _ready() -> void:
 		close_requested.connect(_handle_close_requested)
 	if _music_slider != null and _music_slider.editable:
 		_music_slider.grab_focus()
+
+
+func _exit_tree() -> void:
+	_disconnect_settings_signal()
 
 
 func receive_scene_params(params: Dictionary) -> void:
@@ -75,6 +81,26 @@ func _resolve_services() -> void:
 		_sfx_manager_ref = SfxManager
 
 
+func _connect_settings_signal() -> void:
+	if _app_settings_ref == null:
+		return
+	if not _app_settings_ref.has_signal("setting_changed"):
+		return
+	var changed_callable: Callable = Callable(self , "_on_app_setting_changed")
+	if not _app_settings_ref.is_connected("setting_changed", changed_callable):
+		_app_settings_ref.connect("setting_changed", changed_callable)
+
+
+func _disconnect_settings_signal() -> void:
+	if _app_settings_ref == null:
+		return
+	if not _app_settings_ref.has_signal("setting_changed"):
+		return
+	var changed_callable: Callable = Callable(self , "_on_app_setting_changed")
+	if _app_settings_ref.is_connected("setting_changed", changed_callable):
+		_app_settings_ref.disconnect("setting_changed", changed_callable)
+
+
 func _populate_input_hint_options() -> void:
 	if _input_hint_option == null or _input_hint_option.item_count > 0:
 		return
@@ -108,6 +134,11 @@ func _sync_controls() -> void:
 	_suppress_events = true
 	if _title_label != null:
 		_title_label.text = _title_text
+	if _ribbon_title_label != null:
+		var ribbon_text: String = _title_text
+		if ribbon_text.length() <= 8:
+			ribbon_text = ribbon_text.to_upper()
+		_ribbon_title_label.text = ribbon_text
 	if _music_slider != null:
 		_music_slider.value = _music_manager_ref.get_volume() * 100.0
 	if _music_mute_toggle != null:
@@ -170,6 +201,8 @@ func _on_large_ui_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
 	_app_settings_ref.set_large_ui(button_pressed)
+	_apply_visual_style()
+	_sync_controls()
 
 
 func _on_fullscreen_toggled(button_pressed: bool) -> void:
@@ -193,7 +226,10 @@ func _on_input_hint_selected(index: int) -> void:
 func _auto_discover_ui_nodes() -> void:
 	_backdrop = get_node_or_null("Backdrop") as ColorRect
 	_panel = get_node_or_null("Backdrop/Panel") as PanelContainer
+	_ribbon_title_label = get_node_or_null("Backdrop/Ribbon/RibbonTitleLabel") as Label
 	_title_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TitleLabel") as Label
+	if _title_label == null:
+		_title_label = _ribbon_title_label
 	_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicSlider") as Range
 	_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteToggle") as BaseButton
 	_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider") as Range
@@ -209,7 +245,10 @@ func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
 	ShellThemeUtil.apply_panel(_panel, ShellThemeUtil.CREAM)
 	if _title_label != null:
-		ShellThemeUtil.apply_title(_title_label, 36)
+		ShellThemeUtil.apply_title(_title_label, 40)
+	if _ribbon_title_label != null:
+		ShellThemeUtil.apply_title(_ribbon_title_label, 34)
+		_ribbon_title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
 	var section_headers: Array[NodePath] = [
 		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel"),
@@ -217,7 +256,9 @@ func _apply_visual_style() -> void:
 	]
 	var option_labels: Array[NodePath] = [
 		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicName"),
+		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxName"),
+		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenLabel"),
@@ -230,7 +271,9 @@ func _apply_visual_style() -> void:
 		var label: Label = get_node_or_null(path) as Label
 		if label != null:
 			ShellThemeUtil.apply_body(label, ShellThemeUtil.PLUM_SOFT, 20)
-	ShellThemeUtil.apply_circle_close_button(_close_btn, 58.0)
+	ShellThemeUtil.apply_circle_close_button(_close_btn, 87.0)
+	if _close_btn is TextureButton:
+		(_close_btn as TextureButton).stretch_mode = TextureButton.STRETCH_SCALE
 	ShellThemeUtil.apply_slider(_music_slider)
 	ShellThemeUtil.apply_slider(_sfx_slider)
 	ShellThemeUtil.apply_checkbox(_music_mute_toggle)
@@ -268,3 +311,9 @@ func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
 	if slider_control == null or not slider_control is HSlider:
 		return
 	ShellThemeUtil.set_slider_interactive(slider_control as HSlider, is_enabled)
+
+
+func _on_app_setting_changed(section: String, key: String, _value: Variant) -> void:
+	if section == "display" and key == "large_ui":
+		_apply_visual_style()
+		_sync_controls()

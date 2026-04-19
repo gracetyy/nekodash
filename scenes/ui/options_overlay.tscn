@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dymqonpyn87yd"]
+[gd_scene load_steps=4 format=3 uid="uid://dymqonpyn87yd"]
 
 [ext_resource type="Script" path="res://src/ui/options_menu.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://b2h2drorkunul" path="res://assets/art/cats/cat_head.png" id="3"]
 
 [node name="OptionsOverlay" type="CanvasLayer"]
 layer = 40
@@ -20,9 +22,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
+offset_left = -210.0
 offset_top = -304.0
-offset_right = 240.0
+offset_right = 210.0
 offset_bottom = 304.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -39,6 +41,7 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="TitleLabel" type="Label" parent="Backdrop/Panel/Margin/VBox"]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
 theme_override_font_sizes/font_size = 32
@@ -71,10 +74,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 value = 100.0
 
-[node name="MusicMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
-custom_minimum_size = Vector2(144, 0)
+[node name="MusicMuteLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
 layout_mode = 2
 text = "Mute"
+
+[node name="MusicMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
 
 [node name="SfxRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
 layout_mode = 2
@@ -92,10 +98,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 value = 100.0
 
-[node name="SfxMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
-custom_minimum_size = Vector2(144, 0)
+[node name="SfxMuteLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
 layout_mode = 2
 text = "Mute"
+
+[node name="SfxMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
 
 [node name="DisplaySection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
@@ -156,6 +165,52 @@ text = "Input Hints"
 [node name="InputHintOption" type="OptionButton" parent="Backdrop/Panel/Margin/VBox/InputSection"]
 layout_mode = 2
 
+[node name="Ribbon" type="TextureRect" parent="Backdrop"]
+z_index = 1
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -248.0
+offset_top = -348.0
+offset_right = 248.0
+offset_bottom = -258.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RibbonTitleLabel" type="Label" parent="Backdrop/Ribbon"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.984, 0.957, 1)
+theme_override_font_sizes/font_size = 40
+text = "OPTIONS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CatPeek" type="TextureRect" parent="Backdrop"]
+z_index = 2
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 116.0
+offset_top = -400.0
+offset_right = 236.0
+offset_bottom = -296.0
+mouse_filter = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="CloseBtn" type="TextureButton" parent="Backdrop"]
 z_index = 2
 layout_mode = 0
@@ -163,9 +218,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 176.0
-offset_top = -334.0
-offset_right = 234.0
-offset_bottom = -276.0
+offset_left = -43.5
+offset_top = 259.5
+offset_right = 43.5
+offset_bottom = 346.5
 grow_horizontal = 2
 grow_vertical = 2
