@@ -17,6 +17,7 @@ const ICON_ARROW_RIGHT: Texture2D = preload("res://assets/art/ui/icons/pill_inte
 const ICON_RETRY: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_retry.png")
 const ICON_HOME: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_home.png")
 const CAT_CURIOUS_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_curious.png")
+const CAT_SMILE_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_smile.png")
 const CAT_EXCITED_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_excited.png")
 
 # —————————————————————————————————————————————
@@ -78,6 +79,7 @@ var _prev_best_moves: int = 0
 var _was_previously_completed: bool = false
 var _next_level_data: LevelData
 var _use_internal_navigation: bool = true
+var _star_pose_refresh_pending: bool = false
 
 ## Whether params have been received.
 var _params_received: bool = false
@@ -96,6 +98,8 @@ var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
 func _ready() -> void:
 	_auto_discover_ui_nodes()
 	_apply_visual_style()
+	_apply_default_star_pose()
+	_schedule_star_pose_refresh()
 	# Self-connect navigation only when running in the real scene (auto-discover
 	# found buttons). Tests use set_ui_nodes() after _ready(), so _next_btn is
 	# still null here and these connections are skipped.
@@ -103,6 +107,28 @@ func _ready() -> void:
 		_connect_navigation()
 	if _params_received:
 		populate_results()
+
+
+func _apply_default_star_pose() -> void:
+	for i: int in range(_star_nodes.size()):
+		var node: Control = _star_nodes[i]
+		if node == null:
+			continue
+		node.pivot_offset = node.size * 0.5
+		node.rotation_degrees = _star_rotation_for_index(i)
+
+
+func _schedule_star_pose_refresh() -> void:
+	if _star_pose_refresh_pending:
+		return
+	_star_pose_refresh_pending = true
+	call_deferred("_refresh_star_pose_next_frame")
+
+
+func _refresh_star_pose_next_frame() -> void:
+	await get_tree().process_frame
+	_star_pose_refresh_pending = false
+	_apply_default_star_pose()
 
 
 # —————————————————————————————————————————————
@@ -137,10 +163,8 @@ func populate_results() -> void:
 		var display_name: String = _current_level_data.display_name.strip_edges()
 		if display_name != "":
 			_level_name_label.text = display_name
-		elif _is_perfect_result(_final_moves, _current_level_data.minimum_moves):
-			_level_name_label.text = "Perfect!"
 		else:
-			_level_name_label.text = "Level Complete!"
+			_level_name_label.text = "LEVEL COMPLETE!"
 
 	# Stars
 	_show_stars(_stars)
@@ -150,7 +174,7 @@ func populate_results() -> void:
 
 	# New best badge
 	_update_new_best_badge()
-	_update_cat_illustration(_stars)
+	_update_cat_illustration(_stars, _final_moves, _current_level_data.minimum_moves)
 
 	# Next button visibility
 	_update_next_button()
@@ -268,6 +292,7 @@ func _show_stars(stars: int) -> void:
 	for i: int in range(_star_nodes.size()):
 		var node: Control = _star_nodes[i]
 		node.visible = true
+		node.pivot_offset = node.size * 0.5
 		node.rotation_degrees = _star_rotation_for_index(i)
 		if node is TextureRect:
 			var star_rect: TextureRect = node as TextureRect
@@ -281,6 +306,7 @@ func _show_stars(stars: int) -> void:
 	if stars > 0:
 		SfxManager.play(_sfx_star_earned, SfxManager.SfxBus.SFX)
 	_animate_star_reveal(stars)
+	_schedule_star_pose_refresh()
 
 
 ## Updates the move count label. Handles minimum_moves == 0.
@@ -328,10 +354,12 @@ func _update_new_best_badge() -> void:
 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
-func _update_cat_illustration(stars: int) -> void:
+func _update_cat_illustration(stars: int, final_moves: int, minimum_moves: int) -> void:
 	if _cat_illustration == null:
 		return
-	if stars >= 3:
+	if _is_perfect_result(final_moves, minimum_moves):
+		_cat_illustration.texture = CAT_SMILE_TEXTURE
+	elif stars >= 3:
 		_cat_illustration.texture = CAT_EXCITED_TEXTURE
 	else:
 		_cat_illustration.texture = CAT_CURIOUS_TEXTURE
@@ -429,10 +457,8 @@ func _apply_visual_style() -> void:
 	if _level_name_label != null and _level_name_label is Label:
 		var title_label: Label = _level_name_label as Label
 		title_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
-		title_label.add_theme_font_size_override("font_size", 36)
+		title_label.add_theme_font_size_override("font_size", ShellThemeUtil._scaled_font_size(40))
 		title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
-		title_label.add_theme_color_override("font_outline_color", Color(1.0, 1.0, 1.0, 0.0))
-		title_label.add_theme_constant_override("outline_size", 0)
 	if _moves_label != null and _moves_label is Label:
 		ShellThemeUtil.apply_title(_moves_label as Label, 40)
 	if _min_label != null and _min_label is Label:
@@ -465,9 +491,11 @@ func _apply_visual_style() -> void:
 
 func _animate_star_reveal(stars: int) -> void:
 	if _is_reduce_motion_enabled():
-		for node: Control in _star_nodes:
+		for i: int in range(_star_nodes.size()):
+			var node: Control = _star_nodes[i]
+			node.pivot_offset = node.size * 0.5
 			node.scale = Vector2.ONE
-			node.rotation_degrees = _star_rotation_for_index(_star_nodes.find(node))
+			node.rotation_degrees = _star_rotation_for_index(i)
 		return
 	for i: int in range(_star_nodes.size()):
 		var node: Control = _star_nodes[i]
@@ -475,15 +503,19 @@ func _animate_star_reveal(stars: int) -> void:
 			continue
 		node.pivot_offset = node.size * 0.5
 		node.rotation_degrees = _star_rotation_for_index(i)
-		node.scale = Vector2(0.72, 0.72) if i < stars else Vector2(0.9, 0.9)
+		node.scale = Vector2(0.94, 0.94) if i < stars else Vector2.ONE
 		var tween: Tween = create_tween()
-		tween.tween_property(node, "scale", Vector2.ONE, 0.2).set_delay(float(i) * 0.05) \
+		tween.tween_property(node, "scale", Vector2.ONE, 0.12) \
 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _star_rotation_for_index(index: int) -> float:
 	if index < 0:
 		return 0.0
+	if index == 0:
+		return -26.0
+	if index == 2:
+		return 26.0
 	return 0.0
 
 

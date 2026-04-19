@@ -26,9 +26,7 @@ func _ready() -> void:
 		_content.world_map_requested.connect(_on_world_map_requested)
 
 	if not _pending_params.is_empty():
-		_pending_params["internal_navigation"] = false
-		_content.receive_scene_params(_pending_params)
-		_content.populate_results()
+		call_deferred("_apply_pending_params")
 
 	var next_btn: BaseButton = _content.find_child("NextLevelBtn", true, false) as BaseButton
 	var retry_btn: BaseButton = _content.find_child("RetryBtn", true, false) as BaseButton
@@ -36,6 +34,16 @@ func _ready() -> void:
 		next_btn.grab_focus()
 	elif retry_btn != null:
 		retry_btn.grab_focus()
+
+
+func _apply_pending_params() -> void:
+	if _content == null or _pending_params.is_empty():
+		return
+	await get_tree().process_frame
+	var params: Dictionary = _pending_params.duplicate(true)
+	params["internal_navigation"] = false
+	_content.receive_scene_params(params)
+	_content.populate_results()
 
 
 func _on_next_level_requested(level_data: LevelData) -> void:
