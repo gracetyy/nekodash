@@ -85,6 +85,21 @@ func test_mute_toggle() -> void:
 	assert_false(_music.is_muted(), "Should not be muted after set_muted(false)")
 
 
+func test_play_while_muted_starts_after_unmute() -> void:
+	var stream: AudioStream = _stub_stream()
+
+	_music.set_muted(true)
+	_music.play(stream)
+
+	var any_playing_while_muted: bool = _music._player_a.playing or _music._player_b.playing
+	assert_false(any_playing_while_muted, "No music should start while muted")
+
+	_music.set_muted(false)
+
+	var any_playing_after_unmute: bool = _music._player_a.playing or _music._player_b.playing
+	assert_true(any_playing_after_unmute, "Pending track should start after unmute")
+
+
 func test_stop_no_crash() -> void:
 	_music.stop()
 	pass_test("stop() without any playing track did not crash")
