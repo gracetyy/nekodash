@@ -10,18 +10,9 @@ extends "res://src/ui/cat_part_rig.gd"
 # Constants
 # —————————————————————————————————————————————
 
-@export_category("Slide Head Tilt")
-## Max head tilt applied during horizontal slides.
-@export_range(0.0, 30.0, 0.1, "or_greater")
-var head_slide_tilt_degrees: float = 6.0
-
-## Time to lean the head into the slide direction.
-@export_range(0.0, 1.0, 0.01, "or_greater")
-var head_tilt_in_sec: float = 0.08
-
-## Time to return head tilt back to neutral.
-@export_range(0.0, 1.0, 0.01, "or_greater")
-var head_tilt_out_sec: float = 0.12
+const HEAD_SLIDE_TILT_DEGREES: float = 6.0
+const HEAD_TILT_IN_SEC: float = 0.08
+const HEAD_TILT_OUT_SEC: float = 0.12
 
 
 # —————————————————————————————————————————————
@@ -84,16 +75,16 @@ func _on_parent_slide_started(_from: Vector2i, _to: Vector2i, direction: Vector2
 		return
 
 	if direction.x == 0:
-		tween_head_tilt(0.0, head_tilt_in_sec)
+		tween_head_tilt(0.0, HEAD_TILT_IN_SEC)
 		return
 
-	var target_deg: float = float(direction.x) * head_slide_tilt_degrees
-	tween_head_tilt(target_deg, head_tilt_in_sec)
+	var target_deg: float = float(direction.x) * HEAD_SLIDE_TILT_DEGREES
+	tween_head_tilt(target_deg, HEAD_TILT_IN_SEC)
 
 
 func _on_parent_slide_completed(_from: Vector2i, _to: Vector2i, _direction: Vector2i, _tiles: Array[Vector2i]) -> void:
-	tween_head_tilt(0.0, head_tilt_out_sec)
+	tween_head_tilt(0.0, HEAD_TILT_OUT_SEC)
 
 
 func _on_parent_slide_blocked(_pos: Vector2i, _direction: Vector2i) -> void:
-	tween_head_tilt(0.0, head_tilt_out_sec)
+	tween_head_tilt(0.0, HEAD_TILT_OUT_SEC)
