@@ -19,9 +19,13 @@ AI reference screenshots in `design/reference/`.
 
 ## Cat Sprite
 
-| File             | Category  | Description                                                                                                                                                                                                                                                           |
-| ---------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sprite-cat.png` | Character | White kawaii sitting cat. Dark clean outline, pink blush circles on cheeks, large round eyes. Clean white background. Single static pose — no animation frames. This is the canonical "Default" skin. Use as the player character sprite and skin preview silhouette. |
+| File / Pattern                 | Category      | Description                                                                                                                                                             |
+| ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sprite-cat.png`               | Character     | Original default cat draft reference (single composed pose). Useful as style reference for final exports.                                                               |
+| `cats/parts/cat_default_*.png` | Character Rig | Layered gameplay parts for default skin (`head`, `body`, `legs`, `tail`) exported on matched 320×320 and 640×640 canvases. Designed to stack at shared origin in Godot. |
+| `cats/parts/cat_face_*.png`    | Character Rig | Reusable face overlays (`idle`, `blink`, `excited`, `relax`, `smile`) exported on the same canvas origin as body/head parts.                                            |
+
+> Assembly order for gameplay rig: tail (bottom), body, legs, head, face (top).
 
 ---
 
@@ -87,26 +91,26 @@ AI reference screenshots in `design/reference/`.
 
 ## Asset Coverage Summary
 
-| Category                                | Status                                                    | Files                                                |
-| --------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------- |
-| Cat sprite                              | ✅ Draft exists                                           | `sprite-cat.png`                                     |
-| Floor tiles                             | ✅ Draft exists                                           | `tileset-floor-ver1`, `tileset-floor-ver2`           |
-| Wall tiles — World 1 (bedroom pink)     | ✅ Draft exists                                           | `tileset-wall-ver4.png`                              |
-| Wall tiles — Post-jam Study (lilac paw) | ✅ Draft exists                                           | `tileset-wall-ver2.png`                              |
-| Wall tiles — World 2 (kitchen)          | ✅ Draft exists                                           | `tileset-wall-ver3.png`                              |
-| Wall tiles — World 3 (wood)             | ✅ Draft exists                                           | `tileset-wall-ver1.png`                              |
-| Furniture — World 3 (Living Room)       | ✅ Draft exists                                           | `tileset-livingroom-ver1`, `tileset-livingroom-ver2` |
-| Furniture — World 2 (Kitchen)           | ✅ Draft exists                                           | `tileset-kitchen.png`                                |
-| Furniture — World 1 (Bedroom)           | ✅ Draft exists                                           | `tileset-bedroom.png`                                |
-| Furniture — World 2 (Study)             | ❌ Not yet created                                        | —                                                    |
-| Trail overlay tile                      | ❌ Not yet created                                        | —                                                    |
-| Paw stamp tile                          | ❌ Not yet created (appears on `tileset-floor-ver1` only) | —                                                    |
-| UI Buttons                              | ✅ Draft exists                                           | `ui-button-1`, `ui-button-2`, `ui-button-3`          |
-| UI Panels / Popups                      | ✅ Draft exists                                           | `ui-popup.png`                                       |
-| UI Stars                                | ✅ Draft exists                                           | `ui-stars.png`                                       |
-| UI Level Cards                          | ✅ Draft exists                                           | `ui-level-cards.png`                                 |
-| UI Skin Cards                           | ✅ Draft exists                                           | `ui-skins.png`                                       |
-| UI Misc (padlock, paw coin, bars)       | ✅ Draft exists                                           | `ui-misc.png`                                        |
-| Room backgrounds                        | ⚠️ Exists, not inspected                                  | `bg-livingroom`, `bg-bedroom`, `bg-kitchen`          |
-| Cat animation frames                    | ❌ Not yet created                                        | —                                                    |
-| World 2 furniture (Study/Library)       | ❌ Not yet created                                        | —                                                    |
+| Category                                | Status                                                    | Files                                                       |
+| --------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------- |
+| Cat sprite                              | ✅ Draft exists                                           | `sprite-cat.png`, `cats/parts/cat_default_*.png`            |
+| Floor tiles                             | ✅ Draft exists                                           | `tileset-floor-ver1`, `tileset-floor-ver2`                  |
+| Wall tiles — World 1 (bedroom pink)     | ✅ Draft exists                                           | `tileset-wall-ver4.png`                                     |
+| Wall tiles — Post-jam Study (lilac paw) | ✅ Draft exists                                           | `tileset-wall-ver2.png`                                     |
+| Wall tiles — World 2 (kitchen)          | ✅ Draft exists                                           | `tileset-wall-ver3.png`                                     |
+| Wall tiles — World 3 (wood)             | ✅ Draft exists                                           | `tileset-wall-ver1.png`                                     |
+| Furniture — World 3 (Living Room)       | ✅ Draft exists                                           | `tileset-livingroom-ver1`, `tileset-livingroom-ver2`        |
+| Furniture — World 2 (Kitchen)           | ✅ Draft exists                                           | `tileset-kitchen.png`                                       |
+| Furniture — World 1 (Bedroom)           | ✅ Draft exists                                           | `tileset-bedroom.png`                                       |
+| Furniture — World 2 (Study)             | ❌ Not yet created                                        | —                                                           |
+| Trail overlay tile                      | ❌ Not yet created                                        | —                                                           |
+| Paw stamp tile                          | ❌ Not yet created (appears on `tileset-floor-ver1` only) | —                                                           |
+| UI Buttons                              | ✅ Draft exists                                           | `ui-button-1`, `ui-button-2`, `ui-button-3`                 |
+| UI Panels / Popups                      | ✅ Draft exists                                           | `ui-popup.png`                                              |
+| UI Stars                                | ✅ Draft exists                                           | `ui-stars.png`                                              |
+| UI Level Cards                          | ✅ Draft exists                                           | `ui-level-cards.png`                                        |
+| UI Skin Cards                           | ✅ Draft exists                                           | `ui-skins.png`                                              |
+| UI Misc (padlock, paw coin, bars)       | ✅ Draft exists                                           | `ui-misc.png`                                               |
+| Room backgrounds                        | ⚠️ Exists, not inspected                                  | `bg-livingroom`, `bg-bedroom`, `bg-kitchen`                 |
+| Cat animation frames / part rig         | ✅ Draft exists                                           | `cats/parts/cat_default_*.png`, `cats/parts/cat_face_*.png` |
+| World 2 furniture (Study/Library)       | ❌ Not yet created                                        | —                                                           |

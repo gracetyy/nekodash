@@ -70,7 +70,25 @@ Source draft: `design/draft/sprite-cat.png` (single idle pose, white cat — use
 
 > **Additional skins**: Future skins (e.g. calico, black cat, sakura) reuse the same 7 frames with different colour fills. Add folder per skin: `cat_calico_idle.png`, etc.
 
-> **Implementation note — Skeleton2D**: For smooth idle bob and direction-lean slide states, use `Skeleton2D` with a 2–3 bone rig (body, head, tail). Swap to a dedicated `AnimatedSprite2D` layer for extreme expression frames (bump pancake, happy UwU) that are too distorted for bone offsets. The two approaches are not mutually exclusive.
+### Part-Based Gameplay Cat — `assets/art/cats/parts/`
+
+Gameplay now assembles the in-level cat from layered part sprites. Every part is exported on the same **320×320px** canvas (and **640×640px** for `@2x`) so parts align at shared origin without per-layer cropping offsets.
+
+| File Pattern             | Description                                                                           | Size (px) | Format | Status             |
+| ------------------------ | ------------------------------------------------------------------------------------- | --------- | ------ | ------------------ |
+| `cat_<skin_id>_tail.png` | Bottom-most gameplay layer. Tail rotates around a shape-matched pivot for idle swing. | 320/640   | PNG    | ✅ (`cat_default`) |
+| `cat_<skin_id>_body.png` | Base torso layer above tail.                                                          | 320/640   | PNG    | ✅ (`cat_default`) |
+| `cat_<skin_id>_legs.png` | Leg/paw layer above body.                                                             | 320/640   | PNG    | ✅ (`cat_default`) |
+| `cat_<skin_id>_head.png` | Head layer above legs. Rotates slightly for left/right slide direction feedback.      | 320/640   | PNG    | ✅ (`cat_default`) |
+| `cat_face_idle.png`      | Top-most neutral face layer.                                                          | 320/640   | PNG    | ✅                 |
+| `cat_face_blink.png`     | Blink face variant.                                                                   | 320/640   | PNG    | ✅                 |
+| `cat_face_excited.png`   | Excited face variant.                                                                 | 320/640   | PNG    | ✅                 |
+| `cat_face_relax.png`     | Relaxed face variant.                                                                 | 320/640   | PNG    | ✅                 |
+| `cat_face_smile.png`     | Smile face variant.                                                                   | 320/640   | PNG    | ✅                 |
+
+> **Gameplay assembly order (bottom → top)**: tail, body, legs, head, face.
+
+> **Implementation note — Godot**: Assemble gameplay cat visuals using child `Sprite2D` nodes on one parent cat node. Animate parent slide squish/stretch on the movement node, and animate child offsets/rotation (tail swing + head tilt) on part pivots.
 
 ---
 
