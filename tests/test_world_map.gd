@@ -38,9 +38,13 @@ func _make_level(p_id: String, p_world: int, p_index: int) -> LevelData:
 	return ld
 
 
-func _setup_catalogue(levels: Array[LevelData]) -> void:
+func _setup_catalogue(
+	levels: Array[LevelData],
+	always_unlocked_world_ids: PackedInt32Array = PackedInt32Array(),
+) -> void:
 	var cat: LevelCatalogue = LevelCatalogue.new()
 	cat.levels = levels
+	cat.always_unlocked_world_ids = always_unlocked_world_ids
 	_map._catalogue = cat
 	_map._build_world_index()
 
@@ -55,12 +59,37 @@ func test_first_level_always_unlocked() -> void:
 	assert_true(_map.is_level_unlocked(l1), "Level index 1 should always be unlocked")
 
 
-func test_first_level_unlocked_even_with_no_save() -> void:
-	var l1: LevelData = _make_level("w2_l1", 2, 1)
-	var l2: LevelData = _make_level("w2_l2", 2, 2)
-	_setup_catalogue([l1, l2] as Array[LevelData])
-	assert_true(_map.is_level_unlocked(l1), "First level in any world should be unlocked")
-	assert_false(_map.is_level_unlocked(l2), "Second level locked without completing first")
+func test_world_two_entry_locked_until_world_one_final_completed() -> void:
+	var w1_l1: LevelData = _make_level("w1_l1", 1, 1)
+	var w1_l2: LevelData = _make_level("w1_l2", 1, 2)
+	var w2_l1: LevelData = _make_level("w2_l1", 2, 1)
+	var w2_l2: LevelData = _make_level("w2_l2", 2, 2)
+	_setup_catalogue([w1_l1, w1_l2, w2_l1, w2_l2] as Array[LevelData])
+
+	assert_false(_map.is_level_unlocked(w2_l1), "World 2 entry should be locked initially")
+
+	SaveManager.set_level_record("w1_l1", true, 2, 5)
+	assert_false(_map.is_level_unlocked(w2_l1), "World 2 entry stays locked until world 1 final")
+
+	SaveManager.set_level_record("w1_l2", true, 2, 5)
+	assert_true(_map.is_level_unlocked(w2_l1), "World 2 entry unlocks after world 1 final")
+
+
+func test_special_world_entry_can_be_default_unlocked() -> void:
+	var w1_l1: LevelData = _make_level("w1_l1", 1, 1)
+	var w1_l2: LevelData = _make_level("w1_l2", 1, 2)
+	var sp_l1: LevelData = _make_level("sp_l1", 99, 1)
+	var sp_l2: LevelData = _make_level("sp_l2", 99, 2)
+	_setup_catalogue(
+		[w1_l1, w1_l2, sp_l1, sp_l2] as Array[LevelData],
+		PackedInt32Array([99]),
+	)
+
+	assert_true(_map.is_level_unlocked(sp_l1), "Configured special world entry should be unlocked")
+	assert_false(_map.is_level_unlocked(sp_l2), "Special world still gates sequentially within world")
+
+	SaveManager.set_level_record("sp_l1", true, 2, 5)
+	assert_true(_map.is_level_unlocked(sp_l2), "Special world second level unlocks after first")
 
 
 # —————————————————————————————————————————————

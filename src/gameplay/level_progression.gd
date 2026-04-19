@@ -38,6 +38,9 @@ signal world_completed(world_id: int)
 ## Sorted catalogue of all levels.
 var _levels: Array[LevelData] = []
 
+## Source catalogue reference (used for unlock-rule metadata).
+var _catalogue: LevelCatalogue
+
 ## Maps level_id → index in _levels for O(1) lookup.
 var _level_index_map: Dictionary = {}
 
@@ -71,6 +74,7 @@ func initialize(catalogue: LevelCatalogue, star_rating_ref: Node) -> void:
 			_star_rating_ref.rating_computed.disconnect(_on_rating_computed)
 
 	_star_rating_ref = star_rating_ref
+	_catalogue = catalogue
 
 	# Sort catalogue by (world_id, level_index)
 	_levels = catalogue.levels.duplicate()
@@ -119,8 +123,8 @@ func is_level_unlocked(level_id: String) -> bool:
 	if data == null:
 		return false
 
-	# First level of the whole game is always unlocked (AC: LP-1)
-	if data.world_id == 1 and data.level_index == 1:
+	# Default-unlocked world entry levels (world 1 + configured special worlds).
+	if _is_level_entry_unlocked_by_default(data):
 		return true
 
 	# Otherwise: previous level must be completed (AC: LP-2, LP-3)
@@ -243,6 +247,22 @@ func _get_previous_level(data: LevelData) -> LevelData:
 	if idx == 0:
 		return null
 	return _levels[idx - 1]
+
+
+## True when this level is the entry level for a default-unlocked world.
+func _is_level_entry_unlocked_by_default(data: LevelData) -> bool:
+	if data.level_index != 1:
+		return false
+	if data.world_id == 1:
+		return true
+	return _is_world_always_unlocked(data.world_id)
+
+
+## Returns whether a world should bypass normal cross-world unlock gating.
+func _is_world_always_unlocked(world_id: int) -> bool:
+	if _catalogue == null:
+		return false
+	return world_id in _catalogue.always_unlocked_world_ids
 
 
 ## Sort comparator: (world_id ASC, level_index ASC).

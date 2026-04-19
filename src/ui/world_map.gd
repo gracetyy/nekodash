@@ -140,7 +140,7 @@ func _build_world_index() -> void:
 
 
 func _is_level_unlocked(level_data: LevelData) -> bool:
-	if level_data.level_index == 1:
+	if _is_level_entry_unlocked_by_default(level_data):
 		return true
 	var prev: LevelData = _get_prev_level(level_data)
 	if prev == null:
@@ -153,7 +153,35 @@ func _get_prev_level(level_data: LevelData) -> LevelData:
 	for level: LevelData in world_levels:
 		if level.level_index == level_data.level_index - 1:
 			return level
+
+	if level_data.level_index == 1:
+		var prev_world_id: int = _get_prev_world_id(level_data.world_id)
+		if prev_world_id >= 0:
+			var prev_world_levels: Array[LevelData] = _world_index.get(prev_world_id, [])
+			if not prev_world_levels.is_empty():
+				return prev_world_levels[prev_world_levels.size() - 1]
 	return null
+
+
+func _get_prev_world_id(world_id: int) -> int:
+	var idx: int = _sorted_world_ids.find(world_id)
+	if idx <= 0:
+		return -1
+	return _sorted_world_ids[idx - 1]
+
+
+func _is_level_entry_unlocked_by_default(level_data: LevelData) -> bool:
+	if level_data.level_index != 1:
+		return false
+	if level_data.world_id == 1:
+		return true
+	return _is_world_always_unlocked(level_data.world_id)
+
+
+func _is_world_always_unlocked(world_id: int) -> bool:
+	if _catalogue == null:
+		return false
+	return world_id in _catalogue.always_unlocked_world_ids
 
 
 func _select_world(world_id: int) -> void:
