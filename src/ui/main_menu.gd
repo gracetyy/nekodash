@@ -4,21 +4,46 @@
 ## Simple title screen that lets the player start the game by navigating
 ## to the World Map. Acts as the landing screen and the back-button target
 ## from WorldMap. Shows CatSprite using the equipped skin placeholder.
+@tool
 class_name MainMenu
 extends Control
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
+const CatPartRigScript = preload("res://src/ui/cat_part_rig.gd")
 const ICON_PLAY: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_play.png")
 const ICON_CAT: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png")
 const ICON_SETTINGS: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png")
 const ICON_INFO: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_info.png")
 const TITLE_TEXTURE_LANDSCAPE: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_landscape.png")
 const TITLE_TEXTURE_PORTRAIT: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_portrait.png")
-const CAT_IDLE_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_idle@2x.png")
-const CAT_IDLE_TAIL_UP_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_idle_tail_up@2x.png")
-const CAT_IDLE_TAIL_DOWN_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_idle_tail_down@2x.png")
 const TITLE_PORTRAIT_MAX_WIDTH: float = 700.0
-const CAT_TAIL_BLEND_PERIOD_SEC: float = 1.4
+
+@export_category("Menu Cat")
+## If true, menu root exports override global CatRigProfile defaults.
+@export var menu_cat_override_global_defaults: bool = true
+
+## Display size for the menu cat rig in pixels.
+@export_range(64.0, 320.0, 1.0, "or_greater")
+var menu_cat_size_px: float = 168.0
+
+## Vertical anchor of the menu cat within the illustration rect (0 top, 1 bottom).
+@export_range(0.0, 1.0, 0.01)
+var menu_cat_vertical_anchor_ratio: float = 0.56
+
+## Fine-tune x/y offset of the menu cat rig from its anchored position.
+@export var menu_cat_offset: Vector2 = Vector2.ZERO
+
+## Face overlay variant shown on the menu cat.
+@export_enum("idle", "blink", "excited", "relax", "smile")
+var menu_cat_face_variant: String = "idle"
+
+## Idle tail sway amplitude in degrees for the menu cat.
+@export_range(0.0, 30.0, 0.1, "or_greater")
+var menu_cat_idle_tail_swing_degrees: float = 8.0
+
+## Idle tail sway cycle duration in seconds for the menu cat.
+@export_range(0.1, 5.0, 0.01, "or_greater")
+var menu_cat_idle_tail_swing_period_sec: float = 1.55
 
 
 # —————————————————————————————————————————————
@@ -41,9 +66,9 @@ var _hero_card: PanelContainer
 var _hint_label: Label
 var _title_texture: TextureRect
 var _cat_illustration: TextureRect
-var _cat_tail_overlay: TextureRect
+var _menu_cat_rig: Node
 var _buttons_box: VBoxContainer
-var _cat_tail_blend_time_sec: float = 0.0
+var _editor_menu_cat_signature: String = ""
 
 
 # —————————————————————————————————————————————
@@ -56,7 +81,9 @@ func _ready() -> void:
 	_apply_visual_style()
 	_refresh_title_texture_variant()
 	_play_intro_animation()
-	_set_up_cat_idle_animation()
+	_set_up_menu_cat_rig()
+	_editor_menu_cat_signature = _build_menu_cat_signature()
+	set_process(true)
 	if _play_btn != null:
 		_play_btn.grab_focus()
 
@@ -74,7 +101,6 @@ func _auto_discover_ui_nodes() -> void:
 	_hint_label = _find_child_safe("HintLabel", "Label") as Label
 	_title_texture = _find_child_safe("TitleLabel", "TextureRect") as TextureRect
 	_cat_illustration = _find_child_safe("CatIllustration", "TextureRect") as TextureRect
-	_cat_tail_overlay = _find_child_safe("CatTailOverlay", "TextureRect") as TextureRect
 	_buttons_box = _find_child_safe("Buttons", "VBoxContainer") as VBoxContainer
 
 
@@ -98,15 +124,13 @@ func _connect_signals() -> void:
 		resized.connect(_on_main_menu_resized)
 
 
-func _process(delta: float) -> void:
-	if _cat_illustration == null or _cat_tail_overlay == null:
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		_sync_editor_menu_cat_preview()
 		return
-	if _is_reduce_motion_enabled():
-		_cat_illustration.texture = CAT_IDLE_TEXTURE
-		_cat_tail_overlay.visible = false
+	if _menu_cat_rig == null:
 		return
-	_cat_tail_blend_time_sec += delta
-	_update_cat_tail_animation()
+	_set_menu_cat_rig_property("idle_enabled", not _is_reduce_motion_enabled())
 
 
 func _on_play_btn_pressed() -> void:
@@ -153,6 +177,7 @@ func _apply_visual_style() -> void:
 
 func _on_main_menu_resized() -> void:
 	_refresh_title_texture_variant()
+	_update_menu_cat_layout()
 
 
 func _refresh_title_texture_variant() -> void:
@@ -209,41 +234,115 @@ func _play_intro_animation() -> void:
 			button_index += 1
 
 
-func _set_up_cat_idle_animation() -> void:
-	if _cat_illustration == null or _cat_tail_overlay == null:
+func _set_up_menu_cat_rig() -> void:
+	if _cat_illustration == null:
 		set_process(false)
 		return
-	_cat_tail_blend_time_sec = 0.0
-	_cat_illustration.texture = CAT_IDLE_TEXTURE
-	_cat_tail_overlay.texture = CAT_IDLE_TAIL_UP_TEXTURE
-	_cat_tail_overlay.modulate = Color(1.0, 1.0, 1.0, 1.0)
-	_cat_tail_overlay.visible = not _is_reduce_motion_enabled()
-	_update_cat_tail_animation()
+
+	_cat_illustration.texture = null
+
+	var existing_rig: Node = _cat_illustration.get_node_or_null("MenuCatRig")
+	if existing_rig != null and existing_rig.get_script() == CatPartRigScript:
+		_menu_cat_rig = existing_rig
+	else:
+		if existing_rig != null:
+			existing_rig.queue_free()
+		_menu_cat_rig = CatPartRigScript.new() as Node
+		_menu_cat_rig.name = "MenuCatRig"
+		_cat_illustration.add_child(_menu_cat_rig)
+
+	if SaveManager != null:
+		_set_menu_cat_rig_property("skin_id_override", _resolve_equipped_skin_safe())
+	else:
+		_set_menu_cat_rig_property("skin_id_override", "")
+
+	_apply_menu_cat_exports_to_rig()
+
+	_update_menu_cat_layout()
 	set_process(true)
 
 
-func _update_cat_tail_animation() -> void:
-	if _cat_illustration == null or _cat_tail_overlay == null:
+func _apply_menu_cat_exports_to_rig() -> void:
+	_set_menu_cat_rig_property("override_display_locally", menu_cat_override_global_defaults)
+	_set_menu_cat_rig_property("override_idle_locally", menu_cat_override_global_defaults)
+	_set_menu_cat_rig_property("override_face_locally", menu_cat_override_global_defaults)
+	_set_menu_cat_rig_property("display_size_px", menu_cat_size_px)
+	_set_menu_cat_rig_property("display_offset", menu_cat_offset)
+	_set_menu_cat_rig_property("face_variant", menu_cat_face_variant)
+	_set_menu_cat_rig_property("idle_tail_swing_degrees", menu_cat_idle_tail_swing_degrees)
+	_set_menu_cat_rig_property("idle_tail_swing_period_sec", menu_cat_idle_tail_swing_period_sec)
+	_set_menu_cat_rig_property("idle_enabled", not _is_reduce_motion_enabled())
+	_call_menu_cat_rig_method("refresh_rig")
+
+
+func _sync_editor_menu_cat_preview() -> void:
+	if not is_inside_tree():
 		return
-	_cat_illustration.texture = CAT_IDLE_TEXTURE
-	_cat_tail_overlay.visible = true
-	var cycle: float = fposmod(_cat_tail_blend_time_sec / CAT_TAIL_BLEND_PERIOD_SEC, 1.0) * 4.0
-	var segment: int = int(floor(cycle))
-	var local: float = cycle - float(segment)
-	var smooth: float = local * local * (3.0 - (2.0 * local))
-	match segment:
-		0:
-			_cat_tail_overlay.texture = CAT_IDLE_TAIL_UP_TEXTURE
-			_cat_tail_overlay.modulate = Color(1.0, 1.0, 1.0, 1.0 - smooth)
-		1:
-			_cat_tail_overlay.texture = CAT_IDLE_TAIL_DOWN_TEXTURE
-			_cat_tail_overlay.modulate = Color(1.0, 1.0, 1.0, smooth)
-		2:
-			_cat_tail_overlay.texture = CAT_IDLE_TAIL_DOWN_TEXTURE
-			_cat_tail_overlay.modulate = Color(1.0, 1.0, 1.0, 1.0 - smooth)
-		_:
-			_cat_tail_overlay.texture = CAT_IDLE_TAIL_UP_TEXTURE
-			_cat_tail_overlay.modulate = Color(1.0, 1.0, 1.0, smooth)
+	if _cat_illustration == null:
+		_auto_discover_ui_nodes()
+	if _cat_illustration == null:
+		return
+	if _menu_cat_rig == null or _menu_cat_rig.get_script() != CatPartRigScript:
+		_set_up_menu_cat_rig()
+	var signature: String = _build_menu_cat_signature()
+	if signature == _editor_menu_cat_signature:
+		return
+	_editor_menu_cat_signature = signature
+	_apply_menu_cat_exports_to_rig()
+	_update_menu_cat_layout()
+
+
+func _build_menu_cat_signature() -> String:
+	return "|".join([
+		str(menu_cat_override_global_defaults),
+		str(menu_cat_size_px),
+		str(menu_cat_vertical_anchor_ratio),
+		str(menu_cat_offset),
+		menu_cat_face_variant,
+		str(menu_cat_idle_tail_swing_degrees),
+		str(menu_cat_idle_tail_swing_period_sec),
+	])
+
+
+func _resolve_equipped_skin_safe() -> String:
+	if SaveManager == null:
+		return ""
+	if SaveManager.has_method("get_equipped_skin"):
+		var skin_value: Variant = SaveManager.call("get_equipped_skin")
+		if skin_value is String:
+			return skin_value as String
+	if SaveManager.has_method("get_equipped_skin_id"):
+		var skin_id_value: Variant = SaveManager.call("get_equipped_skin_id")
+		if skin_id_value is String:
+			return skin_id_value as String
+	return ""
+
+
+func _update_menu_cat_layout() -> void:
+	if _menu_cat_rig == null or _cat_illustration == null:
+		return
+
+	_menu_cat_rig.position = Vector2(
+		_cat_illustration.size.x * 0.5,
+		_cat_illustration.size.y * menu_cat_vertical_anchor_ratio
+	)
+
+
+func _set_menu_cat_rig_property(property_name: StringName, value: Variant) -> void:
+	if _menu_cat_rig == null:
+		return
+	if _menu_cat_rig.get_script() != CatPartRigScript:
+		return
+	_menu_cat_rig.set(property_name, value)
+
+
+func _call_menu_cat_rig_method(method_name: StringName) -> void:
+	if _menu_cat_rig == null:
+		return
+	if _menu_cat_rig.get_script() != CatPartRigScript:
+		return
+	if _menu_cat_rig.has_method(method_name):
+		_menu_cat_rig.call(method_name)
 
 
 func _is_reduce_motion_enabled() -> bool:

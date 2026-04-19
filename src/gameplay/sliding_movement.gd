@@ -14,6 +14,8 @@
 ##   sliding_movement.set_grid_position_instant(saved_coord)
 extends Node2D
 
+const CAT_RIG_NODE_PATH: NodePath = ^"CatSprite"
+
 
 # —————————————————————————————————————————————
 # Signals
@@ -80,6 +82,38 @@ const MAX_SLIDE_DISTANCE: int = 20
 ## Duration of the squish-recover phase (squish_scale → Vector2.ONE).
 @export var squish_recover_sec: float = 0.10
 
+## Parent stretch target while sliding horizontally.
+@export var slide_travel_scale_horizontal: Vector2 = Vector2(1.07, 0.94)
+
+## Parent stretch target while sliding vertically.
+@export var slide_travel_scale_vertical: Vector2 = Vector2(0.95, 1.06)
+
+## Duration of the slide-travel squish-in phase.
+@export var slide_travel_in_sec: float = 0.05
+
+@export_category("Cat Rig Host")
+## If true, gameplay host exports override global CatRigProfile defaults.
+@export var cat_override_global_defaults: bool = false
+
+## Display size for gameplay cat rig in pixels when host override is enabled.
+@export_range(16.0, 512.0, 1.0, "or_greater")
+var cat_display_size_px: float = 92.0
+
+## Global offset applied to gameplay cat rig when host override is enabled.
+@export var cat_display_offset: Vector2 = Vector2(0.0, -16.0)
+
+## Face variant used by gameplay cat rig when host override is enabled.
+@export_enum("idle", "blink", "excited", "relax", "smile")
+var cat_face_variant: String = "idle"
+
+## Idle tail sway amplitude in degrees when host override is enabled.
+@export_range(0.0, 60.0, 0.1, "or_greater")
+var cat_idle_tail_swing_degrees: float = 10.0
+
+## Idle tail sway cycle duration in seconds when host override is enabled.
+@export_range(0.0, 10.0, 0.01, "or_greater")
+var cat_idle_tail_swing_period_sec: float = 1.45
+
 
 # —————————————————————————————————————————————
 # State
@@ -101,6 +135,8 @@ var _slide_velocity: float = 15.0
 var _slide_tween: Tween
 var _bump_tween: Tween
 var _squish_tween: Tween
+var _travel_tween: Tween
+var _cat_rig: Node
 
 
 # —————————————————————————————————————————————
@@ -110,6 +146,41 @@ var _squish_tween: Tween
 func _ready() -> void:
 	_slide_velocity = slide_velocity_mobile if DisplayServer.is_touchscreen_available() else slide_velocity_desktop
 	InputSystem.direction_input.connect(_on_direction_input)
+	_cache_cat_rig()
+	_apply_cat_host_overrides()
+
+
+func _cache_cat_rig() -> void:
+	var candidate: Node = get_node_or_null(CAT_RIG_NODE_PATH)
+	if _is_cat_rig_node(candidate):
+		_cat_rig = candidate
+		return
+	_cat_rig = null
+
+
+func _is_cat_rig_node(candidate: Node) -> bool:
+	if candidate == null:
+		return false
+	if not candidate.has_method("refresh_rig"):
+		return false
+	if not candidate.has_method("set_head_tilt_immediate"):
+		return false
+	return true
+
+
+func _apply_cat_host_overrides() -> void:
+	if _cat_rig == null:
+		return
+
+	_cat_rig.set("override_display_locally", cat_override_global_defaults)
+	_cat_rig.set("override_idle_locally", cat_override_global_defaults)
+	_cat_rig.set("override_face_locally", cat_override_global_defaults)
+	_cat_rig.set("display_size_px", cat_display_size_px)
+	_cat_rig.set("display_offset", cat_display_offset)
+	_cat_rig.set("face_variant", cat_face_variant)
+	_cat_rig.set("idle_tail_swing_degrees", cat_idle_tail_swing_degrees)
+	_cat_rig.set("idle_tail_swing_period_sec", cat_idle_tail_swing_period_sec)
+	_cat_rig.call("refresh_rig")
 
 
 # —————————————————————————————————————————————
@@ -235,6 +306,7 @@ func _play_slide(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
 	var duration: float = _compute_slide_duration(tile_count)
 
 	var target_pixel: Vector2 = _grid_to_pixel(to)
+	_play_slide_travel_squish(direction, duration)
 
 	if _slide_tween and _slide_tween.is_valid():
 		_slide_tween.kill()
@@ -249,6 +321,9 @@ func _play_slide(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
 
 
 func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
+	if _travel_tween and _travel_tween.is_valid():
+		_travel_tween.kill()
+	scale = Vector2.ONE
 	_play_squish()
 
 	var tiles: Array[Vector2i] = compute_tiles_covered(from, to, direction)
@@ -262,6 +337,27 @@ func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> vo
 # Animation — squish (landing feedback)
 # —————————————————————————————————————————————
 
+func _play_slide_travel_squish(direction: Vector2i, duration_sec: float) -> void:
+	if _is_reduce_motion_enabled():
+		scale = Vector2.ONE
+		return
+
+	if _travel_tween and _travel_tween.is_valid():
+		_travel_tween.kill()
+
+	var target_scale: Vector2 = slide_travel_scale_horizontal if direction.x != 0 else slide_travel_scale_vertical
+	var in_sec: float = minf(slide_travel_in_sec, duration_sec)
+	var out_sec: float = maxf(0.0, duration_sec - in_sec)
+
+	_travel_tween = create_tween()
+	_travel_tween.tween_property(self , "scale", target_scale, in_sec) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	if out_sec > 0.0:
+		_travel_tween.tween_property(self , "scale", Vector2.ONE, out_sec) \
+			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	else:
+		scale = Vector2.ONE
+
 func _play_squish() -> void:
 	if _is_reduce_motion_enabled():
 		scale = Vector2.ONE
@@ -269,6 +365,8 @@ func _play_squish() -> void:
 
 	if _squish_tween and _squish_tween.is_valid():
 		_squish_tween.kill()
+	if _travel_tween and _travel_tween.is_valid():
+		_travel_tween.kill()
 
 	_squish_tween = create_tween()
 	_squish_tween.tween_property(self , "scale", squish_scale, squish_duration_sec) \
@@ -323,6 +421,8 @@ func _kill_all_tweens() -> void:
 		_bump_tween.kill()
 	if _squish_tween and _squish_tween.is_valid():
 		_squish_tween.kill()
+	if _travel_tween and _travel_tween.is_valid():
+		_travel_tween.kill()
 
 
 func _is_reduce_motion_enabled() -> bool:
