@@ -11,3 +11,7 @@ extends Resource
 
 ## Ordered array of all LevelData resources in the game.
 @export var levels: Array[LevelData] = []
+
+## World IDs whose first level should be unlocked by default.
+## Intended for special/event worlds that bypass normal world-to-world gating.
+@export var always_unlocked_world_ids: PackedInt32Array = PackedInt32Array()
