@@ -25,15 +25,18 @@ grow_vertical = 2
 
 [node name="CatPeek" type="TextureRect" parent="Backdrop"]
 z_index = 4
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -92.0
-offset_top = -450.0
+offset_top = -462.0
 offset_right = 92.0
-offset_bottom = -318.0
+offset_bottom = -330.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("3")
 expand_mode = 1

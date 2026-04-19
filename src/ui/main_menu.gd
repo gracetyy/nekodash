@@ -69,6 +69,7 @@ var _cat_illustration: TextureRect
 var _menu_cat_rig: Node
 var _buttons_box: VBoxContainer
 var _editor_menu_cat_signature: String = ""
+var _menu_cat_layout_refresh_queued: bool = false
 
 
 # —————————————————————————————————————————————
@@ -82,6 +83,7 @@ func _ready() -> void:
 	_refresh_title_texture_variant()
 	_play_intro_animation()
 	_set_up_menu_cat_rig()
+	_schedule_menu_cat_layout_refresh()
 	_editor_menu_cat_signature = _build_menu_cat_signature()
 	set_process(true)
 	if _play_btn != null:
@@ -122,6 +124,8 @@ func _connect_signals() -> void:
 		_skins_btn.pressed.connect(_on_skins_btn_pressed)
 	if not resized.is_connected(_on_main_menu_resized):
 		resized.connect(_on_main_menu_resized)
+	if _cat_illustration != null and not _cat_illustration.resized.is_connected(_on_cat_illustration_resized):
+		_cat_illustration.resized.connect(_on_cat_illustration_resized)
 
 
 func _process(_delta: float) -> void:
@@ -154,7 +158,7 @@ func _on_skins_btn_pressed() -> void:
 
 func _navigate_to_world_map() -> void:
 	SceneManager.go_to(SceneManager.Screen.WORLD_MAP, {
-		"highlight_world_id": AppSettings.get_last_world_id(),
+		"highlight_world_id": _call_app_settings_int("get_last_world_id", 1),
 	})
 
 
@@ -177,7 +181,11 @@ func _apply_visual_style() -> void:
 
 func _on_main_menu_resized() -> void:
 	_refresh_title_texture_variant()
-	_update_menu_cat_layout()
+	_schedule_menu_cat_layout_refresh()
+
+
+func _on_cat_illustration_resized() -> void:
+	_schedule_menu_cat_layout_refresh()
 
 
 func _refresh_title_texture_variant() -> void:
@@ -258,7 +266,7 @@ func _set_up_menu_cat_rig() -> void:
 
 	_apply_menu_cat_exports_to_rig()
 
-	_update_menu_cat_layout()
+	_schedule_menu_cat_layout_refresh()
 	set_process(true)
 
 
@@ -305,17 +313,10 @@ func _build_menu_cat_signature() -> String:
 
 
 func _resolve_equipped_skin_safe() -> String:
-	if SaveManager == null:
-		return ""
-	if SaveManager.has_method("get_equipped_skin"):
-		var skin_value: Variant = SaveManager.call("get_equipped_skin")
-		if skin_value is String:
-			return skin_value as String
-	if SaveManager.has_method("get_equipped_skin_id"):
-		var skin_id_value: Variant = SaveManager.call("get_equipped_skin_id")
-		if skin_id_value is String:
-			return skin_id_value as String
-	return ""
+	var equipped_skin: String = _call_save_manager_string("get_equipped_skin")
+	if not equipped_skin.is_empty():
+		return equipped_skin
+	return _call_save_manager_string("get_equipped_skin_id")
 
 
 func _update_menu_cat_layout() -> void:
@@ -326,6 +327,25 @@ func _update_menu_cat_layout() -> void:
 		_cat_illustration.size.x * 0.5,
 		_cat_illustration.size.y * menu_cat_vertical_anchor_ratio
 	)
+
+
+func _schedule_menu_cat_layout_refresh() -> void:
+	if _menu_cat_layout_refresh_queued:
+		return
+	_menu_cat_layout_refresh_queued = true
+	call_deferred("_refresh_menu_cat_layout_deferred")
+
+
+func _refresh_menu_cat_layout_deferred() -> void:
+	_menu_cat_layout_refresh_queued = false
+	if _menu_cat_rig == null or _cat_illustration == null:
+		return
+
+	# First pass handles immediate size changes, second pass catches container
+	# layout updates that settle one frame later during scene transitions.
+	_update_menu_cat_layout()
+	await get_tree().process_frame
+	_update_menu_cat_layout()
 
 
 func _set_menu_cat_rig_property(property_name: StringName, value: Variant) -> void:
@@ -346,4 +366,40 @@ func _call_menu_cat_rig_method(method_name: StringName) -> void:
 
 
 func _is_reduce_motion_enabled() -> bool:
-	return AppSettings != null and AppSettings.get_reduce_motion()
+	return _call_app_settings_bool("get_reduce_motion", false)
+
+
+func _call_save_manager_string(method_name: StringName, fallback: String = "") -> String:
+	if SaveManager == null:
+		return fallback
+	var method_callable: Callable = Callable(SaveManager, method_name)
+	if not method_callable.is_valid():
+		return fallback
+	var value: Variant = method_callable.call()
+	if value is String and not (value as String).is_empty():
+		return value as String
+	return fallback
+
+
+func _call_app_settings_bool(method_name: StringName, fallback: bool) -> bool:
+	if AppSettings == null:
+		return fallback
+	var method_callable: Callable = Callable(AppSettings, method_name)
+	if not method_callable.is_valid():
+		return fallback
+	var value: Variant = method_callable.call()
+	if value is bool:
+		return value as bool
+	return fallback
+
+
+func _call_app_settings_int(method_name: StringName, fallback: int) -> int:
+	if AppSettings == null:
+		return fallback
+	var method_callable: Callable = Callable(AppSettings, method_name)
+	if not method_callable.is_valid():
+		return fallback
+	var value: Variant = method_callable.call()
+	if value is int:
+		return value as int
+	return fallback

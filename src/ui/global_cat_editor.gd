@@ -41,6 +41,16 @@ const HEAD_PIVOT_GUIDE_PATH: NodePath = NodePath("HeadPivotGuide")
 ## Shows helper lines from display origin to each pivot handle.
 @export var show_pivot_guides: bool = true
 
+@export_category("Head Preview")
+## Enables side-to-side head tilt preview in the editor.
+@export var preview_head_swing: bool = true
+## Maximum head tilt during preview, in degrees.
+@export_range(0.0, 30.0, 0.1, "or_greater")
+var preview_head_swing_degrees: float = 6.0
+## Seconds per full head-swing cycle.
+@export_range(0.1, 10.0, 0.01, "or_greater")
+var preview_head_swing_period_sec: float = 1.6
+
 
 var _cat_rig: Node = null
 var _display_offset_handle: Node2D = null
@@ -56,6 +66,7 @@ var _cached_display_handle_position: Vector2 = Vector2.ZERO
 var _cached_tail_handle_position: Vector2 = Vector2.ZERO
 var _cached_head_handle_position: Vector2 = Vector2.ZERO
 var _cached_profile_signature: String = ""
+var _head_preview_time_sec: float = 0.0
 
 
 func _ready() -> void:
@@ -64,9 +75,10 @@ func _ready() -> void:
 	_apply_profile_to_cat_rig()
 	_sync_handles_from_profile()
 	set_process(true)
+	_apply_head_swing_preview(0.0)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if not Engine.is_editor_hint():
 		return
 	if not _has_valid_setup():
@@ -77,6 +89,7 @@ func _process(_delta: float) -> void:
 
 	_sync_profile_from_handles_if_changed()
 	_refresh_guide_lines()
+	_apply_head_swing_preview(delta)
 
 
 func _resolve_nodes() -> void:
@@ -220,3 +233,22 @@ func _has_valid_setup() -> bool:
 		and _display_offset_handle != null \
 		and _tail_pivot_handle != null \
 		and _head_pivot_handle != null
+
+
+func _apply_head_swing_preview(delta: float) -> void:
+	if _cat_rig == null:
+		return
+
+	var tilt_callable: Callable = Callable(_cat_rig, "set_head_tilt_immediate")
+	if not tilt_callable.is_valid():
+		return
+
+	if not preview_head_swing or preview_head_swing_degrees <= 0.0 or preview_head_swing_period_sec <= 0.0:
+		_head_preview_time_sec = 0.0
+		tilt_callable.call(0.0)
+		return
+
+	_head_preview_time_sec += delta
+	var cycle: float = (_head_preview_time_sec / preview_head_swing_period_sec) * TAU
+	var tilt_degrees: float = sin(cycle) * preview_head_swing_degrees
+	tilt_callable.call(tilt_degrees)
