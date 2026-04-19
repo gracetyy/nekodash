@@ -33,6 +33,7 @@ const FREDOKA_VARIABLE_FALLBACK: FontFile = preload("res://assets/fonts/Fredoka-
 static var FONT_BODY: Font = _load_font_or_fallback(FREDOKA_BODY_FONT_PATH)
 static var FONT_DISPLAY: Font = _load_font_or_fallback(FREDOKA_DISPLAY_FONT_PATH)
 static var _slider_grabber_icons: Dictionary = {}
+static var _checkbox_icons: Dictionary = {}
 
 const TITLE_TEXTURE: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_landscape.png")
 const PANEL_TEXTURE: Texture2D = preload("res://assets/art/ui/panels/panel_modal_normal.png")
@@ -285,8 +286,6 @@ static func apply_pill_button(
 	button.add_theme_color_override("font_hover_pressed_color", resolved_font_color)
 	button.add_theme_color_override("font_focus_color", resolved_font_color)
 	button.add_theme_color_override("font_disabled_color", DISABLED_TEXT)
-	button.add_theme_color_override("font_outline_color", resolved_font_color.darkened(0.28))
-	button.add_theme_constant_override("outline_size", 3)
 	button.add_theme_constant_override("h_separation", 10)
 	button.add_theme_stylebox_override("normal", _pill_style(variant, "normal"))
 	button.add_theme_stylebox_override("hover", _pill_style(variant, "hover"))
@@ -353,7 +352,6 @@ static func apply_option_button(option_button: OptionButton) -> void:
 	option_button.add_theme_color_override("font_hover_pressed_color", PLUM)
 	option_button.add_theme_color_override("font_disabled_color", DISABLED_TEXT)
 	option_button.add_theme_constant_override("h_separation", 12)
-	option_button.add_theme_constant_override("outline_size", 0)
 	var normal_style: StyleBoxFlat = make_rounded_style(CREAM, PLUM_SOFT, 24, 2)
 	var hover_style: StyleBoxFlat = make_rounded_style(CREAM_SOFT, PLUM_SOFT, 24, 2)
 	var pressed_style: StyleBoxFlat = make_rounded_style(LILAC, PLUM_SOFT, 24, 2)
@@ -375,25 +373,44 @@ static func apply_option_button(option_button: OptionButton) -> void:
 	var popup: PopupMenu = option_button.get_popup()
 	if popup == null:
 		return
+	popup.set("transparent", true)
+	popup.set("transparent_bg", true)
+	popup.set("borderless", true)
 	popup.add_theme_font_override("font", FONT_BODY)
 	popup.add_theme_font_size_override("font_size", _scaled_font_size(18))
 	popup.add_theme_color_override("font_color", PLUM)
 	popup.add_theme_color_override("font_hover_color", PLUM)
 	popup.add_theme_color_override("font_disabled_color", DISABLED_TEXT)
-	var popup_panel: StyleBoxTexture = make_panel_style()
-	popup_panel.content_margin_left = 14.0
+	var popup_panel: StyleBoxFlat = make_rounded_style(CREAM, PLUM_SOFT, 26, 3)
+	popup_panel.content_margin_left = 16.0
 	popup_panel.content_margin_top = 12.0
-	popup_panel.content_margin_right = 14.0
+	popup_panel.content_margin_right = 16.0
 	popup_panel.content_margin_bottom = 12.0
+	popup_panel.anti_aliasing = true
+	popup_panel.corner_detail = 16
+	popup_panel.expand_margin_left = 2.0
+	popup_panel.expand_margin_top = 2.0
+	popup_panel.expand_margin_right = 2.0
+	popup_panel.expand_margin_bottom = 2.0
 	popup.add_theme_stylebox_override("panel", popup_panel)
-	var popup_hover: StyleBoxFlat = make_rounded_style(CREAM_SOFT, PLUM_SOFT, 16, 1)
+	popup.add_theme_stylebox_override("panel_disabled", popup_panel)
+	var popup_item_normal: StyleBoxFlat = make_rounded_style(CREAM, Color(0.0, 0.0, 0.0, 0.0), 18, 0)
+	popup_item_normal.content_margin_left = 14.0
+	popup_item_normal.content_margin_right = 14.0
+	popup_item_normal.content_margin_top = 8.0
+	popup_item_normal.content_margin_bottom = 8.0
+	popup_item_normal.anti_aliasing = true
+	popup_item_normal.corner_detail = 12
+	var popup_hover: StyleBoxFlat = make_rounded_style(CREAM_SOFT, PLUM_SOFT, 18, 2)
 	popup_hover.content_margin_left = 14.0
 	popup_hover.content_margin_right = 14.0
 	popup_hover.content_margin_top = 8.0
 	popup_hover.content_margin_bottom = 8.0
 	popup_hover.anti_aliasing = true
-	popup_hover.corner_detail = 8
+	popup_hover.corner_detail = 12
+	popup.add_theme_stylebox_override("normal", popup_item_normal)
 	popup.add_theme_stylebox_override("hover", popup_hover)
+	popup.add_theme_stylebox_override("focus", popup_hover)
 
 
 static func apply_panel(panel: PanelContainer, _fill: Color = CREAM) -> void:
@@ -421,8 +438,6 @@ static func apply_title(label: Label, size: int = 48) -> void:
 	_ensure_fonts_loaded()
 	label.add_theme_font_override("font", FONT_DISPLAY)
 	label.add_theme_color_override("font_color", PLUM)
-	label.add_theme_color_override("font_outline_color", PLUM.darkened(0.32))
-	label.add_theme_constant_override("outline_size", 3)
 	label.add_theme_font_size_override("font_size", _scaled_font_size(size))
 
 
@@ -432,8 +447,6 @@ static func apply_body(label: Label, color: Color = PLUM_SOFT, size: int = 18) -
 	_ensure_fonts_loaded()
 	label.add_theme_font_override("font", FONT_BODY)
 	label.add_theme_color_override("font_color", color)
-	label.add_theme_color_override("font_outline_color", color.darkened(0.22))
-	label.add_theme_constant_override("outline_size", 2)
 	label.add_theme_font_size_override("font_size", _scaled_font_size(size))
 
 
@@ -441,12 +454,13 @@ static func apply_checkbox(toggle: BaseButton) -> void:
 	if toggle == null:
 		return
 	_ensure_fonts_loaded()
+	var checkbox_icons: Dictionary = _get_checkbox_icons()
 	var empty: StyleBoxEmpty = StyleBoxEmpty.new()
-	toggle.custom_minimum_size = Vector2(toggle.custom_minimum_size.x, maxf(toggle.custom_minimum_size.y, 42.0))
-	toggle.add_theme_icon_override("checked", CHECKBOX_CHECKED_TEXTURE)
-	toggle.add_theme_icon_override("unchecked", CHECKBOX_EMPTY_TEXTURE)
-	toggle.add_theme_icon_override("checked_disabled", CHECKBOX_DISABLED_TEXTURE)
-	toggle.add_theme_icon_override("unchecked_disabled", CHECKBOX_DISABLED_TEXTURE)
+	toggle.custom_minimum_size = Vector2(toggle.custom_minimum_size.x, maxf(toggle.custom_minimum_size.y, 48.0 * _text_scale_factor()))
+	toggle.add_theme_icon_override("checked", checkbox_icons.get("checked", CHECKBOX_CHECKED_TEXTURE) as Texture2D)
+	toggle.add_theme_icon_override("unchecked", checkbox_icons.get("unchecked", CHECKBOX_EMPTY_TEXTURE) as Texture2D)
+	toggle.add_theme_icon_override("checked_disabled", checkbox_icons.get("disabled", CHECKBOX_DISABLED_TEXTURE) as Texture2D)
+	toggle.add_theme_icon_override("unchecked_disabled", checkbox_icons.get("disabled", CHECKBOX_DISABLED_TEXTURE) as Texture2D)
 	toggle.add_theme_font_override("font", FONT_BODY)
 	toggle.add_theme_font_size_override("font_size", _scaled_font_size(20))
 	toggle.add_theme_color_override("font_color", PLUM)
@@ -455,9 +469,8 @@ static func apply_checkbox(toggle: BaseButton) -> void:
 	toggle.add_theme_color_override("font_hover_pressed_color", PLUM)
 	toggle.add_theme_color_override("font_focus_color", PLUM)
 	toggle.add_theme_color_override("font_disabled_color", DISABLED_TEXT)
-	toggle.add_theme_constant_override("h_separation", 12)
-	toggle.add_theme_constant_override("icon_max_width", 26)
-	toggle.add_theme_constant_override("outline_size", 0)
+	toggle.add_theme_constant_override("h_separation", 10)
+	toggle.add_theme_constant_override("icon_max_width", 32)
 	toggle.add_theme_stylebox_override("normal", empty)
 	toggle.add_theme_stylebox_override("hover", empty)
 	toggle.add_theme_stylebox_override("pressed", empty)
@@ -470,7 +483,7 @@ static func apply_checkbox(toggle: BaseButton) -> void:
 		check_button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		check_button.expand_icon = false
 		if check_button.text.strip_edges() != "":
-			check_button.custom_minimum_size.x = maxf(check_button.custom_minimum_size.x, 144.0 * _text_scale_factor())
+			check_button.custom_minimum_size.x = maxf(check_button.custom_minimum_size.x, 152.0 * _text_scale_factor())
 
 
 static func apply_slider(range_control: Range) -> void:
@@ -478,7 +491,7 @@ static func apply_slider(range_control: Range) -> void:
 		return
 	var slider: HSlider = range_control as HSlider
 	var min_width: float = maxf(slider.custom_minimum_size.x, 186.0)
-	slider.custom_minimum_size = Vector2(min_width, 44.0)
+	slider.custom_minimum_size = Vector2(min_width, 56.0)
 	set_slider_interactive(slider, slider.editable)
 
 
@@ -487,20 +500,20 @@ static func set_slider_interactive(slider: HSlider, interactive: bool) -> void:
 		return
 	var grabber_icons: Dictionary = _get_slider_grabber_icons()
 	if interactive:
-		slider.add_theme_stylebox_override("slider", make_texture_style(SLIDER_TRACK_TEXTURE, 28, 0, 28, 0))
-		slider.add_theme_stylebox_override("grabber_area", make_texture_style(SLIDER_FILL_TEXTURE, 28, 0, 28, 0))
-		slider.add_theme_stylebox_override("grabber_area_highlight", make_texture_style(SLIDER_FILL_TEXTURE, 28, 0, 28, 0))
-		slider.add_theme_stylebox_override("grabber_area_disabled", make_texture_style(SLIDER_FILL_DISABLED_TEXTURE, 28, 0, 28, 0))
+		slider.add_theme_stylebox_override("slider", _make_slider_texture_style(SLIDER_TRACK_TEXTURE))
+		slider.add_theme_stylebox_override("grabber_area", _make_slider_texture_style(SLIDER_FILL_TEXTURE))
+		slider.add_theme_stylebox_override("grabber_area_highlight", _make_slider_texture_style(SLIDER_FILL_TEXTURE))
+		slider.add_theme_stylebox_override("grabber_area_disabled", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
 		slider.add_theme_icon_override("grabber", grabber_icons.get("normal", SLIDER_KNOB_TEXTURE) as Texture2D)
 		slider.add_theme_icon_override("grabber_highlight", grabber_icons.get("hover", SLIDER_KNOB_HOVER_TEXTURE) as Texture2D)
 		slider.add_theme_icon_override("grabber_disabled", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
 		slider.mouse_filter = Control.MOUSE_FILTER_STOP
 		slider.focus_mode = Control.FOCUS_ALL
 	else:
-		slider.add_theme_stylebox_override("slider", make_texture_style(SLIDER_TRACK_DISABLED_TEXTURE, 28, 0, 28, 0))
-		slider.add_theme_stylebox_override("grabber_area", make_texture_style(SLIDER_FILL_DISABLED_TEXTURE, 28, 0, 28, 0))
-		slider.add_theme_stylebox_override("grabber_area_highlight", make_texture_style(SLIDER_FILL_DISABLED_TEXTURE, 28, 0, 28, 0))
-		slider.add_theme_stylebox_override("grabber_area_disabled", make_texture_style(SLIDER_FILL_DISABLED_TEXTURE, 28, 0, 28, 0))
+		slider.add_theme_stylebox_override("slider", _make_slider_texture_style(SLIDER_TRACK_DISABLED_TEXTURE))
+		slider.add_theme_stylebox_override("grabber_area", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
+		slider.add_theme_stylebox_override("grabber_area_highlight", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
+		slider.add_theme_stylebox_override("grabber_area_disabled", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
 		slider.add_theme_icon_override("grabber", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
 		slider.add_theme_icon_override("grabber_highlight", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
 		slider.add_theme_icon_override("grabber_disabled", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
@@ -509,8 +522,19 @@ static func set_slider_interactive(slider: HSlider, interactive: bool) -> void:
 		if slider.has_focus():
 			slider.release_focus()
 	slider.editable = interactive
-	slider.add_theme_constant_override("center_grabber", 0)
+	slider.add_theme_constant_override("center_grabber", 1)
 	slider.add_theme_constant_override("grabber_offset", 0)
+
+
+static func _make_slider_texture_style(texture: Texture2D) -> StyleBoxTexture:
+	# Do not force content margins to zero: HSlider groove rendering relies on default style content values.
+	var style: StyleBoxTexture = StyleBoxTexture.new()
+	style.texture = texture
+	style.texture_margin_left = 28
+	style.texture_margin_top = 28
+	style.texture_margin_right = 28
+	style.texture_margin_bottom = 28
+	return style
 
 
 static func _get_slider_grabber_icons() -> Dictionary:
@@ -520,6 +544,15 @@ static func _get_slider_grabber_icons() -> Dictionary:
 	_slider_grabber_icons["hover"] = _build_scaled_texture(SLIDER_KNOB_HOVER_TEXTURE, 34)
 	_slider_grabber_icons["disabled"] = _build_scaled_texture(SLIDER_KNOB_DISABLED_TEXTURE, 34)
 	return _slider_grabber_icons
+
+
+static func _get_checkbox_icons() -> Dictionary:
+	if not _checkbox_icons.is_empty():
+		return _checkbox_icons
+	_checkbox_icons["checked"] = _build_scaled_texture(CHECKBOX_CHECKED_TEXTURE, 32)
+	_checkbox_icons["unchecked"] = _build_scaled_texture(CHECKBOX_EMPTY_TEXTURE, 32)
+	_checkbox_icons["disabled"] = _build_scaled_texture(CHECKBOX_DISABLED_TEXTURE, 32)
+	return _checkbox_icons
 
 
 static func _build_scaled_texture(source: Texture2D, target_size: int) -> Texture2D:

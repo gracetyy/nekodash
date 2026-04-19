@@ -14,12 +14,12 @@ const WORLD_TITLES: Dictionary = {
 }
 const GRID_MIN_COLUMNS: int = 2
 const GRID_MAX_COLUMNS: int = 6
-const LEVEL_CARD_MIN_WIDTH: float = 104.0
+const LEVEL_CARD_MIN_WIDTH: float = 120.0
 const LEVEL_CARD_GAP: float = 10.0
 const LEVEL_CARD_HOVER_SCALE: float = 1.04
 const LEVEL_CARD_HOVER_DURATION_SEC: float = 0.1
 const LEVEL_CARD_HOVER_TWEEN_META: String = "_world_level_card_hover_tween"
-const WORLD_CARD_INNER_HORIZONTAL_PADDING: float = 28.0
+const WORLD_CARD_INNER_HORIZONTAL_PADDING: float = 40.0
 const LOCK_JIGGLE_ROTATION_DEGREES: float = 14.0
 
 signal level_selected(level_data: LevelData)
@@ -281,7 +281,7 @@ func _make_level_card(level: LevelData) -> Control:
 	var stars: int = SaveManager.get_best_stars(level.level_id)
 
 	var card: PanelContainer = PanelContainer.new()
-	card.custom_minimum_size = Vector2(104.0, 132.0)
+	card.custom_minimum_size = Vector2(LEVEL_CARD_MIN_WIDTH, 132.0)
 	var card_state: String = "unlocked"
 	if not unlocked:
 		card_state = "locked"
@@ -528,7 +528,7 @@ func _apply_visual_style() -> void:
 	if _hint_label != null:
 		_hint_label.visible = false
 	if _progress_chip != null:
-		_progress_chip.add_theme_stylebox_override("panel", ShellThemeUtil.make_star_pill_style())
+		_progress_chip.visible = false
 	if _progress_label != null:
 		ShellThemeUtil.apply_body(_progress_label, ShellThemeUtil.PLUM, 26)
 

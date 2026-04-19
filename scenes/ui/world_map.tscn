@@ -41,9 +41,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 46
+theme_override_constants/margin_left = 58
 theme_override_constants/margin_top = 26
-theme_override_constants/margin_right = 46
+theme_override_constants/margin_right = 58
 theme_override_constants/margin_bottom = 26
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer"]
@@ -52,8 +52,8 @@ theme_override_constants/separation = 12
 
 [node name="HeaderOuterMargin" type="MarginContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_right = 24
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_right = 30
 
 [node name="HeaderCard" type="PanelContainer" parent="MarginContainer/VBox/HeaderOuterMargin"]
 custom_minimum_size = Vector2(0, 86)
@@ -100,6 +100,7 @@ theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
 [node name="ProgressChip" type="PanelContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
+visible = false
 custom_minimum_size = Vector2(136, 50)
 layout_mode = 2
 
@@ -109,6 +110,10 @@ theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
 theme_override_font_sizes/font_size = 24
 text = "0 / 0"
 vertical_alignment = 1
+
+[node name="RightSpacer" type="Control" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
+custom_minimum_size = Vector2(44, 56)
+layout_mode = 2
 
 [node name="HintLabel" type="Label" parent="MarginContainer/VBox"]
 visible = false
@@ -129,8 +134,8 @@ vertical_alignment = 1
 [node name="ListOuterMargin" type="MarginContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_right = 24
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_right = 30
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBox/ListOuterMargin"]
 layout_mode = 2

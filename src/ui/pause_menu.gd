@@ -14,6 +14,7 @@ var _main_menu_btn: BaseButton
 var _panel: PanelContainer
 var _backdrop: ColorRect
 var _title_label: Label
+var _ribbon_title_label: Label
 var _music_slider: Range
 var _music_mute_toggle: BaseButton
 var _sfx_slider: Range
@@ -27,6 +28,7 @@ var _suppress_events: bool = false
 
 func _ready() -> void:
 	_auto_discover_ui_nodes()
+	_connect_app_settings_signal()
 	_populate_input_hint_options()
 	_connect_signals()
 	_connect_navigation()
@@ -35,6 +37,10 @@ func _ready() -> void:
 	_play_intro_animation()
 	if _resume_btn != null:
 		_resume_btn.grab_focus()
+
+
+func _exit_tree() -> void:
+	_disconnect_app_settings_signal()
 
 
 func on_resume_btn_pressed() -> void:
@@ -171,6 +177,8 @@ func _on_large_ui_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
 	AppSettings.set_large_ui(button_pressed)
+	_apply_visual_style()
+	_sync_controls()
 
 
 func _on_fullscreen_toggled(button_pressed: bool) -> void:
@@ -194,14 +202,23 @@ func _on_input_hint_selected(index: int) -> void:
 func _auto_discover_ui_nodes() -> void:
 	_backdrop = get_node_or_null("Backdrop") as ColorRect
 	_panel = get_node_or_null("Backdrop/Panel") as PanelContainer
+	_ribbon_title_label = get_node_or_null("Backdrop/Ribbon/RibbonTitleLabel") as Label
 	_title_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TitleLabel") as Label
+	if _title_label == null:
+		_title_label = _ribbon_title_label
 	_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicSlider") as Range
 	_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteToggle") as BaseButton
 	_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider") as Range
 	_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteToggle") as BaseButton
-	_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionToggle") as BaseButton
-	_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiToggle") as BaseButton
-	_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenToggle") as BaseButton
+	_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionToggle") as BaseButton
+	if _reduce_motion_toggle == null:
+		_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionToggle") as BaseButton
+	_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiToggle") as BaseButton
+	if _large_ui_toggle == null:
+		_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiToggle") as BaseButton
+	_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenToggle") as BaseButton
+	if _fullscreen_toggle == null:
+		_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenToggle") as BaseButton
 	_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintOption") as OptionButton
 	_resume_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/ResumeBtn") as BaseButton
 	_restart_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/RestartBtn") as BaseButton
@@ -213,6 +230,9 @@ func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_panel(_panel, ShellThemeUtil.CREAM)
 	if _title_label != null:
 		ShellThemeUtil.apply_title(_title_label, 56)
+	if _ribbon_title_label != null:
+		ShellThemeUtil.apply_title(_ribbon_title_label, 28)
+		_ribbon_title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
 	var section_headers: Array[NodePath] = [
 		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel"),
@@ -220,7 +240,12 @@ func _apply_visual_style() -> void:
 	]
 	var option_labels: Array[NodePath] = [
 		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiLabel"),
+		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenLabel"),
 	]
 	for path: NodePath in section_headers:
 		var header: Label = get_node_or_null(path) as Label
@@ -270,3 +295,25 @@ func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
 	if slider_control == null or not slider_control is HSlider:
 		return
 	ShellThemeUtil.set_slider_interactive(slider_control as HSlider, is_enabled)
+
+
+func _connect_app_settings_signal() -> void:
+	if AppSettings == null or not AppSettings.has_signal("setting_changed"):
+		return
+	var changed_callable: Callable = Callable(self , "_on_app_setting_changed")
+	if not AppSettings.is_connected("setting_changed", changed_callable):
+		AppSettings.connect("setting_changed", changed_callable)
+
+
+func _disconnect_app_settings_signal() -> void:
+	if AppSettings == null or not AppSettings.has_signal("setting_changed"):
+		return
+	var changed_callable: Callable = Callable(self , "_on_app_setting_changed")
+	if AppSettings.is_connected("setting_changed", changed_callable):
+		AppSettings.disconnect("setting_changed", changed_callable)
+
+
+func _on_app_setting_changed(section: String, key: String, _value: Variant) -> void:
+	if section == "display" and key == "large_ui":
+		_apply_visual_style()
+		_sync_controls()
