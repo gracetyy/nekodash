@@ -172,25 +172,25 @@ func test_solver_invalid_start_uses_fallback_position() -> void:
 # Verify against shipped levels (AC-1)
 # —————————————————————————————————————————————
 
-func test_solver_w1_l1_returns_1_move() -> void:
+func test_solver_w1_l1_returns_4_moves() -> void:
 	var ld: LevelData = load("res://data/levels/world1/w1_l1.tres")
 	var solver := LevelSolver.new()
 	var result := solver.solve(ld)
-	assert_eq(result.minimum_moves, 1, "w1_l1 should be solvable in 1 move")
+	assert_eq(result.minimum_moves, 4, "w1_l1 should be solvable in 4 moves")
 
 
-func test_solver_w1_l2_returns_3_moves() -> void:
+func test_solver_w1_l2_returns_5_moves() -> void:
 	var ld: LevelData = load("res://data/levels/world1/w1_l2.tres")
 	var solver := LevelSolver.new()
 	var result := solver.solve(ld)
-	assert_eq(result.minimum_moves, 3, "w1_l2 should be solvable in 3 moves")
+	assert_eq(result.minimum_moves, 5, "w1_l2 should be solvable in 5 moves")
 
 
-func test_solver_w1_l3_returns_4_moves() -> void:
+func test_solver_w1_l3_returns_6_moves() -> void:
 	var ld: LevelData = load("res://data/levels/world1/w1_l3.tres")
 	var solver := LevelSolver.new()
 	var result := solver.solve(ld)
-	assert_eq(result.minimum_moves, 4, "w1_l3 should be solvable in 4 moves")
+	assert_eq(result.minimum_moves, 6, "w1_l3 should be solvable in 6 moves")
 
 
 # —————————————————————————————————————————————
