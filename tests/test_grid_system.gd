@@ -178,19 +178,19 @@ func test_grid_system_get_tile_out_of_bounds_returns_blocking() -> void:
 # —————————————————————————————————————————————
 
 func test_grid_system_grid_to_pixel_origin() -> void:
-	# Act — tile (0,0) center with 64px tiles
+	# Act — tile (0,0) center with 72px tiles
 	var px: Vector2 = _grid.grid_to_pixel(Vector2i(0, 0))
 
-	# Assert — center of tile at (0,0) = (32, 32)
-	assert_eq(px, Vector2(32.0, 32.0))
+	# Assert — center of tile at (0,0) = (36, 36)
+	assert_eq(px, Vector2(36.0, 36.0))
 
 
 func test_grid_system_grid_to_pixel_offset_tile() -> void:
-	# Act — tile (3, 2) with 64px tiles
+	# Act — tile (3, 2) with 72px tiles
 	var px: Vector2 = _grid.grid_to_pixel(Vector2i(3, 2))
 
-	# Assert — 3*64 + 32 = 224, 2*64 + 32 = 160
-	assert_eq(px, Vector2(224.0, 160.0))
+	# Assert — 3*72 + 36 = 252, 2*72 + 36 = 180
+	assert_eq(px, Vector2(252.0, 180.0))
 
 
 # —————————————————————————————————————————————
@@ -446,7 +446,7 @@ func test_grid_system_static_wall_obstacle_on_walkable_tile_is_not_walkable() ->
 	var obs := PackedInt32Array()
 	obs.resize(9)
 	obs.fill(0) # all NONE
-	obs[4] = 1  # (1,1) index=4 = STATIC_WALL
+	obs[4] = 1 # (1,1) index=4 = STATIC_WALL
 	var ld := _make_level(3, 3, walk, obs)
 
 	# Act
@@ -463,7 +463,7 @@ func test_grid_system_static_wall_tile_excluded_from_walkable_cache() -> void:
 	# Arrange — 5×5 bordered grid with a STATIC_WALL at (2,2) which is otherwise walkable
 	var ld: LevelData = _make_5x5_bordered()
 	var obs: PackedInt32Array = ld.obstacle_tiles
-	obs[2 + 2 * 5] = 1  # (2,2) = STATIC_WALL
+	obs[2 + 2 * 5] = 1 # (2,2) = STATIC_WALL
 	ld.obstacle_tiles = obs
 
 	# Act

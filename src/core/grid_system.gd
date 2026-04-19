@@ -45,7 +45,7 @@ const MAX_GRID_SIZE: int = 15
 
 ## Pixel size of each tile. Used by grid_to_pixel() and referenced by other
 ## systems (Input System tap zones, TileMapLayer cell size).
-const DEFAULT_TILE_SIZE_PX: int = 64
+const DEFAULT_TILE_SIZE_PX: int = 72
 
 
 # —————————————————————————————————————————————

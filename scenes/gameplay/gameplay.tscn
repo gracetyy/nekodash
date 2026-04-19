@@ -58,9 +58,27 @@ script = ExtResource("12")
 
 [node name="SlidingMovement" type="Node2D" parent="."]
 script = ExtResource("2")
+cat_override_global_defaults = true
+cat_display_size_px = 112.0
 
 [node name="CatSprite" type="Node2D" parent="SlidingMovement"]
 script = ExtResource("11")
+use_global_profile = null
+global_profile_path = null
+override_display_locally = null
+override_pivots_locally = null
+override_idle_locally = null
+override_face_locally = null
+skin_id_override = null
+face_variant = false
+display_size_px = ""
+display_offset = null
+tail_pivot_source_px = false
+head_pivot_source_px = false
+idle_enabled = false
+idle_tail_swing_period_sec = false
+idle_tail_swing_degrees = null
+auto_refresh_in_editor = null
 
 [node name="CoverageTracking" type="Node" parent="."]
 script = ExtResource("3")
@@ -137,9 +155,12 @@ layout_mode = 2
 size_flags_vertical = 4
 
 [node name="StarPillBg" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -4.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("15")
@@ -147,11 +168,14 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="StarRow" type="HBoxContainer" parent="HUD/MarginContainer/TopRow/CenterPill"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
 anchor_left = 0.12
 anchor_top = 0.18
 anchor_right = 0.88
 anchor_bottom = 0.82
+offset_top = -4.0
+offset_bottom = -4.0
 theme_override_constants/separation = 4
 alignment = 1
 

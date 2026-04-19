@@ -127,7 +127,7 @@ func _make_5x5_center_wall() -> LevelData:
 
 ## Returns expected pixel center for a grid coordinate.
 func _expected_pixel(coord: Vector2i) -> Vector2:
-	var tile_size: float = 64.0
+	var tile_size: float = GridSystem.DEFAULT_TILE_SIZE_PX
 	return Vector2(coord) * tile_size + Vector2.ONE * (tile_size * 0.5)
 
 

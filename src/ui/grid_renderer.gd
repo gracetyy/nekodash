@@ -21,7 +21,7 @@ const WALL_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_purpl
 # State
 # —————————————————————————————————————————————
 
-var _tile_size: int = 64
+var _tile_size: int = 72
 
 ## Pixel offset applied to center the grid on screen, below the HUD.
 var _grid_offset: Vector2 = Vector2.ZERO
