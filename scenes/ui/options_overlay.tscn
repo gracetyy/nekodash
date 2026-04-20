@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/ui/options_menu.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://b2h2drorkunul" path="res://assets/art/cats/cat_head.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://b74hwq8lajpn3" path="res://assets/art/cats/cat_default_peek.png" id="3"]
 
 [node name="OptionsOverlay" type="CanvasLayer"]
 layer = 40
@@ -203,14 +203,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 140.0
-offset_top = -397.0
-offset_right = 260.0
-offset_bottom = -293.0
+offset_left = -90.0
+offset_top = -445.0
+offset_right = 90.0
+offset_bottom = -316.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.25581
-scale = Vector2(0.911884, 0.911884)
 mouse_filter = 2
 texture = ExtResource("3")
 expand_mode = 1

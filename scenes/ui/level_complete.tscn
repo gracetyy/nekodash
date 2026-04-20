@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://clvlcmplt5cen"]
 
 [ext_resource type="Script" path="res://src/ui/level_complete_screen.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://bp2mcctl2br23" path="res://assets/art/ui/stars/star_large_filled.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://u2qsy3qbhuw3" path="res://assets/art/ui/stars/star_large_empty.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://cgx2dgwjkg38f" path="res://assets/art/ui/stars/star_large_filled.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bkruayk1cqdle" path="res://assets/art/ui/stars/star_large_empty.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://djhvglc163eql" path="res://assets/art/ui/badges/badge_new_best.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://b4jwiancqsh8n" path="res://assets/art/cats/cat_default_curious.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="6"]
@@ -114,7 +114,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -80.0
+offset_top = -14.0
 offset_right = 80.0
+offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -134,15 +136,11 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="NewBestBadge" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon"]
-visible = false
-layout_mode = 0
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -126.0
-offset_top = -8.0
-offset_right = 18.0
-offset_bottom = 40.0
-grow_horizontal = 0
+layout_mode = 1
+offset_left = 74.0
+offset_top = 86.0
+offset_right = 200.0
+offset_bottom = 125.0
 mouse_filter = 2
 texture = ExtResource("4")
 expand_mode = 1
@@ -175,6 +173,7 @@ theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 
 [node name="PromptLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn"]
+custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65098, 0.537255, 0.423529, 1)
 theme_override_font_sizes/font_size = 24

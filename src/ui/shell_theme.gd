@@ -15,6 +15,12 @@ const BLUSH: Color = Color(0.973, 0.816, 0.835, 1.0)
 const DISABLED_FILL: Color = Color(0.823, 0.808, 0.835, 1.0)
 const DISABLED_TEXT: Color = Color(0.519, 0.467, 0.561, 1.0)
 const OVERLAY: Color = Color(0.118, 0.086, 0.141, 0.62)
+const SLIDER_TRACK_COLOR: Color = Color(0.647059, 0.835294, 0.741176, 1.0)
+const SLIDER_TRACK_BORDER_COLOR: Color = Color(0.486275, 0.466667, 0.494118, 1.0)
+const SLIDER_FILL_COLOR: Color = Color(0.498039, 0.705882, 0.6, 1.0)
+const SLIDER_TRACK_DISABLED_COLOR: Color = Color(0.776471, 0.772549, 0.788235, 1.0)
+const SLIDER_TRACK_DISABLED_BORDER_COLOR: Color = Color(0.486275, 0.466667, 0.494118, 1.0)
+const SLIDER_FILL_DISABLED_COLOR: Color = Color(0.67451, 0.635294, 0.67451, 1.0)
 
 const DEFAULT_BORDER_WIDTH: int = 5
 const DEFAULT_RADIUS: int = 28
@@ -26,7 +32,6 @@ const CIRCLE_HOVER_SCALE: float = 1.08
 const CIRCLE_HOVER_DURATION_SEC: float = 0.1
 const CIRCLE_HOVER_WIRED_META: String = "_shell_circle_hover_wired"
 const CIRCLE_HOVER_TWEEN_META: String = "_shell_circle_hover_tween"
-const SLIDER_GROOVE_MARGIN_PX: int = 10
 const SLIDER_MIN_HEIGHT_PX: float = 22.0
 const FREDOKA_BODY_FONT_PATH: String = "res://assets/fonts/Fredoka-Body-SemiBold.tres"
 const FREDOKA_DISPLAY_FONT_PATH: String = "res://assets/fonts/Fredoka-Display-Bold.tres"
@@ -34,7 +39,6 @@ const FREDOKA_VARIABLE_FALLBACK: FontFile = preload("res://assets/fonts/Fredoka-
 
 static var FONT_BODY: Font = _load_font_or_fallback(FREDOKA_BODY_FONT_PATH)
 static var FONT_DISPLAY: Font = _load_font_or_fallback(FREDOKA_DISPLAY_FONT_PATH)
-static var _slider_grabber_icons: Dictionary = {}
 static var _checkbox_icons: Dictionary = {}
 
 const TITLE_TEXTURE: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_landscape.png")
@@ -53,13 +57,6 @@ const RIBBON_YELLOW_TEXTURE: Texture2D = preload("res://assets/art/ui/headers/ri
 const CHECKBOX_EMPTY_TEXTURE: Texture2D = preload("res://assets/art/ui/settings/checkbox_empty.png")
 const CHECKBOX_CHECKED_TEXTURE: Texture2D = preload("res://assets/art/ui/settings/checkbox_checked.png")
 const CHECKBOX_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/settings/checkbox_disabled.png")
-const SLIDER_TRACK_TEXTURE: Texture2D = preload("res://assets/art/ui/settings/slider_track.png")
-const SLIDER_FILL_TEXTURE: Texture2D = preload("res://assets/art/ui/settings/slider_fill.png")
-const SLIDER_TRACK_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/settings/slider_track_disabled.png")
-const SLIDER_FILL_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/settings/slider_fill_disabled.png")
-const SLIDER_KNOB_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_bg_normal.png")
-const SLIDER_KNOB_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_bg_hover.png")
-const SLIDER_KNOB_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_bg_disabled.png")
 const CIRCLE_BACK_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_arrow_left_normal.png")
 const CIRCLE_BACK_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_arrow_left_hover.png")
 const CIRCLE_BACK_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_arrow_left_pressed.png")
@@ -464,8 +461,8 @@ static func apply_modal_backdrop(backdrop: ColorRect) -> void:
 static func apply_progress_bar(bar: ProgressBar) -> void:
 	if bar == null:
 		return
-	bar.add_theme_stylebox_override("background", make_texture_style(SLIDER_TRACK_TEXTURE, 28, 0, 28, 0))
-	bar.add_theme_stylebox_override("fill", make_texture_style(SLIDER_FILL_TEXTURE, 28, 0, 28, 0))
+	bar.add_theme_stylebox_override("background", _make_slider_track_style(false))
+	bar.add_theme_stylebox_override("fill", _make_slider_fill_style(false))
 
 
 static func apply_title(label: Label, size: int = 48) -> void:
@@ -534,25 +531,24 @@ static func apply_slider(range_control: Range) -> void:
 static func set_slider_interactive(slider: HSlider, interactive: bool) -> void:
 	if slider == null:
 		return
-	var grabber_icons: Dictionary = _get_slider_grabber_icons()
 	if interactive:
-		slider.add_theme_stylebox_override("slider", _make_slider_texture_style(SLIDER_TRACK_TEXTURE))
-		slider.add_theme_stylebox_override("grabber_area", _make_slider_texture_style(SLIDER_FILL_TEXTURE))
-		slider.add_theme_stylebox_override("grabber_area_highlight", _make_slider_texture_style(SLIDER_FILL_TEXTURE))
-		slider.add_theme_stylebox_override("grabber_area_disabled", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
-		slider.add_theme_icon_override("grabber", grabber_icons.get("normal", SLIDER_KNOB_TEXTURE) as Texture2D)
-		slider.add_theme_icon_override("grabber_highlight", grabber_icons.get("hover", SLIDER_KNOB_HOVER_TEXTURE) as Texture2D)
-		slider.add_theme_icon_override("grabber_disabled", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
+		slider.add_theme_stylebox_override("slider", _make_slider_track_style(false))
+		slider.add_theme_stylebox_override("grabber_area", _make_slider_fill_style(false))
+		slider.add_theme_stylebox_override("grabber_area_highlight", _make_slider_fill_style(false))
+		slider.add_theme_stylebox_override("grabber_area_disabled", _make_slider_fill_style(true))
+		slider.remove_theme_icon_override("grabber")
+		slider.remove_theme_icon_override("grabber_highlight")
+		slider.remove_theme_icon_override("grabber_disabled")
 		slider.mouse_filter = Control.MOUSE_FILTER_STOP
 		slider.focus_mode = Control.FOCUS_ALL
 	else:
-		slider.add_theme_stylebox_override("slider", _make_slider_texture_style(SLIDER_TRACK_DISABLED_TEXTURE))
-		slider.add_theme_stylebox_override("grabber_area", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
-		slider.add_theme_stylebox_override("grabber_area_highlight", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
-		slider.add_theme_stylebox_override("grabber_area_disabled", _make_slider_texture_style(SLIDER_FILL_DISABLED_TEXTURE))
-		slider.add_theme_icon_override("grabber", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
-		slider.add_theme_icon_override("grabber_highlight", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
-		slider.add_theme_icon_override("grabber_disabled", grabber_icons.get("disabled", SLIDER_KNOB_DISABLED_TEXTURE) as Texture2D)
+		slider.add_theme_stylebox_override("slider", _make_slider_track_style(true))
+		slider.add_theme_stylebox_override("grabber_area", _make_slider_fill_style(true))
+		slider.add_theme_stylebox_override("grabber_area_highlight", _make_slider_fill_style(true))
+		slider.add_theme_stylebox_override("grabber_area_disabled", _make_slider_fill_style(true))
+		slider.remove_theme_icon_override("grabber")
+		slider.remove_theme_icon_override("grabber_highlight")
+		slider.remove_theme_icon_override("grabber_disabled")
 		slider.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slider.focus_mode = Control.FOCUS_NONE
 		if slider.has_focus():
@@ -562,24 +558,29 @@ static func set_slider_interactive(slider: HSlider, interactive: bool) -> void:
 	slider.add_theme_constant_override("grabber_offset", 0)
 
 
-static func _make_slider_texture_style(texture: Texture2D) -> StyleBoxTexture:
-	# Do not force content margins to zero: HSlider groove rendering relies on default style content values.
-	var style: StyleBoxTexture = StyleBoxTexture.new()
-	style.texture = texture
-	style.texture_margin_left = SLIDER_GROOVE_MARGIN_PX
-	style.texture_margin_top = SLIDER_GROOVE_MARGIN_PX
-	style.texture_margin_right = SLIDER_GROOVE_MARGIN_PX
-	style.texture_margin_bottom = SLIDER_GROOVE_MARGIN_PX
+static func _make_slider_track_style(disabled: bool) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = SLIDER_TRACK_DISABLED_COLOR if disabled else SLIDER_TRACK_COLOR
+	style.border_width_left = 3
+	style.border_width_top = 3
+	style.border_width_right = 3
+	style.border_width_bottom = 3
+	style.border_color = SLIDER_TRACK_DISABLED_BORDER_COLOR if disabled else SLIDER_TRACK_BORDER_COLOR
+	style.corner_radius_top_left = 14
+	style.corner_radius_top_right = 14
+	style.corner_radius_bottom_right = 14
+	style.corner_radius_bottom_left = 14
 	return style
 
 
-static func _get_slider_grabber_icons() -> Dictionary:
-	if not _slider_grabber_icons.is_empty():
-		return _slider_grabber_icons
-	_slider_grabber_icons["normal"] = _build_scaled_texture(SLIDER_KNOB_TEXTURE, 34)
-	_slider_grabber_icons["hover"] = _build_scaled_texture(SLIDER_KNOB_HOVER_TEXTURE, 34)
-	_slider_grabber_icons["disabled"] = _build_scaled_texture(SLIDER_KNOB_DISABLED_TEXTURE, 34)
-	return _slider_grabber_icons
+static func _make_slider_fill_style(disabled: bool) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = SLIDER_FILL_DISABLED_COLOR if disabled else SLIDER_FILL_COLOR
+	style.corner_radius_top_left = 10
+	style.corner_radius_top_right = 10
+	style.corner_radius_bottom_right = 10
+	style.corner_radius_bottom_left = 10
+	return style
 
 
 static func _get_checkbox_icons() -> Dictionary:

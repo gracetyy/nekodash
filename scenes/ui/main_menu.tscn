@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://b5k3qcaoeg0kq" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="3_8kw73"]
 [ext_resource type="Script" path="res://src/ui/cat_part_rig.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="5_y4nb7"]
 [ext_resource type="Texture2D" uid="uid://6jgkeoae2v48" path="res://assets/art/ui/buttons/pill_bases/disabled.png" id="6_5xyyy"]
@@ -19,9 +19,9 @@
 [ext_resource type="Texture2D" uid="uid://bcune8t4wyux2" path="res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png" id="17_40dxg"]
 [ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_81smh"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0ksq7"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rdd4a"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3ukk3"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -32,7 +32,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6bpxa"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_x5of7"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -43,7 +43,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_35t4a"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6tkt0"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -54,7 +54,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1faes"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_sxek5"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -65,7 +65,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bivvs"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_a5d54"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -76,7 +76,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m2wm6"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2j77n"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -87,7 +87,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5q1i5"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jjx1q"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -98,7 +98,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m2777"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_luvdw"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -109,7 +109,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pskre"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xvn0r"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -120,7 +120,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2agwk"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gpj8c"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -131,7 +131,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4erqc"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3rbme"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -142,7 +142,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gpkqp"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3lji6"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -153,7 +153,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3q7qm"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1k6u4"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -164,7 +164,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rm3e7"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qhw0i"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -175,7 +175,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5dxvl"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2lry4"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -186,7 +186,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wcjjv"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xsqoa"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -197,7 +197,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5wt66"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_u80g0"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -208,7 +208,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tqb7y"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_j33ht"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -219,7 +219,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ifrrl"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pu7wr"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -230,7 +230,7 @@ texture_margin_top = 24.0
 texture_margin_right = 52.0
 texture_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7evma"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wtt43"]
 content_margin_left = 30.0
 content_margin_top = 14.0
 content_margin_right = 30.0
@@ -287,7 +287,7 @@ alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_81smh")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0ksq7")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2
@@ -302,9 +302,9 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="TitleLabel" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
-custom_minimum_size = Vector2(560, 220)
+custom_minimum_size = Vector2(320, 250)
 layout_mode = 2
-texture = ExtResource("3")
+texture = ExtResource("3_8kw73")
 expand_mode = 1
 stretch_mode = 5
 
@@ -317,20 +317,28 @@ text = "ネコダッシュ"
 horizontal_alignment = 1
 
 [node name="CatIllustration" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
-custom_minimum_size = Vector2(284, 284)
+custom_minimum_size = Vector2(284, 240)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
 [node name="MenuCatRig" type="Node2D" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/CatIllustration"]
-position = Vector2(220, 119)
+position = Vector2(218, 134.4)
 scale = Vector2(1.8, 1.8)
 script = ExtResource("4")
 override_display_locally = true
+override_idle_locally = true
+override_face_locally = true
 display_size_px = 168.0
 display_offset = Vector2(0, 0)
+tail_pivot_source_px = Vector2(15, 35)
+head_pivot_source_px = Vector2(0, 8)
 idle_tail_swing_period_sec = 1.55
 idle_tail_swing_degrees = 8.0
+
+[node name="Control" type="Control" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
 
 [node name="Buttons" type="VBoxContainer" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
 layout_mode = 2
@@ -347,12 +355,12 @@ theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
-theme_override_font_sizes/font_size = 1
-theme_override_styles/focus = SubResource("StyleBoxTexture_rdd4a")
-theme_override_styles/disabled = SubResource("StyleBoxTexture_6bpxa")
-theme_override_styles/hover = SubResource("StyleBoxTexture_35t4a")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_1faes")
-theme_override_styles/normal = SubResource("StyleBoxTexture_bivvs")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxTexture_3ukk3")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_x5of7")
+theme_override_styles/hover = SubResource("StyleBoxTexture_6tkt0")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_sxek5")
+theme_override_styles/normal = SubResource("StyleBoxTexture_a5d54")
 text = "PLAY"
 icon = ExtResource("9_pakoq")
 metadata/_shell_pill_hover_wired = true
@@ -368,12 +376,12 @@ theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
-theme_override_font_sizes/font_size = 1
-theme_override_styles/focus = SubResource("StyleBoxTexture_m2wm6")
-theme_override_styles/disabled = SubResource("StyleBoxTexture_5q1i5")
-theme_override_styles/hover = SubResource("StyleBoxTexture_m2777")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_pskre")
-theme_override_styles/normal = SubResource("StyleBoxTexture_2agwk")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxTexture_2j77n")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_jjx1q")
+theme_override_styles/hover = SubResource("StyleBoxTexture_luvdw")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_xvn0r")
+theme_override_styles/normal = SubResource("StyleBoxTexture_gpj8c")
 text = "SKINS"
 icon = ExtResource("13_pgqpn")
 metadata/_shell_pill_hover_wired = true
@@ -389,12 +397,12 @@ theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
-theme_override_font_sizes/font_size = 1
-theme_override_styles/focus = SubResource("StyleBoxTexture_4erqc")
-theme_override_styles/disabled = SubResource("StyleBoxTexture_gpkqp")
-theme_override_styles/hover = SubResource("StyleBoxTexture_3q7qm")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_rm3e7")
-theme_override_styles/normal = SubResource("StyleBoxTexture_5dxvl")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxTexture_3rbme")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_3lji6")
+theme_override_styles/hover = SubResource("StyleBoxTexture_1k6u4")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_qhw0i")
+theme_override_styles/normal = SubResource("StyleBoxTexture_2lry4")
 text = "SETTINGS"
 icon = ExtResource("17_40dxg")
 metadata/_shell_pill_hover_wired = true
@@ -410,12 +418,12 @@ theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
-theme_override_font_sizes/font_size = 1
-theme_override_styles/focus = SubResource("StyleBoxTexture_wcjjv")
-theme_override_styles/disabled = SubResource("StyleBoxTexture_5wt66")
-theme_override_styles/hover = SubResource("StyleBoxTexture_tqb7y")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_ifrrl")
-theme_override_styles/normal = SubResource("StyleBoxTexture_7evma")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxTexture_xsqoa")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_u80g0")
+theme_override_styles/hover = SubResource("StyleBoxTexture_j33ht")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_pu7wr")
+theme_override_styles/normal = SubResource("StyleBoxTexture_wtt43")
 text = "CREDITS"
 icon = ExtResource("18_y1h30")
 metadata/_shell_pill_hover_wired = true
@@ -424,5 +432,5 @@ metadata/_shell_pill_hover_wired = true
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.467, 0.365, 0.506, 1)
-theme_override_font_sizes/font_size = 1
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
