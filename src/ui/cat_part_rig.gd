@@ -6,9 +6,6 @@
 class_name CatPartRig
 extends Node2D
 
-const CatRigProfile = preload("res://src/ui/cat_rig_profile.gd")
-
-
 # —————————————————————————————————————————————
 # Exports
 # —————————————————————————————————————————————
@@ -57,6 +54,12 @@ var idle_tail_swing_period_sec: float = 1.45
 ## Maximum idle tail sway angle in degrees.
 @export_range(0.0, 60.0, 0.1, "or_greater")
 var idle_tail_swing_degrees: float = 10.0
+## Seconds per full head breathing cycle.
+@export_range(0.0, 10.0, 0.01, "or_greater")
+var idle_head_breath_period_sec: float = 2.2
+## Max head breathing travel in pixels (up/down around head pivot).
+@export_range(0.0, 24.0, 0.1, "or_greater")
+var idle_head_breath_amplitude_px: float = 2.0
 
 @export_category("Editor")
 ## Auto-refreshes rig preview when exported values change in the inspector.
@@ -121,16 +124,19 @@ func _process(delta: float) -> void:
 
 	if not _effective_idle_enabled():
 		_reset_tail_pose()
+		_reset_head_breath_pose()
 		return
 
 	if _is_reduce_motion_enabled():
 		if _idle_time_sec != 0.0:
 			_idle_time_sec = 0.0
 		_reset_tail_pose()
+		_reset_head_breath_pose()
 		return
 
 	_idle_time_sec += delta
 	_apply_idle_tail_pose(_idle_time_sec)
+	_apply_idle_head_breath_pose(_idle_time_sec)
 
 
 func _exit_tree() -> void:
@@ -266,6 +272,8 @@ func _build_editor_preview_signature() -> String:
 		str(_effective_idle_enabled()),
 		str(_effective_idle_tail_swing_period_sec()),
 		str(_effective_idle_tail_swing_degrees()),
+		str(_effective_idle_head_breath_period_sec()),
+		str(_effective_idle_head_breath_amplitude_px()),
 	]
 	return "|".join(parts)
 
@@ -284,6 +292,8 @@ func _build_profile_signature(profile: CatRigProfile) -> String:
 		str(profile.idle_enabled),
 		str(profile.idle_tail_swing_period_sec),
 		str(profile.idle_tail_swing_degrees),
+		str(profile.idle_head_breath_period_sec),
+		str(profile.idle_head_breath_amplitude_px),
 	]
 	return "|".join(parts)
 
@@ -400,9 +410,28 @@ func _apply_idle_tail_pose(elapsed_sec: float) -> void:
 	_tail_pivot.rotation_degrees = sin(cycle) * _effective_idle_tail_swing_degrees()
 
 
+func _apply_idle_head_breath_pose(elapsed_sec: float) -> void:
+	if _head_pivot == null or not is_instance_valid(_head_pivot):
+		return
+
+	var base_head_pivot: Vector2 = _effective_head_pivot_source_px()
+	if _effective_idle_head_breath_period_sec() <= 0.0 or _effective_idle_head_breath_amplitude_px() <= 0.0:
+		_head_pivot.position = base_head_pivot
+		return
+
+	var cycle: float = (elapsed_sec / _effective_idle_head_breath_period_sec()) * TAU
+	var breath_offset_y: float = - sin(cycle) * _effective_idle_head_breath_amplitude_px()
+	_head_pivot.position = base_head_pivot + Vector2(0.0, breath_offset_y)
+
+
 func _reset_tail_pose() -> void:
 	if _tail_pivot != null and is_instance_valid(_tail_pivot):
 		_tail_pivot.rotation_degrees = 0.0
+
+
+func _reset_head_breath_pose() -> void:
+	if _head_pivot != null and is_instance_valid(_head_pivot):
+		_head_pivot.position = _effective_head_pivot_source_px()
 
 
 # —————————————————————————————————————————————
@@ -479,6 +508,20 @@ func _effective_idle_tail_swing_degrees() -> float:
 	if profile != null and not override_idle_locally:
 		return profile.idle_tail_swing_degrees
 	return idle_tail_swing_degrees
+
+
+func _effective_idle_head_breath_period_sec() -> float:
+	var profile: CatRigProfile = _effective_profile()
+	if profile != null and not override_idle_locally:
+		return profile.idle_head_breath_period_sec
+	return idle_head_breath_period_sec
+
+
+func _effective_idle_head_breath_amplitude_px() -> float:
+	var profile: CatRigProfile = _effective_profile()
+	if profile != null and not override_idle_locally:
+		return profile.idle_head_breath_amplitude_px
+	return idle_head_breath_amplitude_px
 
 
 func _effective_face_variant() -> String:
