@@ -33,3 +33,9 @@ var idle_tail_swing_period_sec: float = 1.45
 ## Maximum idle tail sway angle in degrees.
 @export_range(0.0, 60.0, 0.1, "or_greater")
 var idle_tail_swing_degrees: float = 10.0
+## Seconds per full head breathing cycle.
+@export_range(0.0, 10.0, 0.01, "or_greater")
+var idle_head_breath_period_sec: float = 2.2
+## Max head breathing travel in pixels (up/down around head pivot).
+@export_range(0.0, 24.0, 0.1, "or_greater")
+var idle_head_breath_amplitude_px: float = 2.0

@@ -5,14 +5,14 @@
 ## values in the shared profile resource.
 extends Node2D
 
-const CatRigProfile = preload("res://src/ui/cat_rig_profile.gd")
-
 const CAT_RIG_PATH: NodePath = NodePath("GlobalCatRig")
 const DISPLAY_OFFSET_HANDLE_PATH: NodePath = NodePath("DisplayOffsetHandle")
 const TAIL_PIVOT_HANDLE_PATH: NodePath = NodePath("TailPivotHandle")
 const HEAD_PIVOT_HANDLE_PATH: NodePath = NodePath("HeadPivotHandle")
+const BREATHING_HANDLE_PATH: NodePath = NodePath("HeadPivotHandle/BreathingHandle")
 const TAIL_PIVOT_GUIDE_PATH: NodePath = NodePath("TailPivotGuide")
 const HEAD_PIVOT_GUIDE_PATH: NodePath = NodePath("HeadPivotGuide")
+const BREATHING_GUIDE_PATH: NodePath = NodePath("BreathingGuide")
 
 
 @export_file("*.tres") var profile_path: String = "res://data/cat_rig_defaults.tres"
@@ -56,8 +56,10 @@ var _cat_rig: Node = null
 var _display_offset_handle: Node2D = null
 var _tail_pivot_handle: Node2D = null
 var _head_pivot_handle: Node2D = null
+var _breathing_handle: Node2D = null
 var _tail_pivot_guide: Line2D = null
 var _head_pivot_guide: Line2D = null
+var _breathing_guide: Line2D = null
 
 var _profile: CatRigProfile = null
 var _sync_handles_from_profile_now_flag: bool = false
@@ -65,6 +67,7 @@ var _save_profile_now_flag: bool = false
 var _cached_display_handle_position: Vector2 = Vector2.ZERO
 var _cached_tail_handle_position: Vector2 = Vector2.ZERO
 var _cached_head_handle_position: Vector2 = Vector2.ZERO
+var _cached_breathing_handle_position: Vector2 = Vector2.ZERO
 var _cached_profile_signature: String = ""
 var _head_preview_time_sec: float = 0.0
 
@@ -97,8 +100,10 @@ func _resolve_nodes() -> void:
 	_display_offset_handle = get_node_or_null(DISPLAY_OFFSET_HANDLE_PATH) as Node2D
 	_tail_pivot_handle = get_node_or_null(TAIL_PIVOT_HANDLE_PATH) as Node2D
 	_head_pivot_handle = get_node_or_null(HEAD_PIVOT_HANDLE_PATH) as Node2D
+	_breathing_handle = get_node_or_null(BREATHING_HANDLE_PATH) as Node2D
 	_tail_pivot_guide = get_node_or_null(TAIL_PIVOT_GUIDE_PATH) as Line2D
 	_head_pivot_guide = get_node_or_null(HEAD_PIVOT_GUIDE_PATH) as Line2D
+	_breathing_guide = get_node_or_null(BREATHING_GUIDE_PATH) as Line2D
 
 
 func _load_profile() -> void:
@@ -137,12 +142,13 @@ func _apply_profile_to_cat_rig() -> void:
 func _sync_handles_from_profile() -> void:
 	if _profile == null:
 		return
-	if _display_offset_handle == null or _tail_pivot_handle == null or _head_pivot_handle == null:
+	if _display_offset_handle == null or _tail_pivot_handle == null or _head_pivot_handle == null or _breathing_handle == null:
 		return
 
 	_display_offset_handle.position = _profile.display_offset
 	_tail_pivot_handle.position = _profile.display_offset + _profile.tail_pivot_source_px
 	_head_pivot_handle.position = _profile.display_offset + _profile.head_pivot_source_px
+	_breathing_handle.position = Vector2(0.0, -_profile.idle_head_breath_amplitude_px)
 	_cache_handle_positions()
 	_refresh_guide_lines()
 
@@ -154,15 +160,22 @@ func _sync_profile_from_handles_if_changed() -> void:
 	var display_position: Vector2 = _display_offset_handle.position
 	var tail_position: Vector2 = _tail_pivot_handle.position
 	var head_position: Vector2 = _head_pivot_handle.position
+	var breathing_position_local: Vector2 = _breathing_handle.position
+	var breathing_distance_px: float = absf(breathing_position_local.y)
+	breathing_position_local = Vector2(0.0, -breathing_distance_px)
+	if _breathing_handle.position != breathing_position_local:
+		_breathing_handle.position = breathing_position_local
 
 	if display_position == _cached_display_handle_position \
 	and tail_position == _cached_tail_handle_position \
-	and head_position == _cached_head_handle_position:
+	and head_position == _cached_head_handle_position \
+	and breathing_position_local == _cached_breathing_handle_position:
 		return
 
 	_profile.display_offset = display_position
 	_profile.tail_pivot_source_px = tail_position - display_position
 	_profile.head_pivot_source_px = head_position - display_position
+	_profile.idle_head_breath_amplitude_px = breathing_distance_px
 
 	_cache_handle_positions()
 	_cached_profile_signature = _build_profile_signature()
@@ -185,6 +198,7 @@ func _cache_handle_positions() -> void:
 	_cached_display_handle_position = _display_offset_handle.position
 	_cached_tail_handle_position = _tail_pivot_handle.position
 	_cached_head_handle_position = _head_pivot_handle.position
+	_cached_breathing_handle_position = _breathing_handle.position
 
 
 func _refresh_guide_lines() -> void:
@@ -199,6 +213,12 @@ func _refresh_guide_lines() -> void:
 		_head_pivot_guide.points = PackedVector2Array([
 			_display_offset_handle.position,
 			_head_pivot_handle.position,
+		])
+	if _breathing_guide != null:
+		_breathing_guide.visible = show_pivot_guides
+		_breathing_guide.points = PackedVector2Array([
+			_head_pivot_handle.position,
+			_head_pivot_handle.position + _breathing_handle.position,
 		])
 
 
@@ -224,6 +244,8 @@ func _build_profile_signature() -> String:
 		str(_profile.idle_enabled),
 		str(_profile.idle_tail_swing_period_sec),
 		str(_profile.idle_tail_swing_degrees),
+		str(_profile.idle_head_breath_period_sec),
+		str(_profile.idle_head_breath_amplitude_px),
 	]
 	return "|".join(parts)
 
@@ -232,7 +254,8 @@ func _has_valid_setup() -> bool:
 	return _profile != null \
 		and _display_offset_handle != null \
 		and _tail_pivot_handle != null \
-		and _head_pivot_handle != null
+		and _head_pivot_handle != null \
+		and _breathing_handle != null
 
 
 func _apply_head_swing_preview(delta: float) -> void:
