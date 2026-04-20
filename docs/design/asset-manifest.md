@@ -47,26 +47,27 @@ res://assets/
 ## 1. Cat Sprites — `assets/art/cats/`
 
 All shipped cat UI sprites are exported at **320×320px** for base assets and
-**640×640px** for `@2x` assets. `cat_head.png` is a decorative crop exported at
-**320×271px**.
+**640×640px** for `@2x` assets. `cat_default_peek.png` is a decorative modal
+accent exported at **440×350px**, with a **42px** transparent bottom alignment
+gutter so the cat head can sit flush against modal/card top edges.
 Style: kawaii, soft edges, dark clean outline, pink blush, warm colour fill.
 Source draft: `design/draft/sprite-cat.png` (single idle pose, white cat — use as base for all states).
 
-| File                         | Description                                                             | Style Guide                                                                             | Size (px) | Software  | Format | Status |
-| ---------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------- | --------- | ------ | ------ |
-| `cat_default_idle.png`       | Default cat idle used in menus/UI.                                      | White fur, dark outline 2–3px, pink blush circles, large round eyes, relaxed tail curl. | 320×320   | Procreate | PNG    | ✅     |
-| `cat_default_idle@2x.png`    | Retina idle variant for larger displays.                                | Same artwork as idle; higher-resolution export.                                         | 640×640   | Procreate | PNG    | ✅     |
-| `cat_default_blink.png`      | Blink expression variant for subtle idle alternation.                   | Same base silhouette; eyes closed briefly.                                              | 320×320   | Procreate | PNG    | ✅     |
-| `cat_default_blink@2x.png`   | Retina blink variant.                                                   | Same as blink, doubled resolution.                                                      | 640×640   | Procreate | PNG    | ✅     |
-| `cat_default_curious.png`    | Curious expression used for 0–2 star level-complete outcomes.           | Tilted/curious expression, still readable at small scale.                               | 320×320   | Procreate | PNG    | ✅     |
-| `cat_default_curious@2x.png` | Retina curious variant.                                                 | Same as curious, doubled resolution.                                                    | 640×640   | Procreate | PNG    | ✅     |
-| `cat_default_smile.png`      | Smile expression used for perfect level-complete outcomes.              | Warm satisfied smile; readable at small modal size.                                     | 320×320   | Procreate | PNG    | ✅     |
-| `cat_default_smile@2x.png`   | Retina smile variant.                                                   | Same as smile, doubled resolution.                                                      | 640×640   | Procreate | PNG    | ✅     |
-| `cat_default_excited.png`    | Excited expression fallback for non-perfect 3-star outcomes.            | Energetic happy expression for strong (but not perfect) outcomes.                       | 320×320   | Procreate | PNG    | ✅     |
-| `cat_default_excited@2x.png` | Retina excited variant.                                                 | Same as excited, doubled resolution.                                                    | 640×640   | Procreate | PNG    | ✅     |
-| `cat_default_relax.png`      | Relaxed expression variant for non-critical decorative placements.      | Softer, calmer expression while keeping silhouette consistency.                         | 320×320   | Procreate | PNG    | ✅     |
-| `cat_default_relax@2x.png`   | Retina relaxed variant.                                                 | Same as relax, doubled resolution.                                                      | 640×640   | Procreate | PNG    | ✅     |
-| `cat_head.png`               | Decorative cat head crop for top-edge modal accents (e.g., pause menu). | Cropped head-only art that sits on card edges.                                          | 320×271   | Procreate | PNG    | ✅     |
+| File                         | Description                                                            | Style Guide                                                                             | Size (px) | Software  | Format | Status |
+| ---------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------- | --------- | ------ | ------ |
+| `cat_default_idle.png`       | Default cat idle used in menus/UI.                                     | White fur, dark outline 2–3px, pink blush circles, large round eyes, relaxed tail curl. | 320×320   | Procreate | PNG    | ✅     |
+| `cat_default_idle@2x.png`    | Retina idle variant for larger displays.                               | Same artwork as idle; higher-resolution export.                                         | 640×640   | Procreate | PNG    | ✅     |
+| `cat_default_blink.png`      | Blink expression variant for subtle idle alternation.                  | Same base silhouette; eyes closed briefly.                                              | 320×320   | Procreate | PNG    | ✅     |
+| `cat_default_blink@2x.png`   | Retina blink variant.                                                  | Same as blink, doubled resolution.                                                      | 640×640   | Procreate | PNG    | ✅     |
+| `cat_default_curious.png`    | Curious expression used for 0–2 star level-complete outcomes.          | Tilted/curious expression, still readable at small scale.                               | 320×320   | Procreate | PNG    | ✅     |
+| `cat_default_curious@2x.png` | Retina curious variant.                                                | Same as curious, doubled resolution.                                                    | 640×640   | Procreate | PNG    | ✅     |
+| `cat_default_smile.png`      | Smile expression used for perfect level-complete outcomes.             | Warm satisfied smile; readable at small modal size.                                     | 320×320   | Procreate | PNG    | ✅     |
+| `cat_default_smile@2x.png`   | Retina smile variant.                                                  | Same as smile, doubled resolution.                                                      | 640×640   | Procreate | PNG    | ✅     |
+| `cat_default_excited.png`    | Excited expression fallback for non-perfect 3-star outcomes.           | Energetic happy expression for strong (but not perfect) outcomes.                       | 320×320   | Procreate | PNG    | ✅     |
+| `cat_default_excited@2x.png` | Retina excited variant.                                                | Same as excited, doubled resolution.                                                    | 640×640   | Procreate | PNG    | ✅     |
+| `cat_default_relax.png`      | Relaxed expression variant for non-critical decorative placements.     | Softer, calmer expression while keeping silhouette consistency.                         | 320×320   | Procreate | PNG    | ✅     |
+| `cat_default_relax@2x.png`   | Retina relaxed variant.                                                | Same as relax, doubled resolution.                                                      | 640×640   | Procreate | PNG    | ✅     |
+| `cat_default_peek.png`       | Decorative cat peek sprite for top-edge modal accents (pause/options). | Place with **42px** bottom overlap against modal top edge to align cat head to card.    | 440×350   | Procreate | PNG    | ✅     |
 
 > **Additional skins**: Future skins (e.g. calico, black cat, sakura) reuse the same 7 frames with different colour fills. Add folder per skin: `cat_calico_idle.png`, etc.
 

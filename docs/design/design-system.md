@@ -501,7 +501,7 @@ Arrow: teal/mint color, animated fade-in sequence, disappears after first swipe
 Triggered by: pause button (not shown in reference — TBD: tap top-area or dedicated button)
 Overlay layout:
   [scrim]             full screen rgba overlay
-  [cat peek sprite]   sits above modal top edge, centered
+  [cat peek sprite]   cat_default_peek.png (440×350), centered, with 42px of bottom overlap into the modal top edge
   [modal panel]       centered, ~300px wide
     ├─ "PAUSED" heading
     ├─ Music slider
@@ -510,6 +510,9 @@ Overlay layout:
     ├─ [RESTART button]  Secondary
     └─ [QUIT button]     Tertiary
 ```
+
+Options overlay uses the same `cat_default_peek.png` placement rule: keep the
+cat texture centered and overlap the texture bottom by 42px into the modal top edge.
 
 ### 6.7 Level Complete — 1-2 Stars
 

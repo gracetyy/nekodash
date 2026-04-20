@@ -11,6 +11,7 @@ It is written as step-by-step actions you can run directly in the editor.
 
 ## Quick Decision
 
+- I want global UI theme change: Open `res://scenes/ui/ui_theme_editor.tscn` and tune components across all UI screens in one place.
 - I want global change: Open `res://scenes/ui/global_cat_editor.tscn` and edit with 2D handles.
 - I want per-screen change: Select the host node (`MainMenu` or `SlidingMovement`), set its host toggle to `true`, then edit host override properties.
 - I want one-off local tweak: Select the child `CatPartRig` node (`MenuCatRig` or `CatSprite`), enable only the needed local override category, then tune local values.
@@ -32,9 +33,36 @@ Use this when you want one place to tune default cat behavior across gameplay an
    - `DisplayOffsetHandle`: moves full cat origin.
    - `TailPivotHandle`: sets tail rotation anchor.
    - `HeadPivotHandle`: sets head rotation anchor.
-3. Select `GlobalCatRig`, then edit `local_profile_override` values in Inspector for non-handle fields (`display_size_px`, idle values, default skin, face variant).
+   - `BreathingHandle` (under `HeadPivotHandle`): sets head breathing amplitude (up/down travel).
+3. Select `GlobalCatRig`, then edit `local_profile_override` values in Inspector for non-handle fields (`display_size_px`, idle values, `idle_head_breath_period_sec`, default skin, face variant).
 4. If you changed profile values numerically, toggle `sync_handles_from_profile_now` on root `GlobalCatEditor` to snap handles back to current profile values.
 5. Save `res://data/cat_rig_defaults.tres` (or toggle `save_profile_now` on `GlobalCatEditor`).
+
+## Global UI Theme Sandbox (All UI Components)
+
+Use `res://scenes/ui/ui_theme_editor.tscn` as a direct UI component board.
+Every component is laid out on the canvas (no SubViewport wrappers), so you can select
+and tweak properties directly in the 2D editor.
+
+### What it includes
+
+- Pill button states (primary, secondary, tertiary, danger)
+- Live button samples with state StyleBox overrides
+- Circular icon buttons with normal/hover/pressed/disabled textures
+- Panels and ribbons (`NinePatchRect` + `TextureRect`)
+- Slider/checkbox visual assets used by options and pause menus
+- Stars, badges, HUD pills, and icon interiors
+- World map level card textures + lock icon
+- Cat peek texture used by overlay compositions
+
+### How to use it
+
+1. Open `res://scenes/ui/ui_theme_editor.tscn`.
+2. In the 2D editor, select any component node directly (for example `NinePatchRect`, `Button`, `TextureButton`, `TextureProgressBar`).
+3. Tune values in Inspector (`patch_margin_*`, colors, style resources, textures, icon spacing, state styles).
+4. For button state styling, edit the `StyleBoxTexture_*` subresources wired to sample buttons.
+5. Apply the same tuned values to source scenes/resources as needed.
+6. Run UI snapshot capture after edits to guard against regressions.
 
 ## Cat Inheritance Pattern (Identical Across Hosts)
 
@@ -212,6 +240,7 @@ Target scene: `res://scenes/ui/options_overlay.tscn`
    - `Backdrop/Panel` size and position.
    - `Backdrop/Ribbon` size and offsets.
    - `Backdrop/CatPeek` composition.
+   - Use `res://assets/art/cats/cat_default_peek.png` for `Backdrop/CatPeek` and keep a **42px** bottom overlap against `Backdrop/Panel` top edge.
 3. For row spacing and alignment, tune containers under `Backdrop/Panel/Margin/VBox`.
 4. Keep node names stable (`MusicSlider`, `ReduceMotionToggle`, etc.) so script auto-discovery continues to work.
 
@@ -222,8 +251,9 @@ Target scene: `res://scenes/ui/pause_overlay.tscn`
 1. Open `pause_overlay.tscn`.
 2. Tune blur and dim look in `Backdrop` material (`shader_parameter/*`).
 3. Adjust ribbon/panel/cat-peek offsets.
-4. Tune icon button row spacing under `ButtonStack/IconRow`.
-5. Preserve control node names to avoid script binding regressions.
+4. Use `res://assets/art/cats/cat_default_peek.png` for `Backdrop/CatPeek` and keep a **42px** bottom overlap against `Backdrop/Panel` top edge.
+5. Tune icon button row spacing under `ButtonStack/IconRow`.
+6. Preserve control node names to avoid script binding regressions.
 
 ## 8) HUD (Gameplay UI)
 
