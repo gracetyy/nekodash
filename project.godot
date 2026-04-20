@@ -28,7 +28,6 @@ GridSystem="*res://src/core/grid_system.gd"
 InputSystem="*res://src/core/input_system.gd"
 SfxManager="*res://src/core/sfx_manager.gd"
 MusicManager="*res://src/core/music_manager.gd"
-; TODO(jam-submission): Disable PlaytestCapture autoload before submission build.
 PlaytestCapture="*res://tools/playtest_capture.gd"
 
 [display]
