@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/settings/option_setting_row.gd" id="1"]
+
+[node name="OptionSettingRow" type="VBoxContainer"]
+script = ExtResource("1")
+theme_override_constants/separation = 6
+
+[node name="SettingLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Input Hints"
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 2

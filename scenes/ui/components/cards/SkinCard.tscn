@@ -1,0 +1,77 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/cards/skin_card.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/badges/BadgeEquipped.tscn" id="2"]
+
+[node name="SkinCard" type="PanelContainer"]
+script = ExtResource("1")
+custom_minimum_size = Vector2(110, 150)
+
+[node name="CardMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="CardMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Preview" type="TextureRect" parent="CardMargin/VBox"]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="CardMargin/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "Default Cat"
+
+[node name="UnlockHintLabel" type="Label" parent="CardMargin/VBox"]
+visible = false
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+text = "Complete World 1"
+
+[node name="EquippedBadge" parent="CardMargin/VBox" instance=ExtResource("2")]
+layout_mode = 2
+
+[node name="LockOverlay" type="Control" parent="CardMargin"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LockIcon" type="TextureRect" parent="CardMargin/LockOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.4
+anchor_right = 0.5
+anchor_bottom = 0.4
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="OverlayButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = ""
