@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://dg4meplay5cen"]
+[gd_scene load_steps=20 format=3 uid="uid://dg4meplay5cen"]
 
 [ext_resource type="Script" path="res://src/gameplay/level_coordinator.gd" id="1"]
 [ext_resource type="Script" path="res://src/gameplay/sliding_movement.gd" id="2"]
@@ -13,26 +13,10 @@
 [ext_resource type="Script" path="res://assets/art/cats/cat_sprite.gd" id="11"]
 [ext_resource type="Script" path="res://src/ui/coverage_visualizer.gd" id="12"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="13"]
-[ext_resource type="Texture2D" uid="uid://cddfl2cjbdj4x" path="res://assets/art/ui/hud/move-counter-bg.png" id="14"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/status/HUDMoveCounter.tscn" id="14"]
 [ext_resource type="Texture2D" uid="uid://wslh4ervsbug" path="res://assets/art/ui/hud/star_pill.png" id="15"]
-[ext_resource type="Texture2D" uid="uid://we46j0y1xjak" path="res://assets/art/ui/buttons/circular/btn_circle_undo_normal.png" id="16"]
-[ext_resource type="Texture2D" uid="uid://cuaff1tlxdjk4" path="res://assets/art/ui/buttons/circular/btn_circle_undo_hover.png" id="17"]
-[ext_resource type="Texture2D" uid="uid://c1br1kic7h6p8" path="res://assets/art/ui/buttons/circular/btn_circle_undo_pressed.png" id="18"]
-[ext_resource type="Texture2D" uid="uid://dhyr7sct4biv2" path="res://assets/art/ui/buttons/circular/btn_circle_undo_disabled.png" id="19"]
-[ext_resource type="Texture2D" uid="uid://b0wggdn27plvg" path="res://assets/art/ui/buttons/circular/btn_circle_replay_normal.png" id="20"]
-[ext_resource type="Texture2D" uid="uid://d0p3s163cvvlu" path="res://assets/art/ui/buttons/circular/btn_circle_replay_hover.png" id="21"]
-[ext_resource type="Texture2D" uid="uid://btjrphrit4ddo" path="res://assets/art/ui/buttons/circular/btn_circle_replay_pressed.png" id="22"]
-[ext_resource type="Texture2D" uid="uid://csgvjlu3fk4cd" path="res://assets/art/ui/buttons/circular/btn_circle_replay_disabled.png" id="23"]
-[ext_resource type="Texture2D" uid="uid://mo8aywyydeb2" path="res://assets/art/ui/buttons/circular/btn_circle_home_normal.png" id="24"]
-[ext_resource type="Texture2D" uid="uid://c3bw335426gvg" path="res://assets/art/ui/buttons/circular/btn_circle_home_hover.png" id="25"]
-[ext_resource type="Texture2D" uid="uid://ddc77euux3ef6" path="res://assets/art/ui/buttons/circular/btn_circle_home_pressed.png" id="26"]
-[ext_resource type="Texture2D" uid="uid://cvfj2jdmtdx5w" path="res://assets/art/ui/buttons/circular/btn_circle_home_disabled.png" id="27"]
-[ext_resource type="Texture2D" uid="uid://fttxdg2do8ov" path="res://assets/art/ui/buttons/circular/btn_circle_pause_normal.png" id="28"]
-[ext_resource type="Texture2D" uid="uid://bmson1nxs77up" path="res://assets/art/ui/buttons/circular/btn_circle_pause_hover.png" id="29"]
-[ext_resource type="Texture2D" uid="uid://boohkiruj5gvr" path="res://assets/art/ui/buttons/circular/btn_circle_pause_pressed.png" id="30"]
-[ext_resource type="Texture2D" uid="uid://bxubbfqrdvbnu" path="res://assets/art/ui/buttons/circular/btn_circle_pause_disabled.png" id="31"]
-[ext_resource type="Texture2D" uid="uid://bq6m1wbv6unfs" path="res://assets/art/ui/stars/star_medium_filled.png" id="32"]
-[ext_resource type="Texture2D" uid="uid://h6ni0l2pgn3h" path="res://assets/art/ui/stars/star_medium_empty.png" id="33"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/status/StarStrip.tscn" id="16"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="17"]
 
 [node name="LevelCoordinator" type="Node2D"]
 script = ExtResource("1")
@@ -99,44 +83,8 @@ grow_horizontal = 2
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="MoveCounter" type="Control" parent="HUD/MarginContainer/TopRow"]
-custom_minimum_size = Vector2(154, 100)
+[node name="MoveCounter" parent="HUD/MarginContainer/TopRow" instance=ExtResource("14")]
 layout_mode = 2
-
-[node name="MoveCounterBg" type="TextureRect" parent="HUD/MarginContainer/TopRow/MoveCounter"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 2.0
-offset_right = -2.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("14")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="MovesPrefix" type="Label" parent="HUD/MarginContainer/TopRow/MoveCounter"]
-layout_mode = 0
-anchor_left = 0.1
-anchor_top = 0.16
-anchor_right = 0.9
-anchor_bottom = 0.44
-theme_override_font_sizes/font_size = 18
-text = "Moves"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MoveLabel" type="Label" parent="HUD/MarginContainer/TopRow/MoveCounter"]
-layout_mode = 0
-anchor_left = 0.1
-anchor_top = 0.4
-anchor_right = 0.9
-anchor_bottom = 0.8
-theme_override_font_sizes/font_size = 24
-text = "0"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="CenterPill" type="Control" parent="HUD/MarginContainer/TopRow"]
 custom_minimum_size = Vector2(132, 56)
@@ -156,7 +104,7 @@ texture = ExtResource("15")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="StarRow" type="HBoxContainer" parent="HUD/MarginContainer/TopRow/CenterPill"]
+[node name="StarStrip" parent="HUD/MarginContainer/TopRow/CenterPill" instance=ExtResource("16")]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.12
@@ -165,29 +113,8 @@ anchor_right = 0.88
 anchor_bottom = 0.82
 offset_top = -4.0
 offset_bottom = -4.0
-theme_override_constants/separation = 4
-alignment = 1
-
-[node name="Star1" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill/StarRow"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-texture = ExtResource("32")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Star2" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill/StarRow"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-texture = ExtResource("32")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Star3" type="TextureRect" parent="HUD/MarginContainer/TopRow/CenterPill/StarRow"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-texture = ExtResource("33")
-expand_mode = 1
-stretch_mode = 5
+size_tier = 1
+row_spacing_px = 4.0
 
 [node name="ButtonRow" type="HBoxContainer" parent="HUD/MarginContainer/TopRow"]
 custom_minimum_size = Vector2(0, 56)
@@ -196,34 +123,26 @@ size_flags_vertical = 4
 theme_override_constants/separation = 4
 alignment = 1
 
-[node name="UndoBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+[node name="UndoBtn" parent="HUD/MarginContainer/TopRow/ButtonRow" instance=ExtResource("17")]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-texture_normal = ExtResource("16")
-texture_pressed = ExtResource("18")
-texture_hover = ExtResource("17")
-texture_disabled = ExtResource("19")
+variant = 5
+button_size = 56.0
 
-[node name="RestartBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+[node name="RestartBtn" parent="HUD/MarginContainer/TopRow/ButtonRow" instance=ExtResource("17")]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-texture_normal = ExtResource("20")
-texture_pressed = ExtResource("22")
-texture_hover = ExtResource("21")
-texture_disabled = ExtResource("23")
+variant = 3
+button_size = 56.0
 
-[node name="ExitBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+[node name="ExitBtn" parent="HUD/MarginContainer/TopRow/ButtonRow" instance=ExtResource("17")]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-texture_normal = ExtResource("24")
-texture_pressed = ExtResource("26")
-texture_hover = ExtResource("25")
-texture_disabled = ExtResource("27")
+variant = 4
+button_size = 56.0
 
-[node name="PauseBtn" type="TextureButton" parent="HUD/MarginContainer/TopRow/ButtonRow"]
+[node name="PauseBtn" parent="HUD/MarginContainer/TopRow/ButtonRow" instance=ExtResource("17")]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-texture_normal = ExtResource("28")
-texture_pressed = ExtResource("30")
-texture_hover = ExtResource("29")
-texture_disabled = ExtResource("31")
+variant = 6
+button_size = 56.0

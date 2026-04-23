@@ -23,6 +23,7 @@ CLAUDE.md
 CLAUDE.local.md
 production/session-logs/
 production/session-state/*.md
+docs/superpowers/
 
 # === Codex ===
 .codex
