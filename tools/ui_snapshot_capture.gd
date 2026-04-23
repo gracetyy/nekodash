@@ -25,8 +25,11 @@ func _capture_scene(scene_path: String, output_name: String) -> void:
 		return
 	var instance: Node = scene.instantiate()
 	root.add_child(instance)
-	await process_frame
-	await process_frame
+	var settle_frames: int = 2
+	if scene_path == "res://scenes/ui/world_map.tscn":
+		settle_frames = 18
+	for i: int in range(settle_frames):
+		await process_frame
 	_save_viewport(output_name)
 	instance.queue_free()
 	await process_frame
@@ -54,8 +57,8 @@ func _capture_level_complete(output_name: String) -> void:
 	await process_frame
 	if screen.has_method("populate_results"):
 		screen.populate_results()
-	await process_frame
-	await process_frame
+	for i: int in range(18):
+		await process_frame
 	_save_viewport(output_name)
 	screen.queue_free()
 	await process_frame
