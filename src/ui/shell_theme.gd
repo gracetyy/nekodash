@@ -43,6 +43,7 @@ static var _checkbox_icons: Dictionary = {}
 
 const TITLE_TEXTURE: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_landscape.png")
 const PANEL_TEXTURE: Texture2D = preload("res://assets/art/ui/panels/panel_modal_normal.png")
+const PANEL_TOOLTIP_TEXTURE: Texture2D = preload("res://assets/art/ui/panels/panel_tooltip_bubble.png")
 const STAR_PILL_TEXTURE: Texture2D = preload("res://assets/art/ui/hud/star_pill.png")
 const MOVE_COUNTER_TEXTURE: Texture2D = preload("res://assets/art/ui/hud/move-counter-bg.png")
 const LEVEL_CARD_UNLOCKED_TEXTURE: Texture2D = preload("res://assets/art/ui/world_map/level_card_unlocked.png")
@@ -69,6 +70,10 @@ const CIRCLE_PLAY_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/butto
 const CIRCLE_PLAY_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_play_hover.png")
 const CIRCLE_PLAY_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_play_pressed.png")
 const CIRCLE_PLAY_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_play_disabled.png")
+const CIRCLE_PAUSE_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_pause_normal.png")
+const CIRCLE_PAUSE_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_pause_hover.png")
+const CIRCLE_PAUSE_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_pause_pressed.png")
+const CIRCLE_PAUSE_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_pause_disabled.png")
 const CIRCLE_REPLAY_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_replay_normal.png")
 const CIRCLE_REPLAY_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_replay_hover.png")
 const CIRCLE_REPLAY_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_replay_pressed.png")
@@ -77,13 +82,19 @@ const CIRCLE_HOME_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/butto
 const CIRCLE_HOME_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_home_hover.png")
 const CIRCLE_HOME_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_home_pressed.png")
 const CIRCLE_HOME_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_home_disabled.png")
+const CIRCLE_UNDO_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_undo_normal.png")
+const CIRCLE_UNDO_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_undo_hover.png")
+const CIRCLE_UNDO_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_undo_pressed.png")
+const CIRCLE_UNDO_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_undo_disabled.png")
 const STAR_SMALL_FILLED_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_small_filled.png")
 const STAR_SMALL_EMPTY_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_small_empty.png")
 const STAR_SMALL_HOLLOW_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_small_hollow.png")
 const STAR_MEDIUM_FILLED_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_medium_filled.png")
 const STAR_MEDIUM_EMPTY_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_medium_empty.png")
+const STAR_MEDIUM_HOLLOW_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_medium_hollow.png")
 const STAR_LARGE_FILLED_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_large_filled.png")
 const STAR_LARGE_EMPTY_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_large_empty.png")
+const STAR_LARGE_HOLLOW_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_large_hollow.png")
 
 const _PILL_TEXTURES: Dictionary = {
 	"primary": {
@@ -183,6 +194,10 @@ static func make_button_styles(
 
 static func make_panel_style() -> StyleBoxTexture:
 	return make_texture_style(PANEL_TEXTURE, 44, 44, 54, 54, 26.0, 26.0, 26.0, 28.0)
+
+
+static func make_tooltip_bubble_style() -> StyleBoxTexture:
+	return make_texture_style(PANEL_TOOLTIP_TEXTURE, 15, 15, 18, 26, 35.0, 12.0, 18.0, 20.0)
 
 
 static func make_star_pill_style() -> StyleBoxTexture:
@@ -730,5 +745,27 @@ static func apply_circle_home_button(button: BaseButton, size: float = 62.0) -> 
 		CIRCLE_HOME_HOVER_TEXTURE,
 		CIRCLE_HOME_PRESSED_TEXTURE,
 		CIRCLE_HOME_DISABLED_TEXTURE,
+		size
+	)
+
+
+static func apply_circle_pause_button(button: BaseButton, size: float = 62.0) -> void:
+	apply_circle_icon_button(
+		button,
+		CIRCLE_PAUSE_NORMAL_TEXTURE,
+		CIRCLE_PAUSE_HOVER_TEXTURE,
+		CIRCLE_PAUSE_PRESSED_TEXTURE,
+		CIRCLE_PAUSE_DISABLED_TEXTURE,
+		size
+	)
+
+
+static func apply_circle_undo_button(button: BaseButton, size: float = 62.0) -> void:
+	apply_circle_icon_button(
+		button,
+		CIRCLE_UNDO_NORMAL_TEXTURE,
+		CIRCLE_UNDO_HOVER_TEXTURE,
+		CIRCLE_UNDO_PRESSED_TEXTURE,
+		CIRCLE_UNDO_DISABLED_TEXTURE,
 		size
 	)
