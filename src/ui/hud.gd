@@ -36,16 +36,16 @@ signal pause_pressed
 # Child node references
 # —————————————————————————————————————————————
 
-## Set via set_ui_nodes(), _ready() auto-discovery, or test injection.
-var _move_label: Control # Label
-var _coverage_label: Control # Label
-var _undo_btn: Control # Button
-var _restart_btn: Control # Button
-var _exit_btn: Control # Button
-var _pause_btn: Control # Button
-var _chrome_panel: PanelContainer
-var _moves_prefix_label: Label
-var _star_strip: Control
+## Set via inspector wiring or test injection through set_ui_nodes().
+@export var _move_label: Label
+@export var _coverage_label: Label
+@export var _undo_btn: BaseButton
+@export var _restart_btn: BaseButton
+@export var _exit_btn: BaseButton
+@export var _pause_btn: BaseButton
+@export var _chrome_panel: PanelContainer
+@export var _moves_prefix_label: Label
+@export var _star_strip: Control
 
 
 # —————————————————————————————————————————————
@@ -82,7 +82,15 @@ var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
 # —————————————————————————————————————————————
 
 func _ready() -> void:
-	_auto_discover_ui_nodes()
+	assert(_move_label != null, "_move_label not assigned")
+	assert(_undo_btn != null, "_undo_btn not assigned")
+	assert(_restart_btn != null, "_restart_btn not assigned")
+	assert(_exit_btn != null, "_exit_btn not assigned")
+	assert(_pause_btn != null, "_pause_btn not assigned")
+	assert(_chrome_panel != null, "_chrome_panel not assigned")
+	assert(_moves_prefix_label != null, "_moves_prefix_label not assigned")
+	assert(_star_strip != null, "_star_strip not assigned")
+	_connect_button_signals()
 	_apply_visual_style()
 
 
@@ -167,12 +175,13 @@ func set_ui_nodes(
 	exit_btn: Control = null,
 	pause_btn: Control = null,
 ) -> void:
-	_move_label = move_label
-	_coverage_label = coverage_label
-	_undo_btn = undo_btn
-	_restart_btn = restart_btn
-	_exit_btn = exit_btn
-	_pause_btn = pause_btn
+	_move_label = move_label as Label
+	_coverage_label = coverage_label as Label
+	_undo_btn = undo_btn as BaseButton
+	_restart_btn = restart_btn as BaseButton
+	_exit_btn = exit_btn as BaseButton
+	_pause_btn = pause_btn as BaseButton
+	_connect_button_signals()
 	_apply_visual_style()
 
 
@@ -396,45 +405,15 @@ func _set_pause_button_visible(visible_flag: bool) -> void:
 		_pause_btn.visible = visible_flag
 
 
-## Auto-discovers child Controls by node path. Only sets references that
-## haven't already been injected via set_ui_nodes(). Wires button pressed
-## signals when buttons are found.
-func _auto_discover_ui_nodes() -> void:
-	if _chrome_panel == null:
-		_chrome_panel = get_node_or_null("MarginContainer/TopRow/CenterPill") as PanelContainer
-	if _moves_prefix_label == null:
-		_moves_prefix_label = get_node_or_null("MarginContainer/TopRow/MoveCounter/MovesPrefix") as Label
-	if _move_label == null:
-		_move_label = get_node_or_null("MarginContainer/TopRow/MoveCounter/MoveLabel")
-	if _coverage_label == null:
-		_coverage_label = get_node_or_null("MarginContainer/TopRow/CenterPill/CoverageLabel")
-
-	if _star_strip == null:
-		_star_strip = get_node_or_null("MarginContainer/TopRow/CenterPill/StarStrip") as StarStrip
-
-	if _undo_btn == null:
-		_undo_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/UndoBtn")
-	if _undo_btn != null and _undo_btn is BaseButton:
-		if not (_undo_btn as BaseButton).pressed.is_connected(on_undo_btn_pressed):
-			(_undo_btn as BaseButton).pressed.connect(on_undo_btn_pressed)
-
-	if _restart_btn == null:
-		_restart_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/RestartBtn")
-	if _restart_btn != null and _restart_btn is BaseButton:
-		if not (_restart_btn as BaseButton).pressed.is_connected(on_restart_btn_pressed):
-			(_restart_btn as BaseButton).pressed.connect(on_restart_btn_pressed)
-
-	if _exit_btn == null:
-		_exit_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/ExitBtn")
-	if _exit_btn != null and _exit_btn is BaseButton:
-		if not (_exit_btn as BaseButton).pressed.is_connected(on_exit_btn_pressed):
-			(_exit_btn as BaseButton).pressed.connect(on_exit_btn_pressed)
-
-	if _pause_btn == null:
-		_pause_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/PauseBtn")
-	if _pause_btn != null and _pause_btn is BaseButton:
-		if not (_pause_btn as BaseButton).pressed.is_connected(on_pause_btn_pressed):
-			(_pause_btn as BaseButton).pressed.connect(on_pause_btn_pressed)
+func _connect_button_signals() -> void:
+	if _undo_btn != null and not _undo_btn.pressed.is_connected(on_undo_btn_pressed):
+		_undo_btn.pressed.connect(on_undo_btn_pressed)
+	if _restart_btn != null and not _restart_btn.pressed.is_connected(on_restart_btn_pressed):
+		_restart_btn.pressed.connect(on_restart_btn_pressed)
+	if _exit_btn != null and not _exit_btn.pressed.is_connected(on_exit_btn_pressed):
+		_exit_btn.pressed.connect(on_exit_btn_pressed)
+	if _pause_btn != null and not _pause_btn.pressed.is_connected(on_pause_btn_pressed):
+		_pause_btn.pressed.connect(on_pause_btn_pressed)
 
 
 func _apply_visual_style() -> void:

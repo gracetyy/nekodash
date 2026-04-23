@@ -58,16 +58,16 @@ signal play_requested
 # Child node references
 # —————————————————————————————————————————————
 
-var _play_btn: BaseButton
-var _options_btn: BaseButton
-var _credits_btn: BaseButton
-var _skins_btn: BaseButton
-var _hero_card: PanelContainer
-var _hint_label: Label
-var _title_texture: TextureRect
-var _cat_illustration: TextureRect
+@export var _play_btn: BaseButton
+@export var _options_btn: BaseButton
+@export var _credits_btn: BaseButton
+@export var _skins_btn: BaseButton
+@export var _hero_card: PanelContainer
+@export var _hint_label: Label
+@export var _title_texture: TextureRect
+@export var _cat_illustration: TextureRect
 var _menu_cat_rig: Node
-var _buttons_box: VBoxContainer
+@export var _buttons_box: VBoxContainer
 var _editor_menu_cat_signature: String = ""
 var _menu_cat_layout_refresh_queued: bool = false
 
@@ -77,7 +77,15 @@ var _menu_cat_layout_refresh_queued: bool = false
 # —————————————————————————————————————————————
 
 func _ready() -> void:
-	_auto_discover_ui_nodes()
+	assert(_play_btn != null, "_play_btn not assigned")
+	assert(_options_btn != null, "_options_btn not assigned")
+	assert(_credits_btn != null, "_credits_btn not assigned")
+	assert(_skins_btn != null, "_skins_btn not assigned")
+	assert(_hero_card != null, "_hero_card not assigned")
+	assert(_hint_label != null, "_hint_label not assigned")
+	assert(_title_texture != null, "_title_texture not assigned")
+	assert(_cat_illustration != null, "_cat_illustration not assigned")
+	assert(_buttons_box != null, "_buttons_box not assigned")
 	_connect_signals()
 	_apply_visual_style()
 	_refresh_title_texture_variant()
@@ -93,25 +101,6 @@ func _ready() -> void:
 # —————————————————————————————————————————————
 # Private methods
 # —————————————————————————————————————————————
-
-func _auto_discover_ui_nodes() -> void:
-	_play_btn = _find_child_safe("PlayBtn", "BaseButton") as BaseButton
-	_options_btn = _find_child_safe("OptionsBtn", "BaseButton") as BaseButton
-	_credits_btn = _find_child_safe("CreditsBtn", "BaseButton") as BaseButton
-	_skins_btn = _find_child_safe("SkinsBtn", "BaseButton") as BaseButton
-	_hero_card = _find_child_safe("HeroCard", "PanelContainer") as PanelContainer
-	_hint_label = _find_child_safe("HintLabel", "Label") as Label
-	_title_texture = _find_child_safe("TitleLabel", "TextureRect") as TextureRect
-	_cat_illustration = _find_child_safe("CatIllustration", "TextureRect") as TextureRect
-	_buttons_box = _find_child_safe("Buttons", "VBoxContainer") as VBoxContainer
-
-
-func _find_child_safe(child_name: String, expected_type: String) -> Node:
-	var node: Node = find_child(child_name, true, false)
-	if node == null:
-		push_warning("MainMenu: expected child '%s' (%s) not found." % [child_name, expected_type])
-	return node
-
 
 func _connect_signals() -> void:
 	if _play_btn != null:
@@ -282,8 +271,6 @@ func _apply_menu_cat_exports_to_rig() -> void:
 func _sync_editor_menu_cat_preview() -> void:
 	if not is_inside_tree():
 		return
-	if _cat_illustration == null:
-		_auto_discover_ui_nodes()
 	if _cat_illustration == null:
 		return
 	if _menu_cat_rig == null or _menu_cat_rig.get_script() != CatPartRigScript:

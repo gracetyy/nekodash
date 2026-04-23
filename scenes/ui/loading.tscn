@@ -13,6 +13,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+_panel = NodePath("CenterContainer/LoadingCard")
+_title_label = NodePath("CenterContainer/LoadingCard/CardMargin/VBox/TitleLabel")
+_progress_bar = NodePath("CenterContainer/LoadingCard/CardMargin/VBox/ProgressBar")
 
 [node name="Backdrop" parent="." instance=ExtResource("2")]
 layout_mode = 1

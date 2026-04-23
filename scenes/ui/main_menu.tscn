@@ -20,6 +20,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+_play_btn = NodePath("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/PlayBtn")
+_options_btn = NodePath("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/OptionsBtn")
+_credits_btn = NodePath("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/CreditsBtn")
+_skins_btn = NodePath("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/SkinsBtn")
+_hero_card = NodePath("MarginContainer/Content/HeroCard")
+_hint_label = NodePath("MarginContainer/Content/HintLabel")
+_title_texture = NodePath("MarginContainer/Content/HeroCard/CardMargin/CardBody/TitleLabel")
+_cat_illustration = NodePath("MarginContainer/Content/HeroCard/CardMargin/CardBody/CatIllustration")
+_buttons_box = NodePath("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons")
 
 [node name="Background" type="Control" parent="."]
 layout_mode = 1

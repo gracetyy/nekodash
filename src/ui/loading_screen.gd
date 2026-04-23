@@ -6,15 +6,15 @@ const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 var _target_screen_name: String = "Loading"
 var _progress: float = 0.0
 
-var _title_label: Label
-var _progress_bar: ProgressBar
-var _panel: PanelContainer
+@export var _title_label: Label
+@export var _progress_bar: ProgressBar
+@export var _panel: PanelContainer
 
 
 func _ready() -> void:
-	_panel = find_child("LoadingCard", true, false) as PanelContainer
-	_title_label = find_child("TitleLabel", true, false) as Label
-	_progress_bar = find_child("ProgressBar", true, false) as ProgressBar
+	assert(_panel != null, "_panel not assigned")
+	assert(_title_label != null, "_title_label not assigned")
+	assert(_progress_bar != null, "_progress_bar not assigned")
 	ShellThemeUtil.apply_progress_bar(_progress_bar)
 	_refresh()
 

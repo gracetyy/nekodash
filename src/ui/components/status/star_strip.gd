@@ -33,15 +33,19 @@ var row_spacing_px: float = 6.0
 
 var _is_component_ready: bool = false
 
-@onready var _star_nodes: Array[TextureRect] = [
-	$Star1,
-	$Star2,
-	$Star3,
-]
-@onready var _sentinel_label: Label = $StarSentinel
+@export var _star1: TextureRect
+@export var _star2: TextureRect
+@export var _star3: TextureRect
+@export var _sentinel_label: Label
+var _star_nodes: Array[TextureRect] = []
 
 
 func _ready() -> void:
+	assert(_star1 != null, "_star1 not assigned")
+	assert(_star2 != null, "_star2 not assigned")
+	assert(_star3 != null, "_star3 not assigned")
+	assert(_sentinel_label != null, "_sentinel_label not assigned")
+	_star_nodes = [_star1, _star2, _star3]
 	_is_component_ready = true
 	_apply_component_state()
 

@@ -1,18 +1,17 @@
 ## OpeningScreen — first-run shell entry that hands off to Main Menu.
 extends Control
 
-var _continue_btn: BaseButton
-var _prompt_label: Label
+@export var _continue_btn: BaseButton
+@export var _prompt_label: Label
 
 
 func _ready() -> void:
-	_continue_btn = find_child("ContinueBtn", true, false) as BaseButton
-	_prompt_label = find_child("Prompt", true, false) as Label
+	assert(_continue_btn != null, "_continue_btn not assigned")
+	assert(_prompt_label != null, "_prompt_label not assigned")
 	_refresh_prompt()
-	if _continue_btn != null and not _continue_btn.pressed.is_connected(_on_continue_btn_pressed):
+	if not _continue_btn.pressed.is_connected(_on_continue_btn_pressed):
 		_continue_btn.pressed.connect(_on_continue_btn_pressed)
-	if _continue_btn != null:
-		_continue_btn.grab_focus()
+	_continue_btn.grab_focus()
 
 
 func _unhandled_input(event: InputEvent) -> void:

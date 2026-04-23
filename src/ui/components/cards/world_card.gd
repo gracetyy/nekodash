@@ -15,15 +15,17 @@ const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 @export_range(1, 12, 1, "or_greater")
 var grid_columns: int = 2
 
+@export var _level_grid: GridContainer
+
 var _is_component_ready: bool = false
 
 @onready var _title_label: Label = $Margin/VBox/Header/TitleBox/TitleLabel
 @onready var _subtitle_label: Label = $Margin/VBox/Header/TitleBox/SubtitleLabel
 @onready var _progress_pill: Control = $Margin/VBox/Header/ProgressPill
-@onready var _level_grid: GridContainer = $Margin/VBox/LevelGrid
 
 
 func _ready() -> void:
+	assert(_level_grid != null, "_level_grid not assigned")
 	_is_component_ready = true
 	_apply_component_state()
 
@@ -69,8 +71,6 @@ func add_level_card(card: Control) -> void:
 
 
 func get_level_grid() -> GridContainer:
-	if _level_grid == null:
-		_level_grid = get_node_or_null("Margin/VBox/LevelGrid") as GridContainer
 	return _level_grid
 
 
