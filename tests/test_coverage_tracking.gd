@@ -195,7 +195,7 @@ func test_coverage_tracking_slide_covers_new_tiles() -> void:
 
 	# Simulate slide right: (1,1) → (3,1) covering [2,1], [3,1]
 	var tiles: Array[Vector2i] = [Vector2i(2, 1), Vector2i(3, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
 
 	assert_eq(_ct.get_covered_count(), 3) # 1 spawn + 2 slide
 	assert_eq(_tile_covered_log.size(), 2)
@@ -209,9 +209,9 @@ func test_coverage_tracking_slide_emits_one_coverage_updated() -> void:
 	_coverage_updated_log.clear()
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1), Vector2i(3, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
 
-	# coverage_updated should fire once per slide_completed, not per tile
+	# coverage_updated should fire once per dispatched move, not per tile
 	assert_eq(_coverage_updated_log.size(), 1)
 	assert_eq(_coverage_updated_log[0]["covered"], 3)
 	assert_eq(_coverage_updated_log[0]["total"], 9)
@@ -224,7 +224,7 @@ func test_coverage_tracking_coverage_percent_correct() -> void:
 	assert_almost_eq(_ct.get_coverage_percent(), 100.0 / 9.0, 0.01)
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1), Vector2i(3, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
 	# 3/9 covered
 	assert_almost_eq(_ct.get_coverage_percent(), 300.0 / 9.0, 0.01)
 
@@ -240,12 +240,12 @@ func test_coverage_tracking_revisit_does_not_double_count() -> void:
 
 	# Slide covers (2,1), then a second slide also covers (2,1) again
 	var tiles_1: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles_1)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles_1)
 	assert_eq(_ct.get_covered_count(), 2)
 
 	_tile_covered_log.clear()
 	var tiles_2: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(2, 1), Vector2i(2, 1), Vector2i(-1, 0), tiles_2)
+	_ct.apply_tiles_covered(Vector2i(2, 1), Vector2i(2, 1), Vector2i(-1, 0), tiles_2)
 	assert_eq(_ct.get_covered_count(), 2) # No increase
 	assert_eq(_tile_covered_log.size(), 0) # No tile_covered emitted
 
@@ -257,13 +257,13 @@ func test_coverage_tracking_mixed_new_and_revisited_tiles() -> void:
 
 	# Slide covers (2,1) — new
 	var tiles_1: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles_1)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles_1)
 	assert_eq(_ct.get_covered_count(), 2)
 
 	_tile_covered_log.clear()
 	# Slide covers (1,1) old, (2,1) old, (3,1) new
 	var tiles_2: Array[Vector2i] = [Vector2i(1, 1), Vector2i(2, 1), Vector2i(3, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles_2)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles_2)
 	assert_eq(_ct.get_covered_count(), 3) # Only 1 new tile
 	assert_eq(_tile_covered_log.size(), 1) # Only (3,1)
 	assert_eq(_tile_covered_log[0], Vector2i(3, 1))
@@ -283,7 +283,7 @@ func test_coverage_tracking_level_completed_at_100_percent() -> void:
 	assert_eq(_level_completed_count, 0) # Not complete yet
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_covered_count(), 2)
 	assert_eq(_level_completed_count, 1)
 	assert_eq(_ct.get_state(), 2) # State.COMPLETE
@@ -295,7 +295,7 @@ func test_coverage_tracking_level_completed_emits_exactly_once() -> void:
 
 	_ct.on_spawn_position_set(Vector2i(1, 1))
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_level_completed_count, 1)
 
 
@@ -309,12 +309,12 @@ func test_coverage_tracking_no_reemit_after_complete() -> void:
 	_ct.on_spawn_position_set(Vector2i(1, 1))
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_level_completed_count, 1)
 
 	# Send another slide — should be ignored (COMPLETE state)
 	var tiles_2: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(2, 1), Vector2i(2, 1), Vector2i(-1, 0), tiles_2)
+	_ct.apply_tiles_covered(Vector2i(2, 1), Vector2i(2, 1), Vector2i(-1, 0), tiles_2)
 	assert_eq(_level_completed_count, 1) # Still 1
 
 
@@ -357,7 +357,7 @@ func test_coverage_tracking_restore_snapshot_resets_to_saved_state() -> void:
 
 	# Advance coverage further
 	var tiles: Array[Vector2i] = [Vector2i(2, 1), Vector2i(3, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_covered_count(), 3)
 
 	# Restore
@@ -374,7 +374,7 @@ func test_coverage_tracking_restore_emits_tile_uncovered() -> void:
 	var snapshot: Dictionary = _ct.get_coverage_snapshot()
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 
 	_tile_uncovered_log.clear()
 	_ct.restore_coverage_snapshot(snapshot)
@@ -389,7 +389,7 @@ func test_coverage_tracking_restore_emits_coverage_updated() -> void:
 	var snapshot: Dictionary = _ct.get_coverage_snapshot()
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 
 	_coverage_updated_log.clear()
 	_ct.restore_coverage_snapshot(snapshot)
@@ -407,7 +407,7 @@ func test_coverage_tracking_restore_returns_state_to_tracking() -> void:
 	var snapshot: Dictionary = _ct.get_coverage_snapshot()
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_state(), 2) # COMPLETE
 
 	_ct.restore_coverage_snapshot(snapshot)
@@ -422,7 +422,7 @@ func test_coverage_tracking_reset_clears_all_coverage() -> void:
 	_ct.initialize_level()
 	_ct.on_spawn_position_set(Vector2i(1, 1))
 	var tiles: Array[Vector2i] = [Vector2i(2, 1), Vector2i(3, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_covered_count(), 3)
 
 	_ct.reset_coverage()
@@ -446,7 +446,7 @@ func test_coverage_tracking_reset_emits_tile_uncovered_for_covered_tiles() -> vo
 	_ct.initialize_level()
 	_ct.on_spawn_position_set(Vector2i(1, 1))
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_covered_count(), 2)
 
 	var uncovered: Array[Vector2i] = []
@@ -482,7 +482,7 @@ func test_coverage_tracking_state_tracking_to_complete() -> void:
 	_ct.on_spawn_position_set(Vector2i(1, 1))
 
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_state(), 2) # COMPLETE
 
 
@@ -491,7 +491,7 @@ func test_coverage_tracking_state_complete_to_tracking_via_reset() -> void:
 	_ct.initialize_level()
 	_ct.on_spawn_position_set(Vector2i(1, 1))
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_state(), 2) # COMPLETE
 
 	_ct.reset_coverage()
@@ -522,7 +522,7 @@ func test_coverage_tracking_spawn_before_initialize_is_warning() -> void:
 
 func test_coverage_tracking_slide_before_initialize_is_warning() -> void:
 	var tiles: Array[Vector2i] = [Vector2i(1, 1)]
-	_ct.on_slide_completed(Vector2i(0, 0), Vector2i(1, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(0, 0), Vector2i(1, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_covered_count(), 0)
 	assert_eq(_tile_covered_log.size(), 0)
 
@@ -532,7 +532,7 @@ func test_coverage_tracking_slide_in_complete_state_ignored() -> void:
 	_ct.initialize_level()
 	_ct.on_spawn_position_set(Vector2i(1, 1))
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ct.on_slide_completed(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
 	assert_eq(_ct.get_state(), 2) # COMPLETE
 
 	_tile_covered_log.clear()
@@ -540,34 +540,43 @@ func test_coverage_tracking_slide_in_complete_state_ignored() -> void:
 
 	# This should be silently ignored
 	var tiles_2: Array[Vector2i] = [Vector2i(1, 1)]
-	_ct.on_slide_completed(Vector2i(2, 1), Vector2i(1, 1), Vector2i(-1, 0), tiles_2)
+	_ct.apply_tiles_covered(Vector2i(2, 1), Vector2i(1, 1), Vector2i(-1, 0), tiles_2)
 	assert_eq(_tile_covered_log.size(), 0)
 
 
 # —————————————————————————————————————————————
-# Tests — bind/unbind integration (new: double-bind guard)
+# Tests — explicit move-dispatch API integration
 # —————————————————————————————————————————————
 
-func test_coverage_tracking_double_bind_does_not_double_count() -> void:
-	# Arrange
+func test_coverage_tracking_apply_tiles_covered_marks_tiles() -> void:
 	_ct.initialize_level()
-
-	var sm: Node2D = load("res://src/gameplay/sliding_movement.gd").new()
-	add_child_autofree(sm)
-	_ct.bind_sliding_movement(sm)
-	_ct.bind_sliding_movement(sm) # Second bind — should be idempotent
+	_ct.on_spawn_position_set(Vector2i(1, 1))
+	_tile_covered_log.clear()
+	_coverage_updated_log.clear()
 
 	# Act
-	sm.spawn_position_set.emit(Vector2i(1, 1))
-	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	sm.slide_completed.emit(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	var tiles: Array[Vector2i] = [Vector2i(2, 1), Vector2i(3, 1)]
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(3, 1), Vector2i(1, 0), tiles)
 
-	# Assert — should only count once, not twice
-	assert_eq(_ct.get_covered_count(), 2)
+	# Assert
+	assert_eq(_ct.get_covered_count(), 3)
 	assert_eq(_tile_covered_log.size(), 2)
-	assert_eq(_coverage_updated_log.size(), 2) # One per event, not doubled
+	assert_eq(_coverage_updated_log.size(), 1)
 
-	_ct.unbind_sliding_movement(sm)
+
+func test_coverage_tracking_apply_tiles_covered_is_idempotent_for_revisited_tiles() -> void:
+	_ct.initialize_level()
+	_ct.on_spawn_position_set(Vector2i(1, 1))
+	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+
+	_tile_covered_log.clear()
+	_coverage_updated_log.clear()
+	_ct.apply_tiles_covered(Vector2i(2, 1), Vector2i(2, 1), Vector2i(-1, 0), tiles)
+
+	assert_eq(_ct.get_covered_count(), 2)
+	assert_eq(_tile_covered_log.size(), 0)
+	assert_eq(_coverage_updated_log.size(), 1)
 
 
 func test_coverage_tracking_double_spawn_idempotent() -> void:
@@ -594,41 +603,18 @@ func test_coverage_tracking_is_tile_covered_nonexistent_returns_false() -> void:
 	# Out-of-bounds tile should return false, not crash
 	assert_false(_ct.is_tile_covered(Vector2i(99, 99)))
 
-
-# —————————————————————————————————————————————
-# Tests — bind_sliding_movement integration
-# —————————————————————————————————————————————
-
-func test_coverage_tracking_bind_connects_signals() -> void:
-	# Create a SlidingMovement node and bind
-	var sm: Node2D = load("res://src/gameplay/sliding_movement.gd").new()
-	add_child_autofree(sm)
-	InputSystem.set_accepting_input(true)
-
+func test_coverage_tracking_apply_tiles_covered_in_complete_state_ignored() -> void:
+	GridSystem.load_grid(_make_2_tile_level())
 	_ct.initialize_level()
-	_ct.bind_sliding_movement(sm)
+	_ct.on_spawn_position_set(Vector2i(1, 1))
+	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
+	_ct.apply_tiles_covered(Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles)
+	assert_eq(_ct.get_state(), 2)
 
-	# Initialize level on SlidingMovement — should trigger spawn_position_set
-	sm.initialize_level(Vector2i(1, 1))
-	assert_eq(_ct.get_covered_count(), 1)
-	assert_true(_ct.is_tile_covered(Vector2i(1, 1)))
+	_tile_covered_log.clear()
+	_coverage_updated_log.clear()
+	var tiles_back: Array[Vector2i] = [Vector2i(1, 1)]
+	_ct.apply_tiles_covered(Vector2i(2, 1), Vector2i(1, 1), Vector2i(-1, 0), tiles_back)
 
-	# Cleanup
-	_ct.unbind_sliding_movement(sm)
-	InputSystem.set_accepting_input(true)
-
-
-func test_coverage_tracking_unbind_disconnects_signals() -> void:
-	var sm: Node2D = load("res://src/gameplay/sliding_movement.gd").new()
-	add_child_autofree(sm)
-	InputSystem.set_accepting_input(true)
-
-	_ct.initialize_level()
-	_ct.bind_sliding_movement(sm)
-	_ct.unbind_sliding_movement(sm)
-
-	# After unbinding, initialize_level on SM should NOT affect coverage
-	sm.initialize_level(Vector2i(2, 2))
-	assert_eq(_ct.get_covered_count(), 0)
-
-	InputSystem.set_accepting_input(true)
+	assert_eq(_tile_covered_log.size(), 0)
+	assert_eq(_coverage_updated_log.size(), 0)

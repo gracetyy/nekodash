@@ -1,6 +1,6 @@
 ## Unit tests for UndoRestart gameplay node.
 ## Task: S2-01
-## Covers: initialize, snapshot on slide_completed, undo (position + coverage +
+## Covers: initialize, snapshot recording via process_move dispatch, undo (position + coverage +
 ##         moves in spec order), restart, can_undo, level_completed freeze,
 ##         edge cases per GDD.
 ##
@@ -153,7 +153,7 @@ func _init_undo_restart(spawn: Vector2i = Vector2i(1, 1)) -> void:
 	_ur.initialize(spawn, _sm, _ct, _mc)
 
 
-## Simulate a slide_completed and update mock state.
+## Simulate coordinator-dispatched move processing and update mock state.
 func _simulate_slide(
 	from: Vector2i,
 	to: Vector2i,
@@ -166,7 +166,7 @@ func _simulate_slide(
 	_mc._current = move_count
 
 	var tiles: Array[Vector2i] = [to]
-	_ur.on_slide_completed(from, to, direction, tiles)
+	_ur.record_snapshot(from, to, direction, tiles)
 
 
 # —————————————————————————————————————————————
@@ -203,7 +203,7 @@ func test_undo_restart_reinitialize_clears_history() -> void:
 
 
 # —————————————————————————————————————————————
-# Tests — Snapshot on slide_completed
+# Tests — Snapshot recording
 # —————————————————————————————————————————————
 
 func test_undo_restart_snapshot_records_pre_mutation_state() -> void:
@@ -249,7 +249,7 @@ func test_undo_restart_no_snapshot_in_frozen_state() -> void:
 func test_undo_restart_no_snapshot_in_uninitialized_state() -> void:
 	# Don't call initialize
 	var tiles: Array[Vector2i] = [Vector2i(2, 1)]
-	_ur.on_slide_completed(
+	_ur.record_snapshot(
 		Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 0), tiles,
 	)
 	assert_eq(_ur.undo_count(), 0)

@@ -1,7 +1,7 @@
 ## Integration tests for LevelCoordinator.
 ## Implements: design/gdd/level-coordinator.md
 ##
-## Covers: initialization order, signal connection order (off-by-one fix),
+## Covers: initialization order, deterministic move dispatch order (off-by-one fix),
 ## state transitions, restart, blocked-slide re-emission, freeze on complete.
 ##
 ## Acceptance criteria: LC-1 through LC-8 from design/gdd/level-coordinator.md
@@ -224,7 +224,7 @@ func test_level_coordinator_start_position_covered_on_init() -> void:
 
 
 # —————————————————————————————————————————————
-# Tests — LC-3 / LC-4: Signal connection order (off-by-one fix)
+# Tests — LC-3 / LC-4: Deterministic process_move order (off-by-one fix)
 # —————————————————————————————————————————————
 
 func test_level_coordinator_move_count_correct_at_completion() -> void:
