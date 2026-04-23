@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=3 uid="uid://dymqonpyn87yd"]
 
 [ext_resource type="Script" path="res://src/ui/options_menu.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cy0x18adte55g" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://b74hwq8lajpn3" path="res://assets/art/cats/cat_default_peek.png" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="5"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/settings/SliderSettingRow.tscn" id="6"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/settings/ToggleSettingRow.tscn" id="7"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="8"]
+[ext_resource type="PackedScene" uid="uid://dm7dgglak8lo2" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://s7olix7hr7wf" path="res://scenes/ui/components/settings/SliderSettingRow.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://ddd6r0f0kpb2y" path="res://scenes/ui/components/settings/ToggleSettingRow.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://b5h5g7che7rep" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="8"]
 
 [node name="OptionsOverlay" type="CanvasLayer"]
 layer = 40

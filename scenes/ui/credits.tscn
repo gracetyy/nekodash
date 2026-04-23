@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3 uid="uid://dqyjgmdsnqf5s"]
 
 [ext_resource type="Script" path="res://src/ui/credits_screen.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/PillButton.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bt44v7rdsv5ig" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="4"]
 [ext_resource type="Texture2D" uid="uid://dsm788wpwambk" path="res://assets/art/cats/cat_default_idle.png" id="5"]
 
 [node name="Credits" type="Control"]
@@ -16,6 +16,7 @@ grow_vertical = 2
 script = ExtResource("1")
 
 [node name="Backdrop" parent="." instance=ExtResource("2")]
+layout_mode = 1
 scrim_color = Color(1, 0.988235, 0.941176, 0.78)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]

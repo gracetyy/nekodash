@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bd8e85krqmy0u"]
 
 [ext_resource type="Script" path="res://src/ui/components/cards/world_card.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/status/ProgressPill.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://bw2o5aftvi511" path="res://scenes/ui/components/status/ProgressPill.tscn" id="2"]
 
 [node name="WorldCard" type="PanelContainer"]
 custom_minimum_size = Vector2(0, 216)

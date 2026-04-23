@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dor1daf7bdtqw"]
 
 [ext_resource type="Script" path="res://src/ui/components/cards/level_card.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/status/StarStrip.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cafg6hvdgbxil" path="res://scenes/ui/components/status/StarStrip.tscn" id="2"]
 
 [node name="LevelCard" type="PanelContainer"]
 custom_minimum_size = Vector2(120, 132)

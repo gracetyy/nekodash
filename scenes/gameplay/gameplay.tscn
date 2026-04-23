@@ -13,10 +13,10 @@
 [ext_resource type="Script" path="res://assets/art/cats/cat_sprite.gd" id="11"]
 [ext_resource type="Script" path="res://src/ui/coverage_visualizer.gd" id="12"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="13"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/status/HUDMoveCounter.tscn" id="14"]
+[ext_resource type="PackedScene" uid="uid://chmjbafd3aams" path="res://scenes/ui/components/status/HUDMoveCounter.tscn" id="14"]
 [ext_resource type="Texture2D" uid="uid://wslh4ervsbug" path="res://assets/art/ui/hud/star_pill.png" id="15"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/status/StarStrip.tscn" id="16"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="17"]
+[ext_resource type="PackedScene" uid="uid://cafg6hvdgbxil" path="res://scenes/ui/components/status/StarStrip.tscn" id="16"]
+[ext_resource type="PackedScene" uid="uid://dm7dgglak8lo2" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="17"]
 
 [node name="LevelCoordinator" type="Node2D"]
 script = ExtResource("1")
@@ -106,6 +106,7 @@ stretch_mode = 5
 
 [node name="StarStrip" parent="HUD/MarginContainer/TopRow/CenterPill" instance=ExtResource("16")]
 layout_mode = 1
+anchors_preset = -1
 anchor_left = 0.12
 anchor_top = 0.18
 anchor_right = 0.88

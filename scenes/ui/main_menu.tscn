@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://b5k3qcaoeg0kq" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="3_8kw73"]
 [ext_resource type="Script" path="res://src/ui/cat_part_rig.gd" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
 [ext_resource type="Texture2D" uid="uid://fc3huxga0qgi" path="res://assets/art/ui/icons/pill_interiors/icon_pill_play.png" id="9_pakoq"]
 [ext_resource type="Texture2D" uid="uid://bcotrsgul8gy6" path="res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png" id="13_pgqpn"]
 [ext_resource type="Texture2D" uid="uid://bcune8t4wyux2" path="res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png" id="17_40dxg"]
