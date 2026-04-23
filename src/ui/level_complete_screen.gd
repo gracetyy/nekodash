@@ -62,10 +62,7 @@ var _cat_illustration: TextureRect
 
 ## Star display nodes — array of 3 Controls (e.g. TextureRect or Label).
 ## Filled stars are visible; empty stars are dimmed or hidden.
-var _star_nodes: Array[Control] = []
-
-## Optional sentinel display for stars == -1.
-var _star_sentinel_label: Control # Label showing "?" when unsolved
+var _star_strip: Control
 
 
 # —————————————————————————————————————————————
@@ -79,7 +76,6 @@ var _prev_best_moves: int = 0
 var _was_previously_completed: bool = false
 var _next_level_data: LevelData
 var _use_internal_navigation: bool = true
-var _star_pose_refresh_pending: bool = false
 
 ## Whether params have been received.
 var _params_received: bool = false
@@ -98,8 +94,6 @@ var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
 func _ready() -> void:
 	_auto_discover_ui_nodes()
 	_apply_visual_style()
-	_apply_default_star_pose()
-	_schedule_star_pose_refresh()
 	# Self-connect navigation only when running in the real scene (auto-discover
 	# found buttons). Tests use set_ui_nodes() after _ready(), so _next_btn is
 	# still null here and these connections are skipped.
@@ -107,28 +101,6 @@ func _ready() -> void:
 		_connect_navigation()
 	if _params_received:
 		populate_results()
-
-
-func _apply_default_star_pose() -> void:
-	for i: int in range(_star_nodes.size()):
-		var node: Control = _star_nodes[i]
-		if node == null:
-			continue
-		node.pivot_offset = node.size * 0.5
-		node.rotation_degrees = _star_rotation_for_index(i)
-
-
-func _schedule_star_pose_refresh() -> void:
-	if _star_pose_refresh_pending:
-		return
-	_star_pose_refresh_pending = true
-	call_deferred("_refresh_star_pose_next_frame")
-
-
-func _refresh_star_pose_next_frame() -> void:
-	await get_tree().process_frame
-	_star_pose_refresh_pending = false
-	_apply_default_star_pose()
 
 
 # —————————————————————————————————————————————
@@ -241,8 +213,9 @@ func set_ui_nodes(
 	_next_btn = next_btn
 	_retry_btn = retry_btn
 	_world_map_btn = world_map_btn
-	_star_nodes = star_nodes
-	_star_sentinel_label = star_sentinel_label
+	_star_strip = star_sentinel_label as Control
+	if _star_strip == null and not star_nodes.is_empty() and star_nodes[0] is Control:
+		_star_strip = star_nodes[0] as Control
 	_apply_visual_style()
 
 
@@ -275,38 +248,14 @@ func on_world_map_btn_pressed() -> void:
 
 ## Shows 0–3 filled stars or sentinel for unsolved levels.
 func _show_stars(stars: int) -> void:
-	# Handle sentinel (-1) for unsolved levels
-	if stars == -1:
-		for node: Control in _star_nodes:
-			node.visible = false
-		if _star_sentinel_label != null:
-			_star_sentinel_label.visible = true
-			_star_sentinel_label.text = "?"
+	if _star_strip == null:
 		return
-
-	# Hide sentinel if present
-	if _star_sentinel_label != null:
-		_star_sentinel_label.visible = false
-
-	# Normal star display: show filled for earned, dim for unearned
-	for i: int in range(_star_nodes.size()):
-		var node: Control = _star_nodes[i]
-		node.visible = true
-		node.pivot_offset = node.size * 0.5
-		node.rotation_degrees = _star_rotation_for_index(i)
-		if node is TextureRect:
-			var star_rect: TextureRect = node as TextureRect
-			star_rect.texture = ShellThemeUtil.STAR_LARGE_FILLED_TEXTURE if i < stars else ShellThemeUtil.STAR_LARGE_EMPTY_TEXTURE
-			star_rect.modulate = Color.WHITE
-		elif i < stars:
-			node.modulate = STAR_EARNED_COLOR
-		else:
-			node.modulate = STAR_UNEARNED_COLOR
+	if _star_strip.has_method("configure"):
+		_star_strip.call("configure", stars, 2, 1, 0, 6.0)
 
 	if stars > 0:
 		SfxManager.play(_sfx_star_earned, SfxManager.SfxBus.SFX)
 	_animate_star_reveal(stars)
-	_schedule_star_pose_refresh()
 
 
 ## Updates the move count label. Handles minimum_moves == 0.
@@ -402,7 +351,7 @@ func _auto_discover_ui_nodes() -> void:
 	if _panel == null:
 		_panel = get_node_or_null("MarginContainer/ResultsCard") as PanelContainer
 	if _level_name_label == null:
-		_level_name_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/Ribbon/LevelNameLabel")
+		_level_name_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/RibbonTitleLabel")
 		if _level_name_label == null:
 			_level_name_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/LevelNameLabel")
 	if _moves_label == null:
@@ -414,7 +363,7 @@ func _auto_discover_ui_nodes() -> void:
 	if _cat_illustration == null:
 		_cat_illustration = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration") as TextureRect
 	if _new_best_badge == null:
-		_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/Ribbon/NewBestBadge")
+		_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/NewBestBadge")
 		if _new_best_badge == null:
 			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/NewBestBadge")
 		if _new_best_badge == null:
@@ -422,15 +371,8 @@ func _auto_discover_ui_nodes() -> void:
 		if _new_best_badge == null:
 			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/NewBestBadge")
 
-	if _star_nodes.is_empty():
-		var s1: Control = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star1")
-		var s2: Control = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star2")
-		var s3: Control = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star3")
-		if s1 != null and s2 != null and s3 != null:
-			_star_nodes = [s1, s2, s3]
-
-	if _star_sentinel_label == null:
-		_star_sentinel_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/StarSentinel")
+	if _star_strip == null:
+		_star_strip = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow") as Control
 
 	if _next_btn == null:
 		_next_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
@@ -452,8 +394,6 @@ func _auto_discover_ui_nodes() -> void:
 
 
 func _apply_visual_style() -> void:
-	if _panel != null:
-		ShellThemeUtil.apply_panel(_panel)
 	if _level_name_label != null and _level_name_label is Label:
 		var title_label: Label = _level_name_label as Label
 		title_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
@@ -465,24 +405,18 @@ func _apply_visual_style() -> void:
 		(_min_label as Label).visible = false
 	if _prompt_label != null and _prompt_label is Label:
 		ShellThemeUtil.apply_body(_prompt_label as Label, Color(0.651, 0.537, 0.424, 1.0), 28)
-	if _next_btn != null and _next_btn is BaseButton:
-		ShellThemeUtil.apply_pill_button(_next_btn as BaseButton, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED)
-		if _next_btn is Button:
-			(_next_btn as Button).icon = ICON_ARROW_RIGHT
-			(_next_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-			(_next_btn as Button).expand_icon = false
-	if _retry_btn != null and _retry_btn is BaseButton:
-		ShellThemeUtil.apply_pill_button(_retry_btn as BaseButton, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
-		if _retry_btn is Button:
-			(_retry_btn as Button).icon = ICON_RETRY
-			(_retry_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-			(_retry_btn as Button).expand_icon = false
-	if _world_map_btn != null and _world_map_btn is BaseButton:
-		ShellThemeUtil.apply_pill_button(_world_map_btn as BaseButton, ShellThemeUtil.LILAC, ShellThemeUtil.LILAC_PRESSED)
-		if _world_map_btn is Button:
-			(_world_map_btn as Button).icon = ICON_HOME
-			(_world_map_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-			(_world_map_btn as Button).expand_icon = false
+	if _next_btn != null and _next_btn is Button:
+		(_next_btn as Button).icon = ICON_ARROW_RIGHT
+		(_next_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		(_next_btn as Button).expand_icon = false
+	if _retry_btn != null and _retry_btn is Button:
+		(_retry_btn as Button).icon = ICON_RETRY
+		(_retry_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		(_retry_btn as Button).expand_icon = false
+	if _world_map_btn != null and _world_map_btn is Button:
+		(_world_map_btn as Button).icon = ICON_HOME
+		(_world_map_btn as Button).icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		(_world_map_btn as Button).expand_icon = false
 	if _new_best_badge != null:
 		_new_best_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if _new_best_badge is Control:
@@ -490,33 +424,17 @@ func _apply_visual_style() -> void:
 
 
 func _animate_star_reveal(stars: int) -> void:
-	if _is_reduce_motion_enabled():
-		for i: int in range(_star_nodes.size()):
-			var node: Control = _star_nodes[i]
-			node.pivot_offset = node.size * 0.5
-			node.scale = Vector2.ONE
-			node.rotation_degrees = _star_rotation_for_index(i)
+	if _star_strip == null:
 		return
-	for i: int in range(_star_nodes.size()):
-		var node: Control = _star_nodes[i]
-		if node == null or not node.visible:
-			continue
-		node.pivot_offset = node.size * 0.5
-		node.rotation_degrees = _star_rotation_for_index(i)
-		node.scale = Vector2(0.94, 0.94) if i < stars else Vector2.ONE
-		var tween: Tween = create_tween()
-		tween.tween_property(node, "scale", Vector2.ONE, 0.12) \
-			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-
-
-func _star_rotation_for_index(index: int) -> float:
-	if index < 0:
-		return 0.0
-	if index == 0:
-		return -26.0
-	if index == 2:
-		return 26.0
-	return 0.0
+	if _is_reduce_motion_enabled():
+		_star_strip.pivot_offset = _star_strip.size * 0.5
+		_star_strip.scale = Vector2.ONE
+		return
+	_star_strip.pivot_offset = _star_strip.size * 0.5
+	_star_strip.scale = Vector2(0.94, 0.94) if stars > 0 else Vector2.ONE
+	var tween: Tween = create_tween()
+	tween.tween_property(_star_strip, "scale", Vector2.ONE, 0.12) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _is_reduce_motion_enabled() -> bool:

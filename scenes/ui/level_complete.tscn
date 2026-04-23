@@ -1,11 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://clvlcmplt5cen"]
+[gd_scene load_steps=8 format=3 uid="uid://clvlcmplt5cen"]
 
 [ext_resource type="Script" path="res://src/ui/level_complete_screen.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://cgx2dgwjkg38f" path="res://assets/art/ui/stars/star_large_filled.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://bkruayk1cqdle" path="res://assets/art/ui/stars/star_large_empty.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://djhvglc163eql" path="res://assets/art/ui/badges/badge_new_best.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://b4jwiancqsh8n" path="res://assets/art/cats/cat_default_curious.png" id="5"]
-[ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/status/StarStrip.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/badges/BadgeNewBest.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://b4jwiancqsh8n" path="res://assets/art/cats/cat_default_curious.png" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/PillButton.tscn" id="7"]
 
 [node name="LevelCompleteScreen" type="Control"]
 layout_mode = 3
@@ -28,7 +29,7 @@ theme_override_constants/margin_top = 36
 theme_override_constants/margin_right = 68
 theme_override_constants/margin_bottom = 36
 
-[node name="ResultsCard" type="PanelContainer" parent="MarginContainer"]
+[node name="ResultsCard" parent="MarginContainer" instance=ExtResource("6")]
 layout_mode = 2
 size_flags_vertical = 4
 
@@ -43,64 +44,12 @@ theme_override_constants/margin_bottom = 18
 layout_mode = 2
 theme_override_constants/separation = -8
 
-[node name="StarRow" type="Control" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+[node name="StarRow" parent="MarginContainer/ResultsCard/CardMargin/VBox" instance=ExtResource("2")]
 custom_minimum_size = Vector2(0, 122)
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_filter = 2
-
-[node name="Star1" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
-layout_mode = 0
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -152.0
-offset_top = 8.0
-offset_right = -48.0
-offset_bottom = 112.0
-texture = ExtResource("2")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Star2" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
-layout_mode = 0
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -58.0
-offset_top = -8.0
-offset_right = 58.0
-offset_bottom = 108.0
-texture = ExtResource("2")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Star3" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = 48.0
-offset_top = 8.0
-offset_right = 152.0
-offset_bottom = 112.0
-grow_horizontal = 2
-texture = ExtResource("3")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="StarSentinel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/StarRow"]
-visible = false
-layout_mode = 0
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -24.0
-offset_top = -24.0
-offset_right = 24.0
-offset_bottom = 24.0
-text = "?"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_tier = 2
+layout_variant = 1
 
 [node name="RibbonSlot" type="Control" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
 custom_minimum_size = Vector2(0, 94)
@@ -108,7 +57,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Ribbon" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot"]
+[node name="Ribbon" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot" instance=ExtResource("5")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -119,37 +68,19 @@ offset_right = 80.0
 offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("6")
-expand_mode = 1
+title_text = "LEVEL COMPLETE!"
 
-[node name="LevelNameLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon"]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 0.984, 0.957, 1)
-theme_override_font_sizes/font_size = 38
-text = "LEVEL COMPLETE!"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="NewBestBadge" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon"]
+[node name="NewBestBadge" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon" instance=ExtResource("3")]
 layout_mode = 1
 offset_left = 74.0
 offset_top = 86.0
 offset_right = 200.0
 offset_bottom = 125.0
-mouse_filter = 2
-texture = ExtResource("4")
-expand_mode = 1
-stretch_mode = 5
 
 [node name="CatIllustration" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
-texture = ExtResource("5")
+texture = ExtResource("4")
 expand_mode = 1
 stretch_mode = 5
 
@@ -183,17 +114,20 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="NextLevelBtn" type="Button" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow"]
+[node name="NextLevelBtn" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow" instance=ExtResource("7")]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "NEXT"
+variant = 1
 
-[node name="RetryBtn" type="Button" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow"]
+[node name="RetryBtn" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow" instance=ExtResource("7")]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "RETRY"
+variant = 0
 
-[node name="WorldMapBtn" type="Button" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow"]
+[node name="WorldMapBtn" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow" instance=ExtResource("7")]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "WORLD MAP"
+variant = 2

@@ -165,10 +165,6 @@ func _navigate_to_world_map() -> void:
 func _apply_visual_style() -> void:
 	if _hero_card != null:
 		_hero_card.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-	ShellThemeUtil.apply_pill_button(_play_btn, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
-	ShellThemeUtil.apply_pill_button(_skins_btn, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED)
-	ShellThemeUtil.apply_pill_button(_options_btn, ShellThemeUtil.LILAC, ShellThemeUtil.LILAC_PRESSED)
-	ShellThemeUtil.apply_pill_button(_credits_btn, ShellThemeUtil.LILAC, ShellThemeUtil.LILAC_PRESSED)
 	_apply_button_icon(_play_btn, ICON_PLAY)
 	_apply_button_icon(_skins_btn, ICON_CAT)
 	_apply_button_icon(_options_btn, ICON_SETTINGS)

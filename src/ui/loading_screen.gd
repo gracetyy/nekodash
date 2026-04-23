@@ -15,7 +15,6 @@ func _ready() -> void:
 	_panel = find_child("LoadingCard", true, false) as PanelContainer
 	_title_label = find_child("TitleLabel", true, false) as Label
 	_progress_bar = find_child("ProgressBar", true, false) as ProgressBar
-	ShellThemeUtil.apply_panel(_panel, ShellThemeUtil.CREAM)
 	ShellThemeUtil.apply_progress_bar(_progress_bar)
 	_refresh()
 

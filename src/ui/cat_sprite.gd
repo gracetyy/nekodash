@@ -29,13 +29,11 @@ var head_tilt_out_sec: float = 0.12
 # —————————————————————————————————————————————
 
 func _ready() -> void:
-	super._ready()
 	_connect_parent_slide_signals()
 
 
 func _exit_tree() -> void:
 	_disconnect_parent_slide_signals()
-	super._exit_tree()
 
 
 # —————————————————————————————————————————————

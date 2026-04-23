@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://m6qor75qd1pp"]
+[gd_scene load_steps=7 format=3 uid="uid://m6qor75qd1pp"]
 
 [ext_resource type="Script" path="res://src/ui/skin_select.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/BackButton.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/cards/SkinCard.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
 
 [node name="SkinSelect" type="Control"]
 layout_mode = 3
@@ -11,46 +15,67 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Backdrop" parent="." instance=ExtResource("2")]
+layout_mode = 1
+scrim_color = Color(1, 1, 1, 0)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.965, 0.945, 0.847, 1)
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
 
-[node name="VBox" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -120.0
-offset_right = 150.0
-offset_bottom = 120.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 24
-alignment = 1
-
-[node name="TitleLabel" type="Label" parent="VBox"]
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.361, 0.29, 0.42, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_constants/separation = 18
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BackBtn" parent="MarginContainer/VBox/Header" instance=ExtResource("3")]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Skins"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ComingSoonLabel" type="Label" parent="VBox"]
+[node name="RightSpacer" type="Control" parent="MarginContainer/VBox/Header"]
+custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.541, 0.439, 0.376, 1)
-text = "Coming Soon!"
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="BackBtn" type="Button" parent="VBox"]
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBox"]
 layout_mode = 2
-text = "BACK"
+text = "Componentized placeholder skin cards. Runtime cosmetic-data wiring stays deferred."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="SkinGrid" type="GridContainer" parent="MarginContainer/VBox"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+
+[node name="DefaultSkinCard" parent="MarginContainer/VBox/SkinGrid" instance=ExtResource("4")]
+layout_mode = 2
+
+[node name="CozySkinCard" parent="MarginContainer/VBox/SkinGrid" instance=ExtResource("4")]
+layout_mode = 2
+
+[node name="LockedSkinCard" parent="MarginContainer/VBox/SkinGrid" instance=ExtResource("4")]
+layout_mode = 2
+
+[node name="EquipBtn" parent="MarginContainer/VBox" instance=ExtResource("5")]
+layout_mode = 2
+text = "EQUIP (COMING SOON)"
+variant = 1
+disabled = true

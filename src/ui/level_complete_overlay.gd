@@ -3,7 +3,7 @@ class_name LevelCompleteOverlay
 extends CanvasLayer
 
 var _pending_params: Dictionary = {}
-var _content: LevelCompleteScreen
+var _content: Control
 
 
 func receive_scene_params(params: Dictionary) -> void:
@@ -12,7 +12,7 @@ func receive_scene_params(params: Dictionary) -> void:
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	_content = get_node_or_null("Content") as LevelCompleteScreen
+	_content = get_node_or_null("Content") as Control
 	if _content == null:
 		push_error("LevelCompleteOverlay: missing Content LevelCompleteScreen instance.")
 		return

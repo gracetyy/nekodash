@@ -1,8 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://dymqonpyn87yd"]
+[gd_scene load_steps=9 format=3 uid="uid://dymqonpyn87yd"]
 
 [ext_resource type="Script" path="res://src/ui/options_menu.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://b74hwq8lajpn3" path="res://assets/art/cats/cat_default_peek.png" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://b74hwq8lajpn3" path="res://assets/art/cats/cat_default_peek.png" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/settings/SliderSettingRow.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/settings/ToggleSettingRow.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="8"]
 
 [node name="OptionsOverlay" type="CanvasLayer"]
 layer = 40
@@ -16,7 +21,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.117647, 0.0862745, 0.141176, 0.62)
 
-[node name="Panel" type="PanelContainer" parent="Backdrop"]
+[node name="Panel" parent="Backdrop" instance=ExtResource("2")]
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
@@ -43,8 +48,6 @@ theme_override_constants/separation = 12
 [node name="TitleLabel" type="Label" parent="Backdrop/Panel/Margin/VBox"]
 visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
-theme_override_font_sizes/font_size = 32
 text = "OPTIONS"
 horizontal_alignment = 1
 
@@ -54,57 +57,17 @@ theme_override_constants/separation = 8
 
 [node name="AudioLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
-theme_override_font_sizes/font_size = 20
 text = "Audio"
 
-[node name="MusicRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
+[node name="MusicRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("6")]
 layout_mode = 2
-theme_override_constants/separation = 16
+label_text = "Music"
+toggle_text = "Mute"
 
-[node name="MusicName" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
-custom_minimum_size = Vector2(70, 0)
+[node name="SfxRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("6")]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-text = "Music"
-
-[node name="MusicSlider" type="HSlider" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
-custom_minimum_size = Vector2(186, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-value = 100.0
-
-[node name="MusicMuteLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
-layout_mode = 2
-text = "Mute"
-
-[node name="MusicMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/MusicRow"]
-custom_minimum_size = Vector2(40, 0)
-layout_mode = 2
-
-[node name="SfxRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="SfxName" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
-custom_minimum_size = Vector2(70, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-text = "SFX"
-
-[node name="SfxSlider" type="HSlider" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
-custom_minimum_size = Vector2(186, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-value = 100.0
-
-[node name="SfxMuteLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
-layout_mode = 2
-text = "Mute"
-
-[node name="SfxMuteToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/AudioSection/SfxRow"]
-custom_minimum_size = Vector2(40, 0)
-layout_mode = 2
+label_text = "SFX"
+toggle_text = "Mute"
 
 [node name="DisplaySection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
@@ -112,45 +75,19 @@ theme_override_constants/separation = 8
 
 [node name="DisplayLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
-theme_override_font_sizes/font_size = 20
 text = "Display"
 
-[node name="ReduceMotionRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
+[node name="ReduceMotionRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
 layout_mode = 2
+label_text = "Reduce Motion"
 
-[node name="ReduceMotionLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow"]
+[node name="LargeUiRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-text = "Reduce Motion"
+label_text = "Large Text"
 
-[node name="ReduceMotionToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow"]
+[node name="FullscreenRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
 layout_mode = 2
-
-[node name="LargeUiRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
-layout_mode = 2
-
-[node name="LargeUiLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-text = "Large Text"
-
-[node name="LargeUiToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow"]
-layout_mode = 2
-
-[node name="FullscreenRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
-layout_mode = 2
-
-[node name="FullscreenLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-text = "Fullscreen"
-
-[node name="FullscreenToggle" type="CheckButton" parent="Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow"]
-layout_mode = 2
+label_text = "Fullscreen"
 
 [node name="InputSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
@@ -158,14 +95,13 @@ theme_override_constants/separation = 6
 
 [node name="InputLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/InputSection"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
-theme_override_font_sizes/font_size = 20
 text = "Input Hints"
 
-[node name="InputHintOption" type="OptionButton" parent="Backdrop/Panel/Margin/VBox/InputSection"]
+[node name="InputHintRow" parent="Backdrop/Panel/Margin/VBox/InputSection" instance=ExtResource("8")]
 layout_mode = 2
+label_text = "Hint Style"
 
-[node name="Ribbon" type="TextureRect" parent="Backdrop"]
+[node name="Ribbon" parent="Backdrop" instance=ExtResource("3")]
 z_index = 1
 layout_mode = 0
 anchor_left = 0.5
@@ -178,22 +114,7 @@ offset_right = 248.0
 offset_bottom = -258.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("2")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="RibbonTitleLabel" type="Label" parent="Backdrop/Ribbon"]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 0.984, 0.957, 1)
-theme_override_font_sizes/font_size = 40
-text = "OPTIONS"
-horizontal_alignment = 1
-vertical_alignment = 1
+title_text = "OPTIONS"
 
 [node name="CatPeek" type="TextureRect" parent="Backdrop"]
 z_index = 2
@@ -210,11 +131,11 @@ offset_bottom = -316.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("3")
+texture = ExtResource("4")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CloseBtn" type="TextureButton" parent="Backdrop"]
+[node name="CloseBtn" parent="Backdrop" instance=ExtResource("5")]
 z_index = 2
 layout_mode = 0
 anchor_left = 0.5
@@ -227,3 +148,5 @@ offset_right = 43.5
 offset_bottom = 346.5
 grow_horizontal = 2
 grow_vertical = 2
+variant = 1
+button_size = 87.0

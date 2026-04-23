@@ -45,7 +45,7 @@ var _exit_btn: Control # Button
 var _pause_btn: Control # Button
 var _chrome_panel: PanelContainer
 var _moves_prefix_label: Label
-var _star_nodes: Array[TextureRect] = []
+var _star_strip: Control
 
 
 # —————————————————————————————————————————————
@@ -333,7 +333,7 @@ func _refresh_all_displays(
 
 
 func _update_star_strip(current_moves: int) -> void:
-	if _star_nodes.is_empty():
+	if _star_strip == null:
 		return
 
 	var star_3_threshold: int = _star_3_moves
@@ -362,11 +362,8 @@ func _update_star_strip(current_moves: int) -> void:
 		elif current_moves <= star_1_threshold:
 			stars = 1
 
-	for i: int in range(_star_nodes.size()):
-		var star: TextureRect = _star_nodes[i]
-		if star == null:
-			continue
-		star.texture = ShellThemeUtil.STAR_MEDIUM_FILLED_TEXTURE if i < stars else ShellThemeUtil.STAR_MEDIUM_EMPTY_TEXTURE
+	if _star_strip.has_method("configure"):
+		_star_strip.call("configure", stars, 1, 0, 0, 4.0)
 
 
 ## Sets undo button disabled state with null safety.
@@ -412,12 +409,8 @@ func _auto_discover_ui_nodes() -> void:
 	if _coverage_label == null:
 		_coverage_label = get_node_or_null("MarginContainer/TopRow/CenterPill/CoverageLabel")
 
-	if _star_nodes.is_empty():
-		var star_1: TextureRect = get_node_or_null("MarginContainer/TopRow/CenterPill/StarRow/Star1") as TextureRect
-		var star_2: TextureRect = get_node_or_null("MarginContainer/TopRow/CenterPill/StarRow/Star2") as TextureRect
-		var star_3: TextureRect = get_node_or_null("MarginContainer/TopRow/CenterPill/StarRow/Star3") as TextureRect
-		if star_1 != null and star_2 != null and star_3 != null:
-			_star_nodes = [star_1, star_2, star_3]
+	if _star_strip == null:
+		_star_strip = get_node_or_null("MarginContainer/TopRow/CenterPill/StarStrip") as StarStrip
 
 	if _undo_btn == null:
 		_undo_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/UndoBtn")
@@ -455,11 +448,3 @@ func _apply_visual_style() -> void:
 		(_move_label as Label).add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
 	if _coverage_label != null and _coverage_label is Label:
 		(_coverage_label as Label).visible = false
-	if _undo_btn != null and _undo_btn is Button:
-		ShellThemeUtil.apply_pill_button(_undo_btn as BaseButton, ShellThemeUtil.LILAC, ShellThemeUtil.LILAC_PRESSED, ShellThemeUtil.PLUM, 46.0)
-	if _restart_btn != null and _restart_btn is Button:
-		ShellThemeUtil.apply_pill_button(_restart_btn as BaseButton, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED, ShellThemeUtil.PLUM, 46.0)
-	if _exit_btn != null and _exit_btn is Button:
-		ShellThemeUtil.apply_pill_button(_exit_btn as BaseButton, ShellThemeUtil.BLUSH, ShellThemeUtil.LILAC_PRESSED, ShellThemeUtil.PLUM, 46.0)
-	if _pause_btn != null and _pause_btn is Button:
-		ShellThemeUtil.apply_pill_button(_pause_btn as BaseButton, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED, ShellThemeUtil.PLUM, 46.0)

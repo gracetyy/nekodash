@@ -1,19 +1,13 @@
 ## OpeningScreen — first-run shell entry that hands off to Main Menu.
 extends Control
 
-const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
-
 var _continue_btn: BaseButton
 var _prompt_label: Label
-var _hero_card: PanelContainer
 
 
 func _ready() -> void:
 	_continue_btn = find_child("ContinueBtn", true, false) as BaseButton
 	_prompt_label = find_child("Prompt", true, false) as Label
-	_hero_card = find_child("HeroCard", true, false) as PanelContainer
-	ShellThemeUtil.apply_panel(_hero_card, ShellThemeUtil.CREAM)
-	ShellThemeUtil.apply_pill_button(_continue_btn, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
 	_refresh_prompt()
 	if _continue_btn != null and not _continue_btn.pressed.is_connected(_on_continue_btn_pressed):
 		_continue_btn.pressed.connect(_on_continue_btn_pressed)
