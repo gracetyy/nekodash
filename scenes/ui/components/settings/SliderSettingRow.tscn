@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/settings/slider_setting_row.gd" id="1"]
+
+[node name="SliderSettingRow" type="HBoxContainer"]
+script = ExtResource("1")
+theme_override_constants/separation = 12
+
+[node name="SettingLabel" type="Label" parent="."]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+text = "Music"
+
+[node name="Slider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(186, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="ToggleLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Mute"
+
+[node name="Toggle" type="CheckButton" parent="."]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2

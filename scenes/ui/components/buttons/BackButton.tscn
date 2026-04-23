@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/buttons/icon_circle_button.gd" id="1"]
+
+[node name="BackButton" type="TextureButton"]
+script = ExtResource("1")
+custom_minimum_size = Vector2(56, 56)
+variant = 0
+button_size = 56.0
