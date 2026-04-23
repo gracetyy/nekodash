@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://dljw2wugbb7mr"]
+[gd_scene load_steps=7 format=3 uid="uid://dljw2wugbb7mr"]
 
 [ext_resource type="Script" path="res://src/ui/opening_screen.gd" id="1"]
-[ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="3"]
 [ext_resource type="Texture2D" uid="uid://dsm788wpwambk" path="res://assets/art/cats/cat_default_idle.png" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/PillButton.tscn" id="6"]
 
 [node name="Opening" type="Control"]
 layout_mode = 3
@@ -14,23 +16,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="Background" type="Control" parent="."]
+[node name="Backdrop" parent="." instance=ExtResource("2")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("2")
-
-[node name="Scrim" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(1, 0.988235, 0.941176, 0.8)
+scrim_color = Color(1, 0.988235, 0.941176, 0.8)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -44,7 +32,7 @@ theme_override_constants/margin_top = 48
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 36
 
-[node name="HeroCard" type="PanelContainer" parent="MarginContainer"]
+[node name="HeroCard" parent="MarginContainer" instance=ExtResource("5")]
 layout_mode = 2
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/HeroCard"]
@@ -95,6 +83,7 @@ theme_override_font_sizes/font_size = 18
 text = "Press Enter or click CONTINUE to enter the house."
 horizontal_alignment = 1
 
-[node name="ContinueBtn" type="Button" parent="MarginContainer/HeroCard/CardMargin/CardBody"]
+[node name="ContinueBtn" parent="MarginContainer/HeroCard/CardMargin/CardBody" instance=ExtResource("6")]
 layout_mode = 2
 text = "CONTINUE"
+variant = 0

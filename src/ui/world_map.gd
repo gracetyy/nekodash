@@ -5,6 +5,8 @@ class_name WorldMap
 extends Control
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
+const WorldCardScene: PackedScene = preload("res://scenes/ui/components/cards/WorldCard.tscn")
+const LevelCardScene: PackedScene = preload("res://scenes/ui/components/cards/LevelCard.tscn")
 
 const CATALOGUE_PATH: String = "res://data/level_catalogue.tres"
 const WORLD_TITLES: Dictionary = {
@@ -47,21 +49,18 @@ var level_card_hover_duration_sec: float = 0.1
 @export_range(0.0, 40.0, 0.1, "or_greater")
 var lock_jiggle_rotation_degrees: float = 14.0
 
-const LEVEL_CARD_HOVER_TWEEN_META: String = "_world_level_card_hover_tween"
-
 signal level_selected(level_data: LevelData)
 signal back_requested
 
 var _back_btn: BaseButton
 var _header_card: PanelContainer
-var _progress_chip: PanelContainer
+var _progress_chip: Control
 var _world_list: VBoxContainer
 var _scroll_container: ScrollContainer
 var _no_levels_label: Label
 var _title_label: Label
 var _subtitle_label: Label
 var _hint_label: Label
-var _progress_label: Label
 
 var _catalogue: LevelCatalogue
 var _world_index: Dictionary = {} # int -> Array[LevelData]
@@ -206,55 +205,35 @@ func _rebuild_world_cards() -> void:
 
 
 func _make_world_card(world_id: int, levels: Array[LevelData]) -> Control:
-	var card: PanelContainer = PanelContainer.new()
-	card.custom_minimum_size = Vector2(0.0, 216.0)
-	card.add_theme_stylebox_override("panel", ShellThemeUtil.make_world_card_style(world_id == _selected_world_id))
+	var card_instance = WorldCardScene.instantiate()
+	if not card_instance is PanelContainer:
+		push_error("WorldMap: WorldCard scene did not instantiate as WorldCard.")
+		return Control.new()
+	var card: PanelContainer = card_instance as PanelContainer
+	card.set("world_id", world_id)
+	if card.has_method("set_world_meta"):
+		card.call(
+			"set_world_meta",
+			"World %d — %s" % [world_id, _get_world_title(world_id)],
+			"%d unlocked • %d total" % [_count_unlocked_levels(levels), levels.size()]
+		)
+	if card.has_method("set_progress"):
+		card.call("set_progress", _get_world_progress_text(levels))
+	if card.has_method("set_selected"):
+		card.call("set_selected", world_id == _selected_world_id)
+	if card.has_method("set_grid_columns"):
+		card.call("set_grid_columns", _world_grid_columns(levels.size()))
 
-	var margin: MarginContainer = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 12)
-	margin.add_theme_constant_override("margin_top", 12)
-	margin.add_theme_constant_override("margin_right", 12)
-	margin.add_theme_constant_override("margin_bottom", 12)
-	card.add_child(margin)
-
-	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 10)
-	margin.add_child(vbox)
-
-	var header: HBoxContainer = HBoxContainer.new()
-	header.add_theme_constant_override("separation", 8)
-	vbox.add_child(header)
-
-	var title_box: VBoxContainer = VBoxContainer.new()
-	title_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_box.add_theme_constant_override("separation", 2)
-	header.add_child(title_box)
-
-	var title_label: Label = Label.new()
-	title_label.text = "World %d — %s" % [world_id, _get_world_title(world_id)]
-	ShellThemeUtil.apply_title(title_label, 26)
-	title_box.add_child(title_label)
-
-	var subtitle_label: Label = Label.new()
-	subtitle_label.text = "%d unlocked • %d total" % [_count_unlocked_levels(levels), levels.size()]
-	ShellThemeUtil.apply_body(subtitle_label, ShellThemeUtil.PLUM_SOFT, 18)
-	title_box.add_child(subtitle_label)
-
-	header.add_child(_make_world_progress_chip(levels))
-
-	var body: VBoxContainer = VBoxContainer.new()
-	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vbox.add_child(body)
-
-	var grid: GridContainer = GridContainer.new()
-	grid.columns = _world_grid_columns(levels.size())
-	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	grid.add_theme_constant_override("h_separation", int(level_card_gap))
-	grid.add_theme_constant_override("v_separation", int(level_card_gap))
-	body.add_child(grid)
+	var grid: GridContainer = null
+	if card.has_method("get_level_grid"):
+		grid = card.call("get_level_grid") as GridContainer
+	if grid != null:
+		grid.add_theme_constant_override("h_separation", int(level_card_gap))
+		grid.add_theme_constant_override("v_separation", int(level_card_gap))
 
 	for level: LevelData in levels:
-		grid.add_child(_make_level_card(level))
+		if card.has_method("add_level_card"):
+			card.call("add_level_card", _make_level_card(level))
 
 	return card
 
@@ -336,145 +315,36 @@ func _make_level_card(level: LevelData) -> Control:
 	var unlocked: bool = _is_level_unlocked(level)
 	var completed: bool = SaveManager.is_level_completed(level.level_id)
 	var stars: int = SaveManager.get_best_stars(level.level_id)
+	var level_card_instance = LevelCardScene.instantiate()
+	if not level_card_instance is PanelContainer:
+		push_error("WorldMap: LevelCard scene did not instantiate as LevelCard.")
+		return Control.new()
+	var card: PanelContainer = level_card_instance as PanelContainer
 
-	var card: PanelContainer = PanelContainer.new()
-	card.custom_minimum_size = Vector2(level_card_min_width, 132.0)
 	var card_state: String = "unlocked"
 	if not unlocked:
 		card_state = "locked"
 	elif completed and stars >= 3:
 		card_state = "complete"
-	card.add_theme_stylebox_override("panel", ShellThemeUtil.make_level_card_style(card_state))
 
-	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vbox.offset_left = 14.0
-	vbox.offset_top = 14.0
-	vbox.offset_right = -14.0
-	vbox.offset_bottom = -14.0
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 10)
-	card.add_child(vbox)
+	card.set("min_width", level_card_min_width)
+	card.set("hover_scale", level_card_hover_scale)
+	card.set("hover_duration_sec", level_card_hover_duration_sec)
+	if card.has_method("configure"):
+		card.call("configure", level.level_id, level.level_index, card_state, stars if completed else 0)
 
-	var lock_icon: TextureRect = null
+	var overlay_button: BaseButton = card.find_child("OverlayButton", true, false) as BaseButton
 	if unlocked:
-		var number_label: Label = Label.new()
-		number_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		number_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
-		number_label.add_theme_font_size_override("font_size", 42)
-		number_label.add_theme_color_override("font_color", ShellThemeUtil.PLUM)
-		vbox.add_child(number_label)
-		number_label.text = str(level.level_index)
-		vbox.add_child(_make_level_star_row(stars, completed))
+		if card.has_signal("pressed"):
+			card.connect("pressed", Callable(self , "_on_level_card_selected").bind(level))
+		if _first_focus_button == null and level.world_id == _selected_world_id and overlay_button != null:
+			_first_focus_button = overlay_button
 	else:
-		var spacer_top: Control = Control.new()
-		spacer_top.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		vbox.add_child(spacer_top)
-		lock_icon = _make_lock_icon()
-		vbox.add_child(lock_icon)
-		var spacer_bottom: Control = Control.new()
-		spacer_bottom.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		vbox.add_child(spacer_bottom)
-
-	var button: Button = Button.new()
-	button.focus_mode = Control.FOCUS_ALL
-	button.text = ""
-	button.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
-	button.add_theme_stylebox_override("normal", empty_style)
-	button.add_theme_stylebox_override("hover", empty_style)
-	button.add_theme_stylebox_override("pressed", empty_style)
-	button.add_theme_stylebox_override("focus", empty_style)
-	button.add_theme_stylebox_override("disabled", empty_style)
-	card.add_child(button)
-
-	if unlocked:
-		button.pressed.connect(_on_level_pressed.bind(level))
-		_wire_level_card_hover(button, card)
-		if _first_focus_button == null and level.world_id == _selected_world_id:
-			_first_focus_button = button
-	else:
-		button.pressed.connect(_on_locked_level_pressed.bind(card, lock_icon))
+		var lock_icon: TextureRect = card.find_child("LockIcon", true, false) as TextureRect
+		if card.has_signal("locked_pressed"):
+			card.connect("locked_pressed", Callable(self , "_on_locked_level_card_pressed").bind(card, lock_icon))
 
 	return card
-
-
-func _make_world_progress_chip(levels: Array[LevelData]) -> PanelContainer:
-	var chip: PanelContainer = PanelContainer.new()
-	chip.custom_minimum_size = Vector2(136.0, 50.0)
-	chip.add_theme_stylebox_override("panel", ShellThemeUtil.make_star_pill_style())
-
-	var row: HBoxContainer = HBoxContainer.new()
-	row.set_anchors_preset(Control.PRESET_FULL_RECT)
-	row.offset_left = 16.0
-	row.offset_top = 7.0
-	row.offset_right = -16.0
-	row.offset_bottom = -9.0
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 6)
-	chip.add_child(row)
-
-	var icon: TextureRect = TextureRect.new()
-	icon.custom_minimum_size = Vector2(24.0, 24.0)
-	icon.texture = ShellThemeUtil.STAR_SMALL_FILLED_TEXTURE
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	row.add_child(icon)
-
-	var count_label: Label = Label.new()
-	count_label.text = _get_world_progress_text(levels)
-	count_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	ShellThemeUtil.apply_body(count_label, ShellThemeUtil.PLUM, 24)
-	row.add_child(count_label)
-
-	return chip
-
-
-func _make_level_star_row(stars: int, completed: bool) -> HBoxContainer:
-	var row: HBoxContainer = HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 3)
-	for i: int in range(3):
-		if not completed:
-			row.add_child(_make_star_icon("empty"))
-		elif i < stars:
-			row.add_child(_make_star_icon("filled"))
-		else:
-			row.add_child(_make_star_icon("empty"))
-	return row
-
-
-func _make_star_icon(state: String) -> TextureRect:
-	var rect: TextureRect = TextureRect.new()
-	rect.custom_minimum_size = Vector2(28.0, 28.0)
-	match state:
-		"filled":
-			rect.texture = ShellThemeUtil.STAR_MEDIUM_FILLED_TEXTURE
-		"hollow":
-			rect.texture = ShellThemeUtil.STAR_MEDIUM_EMPTY_TEXTURE
-		_:
-			rect.texture = ShellThemeUtil.STAR_MEDIUM_EMPTY_TEXTURE
-	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	return rect
-
-
-func _make_lock_icon() -> TextureRect:
-	var rect: TextureRect = TextureRect.new()
-	rect.custom_minimum_size = Vector2(64.0, 64.0)
-	rect.texture = ShellThemeUtil.WORLD_MAP_LOCK_TEXTURE
-	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	return rect
-
-
-func _build_star_text(stars: int, completed: bool) -> String:
-	if not completed:
-		return "☆☆☆"
-	var text: String = ""
-	for i: int in range(3):
-		text += "★" if i < stars else "☆"
-	return text
 
 
 func _count_unlocked_levels(levels: Array[LevelData]) -> int:
@@ -499,7 +369,7 @@ func _get_world_title(world_id: int) -> String:
 func _refresh_header_progress() -> void:
 	if _title_label != null:
 		_title_label.text = "World Selection"
-	if _progress_label == null:
+	if _progress_chip == null:
 		return
 	var total_stars: int = 0
 	var total_possible: int = 0
@@ -508,7 +378,8 @@ func _refresh_header_progress() -> void:
 		total_possible += levels.size() * 3
 		for level: LevelData in levels:
 			total_stars += SaveManager.get_best_stars(level.level_id)
-	_progress_label.text = "%d / %d" % [total_stars, total_possible]
+	if _progress_chip.has_method("set_value_text"):
+		_progress_chip.call("set_value_text", "%d / %d" % [total_stars, total_possible])
 
 
 func _refresh_hint_text() -> void:
@@ -529,8 +400,16 @@ func _on_level_pressed(level_data: LevelData) -> void:
 	level_selected.emit(level_data)
 
 
+func _on_level_card_selected(_level_id: String, level_data: LevelData) -> void:
+	_on_level_pressed(level_data)
+
+
 func _on_locked_level_pressed(card: PanelContainer, lock_icon: TextureRect) -> void:
 	_play_locked_level_feedback(card, lock_icon)
+
+
+func _on_locked_level_card_pressed(_level_id: String, card: PanelContainer, lock_icon: TextureRect) -> void:
+	_on_locked_level_pressed(card, lock_icon)
 
 
 func _on_back_btn_pressed() -> void:
@@ -567,8 +446,7 @@ func _auto_discover_ui_nodes() -> void:
 
 	_title_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/TitleLabel") as Label
 	_subtitle_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/SubtitleLabel") as Label
-	_progress_chip = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip") as PanelContainer
-	_progress_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip/ProgressBadge") as Label
+	_progress_chip = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip") as Control
 	_hint_label = get_node_or_null("MarginContainer/VBox/HintLabel") as Label
 	_scroll_container = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer") as ScrollContainer
 	_world_list = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer/WorldList") as VBoxContainer
@@ -578,7 +456,6 @@ func _auto_discover_ui_nodes() -> void:
 func _apply_visual_style() -> void:
 	if _header_card != null:
 		_header_card.add_theme_stylebox_override("panel", ShellThemeUtil.make_ribbon_style("white"))
-	ShellThemeUtil.apply_circle_back_button(_back_btn, 56.0)
 	ShellThemeUtil.apply_title(_title_label, 38)
 	if _subtitle_label != null:
 		_subtitle_label.visible = false
@@ -586,8 +463,6 @@ func _apply_visual_style() -> void:
 		_hint_label.visible = false
 	if _progress_chip != null:
 		_progress_chip.visible = false
-	if _progress_label != null:
-		ShellThemeUtil.apply_body(_progress_label, ShellThemeUtil.PLUM, 26)
 
 
 func _play_locked_level_feedback(card: PanelContainer, lock_icon: TextureRect) -> void:
@@ -620,45 +495,6 @@ func _play_locked_level_feedback(card: PanelContainer, lock_icon: TextureRect) -
 		lock_tween.tween_property(lock_icon, "rotation_degrees", 0.0, 0.08)
 		lock_tween.parallel().tween_property(lock_icon, "scale", Vector2(1.12, 1.12), 0.08)
 		lock_tween.tween_property(lock_icon, "scale", Vector2.ONE, 0.14)
-
-
-func _wire_level_card_hover(button: BaseButton, card: Control) -> void:
-	if button == null or card == null:
-		return
-	var entered_callable: Callable = Callable(self , "_on_level_card_hover_entered").bind(card)
-	var exited_callable: Callable = Callable(self , "_on_level_card_hover_exited").bind(card)
-	if not button.mouse_entered.is_connected(entered_callable):
-		button.mouse_entered.connect(entered_callable)
-	if not button.mouse_exited.is_connected(exited_callable):
-		button.mouse_exited.connect(exited_callable)
-
-
-func _on_level_card_hover_entered(card: Control) -> void:
-	_animate_level_card_hover(card, Vector2(level_card_hover_scale, level_card_hover_scale))
-
-
-func _on_level_card_hover_exited(card: Control) -> void:
-	_animate_level_card_hover(card, Vector2.ONE)
-
-
-func _animate_level_card_hover(card: Control, target_scale: Vector2) -> void:
-	if card == null or not is_instance_valid(card):
-		return
-	card.pivot_offset = card.size * 0.5
-	if _is_reduce_motion_enabled():
-		card.scale = target_scale
-		return
-
-	var prior_tween: Tween = null
-	if card.has_meta(LEVEL_CARD_HOVER_TWEEN_META):
-		prior_tween = card.get_meta(LEVEL_CARD_HOVER_TWEEN_META) as Tween
-	if prior_tween != null and prior_tween.is_valid():
-		prior_tween.kill()
-
-	var tween: Tween = card.create_tween()
-	tween.tween_property(card, "scale", target_scale, level_card_hover_duration_sec) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	card.set_meta(LEVEL_CARD_HOVER_TWEEN_META, tween)
 
 
 func _animate_world_card_entries() -> void:

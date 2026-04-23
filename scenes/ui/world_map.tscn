@@ -1,11 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://bseksb4w5n87s"]
+[gd_scene load_steps=5 format=3 uid="uid://bseksb4w5n87s"]
 
 [ext_resource type="Script" path="res://src/ui/world_map.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://crjdppacerpxw" path="res://assets/art/ui/buttons/circular/btn_circle_arrow_left_normal.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://bknefxnxql3k5" path="res://assets/art/ui/buttons/circular/btn_circle_arrow_left_hover.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://cteare2ewvwpa" path="res://assets/art/ui/buttons/circular/btn_circle_arrow_left_pressed.png" id="5"]
-[ext_resource type="Texture2D" uid="uid://sjwbw1twadh2" path="res://assets/art/ui/buttons/circular/btn_circle_arrow_left_disabled.png" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/BackButton.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/status/ProgressPill.tscn" id="4"]
 
 [node name="WorldMap" type="Control"]
 layout_mode = 3
@@ -70,15 +68,10 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="BackBtn" type="TextureButton" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
+[node name="BackBtn" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("3")]
 custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-texture_normal = ExtResource("3")
-texture_pressed = ExtResource("5")
-texture_hover = ExtResource("4")
-texture_disabled = ExtResource("6")
-ignore_texture_size = true
-stretch_mode = 3
+button_size = 56.0
 
 [node name="TitleBox" type="VBoxContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
 layout_mode = 2
@@ -99,17 +92,10 @@ theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
-[node name="ProgressChip" type="PanelContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
+[node name="ProgressChip" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("4")]
 visible = false
 custom_minimum_size = Vector2(136, 50)
 layout_mode = 2
-
-[node name="ProgressBadge" type="Label" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
-theme_override_font_sizes/font_size = 24
-text = "0 / 0"
-vertical_alignment = 1
 
 [node name="RightSpacer" type="Control" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
 custom_minimum_size = Vector2(44, 56)

@@ -230,20 +230,19 @@ func _auto_discover_ui_nodes() -> void:
 	_title_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TitleLabel") as Label
 	if _title_label == null:
 		_title_label = _ribbon_title_label
-	_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicSlider") as Range
-	_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteToggle") as BaseButton
-	_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider") as Range
-	_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteToggle") as BaseButton
-	_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionToggle") as BaseButton
-	_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiToggle") as BaseButton
-	_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenToggle") as BaseButton
-	_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintOption") as OptionButton
+	_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider") as Range
+	_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle") as BaseButton
+	_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider") as Range
+	_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle") as BaseButton
+	_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle") as BaseButton
+	_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle") as BaseButton
+	_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle") as BaseButton
+	_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton") as OptionButton
 	_close_btn = get_node_or_null("Backdrop/CloseBtn") as BaseButton
 
 
 func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
-	ShellThemeUtil.apply_panel(_panel, ShellThemeUtil.CREAM)
 	if _title_label != null:
 		ShellThemeUtil.apply_title(_title_label, 40)
 	if _ribbon_title_label != null:
@@ -254,35 +253,10 @@ func _apply_visual_style() -> void:
 		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel"),
 		NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputLabel"),
 	]
-	var option_labels: Array[NodePath] = [
-		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicName"),
-		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteLabel"),
-		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxName"),
-		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteLabel"),
-		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionLabel"),
-		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiLabel"),
-		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenLabel"),
-	]
 	for path: NodePath in section_headers:
 		var label: Label = get_node_or_null(path) as Label
 		if label != null:
 			ShellThemeUtil.apply_title(label, 24)
-	for path: NodePath in option_labels:
-		var label: Label = get_node_or_null(path) as Label
-		if label != null:
-			ShellThemeUtil.apply_body(label, ShellThemeUtil.PLUM_SOFT, 20)
-	ShellThemeUtil.apply_circle_close_button(_close_btn, 87.0)
-	if _close_btn is TextureButton:
-		(_close_btn as TextureButton).stretch_mode = TextureButton.STRETCH_SCALE
-	ShellThemeUtil.apply_slider(_music_slider)
-	ShellThemeUtil.apply_slider(_sfx_slider)
-	ShellThemeUtil.apply_checkbox(_music_mute_toggle)
-	ShellThemeUtil.apply_checkbox(_sfx_mute_toggle)
-	ShellThemeUtil.apply_checkbox(_reduce_motion_toggle)
-	ShellThemeUtil.apply_checkbox(_large_ui_toggle)
-	ShellThemeUtil.apply_checkbox(_fullscreen_toggle)
-	if _input_hint_option != null:
-		ShellThemeUtil.apply_option_button(_input_hint_option)
 
 
 func _play_intro_animation() -> void:
