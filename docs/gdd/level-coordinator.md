@@ -12,10 +12,8 @@
 ## Overview
 
 The Level Coordinator is the root node of `res://scenes/gameplay/gameplay.tscn`. It
-owns the initialization order of all per-level-session systems, enforces the critical
-`slide_completed` signal connection order, snapshots the player's previous-best data at
-level load time, and orchestrates the transition to the Level Complete Screen once
-`level_record_saved` fires.
+owns the initialization order of all per-level-session systems, receives each completed
+move once, dispatches the explicit move pipeline (`process_move(from_pos, to_pos, direction, tiles_covered)`), snapshots the player's previous-best data at level load time, and orchestrates the transition to the Level Complete Screen once `level_record_saved` fires.
 
 The Level Coordinator is **not** an autoload. It lives only for the duration of the
 gameplay scene. When SceneManager loads `gameplay.tscn`, it calls
@@ -42,7 +40,7 @@ or a Next Level button that leads somewhere wrong. It is foundation work.
 | -------------------------------------------------------- | -------------------- |
 | Receiving `LevelData` from Scene Manager                 | Level Coordinator ✅ |
 | Initializing all per-level systems in correct order      | Level Coordinator ✅ |
-| Enforcing `slide_completed` connection order             | Level Coordinator ✅ |
+| Dispatching the coordinator-owned move pipeline          | Level Coordinator ✅ |
 | Snapshotting player's previous-best data at level load   | Level Coordinator ✅ |
 | Subscribing to `level_record_saved` for transition logic | Level Coordinator ✅ |
 | Building the Level Complete Screen params dict           | Level Coordinator ✅ |
@@ -125,15 +123,12 @@ func _initialize_systems() -> void:
     _hud.initialize(_undo_restart, _move_counter, _coverage_tracking)
 ```
 
-**Step 3 — Connect signals (order is critical)**
+**Step 3 — Connect signals**
 
 ```gdscript
 func _connect_signals() -> void:
-    # slide_completed order: UndoRestart FIRST, MoveCounter SECOND, CoverageTracking THIRD
-    # — see "Signal Connection Order" section for rationale
-    _sliding_movement.slide_completed.connect(_undo_restart._on_slide_completed)
-    _sliding_movement.slide_completed.connect(_move_counter._on_slide_completed)
-    _sliding_movement.slide_completed.connect(_coverage_tracking._on_slide_completed)
+    # Level Coordinator owns move processing and calls the child systems in order.
+    _sliding_movement.slide_completed.connect(_on_slide_completed)
 
     # spawn_position_set: CoverageTracking pre-covers starting tile
     _sliding_movement.spawn_position_set.connect(
@@ -166,19 +161,18 @@ func _connect_signals() -> void:
     _move_counter.move_count_changed.connect(_hud._on_move_count_changed)
 ```
 
-### Signal Connection Order
+### Coordinator-Owned Move Pipeline
 
-Three systems subscribe to `slide_completed`. The order matters:
+`slide_completed` is subscribed to once. The Level Coordinator receives each completed
+move and calls the child systems in a fixed, explicit order:
 
-| Connection # | System           | Why                                                                                                                                                                                                                                                            |
-| ------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1st**      | UndoRestart      | Must snapshot pre-mutation state (`cat_pos_before`, `coverage_before`, `move_count_before`) before MoveCounter or CoverageTracking mutate their values.                                                                                                        |
-| **2nd**      | MoveCounter      | Must increment before CoverageTracking runs. On the final slide, CoverageTracking emits `level_completed` → StarRatingSystem reads `get_final_move_count()`. If MoveCounter hasn't incremented yet, the star rating is computed with an off-by-one move count. |
-| **3rd**      | CoverageTracking | Runs last. By the time it processes the slide (and possibly emits `level_completed`), UndoRestart has a correct snapshot and MoveCounter has the correct count.                                                                                                |
+1. `UndoRestart.record_snapshot(...)`
+2. `MoveCounter.increment(...)`
+3. `CoverageTracking.apply_tiles_covered(...)`
 
-> **Critical**: this order must never be changed. If a system needs to subscribe
-> to `slide_completed` for a new reason, place it between MoveCounter and
-> CoverageTracking (or after CoverageTracking) — never before UndoRestart.
+This removes the fragile dependency on signal connection order. The Level Coordinator
+now owns the correctness boundary directly, so any move-pipeline change happens in one
+place.
 
 ### Level Complete Flow
 
@@ -270,18 +264,18 @@ cross-system signalling is wired through `_connect_signals()`.
 
 ## Acceptance Criteria
 
-| #     | Criterion                                                                                                                                       |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| LC-1  | `receive_scene_params()` is called before `_ready()`; all child systems initialize with the correct `LevelData`.                                |
-| LC-2  | `_prev_best_moves` reflects the player's previous-session best, not the current attempt's final move count.                                     |
-| LC-3  | `slide_completed` connection order is UndoRestart → MoveCounter → CoverageTracking.                                                             |
-| LC-4  | On the final slide, `StarRatingSystem` reads the incremented move count (not off-by-one).                                                       |
-| LC-5  | `level_record_saved` triggers `SceneManager.go_to(Screen.LEVEL_COMPLETE, ...)` exactly once per level.                                          |
-| LC-6  | All six keys are present in the params dict passed to Level Complete Screen.                                                                    |
-| LC-7  | No node references are included in the params dict — only plain types and resources.                                                            |
-| LC-8  | On `restart()`, all child systems return to their initial state without a scene reload.                                                         |
-| LC-9  | The level-complete overlay appears no sooner than `LEVEL_COMPLETE_OVERLAY_SEC` after `level_record_saved` fires.                                |
-| LC-10 | `_snapshot_previous_bests()` is called immediately after `_current_level_data` is changed in `_on_overlay_next`, before any system initializes. |
+| #     | Criterion                                                                                                                                                    |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| LC-1  | `receive_scene_params()` is called before `_ready()`; all child systems initialize with the correct `LevelData`.                                             |
+| LC-2  | `_prev_best_moves` reflects the player's previous-session best, not the current attempt's final move count.                                                  |
+| LC-3  | `process_move(from_pos, to_pos, direction, tiles_covered)` calls `record_snapshot()` before `increment()`, and `increment()` before `apply_tiles_covered()`. |
+| LC-4  | On the final slide, `StarRatingSystem` reads the incremented move count (not off-by-one).                                                                    |
+| LC-5  | `level_record_saved` triggers `SceneManager.go_to(Screen.LEVEL_COMPLETE, ...)` exactly once per level.                                                       |
+| LC-6  | All six keys are present in the params dict passed to Level Complete Screen.                                                                                 |
+| LC-7  | No node references are included in the params dict — only plain types and resources.                                                                         |
+| LC-8  | On `restart()`, all child systems return to their initial state without a scene reload.                                                                      |
+| LC-9  | The level-complete overlay appears no sooner than `LEVEL_COMPLETE_OVERLAY_SEC` after `level_record_saved` fires.                                             |
+| LC-10 | `_snapshot_previous_bests()` is called immediately after `_current_level_data` is changed in `_on_overlay_next`, before any system initializes.              |
 
 ---
 
@@ -305,7 +299,8 @@ cross-system signalling is wired through `_connect_signals()`.
 | `LEVEL_COMPLETE_OVERLAY_DELAY_SEC` | `0.6`   | Seconds between full grid coverage and overlay appearance. Provides the satisfying pause before results show. |
 
 All other initialization is structural (scene hierarchy and signal wiring). The
-signal connection order is a correctness constraint, not a design variable.
+move pipeline order is a correctness constraint, but it is now enforced explicitly by
+the coordinator rather than by signal ordering.
 
 ---
 

@@ -146,10 +146,9 @@ else:
 _undo_btn.disabled = not _undo_restart_ref.can_undo()  # refresh after every slide
 ```
 
-> **Why here?** `UndoRestart` connects to `slide_completed` before `MoveCounter` (see
-> Level Coordinator GDD — Signal Connection Order), so its snapshot is already pushed
-> by the time `move_count_changed` fires. Reading `can_undo()` here gives a live,
-> correct result every time.
+> **Why here?** The Level Coordinator now dispatches the move pipeline in a fixed
+> order, so Undo/Restart snapshots are already recorded by the time `move_count_changed`
+> fires. Reading `can_undo()` here gives a live, correct result every time.
 
 ### `_on_coverage_updated(covered: int, total: int)`
 

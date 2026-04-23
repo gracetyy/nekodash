@@ -83,8 +83,7 @@ Neither blocker invalidates the art direction itself.
   12, 16, 22, 28, 42 across all screens.
 - **Tile art**: Commission or generate floor/wall tile sprites that match the thick-
   outline, flat-color style of the UI assets.
-- **Theme resource**: Create a shared `Theme` resource (.tres) consolidating all
-  font sizes, colors, and button styles to replace inline `theme_override_*` values.
+- **Component scenes**: Move shared button styling and other reusable UI treatment into dedicated component scenes instead of duplicating inline `theme_override_*` values.
 - **Color system**: Formalize the header color assignments (purple = primary action,
   cyan = secondary, cream = neutral, pink = celebration/title).
 - **Button interactivity**: Replace TextureRect button mockups with actual Button

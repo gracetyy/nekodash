@@ -7,7 +7,7 @@
 
 ## Overview
 
-The Move Counter tracks the number of moves the player has made in the current level attempt and compares that count against the `minimum_moves` value baked into `LevelData`. It owns a single integer — `current_moves: int` — that increments by one each time Sliding Movement emits `slide_completed`. At level load it reads `minimum_moves`, `star_3_moves`, `star_2_moves`, and `star_1_moves` from `LevelData` and caches them for the session. It exposes `current_moves` and `minimum_moves` to the HUD for live display, fires `move_count_changed` after each increment, and exposes `get_final_move_count() -> int` for the Level Complete Screen and Star Rating System to query when `level_completed` fires. It does not compute star ratings — that belongs to Star Rating System. It does not control game flow. It is a thin, stateless counter that answers one question: "how many moves has the player made?"
+The Move Counter tracks the number of moves the player has made in the current level attempt and compares that count against the `minimum_moves` value baked into `LevelData`. It owns a single integer — `current_moves: int` — that increments once per completed move when the Level Coordinator calls `increment(...)`. At level load it reads `minimum_moves`, `star_3_moves`, `star_2_moves`, and `star_1_moves` from `LevelData` and caches them for the session. It exposes `current_moves` and `minimum_moves` to the HUD for live display, fires `move_count_changed` after each increment, and exposes `get_final_move_count() -> int` for the Level Complete Screen and Star Rating System to query when `level_completed` fires. It does not compute star ratings — that belongs to Star Rating System. It does not control game flow. It is a thin, stateless counter that answers one question: "how many moves has the player made?"
 
 ## Player Fantasy
 
@@ -21,9 +21,9 @@ This is **Pillar 2 — Always Know How Close to Perfect You Are** in its most li
 
 1. **Initialization**: At level load, Move Counter reads `level_data.minimum_moves`, `level_data.star_3_moves`, `level_data.star_2_moves`, and `level_data.star_1_moves` from the `LevelData` resource. It caches these as read-only values for the session. It sets `current_moves = 0`.
 
-2. **Counting**: Move Counter subscribes to Sliding Movement's `slide_completed` signal. Each emission increments `current_moves` by 1 and emits `move_count_changed(current_moves: int, minimum_moves: int)`.
+2. **Counting**: The Level Coordinator calls `increment()` once per completed move. Each call increments `current_moves` by 1 and emits `move_count_changed(current_moves: int, minimum_moves: int)`.
 
-3. **One move = one `slide_completed`**: Blocked slides (`slide_blocked`) never emit `slide_completed` and therefore never increment `current_moves`. There is no other increment path.
+3. **One completed move = one increment**: Blocked slides (`slide_blocked`) never emit a completed move and therefore never increment `current_moves`. There is no other increment path.
 
 4. **No decrement during play**: `current_moves` never decreases during a live level attempt. Undo rewinds the count via `set_move_count(n: int)` — called by the Undo system with the pre-move snapshot value.
 
@@ -35,7 +35,7 @@ This is **Pillar 2 — Always Know How Close to Perfect You Are** in its most li
 
 8. **Restart**: On level restart, the Undo/Restart system calls `reset_move_count()`. Move Counter sets `current_moves = 0` and emits `move_count_changed(0, minimum_moves)`.
 
-9. **Read-only public interface**: External systems read `current_moves` and `minimum_moves` as properties. The only write paths are internal (`slide_completed` handler) and `set_move_count()` / `reset_move_count()` for Undo/Restart.
+9. **Read-only public interface**: External systems read `current_moves` and `minimum_moves` as properties. The only write paths are internal (`increment()`), and `set_move_count()` / `reset_move_count()` for Undo/Restart.
 
 ### States and Transitions
 
@@ -44,7 +44,7 @@ Move Counter has no explicit state machine — it is a stateless counter. Its "s
 | Phase        | Entry Condition                          | Behavior                                                             |
 | ------------ | ---------------------------------------- | -------------------------------------------------------------------- |
 | **Reset**    | `reset_move_count()` called; level loads | `current_moves = 0`; `move_count_changed(0, minimum_moves)` emitted  |
-| **Counting** | `slide_completed` received               | `current_moves += 1`; `move_count_changed` emitted                   |
+| **Counting** | `increment()` called                     | `current_moves += 1`; `move_count_changed` emitted                   |
 | **Rewound**  | `set_move_count(n)` called               | `current_moves = n`; `move_count_changed(n, minimum_moves)` emitted  |
 | **Frozen**   | `level_completed` fired (from Coverage)  | Count stops incrementing until restart (no more slides are accepted) |
 
@@ -52,7 +52,7 @@ Move Counter has no explicit state machine — it is a stateless counter. Its "s
 
 | System                    | Direction                        | Interface                                                                                                                 |
 | ------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Sliding Movement**      | Sliding Movement → Move Counter  | Subscribes to `slide_completed`; increments `current_moves` on each emission.                                             |
+| **Level Coordinator**     | Level Coordinator → Move Counter | Calls `increment()` once per completed move.                                                                              |
 | **Level Data Format**     | Level Data Format → Move Counter | Reads `minimum_moves`, `star_3_moves`, `star_2_moves`, `star_1_moves` at level load; cached for the session.              |
 | **Undo/Restart**          | Undo/Restart → Move Counter      | Calls `set_move_count(n)` to rewind; calls `reset_move_count()` on full restart.                                          |
 | **HUD**                   | Move Counter → HUD               | HUD subscribes to `move_count_changed(current, minimum)` to update the live display.                                      |
@@ -65,7 +65,7 @@ Move Counter has no explicit state machine — it is a stateless counter. Its "s
 ### Move Increment
 
 ```
-current_moves += 1    # On each slide_completed emission
+current_moves += 1    # On each coordinator-dispatched move
 ```
 
 No formula more complex than this. One valid slide = one move.
@@ -115,21 +115,21 @@ Positive = over target; 0 = exactly on target; negative = under (impossible — 
 
 ## Edge Cases
 
-| Scenario                                                           | Expected Behavior                                                                                                                                                                                                       | Rationale                                                                                                                                                               |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minimum_moves == 0` (level not yet solved by BFS)                 | Move Counter still tracks `current_moves`; HUD receives `minimum_moves = 0` and omits the target display                                                                                                                | Allows playtesting unfinished levels without crashing or misleading data                                                                                                |
-| `set_move_count(0)` called (undo to start)                         | `current_moves = 0`; `move_count_changed(0, minimum_moves)` emitted; valid                                                                                                                                              | Undoing all moves back to level start is a valid user action                                                                                                            |
-| `set_move_count(n)` called with `n > current_moves`                | Log a warning; clamp to `current_moves`; do not allow count to increase via undo API                                                                                                                                    | Undo only decrements; a larger value indicates a Undo/Restart logic error                                                                                               |
-| `slide_completed` received after `level_completed`                 | Should not occur — Coverage Tracking completes after the slide that triggered completion; Sliding Movement blocks new input immediately after. If it does arrive, increment is ignored (state is frozen).               | Race condition guard; Coverage Tracking's `level_completed` is synchronous                                                                                              |
-| Player achieves `current_moves > star_1_moves`                     | No special behavior from Move Counter — count continues incrementing; Star Rating will assign 0 stars at completion                                                                                                     | Move Counter is neutral; it does not penalize or cap                                                                                                                    |
-| Player reaches exact `minimum_moves` on completion                 | `current_moves == minimum_moves`; `move_count_changed` emitted normally; Star Rating System will assign 3 stars                                                                                                         | Normal happy-path scenario; no special handling needed in Move Counter                                                                                                  |
-| `reset_move_count()` called during an active slide (mid-animation) | `current_moves = 0`; `move_count_changed` emitted immediately; the in-flight `slide_completed` that fires after the tween finishes will re-increment to 1 unless the restart also killed the tween via Sliding Movement | Restart path: Undo/Restart kills the tween via `set_grid_position_instant()` before calling reset; execution order must be: kill tween → reset coverage → reset counter |
+| Scenario                                                           | Expected Behavior                                                                                                                                                                                                  | Rationale                                                                                                                                                               |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `minimum_moves == 0` (level not yet solved by BFS)                 | Move Counter still tracks `current_moves`; HUD receives `minimum_moves = 0` and omits the target display                                                                                                           | Allows playtesting unfinished levels without crashing or misleading data                                                                                                |
+| `set_move_count(0)` called (undo to start)                         | `current_moves = 0`; `move_count_changed(0, minimum_moves)` emitted; valid                                                                                                                                         | Undoing all moves back to level start is a valid user action                                                                                                            |
+| `set_move_count(n)` called with `n > current_moves`                | Log a warning; clamp to `current_moves`; do not allow count to increase via undo API                                                                                                                               | Undo only decrements; a larger value indicates a Undo/Restart logic error                                                                                               |
+| `increment()` called after `level_completed`                       | Should not occur — Coverage Tracking completes after the slide that triggered completion; Sliding Movement blocks new input immediately after. If it does arrive, increment is ignored (state is frozen).          | Race condition guard; Coverage Tracking's `level_completed` is synchronous                                                                                              |
+| Player achieves `current_moves > star_1_moves`                     | No special behavior from Move Counter — count continues incrementing; Star Rating will assign 0 stars at completion                                                                                                | Move Counter is neutral; it does not penalize or cap                                                                                                                    |
+| Player reaches exact `minimum_moves` on completion                 | `current_moves == minimum_moves`; `move_count_changed` emitted normally; Star Rating System will assign 3 stars                                                                                                    | Normal happy-path scenario; no special handling needed in Move Counter                                                                                                  |
+| `reset_move_count()` called during an active slide (mid-animation) | `current_moves = 0`; `move_count_changed` emitted immediately; the in-flight move dispatch that finishes after the tween ends will re-increment to 1 unless the restart also killed the tween via Sliding Movement | Restart path: Undo/Restart kills the tween via `set_grid_position_instant()` before calling reset; execution order must be: kill tween → reset coverage → reset counter |
 
 ## Dependencies
 
 | System                    | Direction                        | Nature                                                                                                                  | Hard/Soft                                                                                        |
 | ------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Sliding Movement**      | Sliding Movement → Move Counter  | Subscribes to `slide_completed`; this is the only increment trigger                                                     | **Hard** — no moves can be counted without this signal                                           |
+| **Level Coordinator**     | Level Coordinator → Move Counter | Calls `increment()`; this is the only increment trigger                                                                 | **Hard** — no moves can be counted without this call                                             |
 | **Level Data Format**     | Level Data Format → Move Counter | Reads `minimum_moves` + star thresholds at level load; cached for the session                                           | **Hard** — without `minimum_moves`, the HUD cannot display a target (degrades to no-target mode) |
 | **Undo/Restart**          | Undo/Restart → Move Counter      | Calls `set_move_count()` and `reset_move_count()` to control the count during undo and restart operations               | **Hard** — undo would show wrong move count without this write path                              |
 | **HUD**                   | Move Counter → HUD               | Subscribes to `move_count_changed(current, minimum)`; reads `current_moves`, `minimum_moves` as properties              | **Soft** — game logic is unaffected; only display breaks without HUD                             |
@@ -166,7 +166,7 @@ Move Counter itself produces no visuals or audio. All feedback is owned by downs
 
 Move Counter exposes two values for HUD display:
 
-- `current_moves: int` — updated live after every `slide_completed`
+- `current_moves: int` — updated live after every coordinator-dispatched move
 - `minimum_moves: int` — set at level load; constant for the session (0 if unsolved)
 
 The HUD is responsible for all layout decisions (position, font, animation) — Move Counter only provides the data. The exact format ("6 / 8", "+2 over target", etc.) is a HUD GDD decision.
@@ -178,14 +178,14 @@ One special case: when `minimum_moves == 0`, the HUD must suppress the target di
 | #    | Criterion                                                                                                                        |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------- |
 | MC-1 | After level load with `minimum_moves = 8`, `current_moves == 0` and `minimum_moves == 8`; `move_count_changed(0, 8)` is emitted. |
-| MC-2 | Each `slide_completed` emission increments `current_moves` by exactly 1 and emits `move_count_changed(n, minimum_moves)`.        |
+| MC-2 | Each completed move increments `current_moves` by exactly 1 and emits `move_count_changed(n, minimum_moves)`.                    |
 | MC-3 | `slide_blocked` does NOT increment `current_moves`.                                                                              |
 | MC-4 | After `set_move_count(3)`, `current_moves == 3`; `move_count_changed(3, minimum_moves)` is emitted.                              |
 | MC-5 | After `reset_move_count()`, `current_moves == 0`; `move_count_changed(0, minimum_moves)` is emitted.                             |
 | MC-6 | `get_final_move_count()` returns `current_moves` at level complete time.                                                         |
 | MC-7 | With `minimum_moves == 0`, `move_count_changed` is still emitted normally with `minimum_moves = 0`; no crash or error.           |
 | MC-8 | `set_move_count(n)` with `n > current_moves` logs a warning and does not increase `current_moves`.                               |
-| MC-9 | `move_count_changed` signal fires exactly once per `slide_completed`, not zero times or more than once.                          |
+| MC-9 | `move_count_changed` signal fires exactly once per completed move, not zero times or more than once.                             |
 
 ## Open Questions
 

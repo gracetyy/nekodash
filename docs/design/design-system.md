@@ -166,7 +166,7 @@ The primary interactive text element across all screens.
 
 - Default: full colour, full 4px bottom shadow visible.
 - Hover / Focus: fill shifts to hover variant; shadow depth remains visually 4px.
-- Pressed: top face physically shifts downward by exactly 2px; Godot UI labels/icons overlaid on these buttons MUST be configured to shift down by 2px (e.g., using `theme_override_constants/icon_max_width` or margin overrides). Visible shadow depth reduces to 2px.
+- Pressed: top face physically shifts downward by exactly 2px; the owning button component scene or script should shift overlaid labels/icons down by 2px as part of the component implementation. Visible shadow depth reduces to 2px.
 - Disabled: `btn-disabled` fill, `text-on-btn` label/icon where readability needs it, muted overall contrast, `btn-disabled-shadow` base.
 
 **Interaction rule:**

@@ -11,7 +11,7 @@ It is written as step-by-step actions you can run directly in the editor.
 
 ## Quick Decision
 
-- I want global UI theme change: Open `res://scenes/ui/ui_theme_editor.tscn` and tune components across all UI screens in one place.
+- I want to edit a reusable UI component: Open the matching scene under `res://scenes/ui/components/` and tune that component in one place.
 - I want global change: Open `res://scenes/ui/global_cat_editor.tscn` and edit with 2D handles.
 - I want per-screen change: Select the host node (`MainMenu` or `SlidingMovement`), set its host toggle to `true`, then edit host override properties.
 - I want one-off local tweak: Select the child `CatPartRig` node (`MenuCatRig` or `CatSprite`), enable only the needed local override category, then tune local values.
@@ -38,16 +38,16 @@ Use this when you want one place to tune default cat behavior across gameplay an
 4. If you changed profile values numerically, toggle `sync_handles_from_profile_now` on root `GlobalCatEditor` to snap handles back to current profile values.
 5. Save `res://data/cat_rig_defaults.tres` (or toggle `save_profile_now` on `GlobalCatEditor`).
 
-## Global UI Theme Sandbox (All UI Components)
+## Reusable UI Component Editing
 
-Use `res://scenes/ui/ui_theme_editor.tscn` as a direct UI component board.
-Every component is laid out on the canvas (no SubViewport wrappers), so you can select
-and tweak properties directly in the 2D editor.
+Reusable buttons, panels, cards, badges, HUD pills, and status widgets now live in
+dedicated component scenes under `res://scenes/ui/components/`. Edit the owning scene
+directly when you need to change shared visuals or behavior.
 
 ### What it includes
 
 - Pill button states (primary, secondary, tertiary, danger)
-- Live button samples with state StyleBox overrides
+- Live button samples for component-scene validation
 - Circular icon buttons with normal/hover/pressed/disabled textures
 - Panels and ribbons (`NinePatchRect` + `TextureRect`)
 - Slider/checkbox visual assets used by options and pause menus
@@ -57,12 +57,10 @@ and tweak properties directly in the 2D editor.
 
 ### How to use it
 
-1. Open `res://scenes/ui/ui_theme_editor.tscn`.
-2. In the 2D editor, select any component node directly (for example `NinePatchRect`, `Button`, `TextureButton`, `TextureProgressBar`).
-3. Tune values in Inspector (`patch_margin_*`, colors, style resources, textures, icon spacing, state styles).
-4. For button state styling, edit the `StyleBoxTexture_*` subresources wired to sample buttons.
-5. Apply the same tuned values to source scenes/resources as needed.
-6. Run UI snapshot capture after edits to guard against regressions.
+1. Open the reusable component scene you want to change.
+2. Tune values in the Inspector or component script rather than copying the styling into each screen.
+3. If a screen still needs a temporary local override during migration, keep it isolated to that screen and plan to move the shared styling into the component scene.
+4. Run UI snapshot capture after edits to guard against regressions.
 
 ## Cat Inheritance Pattern (Identical Across Hosts)
 
@@ -104,8 +102,8 @@ Target scene: `res://scenes/ui/main_menu.tscn`
 1. Open `main_menu.tscn`.
 2. Expand `MarginContainer/Content/HeroCard/CardMargin/CardBody`.
 3. Tune spacing in:
-   - `CardBody` (`theme_override_constants/separation`)
-   - `Buttons` (`theme_override_constants/separation`)
+   - `CardBody` (`theme_override_constants/separation` on the screen-owned composition container)
+   - `Buttons` (`theme_override_constants/separation` on the screen-owned composition container)
 4. Adjust card margins in `CardMargin`.
 5. Adjust title image sizing in `TitleLabel` (`custom_minimum_size`).
 

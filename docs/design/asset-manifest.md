@@ -290,7 +290,7 @@ Exported asset size : 220×60px at 1x
 Corner shape        : Fully rounded pill
 Shadow style        : Bottom-only, hard/chunky, no blur-heavy web shadow
 Nine-patch use      : Horizontal stretch only
-Pressed offset      : The pressed state graphic is physically shifted down by 2px. Godot UI labels/icons overlaid on these buttons MUST be configured to shift down by 2px (e.g., using `theme_override_constants/icon_max_width` or margin overrides, or shifting a container's position) when the button is in the pressed state.
+Pressed offset      : The pressed state graphic is physically shifted down by 2px. The owning button component scene or script should shift overlaid labels/icons down by 2px as part of the component implementation when the button is in the pressed state.
 ```
 
 ### Nine-Patch Margins

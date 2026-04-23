@@ -57,26 +57,21 @@ class MoveSnapshot:
 ```
 
 A snapshot captures the complete pre-move state of all three stateful components.
-It is taken **before** each `slide_completed` processes — i.e., on the signal's
-`from_pos` coordinate and the coverage state at that moment.
+It is taken **before** the Level Coordinator applies the rest of the move pipeline —
+at the moment the coordinator receives the completed slide and before coverage or move
+count state is mutated.
 
 ### Core Rules
 
-1. **Snapshot on `slide_completed`**: Undo/Restart subscribes to Sliding Movement's
-   `slide_completed(from_pos, to_pos, direction, tiles_covered)` signal.
-   On each emission it pushes a `MoveSnapshot` onto `_history: Array[MoveSnapshot]`.
-   The snapshot captures the state **before** the slide that just completed:
-   `cat_pos_before = from_pos`, `coverage_before = get_coverage_snapshot()`
-   (captured before Move Counter and Coverage Tracking process the same signal),
-   `move_count_before = MoveCounter.current_moves`.
+1. **Snapshot on coordinator dispatch**: Undo/Restart records a `MoveSnapshot` when the
+   Level Coordinator calls `record_snapshot(...)` as the first step of
+   `process_move(from_pos, to_pos, direction, tiles_covered)`. The snapshot captures the
+   state **before** the slide that just completed: `cat_pos_before = from_pos`,
+   `coverage_before = get_coverage_snapshot()`, `move_count_before = MoveCounter.current_moves`.
 
-   > **Signal ordering note**: `slide_completed` is connected by all subscribers
-   > at `_ready()`. GDScript signal delivery is synchronous and ordered by
-   > connection time. Undo/Restart must connect **first** so its snapshot
-   > captures pre-mutation state. Move Counter must connect **before** Coverage
-   > Tracking so that when Coverage Tracking's handler emits `level_completed`
-   > (on the final slide), StarRatingSystem reads the already-incremented move
-   > count. The Level Coordinator is responsible for enforcing this order.
+   > **Pipeline note**: the snapshot is no longer dependent on subscriber ordering.
+   > The coordinator calls the move systems explicitly, so the pre-mutation state is
+   > captured before Move Counter or Coverage Tracking can mutate their values.
 
 2. **Undo**: `undo() -> void` is the single public method for undoing one move.
    - If `_history` is empty, logs a warning and returns (no-op).
@@ -113,7 +108,7 @@ It is taken **before** each `slide_completed` processes — i.e., on the signal'
    memory per snapshot ≈ a few hundred bytes. 20 moves × 500 bytes = ~10 KB.
    Negligible.
 
-7. **Undo available on first move**: After one `slide_completed`, the stack has one
+7. **Undo available on first move**: After one completed move, the stack has one
    entry and `undo()` is valid. Before the first slide, the stack is empty and
    `undo()` is a no-op (no moves to undo). The HUD undo button should be disabled
    when `_history.is_empty()`.
@@ -124,35 +119,17 @@ It is taken **before** each `slide_completed` processes — i.e., on the signal'
 9. **`undo_count() -> int`**: Returns `_history.size()`. Useful for HUD or
    debug display showing how many undos are available.
 
-### The `slide_completed` Connection Order Problem
+### Coordinator-Owned Move Pipeline
 
-Three systems subscribe to `slide_completed`:
+The Level Coordinator now owns move processing directly. It is the only consumer of
+move completion, and it invokes the three stateful systems in a fixed order:
 
-- **Undo/Restart** — must record pre-mutation state
-- **Coverage Tracking** — mutates `coverage_map`
-- **Move Counter** — mutates `current_moves`
+1. `record_snapshot(...)`
+2. `MoveCounter.increment(...)`
+3. `CoverageTracking.apply_tiles_covered(...)`
 
-GDScript connects signals in the order `connect()` is called. Undo/Restart's snapshot
-must be taken **before** Coverage Tracking and Move Counter mutate their state.
-
-**Required connection order** (enforced by the Level Coordinator in `_ready()`):
-
-1. Undo/Restart connects first
-2. Move Counter connects second
-3. Coverage Tracking connects third
-
-**Why this order?**
-
-- Undo/Restart must be first: it captures pre-mutation state (`cat_pos_before`,
-  `coverage_before`, `move_count_before`) before Move Counter or Coverage Tracking
-  have processed the same signal.
-- Move Counter must be second: on the final slide, Coverage Tracking's handler
-  emits `level_completed`, which causes StarRatingSystem to call
-  `MoveCounter.get_final_move_count()`. Move Counter must have already incremented
-  before that call happens. If Move Counter connected after Coverage Tracking, the
-  star rating would be computed with an off-by-one move count.
-- Coverage Tracking connects third: by the time its handler runs, Undo/Restart has
-  snapshotted correctly and Move Counter has incremented correctly.
+Undo/Restart still has a compatibility `on_slide_completed(...)` adapter for legacy wiring,
+but the documented contract is the coordinator-owned pipeline above.
 
 ### States and Transitions
 
@@ -171,7 +148,7 @@ must be taken **before** Coverage Tracking and Move Counter mutate their state.
 | **Move Counter**      | Undo/Restart → Move Counter      | Calls `set_move_count(n)` on undo; calls `reset_move_count()` on restart.                                                                            |
 | **Coverage Tracking** | Coverage Tracking → Undo/Restart | Subscribes to `level_completed`; on receipt, freezes the history stack.                                                                              |
 | **HUD**               | Undo/Restart → HUD               | Emits `undo_applied` and `level_restarted`; HUD subscribes to update undo button enabled state. HUD reads `can_undo()`.                              |
-| **Level Coordinator** | Level Coordinator → Undo/Restart | Calls `initialize()` at level load; enforces signal connection order (`slide_completed` connections).                                                |
+| **Level Coordinator** | Level Coordinator → Undo/Restart | Calls `initialize()` at level load; calls `record_snapshot()` as the first step in `process_move(...)`.                                              |
 
 ## Signals
 
@@ -208,16 +185,16 @@ _Not implemented at MVP — noted only for post-jam reference._
 
 ## Edge Cases
 
-| Scenario                                                                              | Expected Behavior                                                                                                                                                                                               | Rationale                                                                    |
-| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `undo()` called with empty history                                                    | No-op; warning logged. HUD button should be disabled at this point.                                                                                                                                             | Guard for unexpected calls; HUD `can_undo()` check prevents this normally    |
-| `undo()` called during `SLIDING` state (tween in flight)                              | `set_grid_position_instant()` kills the tween; undo completes normally. The in-flight `slide_completed` is cancelled.                                                                                           | Tween kill is Sliding Movement's responsibility; undo coordinates safely     |
-| `restart()` called during `SLIDING` state                                             | Same as undo mid-slide: `set_grid_position_instant()` kills tween; history cleared; state reset proceeds.                                                                                                       | Restart always works regardless of animation state                           |
-| `level_completed` fires, then player taps undo button                                 | `undo()` is a no-op (Frozen state); HUD button should already be hidden after `level_completed`.                                                                                                                | Prevents broken state: coverage at 100% should not be partially unwound      |
-| Signal connection order misconfigured (Undo/Restart connects after Coverage Tracking) | Snapshot captures post-mutation coverage state; undo would restore incorrect coverage.                                                                                                                          | **This is a critical bug.** Level Coordinator must enforce connection order. |
-| `restart()` called immediately after `initialize()` (zero moves)                      | History empty; `set_grid_position_instant` snaps to spawn (no-op since already there); `reset_coverage()` a no-op; `initialize_level()` re-emits `spawn_position_set`. Valid operation.                         | Idempotent restart from zero-move state                                      |
-| Very large level with many unique tiles in history snapshots                          | Snapshots grow; at MVP no cap. If memory is a concern post-jam, implement LRU or fixed-depth stack.                                                                                                             | Flagged for post-jam monitoring, not an MVP action                           |
-| Two rapid undo button taps before first undo completes                                | Second call hits `_history` in partially-modified state? No — undo operations are synchronous (no tweens, all instant writes). Second call sees reduced stack and applies it cleanly, or hits empty and no-ops. | GDScript signal handlers are synchronous; no async concern                   |
+| Scenario                                                                              | Expected Behavior                                                                                                                                                                                               | Rationale                                                                       |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `undo()` called with empty history                                                    | No-op; warning logged. HUD button should be disabled at this point.                                                                                                                                             | Guard for unexpected calls; HUD `can_undo()` check prevents this normally       |
+| `undo()` called during `SLIDING` state (tween in flight)                              | `set_grid_position_instant()` kills the tween; undo completes normally. The in-flight move dispatch is cancelled by the coordinator.                                                                            | Tween kill is Sliding Movement's responsibility; undo coordinates safely        |
+| `restart()` called during `SLIDING` state                                             | Same as undo mid-slide: `set_grid_position_instant()` kills tween; history cleared; state reset proceeds.                                                                                                       | Restart always works regardless of animation state                              |
+| `level_completed` fires, then player taps undo button                                 | `undo()` is a no-op (Frozen state); HUD button should already be hidden after `level_completed`.                                                                                                                | Prevents broken state: coverage at 100% should not be partially unwound         |
+| Coordinator calls `increment()` or `apply_tiles_covered()` before `record_snapshot()` | Snapshot captures post-mutation coverage state; undo would restore incorrect coverage.                                                                                                                          | **This is a critical bug.** The coordinator-owned pipeline must preserve order. |
+| `restart()` called immediately after `initialize()` (zero moves)                      | History empty; `set_grid_position_instant` snaps to spawn (no-op since already there); `reset_coverage()` a no-op; `initialize_level()` re-emits `spawn_position_set`. Valid operation.                         | Idempotent restart from zero-move state                                         |
+| Very large level with many unique tiles in history snapshots                          | Snapshots grow; at MVP no cap. If memory is a concern post-jam, implement LRU or fixed-depth stack.                                                                                                             | Flagged for post-jam monitoring, not an MVP action                              |
+| Two rapid undo button taps before first undo completes                                | Second call hits `_history` in partially-modified state? No — undo operations are synchronous (no tweens, all instant writes). Second call sees reduced stack and applies it cleanly, or hits empty and no-ops. | GDScript signal handlers are synchronous; no async concern                      |
 
 ## Dependencies
 
@@ -226,7 +203,7 @@ _Not implemented at MVP — noted only for post-jam reference._
 | **Sliding Movement**  | Bidirectional            | Subscribes to `slide_completed`; calls `set_grid_position_instant()` and `initialize_level()` | **Hard** — cannot record or apply history without this interface               |
 | **Coverage Tracking** | Bidirectional            | Reads snapshot API and calls restore; calls `reset_coverage()`                                | **Hard** — undo without coverage rollback leaves the board in wrong state      |
 | **Move Counter**      | Undo/Restart → Write     | Calls `set_move_count()` and `reset_move_count()`                                             | **Hard** — undo without move count rollback misleads the HUD                   |
-| **Level Coordinator** | Level Coordinator → Undo | Calls `initialize()`; controls signal connection order                                        | **Hard** — Undo/Restart is useless without initialization and correct ordering |
+| **Level Coordinator** | Level Coordinator → Undo | Calls `initialize()`; controls the coordinator-owned move pipeline                            | **Hard** — Undo/Restart is useless without initialization and correct ordering |
 
 ## Tuning Knobs
 
@@ -272,14 +249,14 @@ that the HUD subscribes to; it does not call HUD methods directly.
 
 | #     | Criterion                                                                                                                                                                  |
 | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UR-1  | After one `slide_completed`, `_history.size() == 1` and `can_undo() == true`.                                                                                              |
+| UR-1  | After one completed move, `_history.size() == 1` and `can_undo() == true`.                                                                                                 |
 | UR-2  | After `undo()`, cat position equals `from_pos` of the last slide; coverage is as it was before that slide; move count is decremented by 1.                                 |
 | UR-3  | After `undo()`, `_history.size()` decreases by 1; `undo_applied` is emitted with the new history size.                                                                     |
 | UR-4  | `undo()` with empty history is a no-op with a warning log; no state changes occur.                                                                                         |
 | UR-5  | After `restart()`, cat is at spawn position; coverage map matches post–`spawn_position_set` state (only starting tile covered); `current_moves == 0`; `_history` is empty. |
 | UR-6  | `restart()` during a `SLIDING` animation kills the tween and completes the restart correctly.                                                                              |
 | UR-7  | After `level_completed`, `undo()` is a no-op. `restart()` still functions.                                                                                                 |
-| UR-8  | The snapshot taken by Undo/Restart captures coverage state **before** Coverage Tracking processes the same `slide_completed` signal.                                       |
+| UR-8  | The snapshot taken by Undo/Restart captures coverage state **before** Coverage Tracking processes the same completed move.                                                 |
 | UR-9  | `level_restarted` signal is emitted exactly once per `restart()` call.                                                                                                     |
 | UR-10 | Three sequential undos after three moves return the board to its initial state, equivalent to `restart()` from that position.                                              |
 
@@ -289,4 +266,4 @@ that the HUD subscribes to; it does not call HUD methods directly.
 | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------- | ------------------------------------------------------ |
 | OQ-1 | Coverage Tracking's `restore_coverage_snapshot()` currently only emits `coverage_updated(covered, total)` per the Coverage Tracking GDD. Should it also emit per-tile `tile_uncovered` signals for tiles that became uncovered during the restore? The Coverage Visualizer needs per-tile feedback to correctly revert visuals. Provisional: add `tile_uncovered(coord: Vector2i)` signal to Coverage Tracking for the undo path. Flag this as an amendment to the Coverage Tracking GDD. | High     | Resolve before implementing Coverage Visualizer | Provisional: add `tile_uncovered` to Coverage Tracking |
 | OQ-2 | Should there be a visible "undo count" indicator in the HUD (e.g., "↩ 3")? Provisional: no at MVP — `can_undo()` is enough for the button state; the count adds visual noise.                                                                                                                                                                                                                                                                                                             | Low      | Resolve during HUD GDD                          | Provisional: no count display                          |
-| OQ-3 | The Level Coordinator connection-ordering requirement is fragile. Should Undo/Restart expose a `take_pre_move_snapshot()` method that the Level Coordinator calls explicitly before each slide processes, eliminating the signal-ordering dependency? Provisional: keep signal-based for MVP (simpler); document the ordering requirement heavily in Level Coordinator. Revisit if ordering bugs occur in practice.                                                                       | Medium   | Resolve during implementation                   | Provisional: signal-based with documented ordering     |
+| OQ-3 | Should the Level Coordinator own the explicit move pipeline or continue to rely on direct move-completion subscribers? Resolution: the Level Coordinator owns the explicit pipeline (`record_snapshot` → `increment` → `apply_tiles_covered`), so the ordering dependency is removed.                                                                                                                                                                                                     | Low      | Resolved                                        | Explicit coordinator-owned pipeline                    |
