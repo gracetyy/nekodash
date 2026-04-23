@@ -3,7 +3,9 @@ class_name LevelCompleteOverlay
 extends CanvasLayer
 
 var _pending_params: Dictionary = {}
-var _content: Control
+@export var _content: Control
+@export var _next_btn: BaseButton
+@export var _retry_btn: BaseButton
 
 
 func receive_scene_params(params: Dictionary) -> void:
@@ -12,10 +14,9 @@ func receive_scene_params(params: Dictionary) -> void:
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	_content = get_node_or_null("Content") as Control
-	if _content == null:
-		push_error("LevelCompleteOverlay: missing Content LevelCompleteScreen instance.")
-		return
+	assert(_content != null, "_content not assigned")
+	assert(_next_btn != null, "_next_btn not assigned")
+	assert(_retry_btn != null, "_retry_btn not assigned")
 	_content.process_mode = Node.PROCESS_MODE_ALWAYS
 
 	if not _content.next_level_requested.is_connected(_on_next_level_requested):
@@ -28,12 +29,10 @@ func _ready() -> void:
 	if not _pending_params.is_empty():
 		call_deferred("_apply_pending_params")
 
-	var next_btn: BaseButton = _content.find_child("NextLevelBtn", true, false) as BaseButton
-	var retry_btn: BaseButton = _content.find_child("RetryBtn", true, false) as BaseButton
-	if next_btn != null and next_btn.visible:
-		next_btn.grab_focus()
-	elif retry_btn != null:
-		retry_btn.grab_focus()
+	if _next_btn.visible:
+		_next_btn.grab_focus()
+	else:
+		_retry_btn.grab_focus()
 
 
 func _apply_pending_params() -> void:

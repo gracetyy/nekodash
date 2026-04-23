@@ -12,6 +12,22 @@
 [node name="OptionsOverlay" type="CanvasLayer"]
 layer = 40
 script = ExtResource("1")
+_title_label = NodePath("Backdrop/Panel/Margin/VBox/TitleLabel")
+_ribbon_title_label = NodePath("Backdrop/Ribbon/RibbonTitleLabel")
+_audio_label = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel")
+_display_label = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel")
+_input_label = NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputLabel")
+_panel = NodePath("Backdrop/Panel")
+_backdrop = NodePath("Backdrop")
+_music_slider = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider")
+_music_mute_toggle = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle")
+_sfx_slider = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider")
+_sfx_mute_toggle = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle")
+_reduce_motion_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle")
+_large_ui_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle")
+_fullscreen_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
+_input_hint_option = NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton")
+_close_btn = NodePath("Backdrop/CloseBtn")
 
 [node name="Backdrop" type="ColorRect" parent="."]
 anchors_preset = 15

@@ -52,15 +52,15 @@ var lock_jiggle_rotation_degrees: float = 14.0
 signal level_selected(level_data: LevelData)
 signal back_requested
 
-var _back_btn: BaseButton
-var _header_card: PanelContainer
-var _progress_chip: Control
-var _world_list: VBoxContainer
-var _scroll_container: ScrollContainer
-var _no_levels_label: Label
-var _title_label: Label
-var _subtitle_label: Label
-var _hint_label: Label
+@export var _back_btn: BaseButton
+@export var _header_card: PanelContainer
+@export var _progress_chip: Control
+@export var _world_list: VBoxContainer
+@export var _scroll_container: ScrollContainer
+@export var _no_levels_label: Label
+@export var _title_label: Label
+@export var _subtitle_label: Label
+@export var _hint_label: Label
 
 var _catalogue: LevelCatalogue
 var _world_index: Dictionary = {} # int -> Array[LevelData]
@@ -72,7 +72,16 @@ var _last_grid_column_target: int = -1
 
 
 func _ready() -> void:
-	_auto_discover_ui_nodes()
+	assert(_header_card != null, "_header_card not assigned")
+	assert(_back_btn != null, "_back_btn not assigned")
+	assert(_title_label != null, "_title_label not assigned")
+	assert(_subtitle_label != null, "_subtitle_label not assigned")
+	assert(_progress_chip != null, "_progress_chip not assigned")
+	assert(_hint_label != null, "_hint_label not assigned")
+	assert(_scroll_container != null, "_scroll_container not assigned")
+	assert(_world_list != null, "_world_list not assigned")
+	assert(_no_levels_label != null, "_no_levels_label not assigned")
+	_connect_back_button_signal()
 	_connect_navigation()
 	_apply_visual_style()
 	if not resized.is_connected(_on_world_map_resized):
@@ -438,19 +447,9 @@ func _apply_initial_focus() -> void:
 		_back_btn.grab_focus()
 
 
-func _auto_discover_ui_nodes() -> void:
-	_header_card = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard") as PanelContainer
-	_back_btn = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/BackBtn") as BaseButton
+func _connect_back_button_signal() -> void:
 	if _back_btn != null and not _back_btn.pressed.is_connected(_on_back_btn_pressed):
 		_back_btn.pressed.connect(_on_back_btn_pressed)
-
-	_title_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/TitleLabel") as Label
-	_subtitle_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/SubtitleLabel") as Label
-	_progress_chip = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip") as Control
-	_hint_label = get_node_or_null("MarginContainer/VBox/HintLabel") as Label
-	_scroll_container = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer") as ScrollContainer
-	_world_list = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer/WorldList") as VBoxContainer
-	_no_levels_label = get_node_or_null("MarginContainer/VBox/NoLevelsLabel") as Label
 
 
 func _apply_visual_style() -> void:

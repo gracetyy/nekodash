@@ -6,25 +6,25 @@ extends Control
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 const PLACEHOLDER_PREVIEW_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_idle.png")
 
-var _back_btn: BaseButton
-var _title_label: Label
-var _status_label: Label
-var _equip_btn: BaseButton
-var _skin_grid: GridContainer
+@export var _back_btn: BaseButton
+@export var _title_label: Label
+@export var _status_label: Label
+@export var _equip_btn: BaseButton
+@export var _skin_grid: GridContainer
 var _skin_cards: Array[SkinCard] = []
 var _selected_skin_id: String = "cat_default"
 
 
 func _ready() -> void:
-	_back_btn = find_child("BackBtn", true, false) as BaseButton
-	_title_label = find_child("TitleLabel", true, false) as Label
-	_status_label = find_child("StatusLabel", true, false) as Label
-	_equip_btn = find_child("EquipBtn", true, false) as BaseButton
-	_skin_grid = find_child("SkinGrid", true, false) as GridContainer
+	assert(_back_btn != null, "_back_btn not assigned")
+	assert(_title_label != null, "_title_label not assigned")
+	assert(_status_label != null, "_status_label not assigned")
+	assert(_equip_btn != null, "_equip_btn not assigned")
+	assert(_skin_grid != null, "_skin_grid not assigned")
 
-	if _back_btn != null and not _back_btn.pressed.is_connected(_on_back_btn_pressed):
+	if not _back_btn.pressed.is_connected(_on_back_btn_pressed):
 		_back_btn.pressed.connect(_on_back_btn_pressed)
-	if _equip_btn != null and not _equip_btn.pressed.is_connected(_on_equip_btn_pressed):
+	if not _equip_btn.pressed.is_connected(_on_equip_btn_pressed):
 		_equip_btn.pressed.connect(_on_equip_btn_pressed)
 	_apply_local_text_style()
 	_configure_placeholder_cards()

@@ -5,14 +5,14 @@
 ## values in the shared profile resource.
 extends Node2D
 
-const CAT_RIG_PATH: NodePath = NodePath("GlobalCatRig")
-const DISPLAY_OFFSET_HANDLE_PATH: NodePath = NodePath("DisplayOffsetHandle")
-const TAIL_PIVOT_HANDLE_PATH: NodePath = NodePath("TailPivotHandle")
-const HEAD_PIVOT_HANDLE_PATH: NodePath = NodePath("HeadPivotHandle")
-const BREATHING_HANDLE_PATH: NodePath = NodePath("HeadPivotHandle/BreathingHandle")
-const TAIL_PIVOT_GUIDE_PATH: NodePath = NodePath("TailPivotGuide")
-const HEAD_PIVOT_GUIDE_PATH: NodePath = NodePath("HeadPivotGuide")
-const BREATHING_GUIDE_PATH: NodePath = NodePath("BreathingGuide")
+@export var _cat_rig: Node
+@export var _display_offset_handle: Node2D
+@export var _tail_pivot_handle: Node2D
+@export var _head_pivot_handle: Node2D
+@export var _breathing_handle: Node2D
+@export var _tail_pivot_guide: Line2D
+@export var _head_pivot_guide: Line2D
+@export var _breathing_guide: Line2D
 
 
 @export_file("*.tres") var profile_path: String = "res://data/cat_rig_defaults.tres"
@@ -51,16 +51,6 @@ var preview_head_swing_degrees: float = 6.0
 @export_range(0.1, 10.0, 0.01, "or_greater")
 var preview_head_swing_period_sec: float = 1.6
 
-
-var _cat_rig: Node = null
-var _display_offset_handle: Node2D = null
-var _tail_pivot_handle: Node2D = null
-var _head_pivot_handle: Node2D = null
-var _breathing_handle: Node2D = null
-var _tail_pivot_guide: Line2D = null
-var _head_pivot_guide: Line2D = null
-var _breathing_guide: Line2D = null
-
 var _profile: CatRigProfile = null
 var _sync_handles_from_profile_now_flag: bool = false
 var _save_profile_now_flag: bool = false
@@ -73,7 +63,14 @@ var _head_preview_time_sec: float = 0.0
 
 
 func _ready() -> void:
-	_resolve_nodes()
+	assert(_cat_rig != null, "_cat_rig not assigned")
+	assert(_display_offset_handle != null, "_display_offset_handle not assigned")
+	assert(_tail_pivot_handle != null, "_tail_pivot_handle not assigned")
+	assert(_head_pivot_handle != null, "_head_pivot_handle not assigned")
+	assert(_breathing_handle != null, "_breathing_handle not assigned")
+	assert(_tail_pivot_guide != null, "_tail_pivot_guide not assigned")
+	assert(_head_pivot_guide != null, "_head_pivot_guide not assigned")
+	assert(_breathing_guide != null, "_breathing_guide not assigned")
 	_load_profile()
 	_apply_profile_to_cat_rig()
 	_sync_handles_from_profile()
@@ -93,17 +90,6 @@ func _process(delta: float) -> void:
 	_sync_profile_from_handles_if_changed()
 	_refresh_guide_lines()
 	_apply_head_swing_preview(delta)
-
-
-func _resolve_nodes() -> void:
-	_cat_rig = get_node_or_null(CAT_RIG_PATH)
-	_display_offset_handle = get_node_or_null(DISPLAY_OFFSET_HANDLE_PATH) as Node2D
-	_tail_pivot_handle = get_node_or_null(TAIL_PIVOT_HANDLE_PATH) as Node2D
-	_head_pivot_handle = get_node_or_null(HEAD_PIVOT_HANDLE_PATH) as Node2D
-	_breathing_handle = get_node_or_null(BREATHING_HANDLE_PATH) as Node2D
-	_tail_pivot_guide = get_node_or_null(TAIL_PIVOT_GUIDE_PATH) as Line2D
-	_head_pivot_guide = get_node_or_null(HEAD_PIVOT_GUIDE_PATH) as Line2D
-	_breathing_guide = get_node_or_null(BREATHING_GUIDE_PATH) as Line2D
 
 
 func _load_profile() -> void:

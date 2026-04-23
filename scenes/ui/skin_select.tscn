@@ -14,6 +14,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+_back_btn = NodePath("MarginContainer/VBox/Header/BackBtn")
+_title_label = NodePath("MarginContainer/VBox/Header/TitleLabel")
+_status_label = NodePath("MarginContainer/VBox/StatusLabel")
+_equip_btn = NodePath("MarginContainer/VBox/EquipBtn")
+_skin_grid = NodePath("MarginContainer/VBox/SkinGrid")
 
 [node name="Backdrop" parent="." instance=ExtResource("2")]
 layout_mode = 1

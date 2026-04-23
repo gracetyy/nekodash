@@ -1,15 +1,14 @@
 ## CreditsScreen — shell route listing project credits and returning to Main Menu.
 extends Control
 
-var _back_btn: BaseButton
+@export var _back_btn: BaseButton
 
 
 func _ready() -> void:
-	_back_btn = find_child("BackBtn", true, false) as BaseButton
-	if _back_btn != null and not _back_btn.pressed.is_connected(_on_back_btn_pressed):
+	assert(_back_btn != null, "_back_btn not assigned")
+	if not _back_btn.pressed.is_connected(_on_back_btn_pressed):
 		_back_btn.pressed.connect(_on_back_btn_pressed)
-	if _back_btn != null:
-		_back_btn.grab_focus()
+	_back_btn.grab_focus()
 
 
 func _unhandled_input(event: InputEvent) -> void:

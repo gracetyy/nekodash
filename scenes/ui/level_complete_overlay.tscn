@@ -13,6 +13,9 @@ shader_parameter/dim_tint = Vector3(0.22, 0.18, 0.25)
 [node name="LevelCompleteOverlay" type="CanvasLayer"]
 layer = 42
 script = ExtResource("1")
+_content = NodePath("Content")
+_next_btn = NodePath("Content/MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
+_retry_btn = NodePath("Content/MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/RetryBtn")
 
 [node name="BlurBackdrop" type="ColorRect" parent="."]
 material = SubResource("1")

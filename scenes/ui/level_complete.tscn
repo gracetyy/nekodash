@@ -16,6 +16,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+_level_name_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/RibbonTitleLabel")
+_moves_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MovesLabel")
+_min_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MinLabel")
+_prompt_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/PromptLabel")
+_new_best_badge = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/NewBestBadge")
+_next_btn = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
+_retry_btn = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/RetryBtn")
+_world_map_btn = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/WorldMapBtn")
+_panel = NodePath("MarginContainer/ResultsCard")
+_cat_illustration = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration")
+_star_strip = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/StarRow")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1

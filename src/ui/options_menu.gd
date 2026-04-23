@@ -14,23 +14,41 @@ var _app_settings_ref: Node
 var _music_manager_ref: Node
 var _sfx_manager_ref: Node
 
-var _title_label: Label
-var _ribbon_title_label: Label
-var _panel: PanelContainer
-var _backdrop: ColorRect
-var _music_slider: Range
-var _music_mute_toggle: BaseButton
-var _sfx_slider: Range
-var _sfx_mute_toggle: BaseButton
-var _reduce_motion_toggle: BaseButton
-var _large_ui_toggle: BaseButton
-var _fullscreen_toggle: BaseButton
-var _input_hint_option: OptionButton
-var _close_btn: BaseButton
+@export var _title_label: Label
+@export var _ribbon_title_label: Label
+@export var _audio_label: Label
+@export var _display_label: Label
+@export var _input_label: Label
+@export var _panel: PanelContainer
+@export var _backdrop: ColorRect
+@export var _music_slider: Range
+@export var _music_mute_toggle: BaseButton
+@export var _sfx_slider: Range
+@export var _sfx_mute_toggle: BaseButton
+@export var _reduce_motion_toggle: BaseButton
+@export var _large_ui_toggle: BaseButton
+@export var _fullscreen_toggle: BaseButton
+@export var _input_hint_option: OptionButton
+@export var _close_btn: BaseButton
 
 
 func _ready() -> void:
-	_auto_discover_ui_nodes()
+	assert(_backdrop != null, "_backdrop not assigned")
+	assert(_panel != null, "_panel not assigned")
+	assert(_ribbon_title_label != null, "_ribbon_title_label not assigned")
+	assert(_title_label != null, "_title_label not assigned")
+	assert(_audio_label != null, "_audio_label not assigned")
+	assert(_display_label != null, "_display_label not assigned")
+	assert(_input_label != null, "_input_label not assigned")
+	assert(_music_slider != null, "_music_slider not assigned")
+	assert(_music_mute_toggle != null, "_music_mute_toggle not assigned")
+	assert(_sfx_slider != null, "_sfx_slider not assigned")
+	assert(_sfx_mute_toggle != null, "_sfx_mute_toggle not assigned")
+	assert(_reduce_motion_toggle != null, "_reduce_motion_toggle not assigned")
+	assert(_large_ui_toggle != null, "_large_ui_toggle not assigned")
+	assert(_fullscreen_toggle != null, "_fullscreen_toggle not assigned")
+	assert(_input_hint_option != null, "_input_hint_option not assigned")
+	assert(_close_btn != null, "_close_btn not assigned")
 	_resolve_services()
 	_connect_settings_signal()
 	_populate_input_hint_options()
@@ -223,24 +241,6 @@ func _on_input_hint_selected(index: int) -> void:
 			_app_settings_ref.set_input_hint_mode(AppSettings.INPUT_HINT_AUTO)
 
 
-func _auto_discover_ui_nodes() -> void:
-	_backdrop = get_node_or_null("Backdrop") as ColorRect
-	_panel = get_node_or_null("Backdrop/Panel") as PanelContainer
-	_ribbon_title_label = get_node_or_null("Backdrop/Ribbon/RibbonTitleLabel") as Label
-	_title_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TitleLabel") as Label
-	if _title_label == null:
-		_title_label = _ribbon_title_label
-	_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider") as Range
-	_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle") as BaseButton
-	_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider") as Range
-	_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle") as BaseButton
-	_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle") as BaseButton
-	_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle") as BaseButton
-	_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle") as BaseButton
-	_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton") as OptionButton
-	_close_btn = get_node_or_null("Backdrop/CloseBtn") as BaseButton
-
-
 func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
 	if _title_label != null:
@@ -248,15 +248,9 @@ func _apply_visual_style() -> void:
 	if _ribbon_title_label != null:
 		ShellThemeUtil.apply_title(_ribbon_title_label, 34)
 		_ribbon_title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
-	var section_headers: Array[NodePath] = [
-		NodePath("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel"),
-		NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel"),
-		NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputLabel"),
-	]
-	for path: NodePath in section_headers:
-		var label: Label = get_node_or_null(path) as Label
-		if label != null:
-			ShellThemeUtil.apply_title(label, 24)
+	ShellThemeUtil.apply_title(_audio_label, 24)
+	ShellThemeUtil.apply_title(_display_label, 24)
+	ShellThemeUtil.apply_title(_input_label, 24)
 
 
 func _play_intro_animation() -> void:

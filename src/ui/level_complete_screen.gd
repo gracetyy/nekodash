@@ -49,20 +49,20 @@ signal world_map_requested
 # Child node references — set via set_ui_nodes() or @onready
 # —————————————————————————————————————————————
 
-var _level_name_label: Control # Label
-var _moves_label: Control # Label
-var _min_label: Control # Label
-var _prompt_label: Control # Label
-var _new_best_badge: Control # Label / TextureRect
-var _next_btn: Control # Button
-var _retry_btn: Control # Button
-var _world_map_btn: Control # Button
-var _panel: PanelContainer
-var _cat_illustration: TextureRect
+@export var _level_name_label: Label
+@export var _moves_label: Label
+@export var _min_label: Label
+@export var _prompt_label: Label
+@export var _new_best_badge: Control # Label / TextureRect
+@export var _next_btn: BaseButton
+@export var _retry_btn: BaseButton
+@export var _world_map_btn: BaseButton
+@export var _panel: PanelContainer
+@export var _cat_illustration: TextureRect
 
 ## Star display nodes — array of 3 Controls (e.g. TextureRect or Label).
 ## Filled stars are visible; empty stars are dimmed or hidden.
-var _star_strip: Control
+@export var _star_strip: Control
 
 
 # —————————————————————————————————————————————
@@ -92,7 +92,18 @@ var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
 # —————————————————————————————————————————————
 
 func _ready() -> void:
-	_auto_discover_ui_nodes()
+	assert(_panel != null, "_panel not assigned")
+	assert(_level_name_label != null, "_level_name_label not assigned")
+	assert(_moves_label != null, "_moves_label not assigned")
+	assert(_min_label != null, "_min_label not assigned")
+	assert(_prompt_label != null, "_prompt_label not assigned")
+	assert(_cat_illustration != null, "_cat_illustration not assigned")
+	assert(_new_best_badge != null, "_new_best_badge not assigned")
+	assert(_star_strip != null, "_star_strip not assigned")
+	assert(_next_btn != null, "_next_btn not assigned")
+	assert(_retry_btn != null, "_retry_btn not assigned")
+	assert(_world_map_btn != null, "_world_map_btn not assigned")
+	_connect_button_signals()
 	_apply_visual_style()
 	# Self-connect navigation only when running in the real scene (auto-discover
 	# found buttons). Tests use set_ui_nodes() after _ready(), so _next_btn is
@@ -205,17 +216,18 @@ func set_ui_nodes(
 	min_label: Control = null,
 	prompt_label: Control = null,
 ) -> void:
-	_level_name_label = level_name_label
-	_moves_label = moves_label
-	_min_label = min_label
-	_prompt_label = prompt_label
+	_level_name_label = level_name_label as Label
+	_moves_label = moves_label as Label
+	_min_label = min_label as Label
+	_prompt_label = prompt_label as Label
 	_new_best_badge = new_best_badge
-	_next_btn = next_btn
-	_retry_btn = retry_btn
-	_world_map_btn = world_map_btn
+	_next_btn = next_btn as BaseButton
+	_retry_btn = retry_btn as BaseButton
+	_world_map_btn = world_map_btn as BaseButton
 	_star_strip = star_sentinel_label as Control
 	if _star_strip == null and not star_nodes.is_empty() and star_nodes[0] is Control:
 		_star_strip = star_nodes[0] as Control
+	_connect_button_signals()
 	_apply_visual_style()
 
 
@@ -345,52 +357,13 @@ func _navigate_to_world_map() -> void:
 	SceneManager.go_to(SceneManager.Screen.WORLD_MAP)
 
 
-## Discovers child UI nodes by path when running inside the .tscn scene.
-## Skipped if set_ui_nodes() was already called (e.g. from tests).
-func _auto_discover_ui_nodes() -> void:
-	if _panel == null:
-		_panel = get_node_or_null("MarginContainer/ResultsCard") as PanelContainer
-	if _level_name_label == null:
-		_level_name_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/RibbonTitleLabel")
-		if _level_name_label == null:
-			_level_name_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/LevelNameLabel")
-	if _moves_label == null:
-		_moves_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MovesLabel")
-	if _min_label == null:
-		_min_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MinLabel")
-	if _prompt_label == null:
-		_prompt_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/PromptLabel")
-	if _cat_illustration == null:
-		_cat_illustration = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration") as TextureRect
-	if _new_best_badge == null:
-		_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/NewBestBadge")
-		if _new_best_badge == null:
-			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/NewBestBadge")
-		if _new_best_badge == null:
-			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/NewBestBadge")
-		if _new_best_badge == null:
-			_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/NewBestBadge")
-
-	if _star_strip == null:
-		_star_strip = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow") as Control
-
-	if _next_btn == null:
-		_next_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
-	if _next_btn != null and _next_btn is BaseButton:
-		if not (_next_btn as BaseButton).pressed.is_connected(on_next_btn_pressed):
-			(_next_btn as BaseButton).pressed.connect(on_next_btn_pressed)
-
-	if _retry_btn == null:
-		_retry_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/RetryBtn")
-	if _retry_btn != null and _retry_btn is BaseButton:
-		if not (_retry_btn as BaseButton).pressed.is_connected(on_retry_btn_pressed):
-			(_retry_btn as BaseButton).pressed.connect(on_retry_btn_pressed)
-
-	if _world_map_btn == null:
-		_world_map_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/WorldMapBtn")
-	if _world_map_btn != null and _world_map_btn is BaseButton:
-		if not (_world_map_btn as BaseButton).pressed.is_connected(on_world_map_btn_pressed):
-			(_world_map_btn as BaseButton).pressed.connect(on_world_map_btn_pressed)
+func _connect_button_signals() -> void:
+	if _next_btn != null and not _next_btn.pressed.is_connected(on_next_btn_pressed):
+		_next_btn.pressed.connect(on_next_btn_pressed)
+	if _retry_btn != null and not _retry_btn.pressed.is_connected(on_retry_btn_pressed):
+		_retry_btn.pressed.connect(on_retry_btn_pressed)
+	if _world_map_btn != null and not _world_map_btn.pressed.is_connected(on_world_map_btn_pressed):
+		_world_map_btn.pressed.connect(on_world_map_btn_pressed)
 
 
 func _apply_visual_style() -> void:
