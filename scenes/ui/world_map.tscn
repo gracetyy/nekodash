@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://src/ui/world_map.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/BackButton.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/status/ProgressPill.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://cknwn3q2gg3ht" path="res://scenes/ui/components/buttons/BackButton.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bw2o5aftvi511" path="res://scenes/ui/components/status/ProgressPill.tscn" id="4"]
 
 [node name="WorldMap" type="Control"]
 layout_mode = 3
@@ -69,9 +69,7 @@ layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="BackBtn" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("3")]
-custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
-button_size = 56.0
 
 [node name="TitleBox" type="VBoxContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
 layout_mode = 2
@@ -94,7 +92,6 @@ horizontal_alignment = 1
 
 [node name="ProgressChip" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("4")]
 visible = false
-custom_minimum_size = Vector2(136, 50)
 layout_mode = 2
 
 [node name="RightSpacer" type="Control" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]

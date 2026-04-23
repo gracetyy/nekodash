@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cyc8taatuavh3"]
+[gd_scene load_steps=11 format=3 uid="uid://cyc8taatuavh3"]
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://bcune8t4wyux2" path="res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png" id="17_40dxg"]
 [ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0ksq7"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rhjuu"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -58,7 +58,7 @@ alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_0ksq7")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_rhjuu")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2
@@ -73,7 +73,7 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="TitleLabel" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
-custom_minimum_size = Vector2(320, 250)
+custom_minimum_size = Vector2(320, 228)
 layout_mode = 2
 texture = ExtResource("3_8kw73")
 expand_mode = 1
@@ -117,24 +117,31 @@ theme_override_constants/separation = 14
 
 [node name="PlayBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
 text = "PLAY"
 icon = ExtResource("9_pakoq")
-variant = 0
 
 [node name="SkinsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
 text = "SKINS"
 icon = ExtResource("13_pgqpn")
 variant = 1
 
 [node name="OptionsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
 text = "SETTINGS"
 icon = ExtResource("17_40dxg")
 variant = 2
 
 [node name="CreditsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/icon_max_width = 34
 text = "CREDITS"
 icon = ExtResource("18_y1h30")
 variant = 2

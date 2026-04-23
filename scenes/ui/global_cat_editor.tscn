@@ -23,7 +23,7 @@ default_color = Color(0.4, 0.4, 0.4, 0.45)
 
 [node name="TailPivotGuide" type="Line2D" parent="."]
 z_index = -15
-points = PackedVector2Array(0, -16, 14.915, 17.1)
+points = PackedVector2Array(0, -16, 15, 19)
 width = 2.0
 default_color = Color(0.772549, 0.556863, 0.25098, 0.9)
 
@@ -52,7 +52,7 @@ position = Vector2(0, -16)
 gizmo_extents = 14.0
 
 [node name="TailPivotHandle" type="Marker2D" parent="."]
-position = Vector2(14.915, 17.1)
+position = Vector2(15, 19)
 gizmo_extents = 12.0
 
 [node name="HeadPivotHandle" type="Marker2D" parent="."]

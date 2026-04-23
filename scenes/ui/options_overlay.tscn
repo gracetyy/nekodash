@@ -61,13 +61,10 @@ text = "Audio"
 
 [node name="MusicRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("6")]
 layout_mode = 2
-label_text = "Music"
-toggle_text = "Mute"
 
 [node name="SfxRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("6")]
 layout_mode = 2
 label_text = "SFX"
-toggle_text = "Mute"
 
 [node name="DisplaySection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
@@ -79,7 +76,6 @@ text = "Display"
 
 [node name="ReduceMotionRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
 layout_mode = 2
-label_text = "Reduce Motion"
 
 [node name="LargeUiRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
 layout_mode = 2

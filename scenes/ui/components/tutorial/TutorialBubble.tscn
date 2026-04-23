@@ -1,10 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://ccsgme5wx1fs8"]
 
 [ext_resource type="Script" path="res://src/ui/components/tutorial/tutorial_bubble.gd" id="1"]
 
 [node name="TutorialBubble" type="PanelContainer"]
-script = ExtResource("1")
 custom_minimum_size = Vector2(180, 88)
+script = ExtResource("1")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
@@ -14,4 +14,3 @@ text = "Swipe to slide!"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
-mouse_filter = 2

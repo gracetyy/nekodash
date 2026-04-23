@@ -1,11 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://cafg6hvdgbxil"]
 
 [ext_resource type="Script" path="res://src/ui/components/status/star_strip.gd" id="1"]
 
 [node name="StarStrip" type="Control"]
-script = ExtResource("1")
 custom_minimum_size = Vector2(96, 28)
+layout_mode = 3
+anchors_preset = 0
 mouse_filter = 2
+script = ExtResource("1")
 
 [node name="Star1" type="TextureRect" parent="."]
 layout_mode = 0
@@ -36,4 +38,3 @@ grow_vertical = 2
 text = "?"
 horizontal_alignment = 1
 vertical_alignment = 1
-mouse_filter = 2

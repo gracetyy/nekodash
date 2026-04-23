@@ -124,7 +124,6 @@ variant = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "RETRY"
-variant = 0
 
 [node name="WorldMapBtn" parent="MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow" instance=ExtResource("7")]
 layout_mode = 2
