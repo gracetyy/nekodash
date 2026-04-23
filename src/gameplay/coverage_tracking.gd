@@ -3,8 +3,9 @@
 ## Task: S1-07
 ##
 ## Tracks which walkable tiles have been visited during the current level
-## attempt. Subscribes to SlidingMovement's spawn_position_set and
-## slide_completed signals to mark newly covered tiles. Emits tile_covered
+## attempt. Handles spawn_position_set for starting-tile pre-coverage and
+## applies per-move coverage through apply_tiles_covered() called by
+## LevelCoordinator.process_move(). Emits tile_covered
 ## per new tile, coverage_updated per event, and level_completed at 100%.
 ##
 ## Coverage is monotonically increasing within a single attempt: tiles once
@@ -12,7 +13,8 @@
 ##
 ## Usage:
 ##   coverage_tracking.initialize_level()
-##   coverage_tracking.bind_sliding_movement(sliding_movement_node)
+##   # Hook spawn_position_set from SlidingMovement to on_spawn_position_set()
+##   # For slide completion, LevelCoordinator calls apply_tiles_covered(...)
 extends Node
 
 
@@ -26,7 +28,7 @@ signal tile_covered(coord: Vector2i)
 ## Emitted per tile reverting to uncovered (undo / restore_coverage_snapshot).
 signal tile_uncovered(coord: Vector2i)
 
-## Emitted after each spawn_position_set, slide_completed, or
+## Emitted after each spawn_position_set, dispatched move, or
 ## restore_coverage_snapshot. Downstream: HUD.
 signal coverage_updated(covered: int, total: int)
 
@@ -153,25 +155,8 @@ func restore_coverage_snapshot(snapshot: Dictionary) -> void:
 	coverage_updated.emit(_covered_count, _total_walkable)
 
 
-## Connects this tracker to a SlidingMovement node's signals.
-## Guards against double-binding — safe to call repeatedly on the same node.
-func bind_sliding_movement(sm: Node) -> void:
-	if not sm.spawn_position_set.is_connected(on_spawn_position_set):
-		sm.spawn_position_set.connect(on_spawn_position_set)
-	if not sm.slide_completed.is_connected(on_slide_completed):
-		sm.slide_completed.connect(on_slide_completed)
-
-
-## Disconnects from a SlidingMovement node's signals.
-func unbind_sliding_movement(sm: Node) -> void:
-	if sm.spawn_position_set.is_connected(on_spawn_position_set):
-		sm.spawn_position_set.disconnect(on_spawn_position_set)
-	if sm.slide_completed.is_connected(on_slide_completed):
-		sm.slide_completed.disconnect(on_slide_completed)
-
-
 # —————————————————————————————————————————————
-# Signal handlers (public for testability + external wiring)
+# Public handlers for coordinator/event wiring
 # —————————————————————————————————————————————
 
 ## Handles spawn_position_set — marks the starting tile as pre-covered.
@@ -190,8 +175,9 @@ func on_spawn_position_set(pos: Vector2i) -> void:
 		level_completed.emit()
 
 
-## Handles slide_completed — marks all traversed tiles and checks completion.
-func on_slide_completed(
+## Applies traversed tiles for a completed move and checks completion.
+## Called by LevelCoordinator.process_move() after move count increments.
+func apply_tiles_covered(
 	_from_pos: Vector2i,
 	_to_pos: Vector2i,
 	_direction: Vector2i,
@@ -211,6 +197,16 @@ func on_slide_completed(
 	if _covered_count == _total_walkable and _total_walkable > 0:
 		_state = State.COMPLETE
 		level_completed.emit()
+
+
+## Backward-compat adapter for legacy direct signal tests/wiring.
+func on_slide_completed(
+	from_pos: Vector2i,
+	to_pos: Vector2i,
+	direction: Vector2i,
+	tiles_covered: Array[Vector2i],
+) -> void:
+	apply_tiles_covered(from_pos, to_pos, direction, tiles_covered)
 
 
 # —————————————————————————————————————————————

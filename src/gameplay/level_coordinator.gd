@@ -2,11 +2,12 @@
 ## Implements: design/gdd/level-coordinator.md
 ## Task: S2-05
 ##
-## Owns initialization order, enforces the critical slide_completed signal
-## connection order (UndoRestart FIRST, MoveCounter SECOND, CoverageTracking
-## THIRD), snapshots previous-best data at level load, freezes systems on
-## completion, computes stars via StarRatingSystem, saves via LevelProgression,
-## and orchestrates the transition to Level Complete Screen.
+## Owns initialization order, receives slide_completed once, dispatches
+## process_move() in deterministic order (UndoRestart.record_snapshot,
+## MoveCounter.increment, CoverageTracking.apply_tiles_covered), snapshots
+## previous-best data at level load, freezes systems on completion, computes
+## stars via StarRatingSystem, saves via LevelProgression, and orchestrates
+## the transition to Level Complete Screen.
 ##
 ## Usage:
 ##   SceneManager calls receive_scene_params({"level_data": level_data}) before
@@ -197,16 +198,14 @@ func _initialize_systems() -> void:
 		_coverage_visualizer.initialize_level(GridSystem.get_width(), GridSystem.get_height())
 
 
-## Wires all inter-system signals. Order is critical — see
-## design/gdd/level-coordinator.md "Signal Connection Order".
+## Wires all inter-system signals. Move processing is centralized through
+## _on_slide_completed() -> process_move() to avoid fragile ordering-by-connect.
 func _connect_signals() -> void:
-	# slide_completed order:
-	#   1. UndoRestart FIRST  — snapshot pre-mutation state
-	#   2. MoveCounter SECOND — increment count
-	#   3. CoverageTracking THIRD — mark tiles + check 100% → level_completed
-	_sliding_movement.slide_completed.connect(_undo_restart.on_slide_completed)
-	_sliding_movement.slide_completed.connect(_move_counter.on_slide_completed)
-	_sliding_movement.slide_completed.connect(_coverage_tracking.on_slide_completed)
+	# Single slide_completed subscription. Coordinator dispatches in explicit order:
+	#   1. UndoRestart.record_snapshot()      (pre-mutation snapshot)
+	#   2. MoveCounter.increment()            (count this move)
+	#   3. CoverageTracking.apply_tiles_covered() (coverage + completion check)
+	_sliding_movement.slide_completed.connect(_on_slide_completed)
 
 	# spawn_position_set → CoverageTracking pre-covers starting tile
 	_sliding_movement.spawn_position_set.connect(
@@ -250,12 +249,8 @@ func _connect_signals() -> void:
 ## Disconnects all inter-system signals. Called before restart.
 func _disconnect_signals() -> void:
 	# slide_completed
-	if _sliding_movement.slide_completed.is_connected(_undo_restart.on_slide_completed):
-		_sliding_movement.slide_completed.disconnect(_undo_restart.on_slide_completed)
-	if _sliding_movement.slide_completed.is_connected(_move_counter.on_slide_completed):
-		_sliding_movement.slide_completed.disconnect(_move_counter.on_slide_completed)
-	if _sliding_movement.slide_completed.is_connected(_coverage_tracking.on_slide_completed):
-		_sliding_movement.slide_completed.disconnect(_coverage_tracking.on_slide_completed)
+	if _sliding_movement.slide_completed.is_connected(_on_slide_completed):
+		_sliding_movement.slide_completed.disconnect(_on_slide_completed)
 
 	# spawn_position_set
 	if _sliding_movement.spawn_position_set.is_connected(_coverage_tracking.on_spawn_position_set):
@@ -308,6 +303,27 @@ func _disconnect_signals() -> void:
 # —————————————————————————————————————————————
 # Signal handlers
 # —————————————————————————————————————————————
+
+func _on_slide_completed(
+	from_pos: Vector2i,
+	to_pos: Vector2i,
+	direction: Vector2i,
+	tiles_covered: Array[Vector2i],
+) -> void:
+	process_move(from_pos, to_pos, direction, tiles_covered)
+
+
+## Deterministic move pipeline owned by the coordinator.
+## This replaces reliance on signal connection timing across sibling systems.
+func process_move(
+	from_pos: Vector2i,
+	to_pos: Vector2i,
+	direction: Vector2i,
+	tiles_covered: Array[Vector2i],
+) -> void:
+	_undo_restart.record_snapshot(from_pos, to_pos, direction, tiles_covered)
+	_move_counter.increment(from_pos, to_pos, direction, tiles_covered)
+	_coverage_tracking.apply_tiles_covered(from_pos, to_pos, direction, tiles_covered)
 
 func _on_level_completed() -> void:
 	if _state != State.PLAYING:

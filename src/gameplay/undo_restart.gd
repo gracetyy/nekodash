@@ -2,14 +2,14 @@
 ## Implements: design/gdd/undo-restart.md
 ## Task: S2-01
 ##
-## Owns a history stack of MoveSnapshots. On each slide_completed (connected
-## FIRST by Level Coordinator), captures pre-mutation state. undo() pops the
-## top snapshot and applies it in spec order. restart() clears the stack and
+## Owns a history stack of MoveSnapshots. LevelCoordinator.process_move() calls
+## record_snapshot() before any move-state mutation. undo() pops the top
+## snapshot and applies it in spec order. restart() clears the stack and
 ## re-initializes the level.
 ##
 ## Usage:
 ##   undo_restart.initialize(spawn_pos, sliding_movement, coverage_tracking, move_counter)
-##   # Level Coordinator connects undo_restart.on_slide_completed FIRST
+##   # Level Coordinator calls undo_restart.record_snapshot(...) first in process_move()
 ##   undo_restart.undo()    # rewinds one move
 ##   undo_restart.restart() # full level reset
 extends Node
@@ -177,12 +177,13 @@ func restart() -> void:
 
 
 # —————————————————————————————————————————————
-# Signal handlers (public for Level Coordinator wiring)
+# Move-processing API (called by LevelCoordinator)
 # —————————————————————————————————————————————
 
-## Handles slide_completed — captures pre-mutation snapshot. MUST be connected
-## FIRST (before MoveCounter and CoverageTracking) so it reads pre-mutation state.
-func on_slide_completed(
+## Captures pre-mutation snapshot for a processed move. LevelCoordinator
+## guarantees this runs before MoveCounter.increment() and
+## CoverageTracking.apply_tiles_covered().
+func record_snapshot(
 	from_pos: Vector2i,
 	_to_pos: Vector2i,
 	_direction: Vector2i,
@@ -197,6 +198,16 @@ func on_slide_completed(
 		_move_counter.get_current_moves(),
 	)
 	_history.push_back(snapshot)
+
+
+## Backward-compat adapter for legacy direct signal tests/wiring.
+func on_slide_completed(
+	from_pos: Vector2i,
+	to_pos: Vector2i,
+	direction: Vector2i,
+	tiles_covered: Array[Vector2i],
+) -> void:
+	record_snapshot(from_pos, to_pos, direction, tiles_covered)
 
 
 ## Handles level_completed — freezes the history stack. Undo becomes no-op.

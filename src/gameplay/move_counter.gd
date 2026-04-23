@@ -2,13 +2,14 @@
 ## Implements: design/gdd/move-counter.md
 ## Task: S1-08
 ##
-## Thin, deterministic counter. Increments by 1 on each slide_completed.
+## Thin, deterministic counter. Increments by 1 on each coordinator-dispatched move.
 ## Exposes current_moves and minimum_moves to HUD via move_count_changed.
 ## Undo/Restart controls the count via set_move_count() / reset_move_count().
 ##
 ## Usage:
 ##   move_counter.initialize_level(level_data)
-##   move_counter.bind_sliding_movement(sliding_movement_node)
+##   # Called by LevelCoordinator.process_move(...):
+##   move_counter.increment(from_pos, to_pos, direction, tiles_covered)
 extends Node
 
 
@@ -133,25 +134,10 @@ func freeze() -> void:
 	_frozen = true
 
 
-## Connects this counter to a SlidingMovement node's slide_completed signal.
-## Guards against double-binding — safe to call repeatedly on the same node.
-func bind_sliding_movement(sm: Node) -> void:
-	if not sm.slide_completed.is_connected(on_slide_completed):
-		sm.slide_completed.connect(on_slide_completed)
-
-
-## Disconnects from a SlidingMovement node's slide_completed signal.
-func unbind_sliding_movement(sm: Node) -> void:
-	if sm.slide_completed.is_connected(on_slide_completed):
-		sm.slide_completed.disconnect(on_slide_completed)
-
-
-# —————————————————————————————————————————————
-# Signal handlers (public for testability + external wiring)
-# —————————————————————————————————————————————
-
-## Handles slide_completed — increments current_moves by 1.
-func on_slide_completed(
+## Increments current_moves by 1 for a completed move.
+## Called by LevelCoordinator.process_move() as part of the deterministic
+## move pipeline.
+func increment(
 	_from_pos: Vector2i,
 	_to_pos: Vector2i,
 	_direction: Vector2i,
@@ -161,3 +147,13 @@ func on_slide_completed(
 		return
 	_current_moves += 1
 	move_count_changed.emit(_current_moves, _minimum_moves)
+
+
+## Backward-compat adapter for legacy direct signal tests/wiring.
+func on_slide_completed(
+	from_pos: Vector2i,
+	to_pos: Vector2i,
+	direction: Vector2i,
+	tiles_covered: Array[Vector2i],
+) -> void:
+	increment(from_pos, to_pos, direction, tiles_covered)
