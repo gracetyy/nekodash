@@ -41,6 +41,14 @@ var _star_nodes: Array[TextureRect] = []
 
 
 func _ready() -> void:
+	if _star1 == null:
+		_star1 = get_node_or_null("Star1")
+	if _star2 == null:
+		_star2 = get_node_or_null("Star2")
+	if _star3 == null:
+		_star3 = get_node_or_null("Star3")
+	if _sentinel_label == null:
+		_sentinel_label = get_node_or_null("StarSentinel")
 	assert(_star1 != null, "_star1 not assigned")
 	assert(_star2 != null, "_star2 not assigned")
 	assert(_star3 != null, "_star3 not assigned")

@@ -16,6 +16,16 @@ var _selected_skin_id: String = "cat_default"
 
 
 func _ready() -> void:
+	if _back_btn == null:
+		_back_btn = get_node_or_null("MarginContainer/VBox/Header/BackBtn")
+	if _title_label == null:
+		_title_label = get_node_or_null("MarginContainer/VBox/Header/TitleLabel")
+	if _status_label == null:
+		_status_label = get_node_or_null("MarginContainer/VBox/StatusLabel")
+	if _equip_btn == null:
+		_equip_btn = get_node_or_null("MarginContainer/VBox/EquipBtn")
+	if _skin_grid == null:
+		_skin_grid = get_node_or_null("MarginContainer/VBox/SkinGrid")
 	assert(_back_btn != null, "_back_btn not assigned")
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_status_label != null, "_status_label not assigned")
@@ -32,8 +42,8 @@ func _ready() -> void:
 
 
 func _apply_local_text_style() -> void:
-	if _title_label != null:
-		ShellThemeUtil.apply_title(_title_label, 44)
+	if _title_label != null and _title_label.has_method("refresh_style"):
+		_title_label.call("refresh_style")
 	if _status_label != null:
 		ShellThemeUtil.apply_body(_status_label, ShellThemeUtil.PLUM_SOFT, 18)
 

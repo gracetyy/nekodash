@@ -49,7 +49,7 @@ signal world_map_requested
 # Child node references — set via set_ui_nodes() or @onready
 # —————————————————————————————————————————————
 
-@export var _level_name_label: Label
+@export var _level_name_ribbon: RibbonHeader
 @export var _moves_label: Label
 @export var _min_label: Label
 @export var _prompt_label: Label
@@ -76,6 +76,9 @@ var _prev_best_moves: int = 0
 var _was_previously_completed: bool = false
 var _next_level_data: LevelData
 var _use_internal_navigation: bool = true
+var _level_name_label: Label
+var _legacy_star_nodes: Array[Control] = []
+var _legacy_star_sentinel: Label
 
 ## Whether params have been received.
 var _params_received: bool = false
@@ -92,8 +95,30 @@ var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	if _panel == null:
+		_panel = get_node_or_null("MarginContainer/ResultsCard")
+	if _level_name_ribbon == null:
+		_level_name_ribbon = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon")
+	if _moves_label == null:
+		_moves_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MovesLabel")
+	if _min_label == null:
+		_min_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MinLabel")
+	if _prompt_label == null:
+		_prompt_label = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/PromptLabel")
+	if _cat_illustration == null:
+		_cat_illustration = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration")
+	if _new_best_badge == null:
+		_new_best_badge = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/NewBestBadge")
+	if _star_strip == null:
+		_star_strip = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/StarRow")
+	if _next_btn == null:
+		_next_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
+	if _retry_btn == null:
+		_retry_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/RetryBtn")
+	if _world_map_btn == null:
+		_world_map_btn = get_node_or_null("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/WorldMapBtn")
 	assert(_panel != null, "_panel not assigned")
-	assert(_level_name_label != null, "_level_name_label not assigned")
+	assert(_level_name_ribbon != null, "_level_name_ribbon not assigned")
 	assert(_moves_label != null, "_moves_label not assigned")
 	assert(_min_label != null, "_min_label not assigned")
 	assert(_prompt_label != null, "_prompt_label not assigned")
@@ -142,10 +167,16 @@ func populate_results() -> void:
 		return
 
 	# Level name
-	if _level_name_label != null:
+	if _level_name_ribbon != null:
 		var display_name: String = _current_level_data.display_name.strip_edges()
 		if display_name != "":
-			_level_name_label.text = display_name
+			_level_name_ribbon.set_title(display_name)
+		else:
+			_level_name_ribbon.set_title("LEVEL COMPLETE!")
+	elif _level_name_label != null:
+		var fallback_name: String = _current_level_data.display_name.strip_edges()
+		if fallback_name != "":
+			_level_name_label.text = fallback_name
 		else:
 			_level_name_label.text = "LEVEL COMPLETE!"
 
@@ -216,7 +247,11 @@ func set_ui_nodes(
 	min_label: Control = null,
 	prompt_label: Control = null,
 ) -> void:
-	_level_name_label = level_name_label as Label
+	if level_name_label is RibbonHeader:
+		_level_name_ribbon = level_name_label as RibbonHeader
+		_level_name_label = null
+	else:
+		_level_name_label = level_name_label as Label
 	_moves_label = moves_label as Label
 	_min_label = min_label as Label
 	_prompt_label = prompt_label as Label
@@ -224,6 +259,10 @@ func set_ui_nodes(
 	_next_btn = next_btn as BaseButton
 	_retry_btn = retry_btn as BaseButton
 	_world_map_btn = world_map_btn as BaseButton
+	_legacy_star_nodes.clear()
+	for node: Control in star_nodes:
+		_legacy_star_nodes.append(node)
+	_legacy_star_sentinel = star_sentinel_label as Label
 	_star_strip = star_sentinel_label as Control
 	if _star_strip == null and not star_nodes.is_empty() and star_nodes[0] is Control:
 		_star_strip = star_nodes[0] as Control
@@ -264,10 +303,47 @@ func _show_stars(stars: int) -> void:
 		return
 	if _star_strip.has_method("configure"):
 		_star_strip.call("configure", stars, 2, 1, 0, 6.0)
+	_apply_legacy_star_visuals(stars)
 
 	if stars > 0:
 		SfxManager.play(_sfx_star_earned, SfxManager.SfxBus.SFX)
 	_animate_star_reveal(stars)
+
+
+func _apply_legacy_star_visuals(stars: int) -> void:
+	if _star_strip == null:
+		return
+	var star_nodes: Array[Control] = _legacy_star_nodes.duplicate()
+	if star_nodes.is_empty():
+		for name: String in ["Star1", "Star2", "Star3"]:
+			var star_node: Control = _star_strip.get_node_or_null(name) as Control
+			if star_node != null:
+				star_nodes.append(star_node)
+	if star_nodes.is_empty():
+		for child: Node in _star_strip.get_children():
+			if child is Control:
+				star_nodes.append(child as Control)
+
+	var sentinel: Label = _legacy_star_sentinel
+	if sentinel == null:
+		sentinel = _star_strip.get_node_or_null("StarSentinel") as Label
+	if sentinel == null:
+		sentinel = _star_strip as Label
+
+	if stars < 0:
+		for star: Control in star_nodes:
+			star.visible = false
+		if sentinel != null:
+			sentinel.visible = true
+			sentinel.text = "?"
+		return
+
+	for index: int in range(star_nodes.size()):
+		var star: Control = star_nodes[index]
+		star.visible = true
+		star.modulate = STAR_EARNED_COLOR if index < stars else STAR_UNEARNED_COLOR
+	if sentinel != null:
+		sentinel.visible = false
 
 
 ## Updates the move count label. Handles minimum_moves == 0.
@@ -367,13 +443,13 @@ func _connect_button_signals() -> void:
 
 
 func _apply_visual_style() -> void:
-	if _level_name_label != null and _level_name_label is Label:
-		var title_label: Label = _level_name_label as Label
-		title_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
-		title_label.add_theme_font_size_override("font_size", ShellThemeUtil._scaled_font_size(40))
-		title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
+	if _level_name_ribbon != null:
+		_level_name_ribbon.title_font_size = 40
+		_level_name_ribbon.title_color = Color(1.0, 0.984, 0.957, 1.0)
+		_level_name_ribbon.refresh_style()
 	if _moves_label != null and _moves_label is Label:
-		ShellThemeUtil.apply_title(_moves_label as Label, 40)
+		if (_moves_label as Label).has_method("refresh_style"):
+			(_moves_label as Label).call("refresh_style")
 	if _min_label != null and _min_label is Label:
 		(_min_label as Label).visible = false
 	if _prompt_label != null and _prompt_label is Label:

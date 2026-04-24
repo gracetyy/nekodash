@@ -8,14 +8,6 @@
 script = ExtResource("1")
 preview_head_swing = false
 preview_head_swing_degrees = 3.0
-_cat_rig = NodePath("GlobalCatRig")
-_display_offset_handle = NodePath("DisplayOffsetHandle")
-_tail_pivot_handle = NodePath("TailPivotHandle")
-_head_pivot_handle = NodePath("HeadPivotHandle")
-_breathing_handle = NodePath("HeadPivotHandle/BreathingHandle")
-_tail_pivot_guide = NodePath("TailPivotGuide")
-_head_pivot_guide = NodePath("HeadPivotGuide")
-_breathing_guide = NodePath("BreathingGuide")
 
 [node name="AxisHorizontal" type="Line2D" parent="."]
 z_index = -20

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://m6qor75qd1pp"]
+[gd_scene load_steps=7 format=3 uid="uid://m6qor75qd1pp"]
 
 [ext_resource type="Script" path="res://src/ui/skin_select.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bt44v7rdsv5ig" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://cknwn3q2gg3ht" path="res://scenes/ui/components/buttons/BackButton.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cogx2ma7fy4e1" path="res://scenes/ui/components/cards/SkinCard.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
+[ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="6"]
 
 [node name="SkinSelect" type="Control"]
 layout_mode = 3
@@ -14,11 +15,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
-_back_btn = NodePath("MarginContainer/VBox/Header/BackBtn")
-_title_label = NodePath("MarginContainer/VBox/Header/TitleLabel")
-_status_label = NodePath("MarginContainer/VBox/StatusLabel")
-_equip_btn = NodePath("MarginContainer/VBox/EquipBtn")
-_skin_grid = NodePath("MarginContainer/VBox/SkinGrid")
 
 [node name="Backdrop" parent="." instance=ExtResource("2")]
 layout_mode = 1
@@ -53,6 +49,8 @@ size_flags_horizontal = 3
 text = "Skins"
 horizontal_alignment = 1
 vertical_alignment = 1
+script = ExtResource("6")
+font_size = 44
 
 [node name="RightSpacer" type="Control" parent="MarginContainer/VBox/Header"]
 custom_minimum_size = Vector2(56, 56)

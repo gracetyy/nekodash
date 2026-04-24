@@ -43,7 +43,7 @@ signal pause_pressed
 @export var _restart_btn: BaseButton
 @export var _exit_btn: BaseButton
 @export var _pause_btn: BaseButton
-@export var _chrome_panel: PanelContainer
+@export var _chrome_panel: Control
 @export var _moves_prefix_label: Label
 @export var _star_strip: Control
 
@@ -82,6 +82,24 @@ var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	if _move_label == null:
+		_move_label = get_node_or_null("MarginContainer/TopRow/MoveCounter/MoveLabel")
+	if _coverage_label == null:
+		_coverage_label = get_node_or_null("MarginContainer/TopRow/CenterPill/CoverageLabel")
+	if _undo_btn == null:
+		_undo_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/UndoBtn")
+	if _restart_btn == null:
+		_restart_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/RestartBtn")
+	if _exit_btn == null:
+		_exit_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/ExitBtn")
+	if _pause_btn == null:
+		_pause_btn = get_node_or_null("MarginContainer/TopRow/ButtonRow/PauseBtn")
+	if _chrome_panel == null:
+		_chrome_panel = get_node_or_null("MarginContainer/TopRow/CenterPill")
+	if _moves_prefix_label == null:
+		_moves_prefix_label = get_node_or_null("MarginContainer/TopRow/MoveCounter/MovesPrefix")
+	if _star_strip == null:
+		_star_strip = get_node_or_null("MarginContainer/TopRow/CenterPill/StarStrip")
 	assert(_move_label != null, "_move_label not assigned")
 	assert(_undo_btn != null, "_undo_btn not assigned")
 	assert(_restart_btn != null, "_restart_btn not assigned")

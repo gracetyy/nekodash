@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://clvlcmplt5cen"]
+[gd_scene load_steps=9 format=3 uid="uid://clvlcmplt5cen"]
 
 [ext_resource type="Script" path="res://src/ui/level_complete_screen.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://cafg6hvdgbxil" path="res://scenes/ui/components/status/StarStrip.tscn" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cy0x18adte55g" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="7"]
+[ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="8"]
 
 [node name="LevelCompleteScreen" type="Control"]
 layout_mode = 3
@@ -16,17 +17,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
-_level_name_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/RibbonTitleLabel")
-_moves_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MovesLabel")
-_min_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/MinLabel")
-_prompt_label = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn/PromptLabel")
-_new_best_badge = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon/NewBestBadge")
-_next_btn = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
-_retry_btn = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/RetryBtn")
-_world_map_btn = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/WorldMapBtn")
-_panel = NodePath("MarginContainer/ResultsCard")
-_cat_illustration = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration")
-_star_strip = NodePath("MarginContainer/ResultsCard/CardMargin/VBox/StarRow")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -106,6 +96,8 @@ theme_override_colors/font_color = Color(0.592157, 0.490196, 0.788235, 1)
 theme_override_font_sizes/font_size = 26
 text = "Moves: 0"
 horizontal_alignment = 1
+script = ExtResource("8")
+font_size = 40
 
 [node name="MinLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn"]
 visible = false

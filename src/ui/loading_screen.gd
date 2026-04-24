@@ -12,6 +12,12 @@ var _progress: float = 0.0
 
 
 func _ready() -> void:
+	if _panel == null:
+		_panel = get_node_or_null("CenterContainer/LoadingCard")
+	if _title_label == null:
+		_title_label = get_node_or_null("CenterContainer/LoadingCard/CardMargin/VBox/TitleLabel")
+	if _progress_bar == null:
+		_progress_bar = get_node_or_null("CenterContainer/LoadingCard/CardMargin/VBox/ProgressBar")
 	assert(_panel != null, "_panel not assigned")
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_progress_bar != null, "_progress_bar not assigned")

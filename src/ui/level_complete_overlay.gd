@@ -14,6 +14,12 @@ func receive_scene_params(params: Dictionary) -> void:
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	if _content == null:
+		_content = get_node_or_null("Content")
+	if _next_btn == null:
+		_next_btn = get_node_or_null("Content/MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/NextLevelBtn")
+	if _retry_btn == null:
+		_retry_btn = get_node_or_null("Content/MarginContainer/ResultsCard/CardMargin/VBox/ButtonRow/RetryBtn")
 	assert(_content != null, "_content not assigned")
 	assert(_next_btn != null, "_next_btn not assigned")
 	assert(_retry_btn != null, "_retry_btn not assigned")

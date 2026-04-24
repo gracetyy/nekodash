@@ -8,10 +8,6 @@ layout_mode = 3
 anchors_preset = 0
 mouse_filter = 2
 script = ExtResource("1")
-_star1 = NodePath("Star1")
-_star2 = NodePath("Star2")
-_star3 = NodePath("Star3")
-_sentinel_label = NodePath("StarSentinel")
 
 [node name="Star1" type="TextureRect" parent="."]
 layout_mode = 0

@@ -6,6 +6,10 @@ extends Control
 
 
 func _ready() -> void:
+	if _continue_btn == null:
+		_continue_btn = get_node_or_null("MarginContainer/HeroCard/CardMargin/CardBody/ContinueBtn")
+	if _prompt_label == null:
+		_prompt_label = get_node_or_null("MarginContainer/HeroCard/CardMargin/CardBody/Prompt")
 	assert(_continue_btn != null, "_continue_btn not assigned")
 	assert(_prompt_label != null, "_prompt_label not assigned")
 	_refresh_prompt()

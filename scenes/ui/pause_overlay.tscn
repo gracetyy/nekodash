@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://d1p7xihah4drw"]
+[gd_scene load_steps=12 format=3 uid="uid://d1p7xihah4drw"]
 
 [ext_resource type="Script" path="res://src/ui/pause_menu.gd" id="1"]
 [ext_resource type="Shader" path="res://assets/shaders/ui/canvas_ui_overlay_blur.gdshader" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://s7olix7hr7wf" path="res://scenes/ui/components/settings/SliderSettingRow.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://ddd6r0f0kpb2y" path="res://scenes/ui/components/settings/ToggleSettingRow.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://b5h5g7che7rep" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="9"]
+[ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="10"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("2")
@@ -19,24 +20,6 @@ shader_parameter/dim_tint = Vector3(0.22, 0.18, 0.25)
 [node name="PauseOverlay" type="CanvasLayer"]
 layer = 41
 script = ExtResource("1")
-_resume_btn = NodePath("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/ResumeBtn")
-_restart_btn = NodePath("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/RestartBtn")
-_main_menu_btn = NodePath("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/MainMenuBtn")
-_panel = NodePath("Backdrop/Panel")
-_backdrop = NodePath("Backdrop")
-_title_label = NodePath("Backdrop/Panel/Margin/VBox/TitleLabel")
-_ribbon_title_label = NodePath("Backdrop/Ribbon/RibbonTitleLabel")
-_audio_label = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel")
-_display_label = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel")
-_input_label = NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputLabel")
-_music_slider = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider")
-_music_mute_toggle = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle")
-_sfx_slider = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider")
-_sfx_mute_toggle = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle")
-_reduce_motion_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle")
-_large_ui_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle")
-_fullscreen_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
-_input_hint_option = NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton")
 
 [node name="Backdrop" type="ColorRect" parent="."]
 material = SubResource("1")
@@ -80,6 +63,7 @@ offset_bottom = -242.0
 grow_horizontal = 2
 grow_vertical = 2
 title_text = "PAUSED"
+title_font_size = 28
 
 [node name="Panel" parent="Backdrop" instance=ExtResource("4")]
 z_index = 1
@@ -112,6 +96,8 @@ visible = false
 layout_mode = 2
 text = "PAUSED"
 horizontal_alignment = 1
+script = ExtResource("10")
+font_size = 56
 
 [node name="AudioSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
@@ -120,6 +106,8 @@ theme_override_constants/separation = 8
 [node name="AudioLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
 layout_mode = 2
 text = "Audio"
+script = ExtResource("10")
+font_size = 24
 
 [node name="MusicRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("7")]
 layout_mode = 2
@@ -135,6 +123,8 @@ theme_override_constants/separation = 4
 [node name="DisplayLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
 layout_mode = 2
 text = "Display"
+script = ExtResource("10")
+font_size = 24
 
 [node name="ReduceMotionRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("8")]
 layout_mode = 2
@@ -154,6 +144,8 @@ theme_override_constants/separation = 4
 [node name="InputLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/InputSection"]
 layout_mode = 2
 text = "Input Hints"
+script = ExtResource("10")
+font_size = 24
 
 [node name="InputHintRow" parent="Backdrop/Panel/Margin/VBox/InputSection" instance=ExtResource("9")]
 layout_mode = 2

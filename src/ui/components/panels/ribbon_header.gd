@@ -26,6 +26,10 @@ func _ready() -> void:
 	_apply_component_state()
 
 
+func refresh_style() -> void:
+	_apply_component_state()
+
+
 func set_title(value: String) -> void:
 	title_text = value
 	_apply_component_state()

@@ -25,6 +25,8 @@ var _is_component_ready: bool = false
 
 
 func _ready() -> void:
+	if _level_grid == null:
+		_level_grid = get_node_or_null("Margin/VBox/LevelGrid")
 	assert(_level_grid != null, "_level_grid not assigned")
 	_is_component_ready = true
 	_apply_component_state()
@@ -71,6 +73,8 @@ func add_level_card(card: Control) -> void:
 
 
 func get_level_grid() -> GridContainer:
+	if _level_grid == null:
+		_level_grid = get_node_or_null("Margin/VBox/LevelGrid")
 	return _level_grid
 
 

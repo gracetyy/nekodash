@@ -77,6 +77,24 @@ var _menu_cat_layout_refresh_queued: bool = false
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	if _play_btn == null:
+		_play_btn = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/PlayBtn")
+	if _options_btn == null:
+		_options_btn = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/OptionsBtn")
+	if _credits_btn == null:
+		_credits_btn = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/CreditsBtn")
+	if _skins_btn == null:
+		_skins_btn = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/SkinsBtn")
+	if _hero_card == null:
+		_hero_card = get_node_or_null("MarginContainer/Content/HeroCard")
+	if _hint_label == null:
+		_hint_label = get_node_or_null("MarginContainer/Content/HintLabel")
+	if _title_texture == null:
+		_title_texture = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/TitleLabel")
+	if _cat_illustration == null:
+		_cat_illustration = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/CatIllustration")
+	if _buttons_box == null:
+		_buttons_box = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons")
 	assert(_play_btn != null, "_play_btn not assigned")
 	assert(_options_btn != null, "_options_btn not assigned")
 	assert(_credits_btn != null, "_credits_btn not assigned")

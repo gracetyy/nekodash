@@ -72,6 +72,24 @@ var _last_grid_column_target: int = -1
 
 
 func _ready() -> void:
+	if _back_btn == null:
+		_back_btn = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/BackBtn")
+	if _header_card == null:
+		_header_card = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard")
+	if _progress_chip == null:
+		_progress_chip = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip")
+	if _world_list == null:
+		_world_list = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer/WorldList")
+	if _scroll_container == null:
+		_scroll_container = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer")
+	if _no_levels_label == null:
+		_no_levels_label = get_node_or_null("MarginContainer/VBox/NoLevelsLabel")
+	if _title_label == null:
+		_title_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/TitleLabel")
+	if _subtitle_label == null:
+		_subtitle_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/SubtitleLabel")
+	if _hint_label == null:
+		_hint_label = get_node_or_null("MarginContainer/VBox/HintLabel")
 	assert(_header_card != null, "_header_card not assigned")
 	assert(_back_btn != null, "_back_btn not assigned")
 	assert(_title_label != null, "_title_label not assigned")

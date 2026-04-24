@@ -69,15 +69,15 @@ script = ExtResource("7")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("8")
-_move_label = NodePath("HUD/MarginContainer/TopRow/MoveCounter/MoveLabel")
-_coverage_label = NodePath("HUD/MarginContainer/TopRow/CenterPill/CoverageLabel")
-_undo_btn = NodePath("HUD/MarginContainer/TopRow/ButtonRow/UndoBtn")
-_restart_btn = NodePath("HUD/MarginContainer/TopRow/ButtonRow/RestartBtn")
-_exit_btn = NodePath("HUD/MarginContainer/TopRow/ButtonRow/ExitBtn")
-_pause_btn = NodePath("HUD/MarginContainer/TopRow/ButtonRow/PauseBtn")
-_chrome_panel = NodePath("HUD/MarginContainer/TopRow/CenterPill")
-_moves_prefix_label = NodePath("HUD/MarginContainer/TopRow/MoveCounter/MovesPrefix")
-_star_strip = NodePath("HUD/MarginContainer/TopRow/CenterPill/StarStrip")
+_move_label = NodePath("MarginContainer/TopRow/MoveCounter/MoveLabel")
+_coverage_label = NodePath("MarginContainer/TopRow/CenterPill/CoverageLabel")
+_undo_btn = NodePath("MarginContainer/TopRow/ButtonRow/UndoBtn")
+_restart_btn = NodePath("MarginContainer/TopRow/ButtonRow/RestartBtn")
+_exit_btn = NodePath("MarginContainer/TopRow/ButtonRow/ExitBtn")
+_pause_btn = NodePath("MarginContainer/TopRow/ButtonRow/PauseBtn")
+_chrome_panel = NodePath("MarginContainer/TopRow/CenterPill")
+_moves_prefix_label = NodePath("MarginContainer/TopRow/MoveCounter/MovesPrefix")
+_star_strip = NodePath("MarginContainer/TopRow/CenterPill/StarStrip")
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD"]
 anchors_preset = 10

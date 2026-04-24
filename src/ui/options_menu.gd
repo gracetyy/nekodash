@@ -15,7 +15,7 @@ var _music_manager_ref: Node
 var _sfx_manager_ref: Node
 
 @export var _title_label: Label
-@export var _ribbon_title_label: Label
+@export var _ribbon: TextureRect
 @export var _audio_label: Label
 @export var _display_label: Label
 @export var _input_label: Label
@@ -33,9 +33,41 @@ var _sfx_manager_ref: Node
 
 
 func _ready() -> void:
+	if _backdrop == null:
+		_backdrop = get_node_or_null("Backdrop")
+	if _panel == null:
+		_panel = get_node_or_null("Backdrop/Panel")
+	if _ribbon == null:
+		_ribbon = get_node_or_null("Backdrop/Ribbon")
+	if _title_label == null:
+		_title_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TitleLabel")
+	if _audio_label == null:
+		_audio_label = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel")
+	if _display_label == null:
+		_display_label = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel")
+	if _input_label == null:
+		_input_label = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputLabel")
+	if _music_slider == null:
+		_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider")
+	if _music_mute_toggle == null:
+		_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle")
+	if _sfx_slider == null:
+		_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider")
+	if _sfx_mute_toggle == null:
+		_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle")
+	if _reduce_motion_toggle == null:
+		_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle")
+	if _large_ui_toggle == null:
+		_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle")
+	if _fullscreen_toggle == null:
+		_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
+	if _input_hint_option == null:
+		_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton")
+	if _close_btn == null:
+		_close_btn = get_node_or_null("Backdrop/CloseBtn")
 	assert(_backdrop != null, "_backdrop not assigned")
 	assert(_panel != null, "_panel not assigned")
-	assert(_ribbon_title_label != null, "_ribbon_title_label not assigned")
+	assert(_ribbon != null, "_ribbon not assigned")
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_audio_label != null, "_audio_label not assigned")
 	assert(_display_label != null, "_display_label not assigned")
@@ -152,11 +184,12 @@ func _sync_controls() -> void:
 	_suppress_events = true
 	if _title_label != null:
 		_title_label.text = _title_text
-	if _ribbon_title_label != null:
+	if _ribbon != null:
 		var ribbon_text: String = _title_text
 		if ribbon_text.length() <= 8:
 			ribbon_text = ribbon_text.to_upper()
-		_ribbon_title_label.text = ribbon_text
+		if _ribbon.has_method("set_title"):
+			_ribbon.call("set_title", ribbon_text)
 	if _music_slider != null:
 		_music_slider.value = _music_manager_ref.get_volume() * 100.0
 	if _music_mute_toggle != null:
@@ -243,14 +276,15 @@ func _on_input_hint_selected(index: int) -> void:
 
 func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
-	if _title_label != null:
-		ShellThemeUtil.apply_title(_title_label, 40)
-	if _ribbon_title_label != null:
-		ShellThemeUtil.apply_title(_ribbon_title_label, 34)
-		_ribbon_title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
-	ShellThemeUtil.apply_title(_audio_label, 24)
-	ShellThemeUtil.apply_title(_display_label, 24)
-	ShellThemeUtil.apply_title(_input_label, 24)
+	_refresh_title_components()
+
+
+func _refresh_title_components() -> void:
+	for node: Label in [_title_label, _audio_label, _display_label, _input_label]:
+		if node != null and node.has_method("refresh_style"):
+			node.call("refresh_style")
+	if _ribbon != null and _ribbon.has_method("refresh_style"):
+		_ribbon.call("refresh_style")
 
 
 func _play_intro_animation() -> void:

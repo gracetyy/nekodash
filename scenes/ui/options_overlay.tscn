@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dymqonpyn87yd"]
+[gd_scene load_steps=10 format=3 uid="uid://dymqonpyn87yd"]
 
 [ext_resource type="Script" path="res://src/ui/options_menu.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="2"]
@@ -8,26 +8,11 @@
 [ext_resource type="PackedScene" uid="uid://s7olix7hr7wf" path="res://scenes/ui/components/settings/SliderSettingRow.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://ddd6r0f0kpb2y" path="res://scenes/ui/components/settings/ToggleSettingRow.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://b5h5g7che7rep" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="8"]
+[ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="9"]
 
 [node name="OptionsOverlay" type="CanvasLayer"]
 layer = 40
 script = ExtResource("1")
-_title_label = NodePath("Backdrop/Panel/Margin/VBox/TitleLabel")
-_ribbon_title_label = NodePath("Backdrop/Ribbon/RibbonTitleLabel")
-_audio_label = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel")
-_display_label = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel")
-_input_label = NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputLabel")
-_panel = NodePath("Backdrop/Panel")
-_backdrop = NodePath("Backdrop")
-_music_slider = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider")
-_music_mute_toggle = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle")
-_sfx_slider = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider")
-_sfx_mute_toggle = NodePath("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle")
-_reduce_motion_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle")
-_large_ui_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle")
-_fullscreen_toggle = NodePath("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
-_input_hint_option = NodePath("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton")
-_close_btn = NodePath("Backdrop/CloseBtn")
 
 [node name="Backdrop" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -66,6 +51,8 @@ visible = false
 layout_mode = 2
 text = "OPTIONS"
 horizontal_alignment = 1
+script = ExtResource("9")
+font_size = 40
 
 [node name="AudioSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
 layout_mode = 2
@@ -74,6 +61,8 @@ theme_override_constants/separation = 8
 [node name="AudioLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
 layout_mode = 2
 text = "Audio"
+script = ExtResource("9")
+font_size = 24
 
 [node name="MusicRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("6")]
 layout_mode = 2
@@ -89,6 +78,8 @@ theme_override_constants/separation = 8
 [node name="DisplayLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
 layout_mode = 2
 text = "Display"
+script = ExtResource("9")
+font_size = 24
 
 [node name="ReduceMotionRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
 layout_mode = 2
@@ -108,6 +99,8 @@ theme_override_constants/separation = 6
 [node name="InputLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/InputSection"]
 layout_mode = 2
 text = "Input Hints"
+script = ExtResource("9")
+font_size = 24
 
 [node name="InputHintRow" parent="Backdrop/Panel/Margin/VBox/InputSection" instance=ExtResource("8")]
 layout_mode = 2
@@ -127,6 +120,7 @@ offset_bottom = -258.0
 grow_horizontal = 2
 grow_vertical = 2
 title_text = "OPTIONS"
+title_font_size = 34
 
 [node name="CatPeek" type="TextureRect" parent="Backdrop"]
 z_index = 2

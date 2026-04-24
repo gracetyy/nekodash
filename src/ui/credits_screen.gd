@@ -5,6 +5,8 @@ extends Control
 
 
 func _ready() -> void:
+	if _back_btn == null:
+		_back_btn = get_node_or_null("MarginContainer/CreditsCard/CardMargin/VBox/BackBtn")
 	assert(_back_btn != null, "_back_btn not assigned")
 	if not _back_btn.pressed.is_connected(_on_back_btn_pressed):
 		_back_btn.pressed.connect(_on_back_btn_pressed)

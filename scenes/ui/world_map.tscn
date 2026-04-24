@@ -13,15 +13,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
-_back_btn = NodePath("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/BackBtn")
-_header_card = NodePath("MarginContainer/VBox/HeaderOuterMargin/HeaderCard")
-_progress_chip = NodePath("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip")
-_world_list = NodePath("MarginContainer/VBox/ListOuterMargin/ScrollContainer/WorldList")
-_scroll_container = NodePath("MarginContainer/VBox/ListOuterMargin/ScrollContainer")
-_no_levels_label = NodePath("MarginContainer/VBox/NoLevelsLabel")
-_title_label = NodePath("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/TitleLabel")
-_subtitle_label = NodePath("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/SubtitleLabel")
-_hint_label = NodePath("MarginContainer/VBox/HintLabel")
 
 [node name="Background" type="Control" parent="."]
 layout_mode = 1

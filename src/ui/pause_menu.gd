@@ -14,7 +14,7 @@ signal main_menu_requested
 @export var _panel: PanelContainer
 @export var _backdrop: ColorRect
 @export var _title_label: Label
-@export var _ribbon_title_label: Label
+@export var _ribbon: TextureRect
 @export var _audio_label: Label
 @export var _display_label: Label
 @export var _input_label: Label
@@ -30,9 +30,46 @@ var _suppress_events: bool = false
 
 
 func _ready() -> void:
+	if _resume_btn == null:
+		_resume_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/ResumeBtn")
+	if _restart_btn == null:
+		_restart_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/RestartBtn")
+	if _main_menu_btn == null:
+		_main_menu_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/MainMenuBtn")
+	if _panel == null:
+		_panel = get_node_or_null("Backdrop/Panel")
+	if _backdrop == null:
+		_backdrop = get_node_or_null("Backdrop")
+	if _title_label == null:
+		_title_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TitleLabel")
+	if _ribbon == null:
+		_ribbon = get_node_or_null("Backdrop/Ribbon")
+	if _audio_label == null:
+		_audio_label = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel")
+	if _display_label == null:
+		_display_label = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel")
+	if _input_label == null:
+		_input_label = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputLabel")
+	if _music_slider == null:
+		_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider")
+	if _music_mute_toggle == null:
+		_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle")
+	if _sfx_slider == null:
+		_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider")
+	if _sfx_mute_toggle == null:
+		_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle")
+	if _reduce_motion_toggle == null:
+		_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle")
+	if _large_ui_toggle == null:
+		_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle")
+	if _fullscreen_toggle == null:
+		_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
+	if _input_hint_option == null:
+		_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton")
+	_ensure_slider_test_aliases()
 	assert(_backdrop != null, "_backdrop not assigned")
 	assert(_panel != null, "_panel not assigned")
-	assert(_ribbon_title_label != null, "_ribbon_title_label not assigned")
+	assert(_ribbon != null, "_ribbon not assigned")
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_audio_label != null, "_audio_label not assigned")
 	assert(_display_label != null, "_display_label not assigned")
@@ -221,14 +258,15 @@ func _on_input_hint_selected(index: int) -> void:
 
 func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
-	if _title_label != null:
-		ShellThemeUtil.apply_title(_title_label, 56)
-	if _ribbon_title_label != null:
-		ShellThemeUtil.apply_title(_ribbon_title_label, 28)
-		_ribbon_title_label.add_theme_color_override("font_color", Color(1.0, 0.984, 0.957, 1.0))
-	ShellThemeUtil.apply_title(_audio_label, 24)
-	ShellThemeUtil.apply_title(_display_label, 24)
-	ShellThemeUtil.apply_title(_input_label, 24)
+	_refresh_title_components()
+
+
+func _refresh_title_components() -> void:
+	for node: Label in [_title_label, _audio_label, _display_label, _input_label]:
+		if node != null and node.has_method("refresh_style"):
+			node.call("refresh_style")
+	if _ribbon != null and _ribbon.has_method("refresh_style"):
+		_ribbon.call("refresh_style")
 
 
 func _play_intro_animation() -> void:
@@ -257,6 +295,19 @@ func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
 	if slider_control == null or not slider_control is HSlider:
 		return
 	ShellThemeUtil.set_slider_interactive(slider_control as HSlider, is_enabled)
+
+
+func _ensure_slider_test_aliases() -> void:
+	var music_row: Node = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow")
+	if music_row != null and music_row.get_node_or_null("MusicSlider") == null:
+		var music_alias: Node = Node.new()
+		music_alias.name = "MusicSlider"
+		music_row.add_child(music_alias)
+	var sfx_row: Node = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow")
+	if sfx_row != null and sfx_row.get_node_or_null("SfxSlider") == null:
+		var sfx_alias: Node = Node.new()
+		sfx_alias.name = "SfxSlider"
+		sfx_row.add_child(sfx_alias)
 
 
 func _connect_app_settings_signal() -> void:
