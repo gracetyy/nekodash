@@ -1,3 +1,4 @@
+@tool
 class_name PillButton
 extends Button
 
@@ -10,10 +11,18 @@ enum Variant {
 	DANGER,
 }
 
-@export var variant: Variant = Variant.PRIMARY
+@export var variant: Variant = Variant.PRIMARY:
+	set(value):
+		variant = value
+		if is_node_ready():
+			_apply_component_state()
 
 @export_range(44.0, 120.0, 1.0, "or_greater")
-var min_height_px: float = 60.0
+var min_height_px: float = 60.0:
+	set(value):
+		min_height_px = value
+		if is_node_ready():
+			_apply_component_state()
 
 
 func _ready() -> void:

@@ -1,3 +1,4 @@
+@tool
 class_name ShellTheme
 extends RefCounted
 
@@ -251,8 +252,8 @@ static func _pill_variant_from_fill(fill: Color) -> String:
 static func _pill_style(variant: String, state: String) -> StyleBoxTexture:
 	var textures: Dictionary = _PILL_TEXTURES.get(variant, _PILL_TEXTURES["primary"])
 	var texture: Texture2D = textures.get(state, textures["normal"]) as Texture2D
-	# Keep cap curvature consistent across states to avoid corner mismatch.
-	return make_texture_style(texture, 52, 24, 52, 24, 30.0, 14.0, 30.0, 18.0)
+	# 3-slice layout: Left and right caps protect the fully rounded corners, top/bottom scale freely.
+	return make_texture_style(texture, 52, 0, 52, 0, 30.0, 14.0, 30.0, 18.0)
 
 
 static func _ensure_fonts_loaded() -> void:
@@ -275,10 +276,18 @@ static func _is_reduce_motion_enabled() -> bool:
 	return _call_app_settings_bool("get_reduce_motion", false)
 
 
+static func _get_app_settings() -> Node:
+	if Engine.get_main_loop() is SceneTree:
+		var tree: SceneTree = Engine.get_main_loop() as SceneTree
+		if tree.root.has_node("AppSettings"):
+			return tree.root.get_node("AppSettings")
+	return null
+
 static func _call_app_settings_float(method_name: StringName, fallback: float) -> float:
-	if AppSettings == null:
+	var settings: Node = _get_app_settings()
+	if settings == null:
 		return fallback
-	var method_callable: Callable = Callable(AppSettings, method_name)
+	var method_callable: Callable = Callable(settings, method_name)
 	if not method_callable.is_valid():
 		return fallback
 	var value: Variant = method_callable.call()
@@ -290,9 +299,10 @@ static func _call_app_settings_float(method_name: StringName, fallback: float) -
 
 
 static func _call_app_settings_bool(method_name: StringName, fallback: bool) -> bool:
-	if AppSettings == null:
+	var settings: Node = _get_app_settings()
+	if settings == null:
 		return fallback
-	var method_callable: Callable = Callable(AppSettings, method_name)
+	var method_callable: Callable = Callable(settings, method_name)
 	if not method_callable.is_valid():
 		return fallback
 	var value: Variant = method_callable.call()
@@ -335,12 +345,26 @@ static func apply_pill_button(
 	button.add_theme_color_override("font_focus_color", resolved_font_color)
 	button.add_theme_color_override("font_disabled_color", DISABLED_TEXT)
 	button.add_theme_constant_override("h_separation", 10)
-	button.add_theme_stylebox_override("normal", _pill_style(variant, "normal"))
-	button.add_theme_stylebox_override("hover", _pill_style(variant, "hover"))
-	button.add_theme_stylebox_override("pressed", _pill_style(variant, "pressed"))
-	button.add_theme_stylebox_override("focus", _pill_style(variant, "normal"))
-	button.add_theme_stylebox_override("disabled", _pill_style("disabled", "normal"))
+	_update_style_override(button, "normal", variant, "normal")
+	_update_style_override(button, "hover", variant, "hover")
+	_update_style_override(button, "pressed", variant, "pressed")
+	_update_style_override(button, "focus", variant, "normal")
+	_update_style_override(button, "disabled", "disabled", "normal")
 	_wire_pill_hover_feedback(button)
+
+
+static func _update_style_override(button: BaseButton, override_name: StringName, variant: String, state: String) -> void:
+	var textures: Dictionary = _PILL_TEXTURES.get(variant, _PILL_TEXTURES["primary"])
+	var texture: Texture2D = textures.get(state, textures["normal"]) as Texture2D
+	if button.has_theme_stylebox_override(override_name):
+		var existing: StyleBox = button.get_theme_stylebox(override_name)
+		if existing is StyleBoxTexture:
+			existing.texture = texture
+			# Enforce 3-slice horizontally (top/bottom are 0).
+			existing.texture_margin_top = 0.0
+			existing.texture_margin_bottom = 0.0
+			return
+	button.add_theme_stylebox_override(override_name, _pill_style(variant, state))
 
 
 static func _wire_pill_hover_feedback(button: BaseButton) -> void:
