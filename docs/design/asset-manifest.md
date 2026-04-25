@@ -50,7 +50,7 @@ res://assets/
 
 All shipped cat UI sprites are exported at **320×320px** for base assets and
 **640×640px** for `@2x` assets. `cat_default_peek.png` is a decorative modal
-accent exported at **440×350px**, with a **42px** transparent bottom alignment
+accent exported at **440×350px**, with a **42px** transparent bottom alignment  
 gutter so the cat head can sit flush against modal/card top edges.
 Style: kawaii, soft edges, dark clean outline, pink blush, warm colour fill.
 Source draft: `design/draft/sprite-cat.png` (single idle pose, white cat — use as base for all states).
@@ -102,8 +102,12 @@ One unvisited state + one visited/trail state per world.
 Draft source: `design/draft/tileset-floor-ver1 1.png` (World 1 confirmed).
 
 > **Runtime note (2026-04-25)**: World 1 currently renders from
-> `assets/art/tiles/home/bedroom/1x1_floor_tile/normal.png` and `visited.png` while the
-> canonical shared `tiles/floor/` export layout remains a longer-term art-pipeline target.
+> `assets/art/tiles/home/bedroom/1x1_floor_tile/normal.png`, `visited.png`, and
+> `visited_paw.png` while the canonical shared `tiles/floor/` export layout remains a
+> longer-term art-pipeline target.
+>
+> Runtime split: `visited.png` is used as the floor under walls/obstacles; `visited_paw.png`
+> is used for tiles newly covered by cat movement.
 
 | File                     | Description                                                                                                                                                        | Style Guide                                                                    | Size (px) | Software  | Format | Status                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | --------- | --------- | ------ | ------------------------------------------- |
@@ -196,12 +200,15 @@ Palette: `#D0C0E8` (lavender), `#F8F0E8` (cream paw ground), `#4A3870` (dark pur
 ### Home Runtime Source (`assets/art/tiles/home/`)
 
 art (currently unused), and `0.5x0.5_tabletop_item` decor overlays.
-**Wall tile variants**: Each world folder includes: - `wooden.png` — for mid-room walls - `wooden_side.png` (optional) — for leftmost/rightmost edge walls (visual variation) - Other world-specific variants as needed
+**Wall tile variants**: Each world folder can ship world-specific wall files. World 1 runtime mapping uses semantic edge/corner roles: `top`, `bottom`, `left`, `right`, `top_left_corner`, `top_right_corner`, `bottom_left_corner`, `bottom_right_corner`.
 
-- `bedroom/` currently ships the active World 1 floor and bedroom-only obstacle set.
-  Includes bedroom-specific `wooden.png` and `wooden_side.png` wall variants.
+- `bedroom/` currently ships the active World 1 floor, bedroom obstacle set, and active World 1 wall set in `1x1_wall_tile/`.
+  Runtime wall files include `top.png`, `bottom.png`, `right.png`, `*_corner.png`, and `furniture10.png`.
+  `left.png` is recommended for full directional parity; if missing, runtime currently falls back to `right.png` for left-edge walls.
 - Folder names follow the runtime contract `width`x`height`\_`usage`
   (examples: `1x1_floor_tile`, `2x1_obstacle_tile`, `1x3_obstacle_tile_side_facing`).
+
+- Tabletop decor placement rule: tables can use the full top area; shelves are constrained to the upper quarter.
 
 | File              | Tile Size | Description                | Size (px) | Software  | Format | Status |
 | ----------------- | --------- | -------------------------- | --------- | --------- | ------ | ------ |

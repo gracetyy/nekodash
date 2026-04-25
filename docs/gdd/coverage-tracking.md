@@ -166,12 +166,12 @@ Coverage Tracking has no runtime tuning knobs — it is a deterministic state tr
 
 Coverage Tracking itself produces no visuals or audio — it only emits signals. All visual and audio feedback is owned by downstream systems:
 
-| Event                                 | Owner                               | Description                                                                                   | Priority |
-| ------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- | -------- |
-| Tile first covered (`tile_covered`)   | CoverageVisualizer                  | Tile transitions from "uncovered" to the room's visited-floor art (or yellow Simple UI fallback) | Required |
-| Coverage updated (`coverage_updated`) | HUD                                 | Live percentage or count update in HUD display                                                | Required |
-| Level completed (`level_completed`)   | Level Complete Screen + SFX Manager | Completion flourish animation + completion musical sting                                      | Required |
-| Starting tile pre-covered             | CoverageVisualizer                  | Tile under cat spawn position shows as covered immediately on level load                      | Required |
+| Event                                 | Owner                               | Description                                                                                                                            | Priority |
+| ------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Tile first covered (`tile_covered`)   | CoverageVisualizer                  | Tile transitions from "uncovered" to the room's trail tile (`visited_paw` where available, else visited; or yellow Simple UI fallback) | Required |
+| Coverage updated (`coverage_updated`) | HUD                                 | Live percentage or count update in HUD display                                                                                         | Required |
+| Level completed (`level_completed`)   | Level Complete Screen + SFX Manager | Completion flourish animation + completion musical sting                                                                               | Required |
+| Starting tile pre-covered             | CoverageVisualizer                  | Tile under cat spawn position shows as covered immediately on level load                                                               | Required |
 
 _Note: The visual distinction between "covered" and "uncovered" tiles is one of NekoDash's primary feedback mechanisms. The tile color ramp (e.g., pale grey uncovered → warm gold covered) is a critical art direction decision to be resolved before the first art sprint. Coverage Tracking only provides the data model; the visual layer owns the presentation._
 
@@ -249,8 +249,9 @@ func _on_spawn_position_set(pos: Vector2i) -> void
 
 1. `initialize_level()`: sets all tiles to uncovered visual state with no animation.
 2. `_on_tile_covered(coord)`: transitions tile to covered state. In the current home-room
-   implementation this uses the active room's visited floor tile; when `Simple UI` is on it
-   falls back to `assets/art/tiles/grids/grid_yellow.png`.
+   implementation this uses the active room's trail tile (`visited_paw` where available,
+   falling back to `visited`); when `Simple UI` is on it falls back to
+   `assets/art/tiles/grids/grid_yellow.png`.
 3. `_on_tile_uncovered(coord)`: transitions tile to uncovered state. Called when Undo
    triggers `restore_coverage_snapshot()`. Instant at MVP.
 4. `_on_spawn_position_set(pos)`: marks starting tile as covered immediately (no animation)

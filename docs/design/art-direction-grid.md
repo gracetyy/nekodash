@@ -11,7 +11,7 @@
 
 This document defines the visual art direction for the **game grid** — the floor tiles,
 
-- **Wall variants by position**: Normal mid-room walls use `wooden` variant; leftmost/rightmost edge walls prefer `wooden_side` variant if available for visual distinction
+- **Wall variants by position**: World 1 runtime wall selection is role-based (`top`, `bottom`, `left`, `right`, and explicit corner tokens)
 
 > **Critical Note**: The plain coloured tiles in the AI reference screenshots are
 > **placeholder art only**. The actual game grid must look like a **top-down view
@@ -81,11 +81,11 @@ additive glow, not a flat fill.
    When right side is walled, use default orientation; when left side is walled, use
    flipped (mirrored) orientation. The packing algorithm tries right-facing placement first,
    then falls back to left-facing if the right side is blocked.
-   _(tabletops may sit anywhere on tables, but stay in the upper third on shelves)_
+   _(tabletops may sit anywhere on tables, but stay in the upper quarter on shelves)_
 5. **`?x?_backdrop` assets are not used yet.** They remain authored content for a later pass.
 6. **Table and shelf props receive decor overlays.** Any obstacle whose filename contains
    `table` or `shelf` gets a random `0.5x0.5_tabletop_item` overlay. Tables may place
-   the item anywhere on their top surface; shelves constrain placement to the upper third.
+   the item anywhere on their top surface; shelves constrain placement to the upper quarter.
 
 ### Art Rules
 
@@ -195,12 +195,12 @@ sprites applied to blocking cells:
 
 **Wall tile sets by world:**
 
-| World            | Theme                        | Draft File              | Variants                                                                                 |
-| ---------------- | ---------------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
-| 1 — Bedroom      | Pastel pink kawaii wallpaper | `tileset-wall-ver4.png` | 8: plain pink, stars, hearts, corner, fairy lights, floating shelf, poster, outer corner |
-| 2 — Kitchen      | White/mint subway tile       | `tileset-wall-ver3.png` | 8: plain, mint accent, grout, corner, knife rack, calendar, window, outer corner         |
-| 3 — Living Room  | Brown wood log-cabin planks  | `tileset-wall-ver1.png` | 6: plain, corner, alt corner, shelf, clock, picture                                      |
-| Post-jam — Study | Lavender paw-print wallpaper | `tileset-wall-ver2.png` | 8: plain, stripe, dense paw, corner, cat picture, switch, outlet, dark solid             |
+| World            | Theme                        | Draft File                                     | Variants                                                                         |
+| ---------------- | ---------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1 — Bedroom      | Pastel pink kawaii wallpaper | `assets/art/tiles/home/bedroom/1x1_wall_tile/` | 8: `top`, `bottom`, `left`, `right`, four corners                                |
+| 2 — Kitchen      | White/mint subway tile       | `tileset-wall-ver3.png`                        | 8: plain, mint accent, grout, corner, knife rack, calendar, window, outer corner |
+| 3 — Living Room  | Brown wood log-cabin planks  | `tileset-wall-ver1.png`                        | 6: plain, corner, alt corner, shelf, clock, picture                              |
+| Post-jam — Study | Lavender paw-print wallpaper | `tileset-wall-ver2.png`                        | 8: plain, stripe, dense paw, corner, cat picture, switch, outlet, dark solid     |
 
 ---
 
@@ -217,21 +217,21 @@ rooms as they progress.
 **Room concept**: The cat's own bedroom — soft, cosy, personal. First world: larger grid,
 higher obstacle density. Sets the warm kawaii tone for the whole game.
 
-| Element               | Description                                                                                                                     |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Grid size range**   | 7×7 to 9×9                                                                                                                      |
-| **Obstacle density**  | 0.18–0.25 (more furniture = more challenge per move)                                                                            |
-| **Levels**            | 5–7 levels                                                                                                                      |
-| **Floor tile**        | Soft pale pink carpet — subtle fabric weave texture, dusky rose colour                                                          |
-| **Floor colour**      | Unvisited: `#FFE8EE` · Visited glow: `#FFD6E0`                                                                                  |
-| **Trail tint**        | Warm golden-amber glow over the carpet texture                                                                                  |
-| **Background colour** | `#FDE8EE`                                                                                                                       |
-| **Accent colour**     | `#F5C842` (gold)                                                                                                                |
-| **Wall border**       | Pastel pink kawaii wallpaper (`tileset-wall-ver4`) — 8 variants with fairy lights, floating shelf, poster                       |
-| **Furniture set**     | Double bed (2×2), wardrobe (1×3), chest of drawers, nightstand with lamp, floor mirror, bean bag, laundry basket, round cat bed |
-| **Furniture palette** | Warm rose/pink duvet, walnut brown wardrobe, peach soft furnishings                                                             |
-| **Colour mood**       | Dusky rose, mauve, soft warm pink, cream                                                                                        |
-| **Music mood**        | Dreamy, lullaby-adjacent, music box or gentle chime, soft synth                                                                 |
+| Element               | Description                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Grid size range**   | 7×7 to 9×9                                                                                                                                            |
+| **Obstacle density**  | 0.18–0.25 (more furniture = more challenge per move)                                                                                                  |
+| **Levels**            | 5–7 levels                                                                                                                                            |
+| **Floor tile**        | Soft pale pink carpet — subtle fabric weave texture, dusky rose colour                                                                                |
+| **Floor colour**      | Unvisited: `#FFE8EE` · Visited glow: `#FFD6E0`                                                                                                        |
+| **Trail tint**        | Warm golden-amber glow over the carpet texture                                                                                                        |
+| **Background colour** | `#FDE8EE`                                                                                                                                             |
+| **Accent colour**     | `#F5C842` (gold)                                                                                                                                      |
+| **Wall border**       | Pastel pink bedroom wall set (`assets/art/tiles/home/bedroom/1x1_wall_tile`) — directional roles (`top`, `bottom`, `left`, `right`) + corner variants |
+| **Furniture set**     | Double bed (2×2), wardrobe (1×3), chest of drawers, nightstand with lamp, floor mirror, bean bag, laundry basket, round cat bed                       |
+| **Furniture palette** | Warm rose/pink duvet, walnut brown wardrobe, peach soft furnishings                                                                                   |
+| **Colour mood**       | Dusky rose, mauve, soft warm pink, cream                                                                                                              |
+| **Music mood**        | Dreamy, lullaby-adjacent, music box or gentle chime, soft synth                                                                                       |
 
 ---
 
@@ -338,7 +338,7 @@ maintaining square tiles and the 8px horizontal margin constraint.
 
 ```
 Layer 0: Floor tiles from `assets/art/tiles/home/<room>/1x1_floor_tile`
-Layer 1: Visited floor overlay (room-specific visited tile or `grid_yellow.png` in Simple UI)
+Layer 1: Visited overlays (`visited_paw` for cat trail; `visited` under walls/obstacles)
 Layer 2: Wall / obstacle / tabletop sprites from `assets/art/tiles/home/common` + room folder
 Layer 3: Cat sprite (CharacterBody2D or AnimatedSprite2D)
 Layer 4: VFX particles (trail sparkle, bump dust, etc.)
@@ -384,12 +384,13 @@ within the correct row. The `world_id` parameter selects the column offset.
 ### Floor Tiles (per world × 3 worlds = 3 each)
 
 - [✅] Floor — unvisited (World 1: Bedroom) — `assets/art/tiles/home/bedroom/1x1_floor_tile/normal.png`
-- [✅] Floor — visited/trail (World 1: Bedroom) — `assets/art/tiles/home/bedroom/1x1_floor_tile/visited.png`
+- [✅] Floor — visited base under walls/obstacles (World 1: Bedroom) — `assets/art/tiles/home/bedroom/1x1_floor_tile/visited.png`
+- [✅] Floor — visited trail (cat path) (World 1: Bedroom) — `assets/art/tiles/home/bedroom/1x1_floor_tile/visited_paw.png`
 - [ ] Floor — unvisited (World 2: white ceramic tile `#F8F8F8`) — not yet created
 - [ ] Floor — visited/trail (World 2: ceramic + mint glow `#DCF3EA` + paw stamp) — not yet created
 - [✅] Floor — unvisited (World 3: warm oak plank `#F5E6C8`) — `tileset-floor-ver1`
 - [✅] Floor — visited/trail (World 3: plank + amber glow `#F5C842` + paw stamp) — `tileset-floor-ver1`
-- [✅] Trail overlay now uses the room's visited floor tile; `grid_yellow.png` is retained for `Simple UI`
+- [✅] Trail overlay now uses `visited_paw` when available; `visited` is retained under walls/obstacles; `grid_yellow.png` is retained for `Simple UI`
 - [✅] Paw stamp on trail tile — confirmed in `tileset-floor-ver1` (right tile has white paw stamp)
 
 ### Grid Container Frame
@@ -398,7 +399,7 @@ within the correct row. The `world_id` parameter selects the column offset.
 
 ### Wall Tile Sets (per world)
 
-- [✅] Wall tile set — World 1 / Bedroom (pink kawaii) — `tileset-wall-ver4.png` (8 variants)
+- [✅] Wall tile set — World 1 / Bedroom (pink kawaii) — `assets/art/tiles/home/bedroom/1x1_wall_tile` (8 runtime variants)
 - [✅] Wall tile set — World 2 / Kitchen (white/mint subway) — `tileset-wall-ver3.png` (8 variants)
 - [✅] Wall tile set — World 3 / Living Room (wood plank) — `tileset-wall-ver1.png` (6 variants)
 - [✅] Wall tile set — Post-jam / Study (lavender paw) — `tileset-wall-ver2.png` (8 variants)
