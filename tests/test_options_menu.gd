@@ -12,6 +12,7 @@ class MockSettings extends Node:
 	var fullscreen: bool = false
 	var reduce_motion: bool = false
 	var large_ui: bool = false
+	var simple_ui: bool = false
 	var input_hint_mode: String = AppSettings.INPUT_HINT_AUTO
 
 	func get_fullscreen() -> bool:
@@ -31,6 +32,12 @@ class MockSettings extends Node:
 
 	func set_large_ui(enabled: bool) -> void:
 		large_ui = enabled
+
+	func get_simple_ui() -> bool:
+		return simple_ui
+
+	func set_simple_ui(enabled: bool) -> void:
+		simple_ui = enabled
 
 	func get_input_hint_mode() -> String:
 		return input_hint_mode
@@ -87,6 +94,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	_settings.fullscreen = true
 	_settings.reduce_motion = true
 	_settings.large_ui = true
+	_settings.simple_ui = true
 	_settings.input_hint_mode = AppSettings.INPUT_HINT_CONTROLLER
 	_music.volume = 0.35
 	_music.muted = true
@@ -97,14 +105,15 @@ func test_sync_controls_reads_injected_services() -> void:
 	_menu.set_services(_settings, _music, _sfx)
 	add_child_autofree(_menu)
 
-	var music_slider: HSlider = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicSlider") as HSlider
-	var music_mute: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicMuteToggle") as CheckButton
-	var sfx_slider: HSlider = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider") as HSlider
-	var sfx_mute: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxMuteToggle") as CheckButton
-	var reduce_motion: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/ReduceMotionToggle") as CheckButton
-	var large_ui: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/LargeUiToggle") as CheckButton
-	var fullscreen: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/FullscreenToggle") as CheckButton
-	var input_hint: OptionButton = _menu.get_node("Backdrop/Panel/Margin/VBox/InputSection/InputHintOption") as OptionButton
+	var music_slider: HSlider = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider") as HSlider
+	var music_mute: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle") as CheckButton
+	var sfx_slider: HSlider = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider") as HSlider
+	var sfx_mute: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle") as CheckButton
+	var reduce_motion: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle") as CheckButton
+	var large_ui: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle") as CheckButton
+	var simple_ui: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/SimpleUiRow/Toggle") as CheckButton
+	var fullscreen: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle") as CheckButton
+	var input_hint: OptionButton = _menu.get_node("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton") as OptionButton
 
 	assert_eq(music_slider.value, 35.0)
 	assert_true(music_mute.button_pressed)
@@ -112,6 +121,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	assert_true(sfx_mute.button_pressed)
 	assert_true(reduce_motion.button_pressed)
 	assert_true(large_ui.button_pressed)
+	assert_true(simple_ui.button_pressed)
 	assert_true(fullscreen.button_pressed)
 	assert_eq(input_hint.selected, 2)
 
@@ -123,6 +133,7 @@ func test_controls_write_through_to_services() -> void:
 	_menu._on_sfx_mute_toggled(true)
 	_menu._on_reduce_motion_toggled(true)
 	_menu._on_large_ui_toggled(true)
+	_menu._on_simple_ui_toggled(true)
 	_menu._on_fullscreen_toggled(true)
 	_menu._on_input_hint_selected(1)
 
@@ -132,6 +143,7 @@ func test_controls_write_through_to_services() -> void:
 	assert_true(_sfx.muted)
 	assert_true(_settings.reduce_motion)
 	assert_true(_settings.large_ui)
+	assert_true(_settings.simple_ui)
 	assert_true(_settings.fullscreen)
 	assert_eq(_settings.input_hint_mode, AppSettings.INPUT_HINT_TOUCH)
 

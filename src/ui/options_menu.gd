@@ -27,6 +27,7 @@ var _sfx_manager_ref: Node
 @export var _sfx_mute_toggle: BaseButton
 @export var _reduce_motion_toggle: BaseButton
 @export var _large_ui_toggle: BaseButton
+@export var _simple_ui_toggle: BaseButton
 @export var _fullscreen_toggle: BaseButton
 @export var _input_hint_option: OptionButton
 @export var _close_btn: BaseButton
@@ -59,6 +60,8 @@ func _ready() -> void:
 		_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle")
 	if _large_ui_toggle == null:
 		_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle")
+	if _simple_ui_toggle == null:
+		_simple_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/SimpleUiRow/Toggle")
 	if _fullscreen_toggle == null:
 		_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
 	if _input_hint_option == null:
@@ -78,6 +81,7 @@ func _ready() -> void:
 	assert(_sfx_mute_toggle != null, "_sfx_mute_toggle not assigned")
 	assert(_reduce_motion_toggle != null, "_reduce_motion_toggle not assigned")
 	assert(_large_ui_toggle != null, "_large_ui_toggle not assigned")
+	assert(_simple_ui_toggle != null, "_simple_ui_toggle not assigned")
 	assert(_fullscreen_toggle != null, "_fullscreen_toggle not assigned")
 	assert(_input_hint_option != null, "_input_hint_option not assigned")
 	assert(_close_btn != null, "_close_btn not assigned")
@@ -172,6 +176,8 @@ func _connect_ui() -> void:
 		_reduce_motion_toggle.toggled.connect(_on_reduce_motion_toggled)
 	if _large_ui_toggle != null and not _large_ui_toggle.toggled.is_connected(_on_large_ui_toggled):
 		_large_ui_toggle.toggled.connect(_on_large_ui_toggled)
+	if _simple_ui_toggle != null and not _simple_ui_toggle.toggled.is_connected(_on_simple_ui_toggled):
+		_simple_ui_toggle.toggled.connect(_on_simple_ui_toggled)
 	if _fullscreen_toggle != null and not _fullscreen_toggle.toggled.is_connected(_on_fullscreen_toggled):
 		_fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 	if _input_hint_option != null and not _input_hint_option.item_selected.is_connected(_on_input_hint_selected):
@@ -202,6 +208,8 @@ func _sync_controls() -> void:
 		_reduce_motion_toggle.button_pressed = _app_settings_ref.get_reduce_motion()
 	if _large_ui_toggle != null:
 		_large_ui_toggle.button_pressed = _app_settings_ref.get_large_ui()
+	if _simple_ui_toggle != null:
+		_simple_ui_toggle.button_pressed = _app_settings_ref.get_simple_ui()
 	if _fullscreen_toggle != null:
 		_fullscreen_toggle.button_pressed = _app_settings_ref.get_fullscreen()
 	if _input_hint_option != null:
@@ -254,6 +262,12 @@ func _on_large_ui_toggled(button_pressed: bool) -> void:
 	_app_settings_ref.set_large_ui(button_pressed)
 	_apply_visual_style()
 	_sync_controls()
+
+
+func _on_simple_ui_toggled(button_pressed: bool) -> void:
+	if _suppress_events:
+		return
+	_app_settings_ref.set_simple_ui(button_pressed)
 
 
 func _on_fullscreen_toggled(button_pressed: bool) -> void:
@@ -316,6 +330,9 @@ func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
 
 
 func _on_app_setting_changed(section: String, key: String, _value: Variant) -> void:
-	if section == "display" and key == "large_ui":
-		_apply_visual_style()
+	if section == AppSettings.SECTION_DISPLAY:
+		if key == AppSettings.KEY_LARGE_UI:
+			_apply_visual_style()
+		_sync_controls()
+	elif section == AppSettings.SECTION_INPUT and key == AppSettings.KEY_INPUT_HINT_MODE:
 		_sync_controls()

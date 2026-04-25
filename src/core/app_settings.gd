@@ -17,6 +17,7 @@ const KEY_FULLSCREEN: String = "fullscreen"
 const KEY_REDUCE_MOTION: String = "reduce_motion"
 # Kept for backward compatibility with existing user settings file.
 const KEY_LARGE_UI: String = "large_ui"
+const KEY_SIMPLE_UI: String = "simple_ui"
 const KEY_LAST_WORLD_ID: String = "last_world_id"
 const KEY_INPUT_HINT_MODE: String = "input_hint_mode"
 const UI_SCALE_NORMAL: float = 1.0
@@ -33,6 +34,7 @@ const DEFAULTS: Dictionary = {
 		KEY_FULLSCREEN: false,
 		KEY_REDUCE_MOTION: false,
 		KEY_LARGE_UI: false,
+		KEY_SIMPLE_UI: false,
 	},
 	SECTION_SHELL: {
 		KEY_LAST_WORLD_ID: 1,
@@ -128,6 +130,14 @@ func get_large_ui() -> bool:
 
 func set_large_ui(enabled: bool) -> void:
 	set_value(SECTION_DISPLAY, KEY_LARGE_UI, enabled)
+
+
+func get_simple_ui() -> bool:
+	return get_value(SECTION_DISPLAY, KEY_SIMPLE_UI, false) as bool
+
+
+func set_simple_ui(enabled: bool) -> void:
+	set_value(SECTION_DISPLAY, KEY_SIMPLE_UI, enabled)
 
 
 func get_last_world_id() -> int:

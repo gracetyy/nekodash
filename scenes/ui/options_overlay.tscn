@@ -88,6 +88,10 @@ layout_mode = 2
 layout_mode = 2
 label_text = "Large Text"
 
+[node name="SimpleUiRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
+layout_mode = 2
+label_text = "Simple UI"
+
 [node name="FullscreenRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("7")]
 layout_mode = 2
 label_text = "Fullscreen"

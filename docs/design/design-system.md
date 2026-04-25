@@ -506,6 +506,8 @@ Overlay layout:
     ├─ "PAUSED" heading
     ├─ Music slider
     ├─ SFX slider
+    ├─ Display toggles: Reduce Motion / Large Text / Simple UI / Fullscreen
+    ├─ Input hint picker
     ├─ [RESUME button]   Primary
     ├─ [RESTART button]  Secondary
     └─ [QUIT button]     Tertiary
@@ -513,6 +515,8 @@ Overlay layout:
 
 Options overlay uses the same `cat_default_peek.png` placement rule: keep the
 cat texture centered and overlap the texture bottom by 42px into the modal top edge.
+`Simple UI` swaps gameplay back to the mint/yellow/purple placeholder tiles instead of
+the authored room-art board.
 
 ### 6.7 Level Complete — 1-2 Stars
 

@@ -32,6 +32,7 @@ func test_defaults_loaded_on_ready() -> void:
 	assert_true(_settings.is_loaded())
 	assert_false(_settings.get_reduce_motion())
 	assert_false(_settings.get_large_ui())
+	assert_false(_settings.get_simple_ui())
 	assert_eq(_settings.get_input_hint_mode(), "auto")
 	assert_eq(_settings.get_last_world_id(), 1)
 
@@ -61,6 +62,13 @@ func test_large_ui_roundtrip() -> void:
 	var settings2: Node = load("res://src/core/app_settings.gd").new()
 	add_child_autofree(settings2)
 	assert_true(settings2.get_large_ui())
+
+
+func test_simple_ui_roundtrip() -> void:
+	_settings.set_simple_ui(true)
+	var settings2: Node = load("res://src/core/app_settings.gd").new()
+	add_child_autofree(settings2)
+	assert_true(settings2.get_simple_ui())
 
 
 func test_ui_scale_factor_stays_normal_with_large_text_enabled() -> void:
