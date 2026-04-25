@@ -42,23 +42,52 @@ static func is_simple_ui_enabled(settings_ref: Node = null) -> bool:
 
 
 static func get_floor_texture(world_id: int, visited: bool, use_simple_ui: bool = false) -> Texture2D:
-	var floor_entry: Dictionary = _get_floor_entry(world_id, visited, use_simple_ui)
+	if visited:
+		return get_trail_texture(world_id, use_simple_ui)
+
+	var floor_entry: Dictionary = _get_floor_entry_by_key(world_id, "normal", use_simple_ui)
 	var texture: Texture2D = floor_entry.get("texture", null) as Texture2D
 	if texture != null:
 		return texture
-	return SIMPLE_VISITED_TEXTURE if visited else SIMPLE_FLOOR_TEXTURE
+	return SIMPLE_FLOOR_TEXTURE
+
+
+static func get_trail_texture(world_id: int, use_simple_ui: bool = false) -> Texture2D:
+	var trail_entry: Dictionary = _get_floor_entry_by_key(
+		world_id,
+		"visited_paw",
+		use_simple_ui,
+		["visited"]
+	)
+	var texture: Texture2D = trail_entry.get("texture", null) as Texture2D
+	if texture != null:
+		return texture
+	return SIMPLE_VISITED_TEXTURE
 
 
 static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> Dictionary:
 	var world_id: int = _get_world_id(level_data)
-	var floor_entry: Dictionary = _get_floor_entry(world_id, false, use_simple_ui)
-	var visited_entry: Dictionary = _get_floor_entry(world_id, true, use_simple_ui)
+	var floor_entry: Dictionary = _get_floor_entry_by_key(world_id, "normal", use_simple_ui)
+	var visited_entry: Dictionary = _get_floor_entry_by_key(
+		world_id,
+		"visited",
+		use_simple_ui,
+		["visited_paw"]
+	)
+	var trail_entry: Dictionary = _get_floor_entry_by_key(
+		world_id,
+		"visited_paw",
+		use_simple_ui,
+		["visited"]
+	)
 	var layout: Dictionary = {
 		"simple_ui": use_simple_ui,
 		"floor_texture": floor_entry.get("texture", SIMPLE_FLOOR_TEXTURE),
 		"floor_path": floor_entry.get("path", "res://assets/art/tiles/grids/grid_mint.png"),
 		"visited_texture": visited_entry.get("texture", SIMPLE_VISITED_TEXTURE),
 		"visited_path": visited_entry.get("path", "res://assets/art/tiles/grids/grid_yellow.png"),
+		"trail_texture": trail_entry.get("texture", SIMPLE_VISITED_TEXTURE),
+		"trail_path": trail_entry.get("path", "res://assets/art/tiles/grids/grid_yellow.png"),
 		"blocking_texture": SIMPLE_BLOCKING_TEXTURE,
 		"blocking_path": "res://assets/art/tiles/grids/grid_purple.png",
 		"wall_draws": [],
@@ -73,9 +102,7 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 		return layout
 
 	var world_assets: Dictionary = _get_world_assets(world_id)
-	var wall_assets: Array = _filter_wooden_wall_assets(
-		world_assets.get("wall_assets", []) as Array
-	)
+	var wall_assets: Array = world_assets.get("wall_assets", []) as Array
 	var wall_draws: Array[Dictionary] = []
 	var remaining_blocked: Dictionary = {}
 
@@ -90,6 +117,9 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 				var wall_asset: Dictionary = _pick_wall_asset(
 					wall_assets,
 					world_assets,
+					world_id,
+					coord,
+					dims,
 					wall_texture_key,
 					is_edge_wall
 				)
@@ -194,7 +224,12 @@ static func _merge_asset_bucket(asset_set: Dictionary, bucket_path: String, buck
 			var texture: Texture2D = _load_png_texture(asset_path)
 			if texture == null:
 				continue
-			var floor_key: String = "visited" if _basename_from_path(asset_path).find("visited") >= 0 else "normal"
+			var base_name: String = _basename_from_path(asset_path).to_lower()
+			var floor_key: String = "normal"
+			if base_name.find("visited_paw") >= 0:
+				floor_key = "visited_paw"
+			elif base_name.find("visited") >= 0:
+				floor_key = "visited"
 			var floor_entries: Dictionary = asset_set.get("floors", {}) as Dictionary
 			floor_entries[floor_key] = {
 				"name": _basename_from_path(asset_path),
@@ -467,9 +502,19 @@ static func _get_side_facing_orientation(
 static func _pick_wall_asset(
 	wall_assets: Array,
 	_world_assets: Dictionary,
+	world_id: int,
+	coord: Vector2i,
+	dims: Vector2i,
 	seed_key: String,
 	is_edge_wall: bool,
 ) -> Dictionary:
+	if world_id == 1:
+		var bedroom_assets: Array = _filter_assets_by_path_token(wall_assets, "/bedroom/")
+		if not bedroom_assets.is_empty():
+			var bedroom_asset: Dictionary = _pick_bedroom_wall_asset(bedroom_assets, coord, dims, seed_key)
+			if not bedroom_asset.is_empty():
+				return bedroom_asset
+
 	var wooden_side_assets: Array = []
 	var wooden_assets: Array = []
 	for asset: Dictionary in wall_assets:
@@ -491,6 +536,82 @@ static func _pick_wall_asset(
 		return _pick_asset(wooden_side_assets, seed_key)
 
 	return _pick_asset(wall_assets, seed_key)
+
+
+static func _pick_bedroom_wall_asset(
+	bedroom_assets: Array,
+	coord: Vector2i,
+	dims: Vector2i,
+	seed_key: String,
+) -> Dictionary:
+	var role_token: String = _get_wall_role_token(coord, dims)
+	if role_token != "":
+		var role_assets: Array = _filter_assets_by_exact_name_token(bedroom_assets, role_token)
+		if not role_assets.is_empty():
+			return _pick_asset(role_assets, seed_key)
+
+		if role_token == "left":
+			# Temporary bridge while bedroom set has no left.png yet.
+			var mirrored_side_assets: Array = _filter_assets_by_exact_name_token(bedroom_assets, "right")
+			if not mirrored_side_assets.is_empty():
+				return _pick_asset(mirrored_side_assets, seed_key)
+
+	return _pick_asset(bedroom_assets, seed_key)
+
+
+static func _get_wall_role_token(coord: Vector2i, dims: Vector2i) -> String:
+	var max_x: int = dims.x - 1
+	var max_y: int = dims.y - 1
+	if coord.x == 0 and coord.y == 0:
+		return "top_left_corner"
+	if coord.x == max_x and coord.y == 0:
+		return "top_right_corner"
+	if coord.x == 0 and coord.y == max_y:
+		return "bottom_left_corner"
+	if coord.x == max_x and coord.y == max_y:
+		return "bottom_right_corner"
+	if coord.x == 0:
+		return "left"
+	if coord.x == max_x:
+		return "right"
+	if coord.y == 0:
+		return "top"
+	if coord.y == max_y:
+		return "bottom"
+	return ""
+
+
+static func _filter_assets_by_path_token(assets: Array, token: String) -> Array:
+	var token_lower: String = token.to_lower()
+	var filtered: Array = []
+	for asset: Dictionary in assets:
+		var asset_path: String = str(asset.get("path", "")).to_lower()
+		if asset_path.find(token_lower) >= 0:
+			filtered.append(asset)
+	return filtered
+
+
+static func _filter_assets_by_exact_name_token(assets: Array, token: String) -> Array:
+	var token_lower: String = token.to_lower()
+	var filtered: Array = []
+	for asset: Dictionary in assets:
+		var asset_name: String = str(asset.get("name", "")).to_lower()
+		var asset_path: String = str(asset.get("path", ""))
+		var asset_basename: String = _basename_from_path(asset_path).to_lower()
+		if asset_basename == token_lower or asset_name == token_lower:
+			filtered.append(asset)
+	return filtered
+
+
+static func _filter_assets_by_name_token(assets: Array, token: String) -> Array:
+	var token_lower: String = token.to_lower()
+	var filtered: Array = []
+	for asset: Dictionary in assets:
+		var asset_name: String = str(asset.get("name", "")).to_lower()
+		var asset_path: String = str(asset.get("path", "")).to_lower()
+		if asset_name.find(token_lower) >= 0 or asset_path.find(token_lower) >= 0:
+			filtered.append(asset)
+	return filtered
 
 
 static func _get_tabletop_offset_y(size: Vector2i) -> float:
@@ -530,22 +651,6 @@ static func _pick_asset(assets: Array, seed_key: String) -> Dictionary:
 	return assets[index] as Dictionary
 
 
-static func _filter_wooden_wall_assets(wall_assets: Array) -> Array:
-	if wall_assets.is_empty():
-		return wall_assets
-
-	var wooden_assets: Array = []
-	for wall_asset: Dictionary in wall_assets:
-		var asset_name: String = str(wall_asset.get("name", "")).to_lower()
-		var asset_path: String = str(wall_asset.get("path", "")).to_lower()
-		if asset_name.find("wood") >= 0 or asset_path.find("wood") >= 0:
-			wooden_assets.append(wall_asset)
-
-	if not wooden_assets.is_empty():
-		return wooden_assets
-	return wall_assets
-
-
 # —————————————————————————————————————————————
 # Helpers
 # —————————————————————————————————————————————
@@ -557,21 +662,42 @@ static func _get_world_id(level_data: LevelData) -> int:
 
 
 static func _get_floor_entry(world_id: int, visited: bool, use_simple_ui: bool) -> Dictionary:
+	return _get_floor_entry_by_key(world_id, "visited" if visited else "normal", use_simple_ui)
+
+
+static func _get_floor_entry_by_key(
+	world_id: int,
+	floor_key: String,
+	use_simple_ui: bool,
+	fallback_keys: Array[String] = [],
+) -> Dictionary:
 	if use_simple_ui:
+		var is_normal: bool = floor_key == "normal"
 		return {
-			"path": "res://assets/art/tiles/grids/grid_yellow.png" if visited else "res://assets/art/tiles/grids/grid_mint.png",
-			"texture": SIMPLE_VISITED_TEXTURE if visited else SIMPLE_FLOOR_TEXTURE,
+			"path": "res://assets/art/tiles/grids/grid_mint.png" if is_normal else "res://assets/art/tiles/grids/grid_yellow.png",
+			"texture": SIMPLE_FLOOR_TEXTURE if is_normal else SIMPLE_VISITED_TEXTURE,
 		}
 
 	var world_assets: Dictionary = _get_world_assets(world_id)
 	var floor_entries: Dictionary = world_assets.get("floors", {}) as Dictionary
-	var floor_entry: Dictionary = floor_entries.get("visited" if visited else "normal", {}) as Dictionary
+	var floor_entry: Dictionary = floor_entries.get(floor_key, {}) as Dictionary
 	if not floor_entry.is_empty():
 		return floor_entry
 
+	for fallback_key: String in fallback_keys:
+		var fallback_entry: Dictionary = floor_entries.get(fallback_key, {}) as Dictionary
+		if not fallback_entry.is_empty():
+			return fallback_entry
+
+	if floor_key != "normal":
+		var visited_entry: Dictionary = floor_entries.get("visited", {}) as Dictionary
+		if not visited_entry.is_empty():
+			return visited_entry
+
+	var is_normal_default: bool = floor_key == "normal"
 	return {
-		"path": "res://assets/art/tiles/grids/grid_yellow.png" if visited else "res://assets/art/tiles/grids/grid_mint.png",
-		"texture": SIMPLE_VISITED_TEXTURE if visited else SIMPLE_FLOOR_TEXTURE,
+		"path": "res://assets/art/tiles/grids/grid_mint.png" if is_normal_default else "res://assets/art/tiles/grids/grid_yellow.png",
+		"texture": SIMPLE_FLOOR_TEXTURE if is_normal_default else SIMPLE_VISITED_TEXTURE,
 	}
 
 

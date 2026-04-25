@@ -12,7 +12,7 @@
 class_name CoverageVisualizer
 extends Node2D
 
-const HomeTileArt = preload("res://src/ui/home_tile_art.gd")
+const HomeTileArtScript = preload("res://src/ui/home_tile_art.gd")
 
 
 # —————————————————————————————————————————————
@@ -28,7 +28,7 @@ var _tile_size: int = 72
 ## Whether the visualizer has been initialized for the current level.
 var _initialized: bool = false
 var _current_level_data: LevelData
-var _visited_texture: Texture2D = HomeTileArt.SIMPLE_VISITED_TEXTURE
+var _visited_texture: Texture2D = HomeTileArtScript.SIMPLE_VISITED_TEXTURE
 
 
 # —————————————————————————————————————————————
@@ -53,10 +53,9 @@ func refresh_theme(level_data: LevelData = null) -> void:
 	var world_id: int = 1
 	if _current_level_data != null:
 		world_id = max(_current_level_data.world_id, 1)
-	_visited_texture = HomeTileArt.get_floor_texture(
+	_visited_texture = HomeTileArtScript.get_trail_texture(
 		world_id,
-		true,
-		HomeTileArt.is_simple_ui_enabled()
+		HomeTileArtScript.is_simple_ui_enabled()
 	)
 	queue_redraw()
 

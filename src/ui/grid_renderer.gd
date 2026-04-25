@@ -70,6 +70,10 @@ func _draw() -> void:
 		"floor_texture",
 		HomeTileArtScript.SIMPLE_FLOOR_TEXTURE
 	) as Texture2D
+	var visited_texture: Texture2D = _render_layout.get(
+		"visited_texture",
+		HomeTileArtScript.SIMPLE_VISITED_TEXTURE
+	) as Texture2D
 	var blocking_texture: Texture2D = _render_layout.get(
 		"blocking_texture",
 		HomeTileArtScript.SIMPLE_BLOCKING_TEXTURE
@@ -83,6 +87,8 @@ func _draw() -> void:
 			var rect := Rect2(col * _tile_size, row * _tile_size, _tile_size, _tile_size)
 			if GridSystem.is_walkable(coord):
 				draw_texture_rect(floor_texture, rect, false)
+			elif not use_simple_ui:
+				draw_texture_rect(visited_texture, rect, false)
 			elif use_simple_ui:
 				draw_texture_rect(blocking_texture, rect, false)
 
@@ -111,7 +117,7 @@ func _draw() -> void:
 					_tile_size,
 					_tile_size,
 				)
-				draw_texture_rect(floor_texture, floor_rect, false)
+				draw_texture_rect(visited_texture, floor_rect, false)
 
 		var obstacle_texture: Texture2D = obstacle_draw.get("texture", blocking_texture) as Texture2D
 		var obstacle_rect := Rect2(
@@ -134,7 +140,8 @@ func _draw() -> void:
 		var max_offset_x: float = max(0.0, obstacle_rect.size.x - tabletop_size.x)
 		var max_offset_y: float = max(0.0, obstacle_rect.size.y - tabletop_size.y)
 		if is_shelf:
-			max_offset_y *= 0.33333334
+			# Shelves only allow decor in the upper quarter; tables can use the full top surface.
+			max_offset_y *= 0.25
 		var offset_x: float = max_offset_x * float(abs((tabletop_seed + "|x").hash()) % 1000) / 999.0
 		var offset_y: float = max_offset_y * float(abs((tabletop_seed + "|y").hash()) % 1000) / 999.0
 		var tabletop_rect := Rect2(
