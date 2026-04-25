@@ -12,17 +12,11 @@
 class_name CoverageVisualizer
 extends Node2D
 
+const HomeTileArt = preload("res://src/ui/home_tile_art.gd")
+
 
 # —————————————————————————————————————————————
 # Constants
-# —————————————————————————————————————————————
-
-## Color drawn on covered tiles — grid-trail #FBD490.
-const COVERED_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_yellow.png")
-
-
-# —————————————————————————————————————————————
-# State
 # —————————————————————————————————————————————
 
 ## Visual-state dictionary: Vector2i → bool. Driven entirely by signals.
@@ -33,6 +27,8 @@ var _tile_size: int = 72
 
 ## Whether the visualizer has been initialized for the current level.
 var _initialized: bool = false
+var _current_level_data: LevelData
+var _visited_texture: Texture2D = HomeTileArt.SIMPLE_VISITED_TEXTURE
 
 
 # —————————————————————————————————————————————
@@ -41,10 +37,27 @@ var _initialized: bool = false
 
 ## Resets visual state for a new level. Called by Level Coordinator before
 ## signals start firing.
-func initialize_level(_grid_width: int, _grid_height: int) -> void:
+func initialize_level(_grid_width: int, _grid_height: int, level_data: LevelData = null) -> void:
+	if level_data != null:
+		_current_level_data = level_data
 	_tile_size = GridSystem.DEFAULT_TILE_SIZE_PX
 	_tile_states.clear()
 	_initialized = true
+	refresh_theme()
+	queue_redraw()
+
+
+func refresh_theme(level_data: LevelData = null) -> void:
+	if level_data != null:
+		_current_level_data = level_data
+	var world_id: int = 1
+	if _current_level_data != null:
+		world_id = max(_current_level_data.world_id, 1)
+	_visited_texture = HomeTileArt.get_floor_texture(
+		world_id,
+		true,
+		HomeTileArt.is_simple_ui_enabled()
+	)
 	queue_redraw()
 
 
@@ -101,4 +114,4 @@ func _draw() -> void:
 				_tile_size,
 				_tile_size,
 			)
-			draw_texture_rect(COVERED_TEXTURE, rect, false)
+			draw_texture_rect(_visited_texture, rect, false)

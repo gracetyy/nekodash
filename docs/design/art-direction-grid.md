@@ -10,7 +10,8 @@
 ## Purpose
 
 This document defines the visual art direction for the **game grid** — the floor tiles,
-obstacle/wall objects, and per-world theming that the player sees during gameplay.
+
+- **Wall variants by position**: Normal mid-room walls use `wooden` variant; leftmost/rightmost edge walls prefer `wooden_side` variant if available for visual distinction
 
 > **Critical Note**: The plain coloured tiles in the AI reference screenshots are
 > **placeholder art only**. The actual game grid must look like a **top-down view
@@ -62,16 +63,34 @@ additive glow, not a flat fill.
 
 ## 2. Obstacle Tiles (Blocking / Walls)
 
-> **UPDATE (2026-04-15)**: The idea of using complex furniture and detailed room walls as level grid obstacles is deferred to post-jam. For the MVP, we will simply use three distinct colored tile PNGs (yellow, purple, mint) to represent obstacles/walls.
+> **UPDATE (2026-04-25)**: Home levels now render authored board art from
+> `assets/art/tiles/home/`. The flat mint/yellow/purple grid remains available only as the
+> `Simple UI` fallback in settings.
 
-### MVP Design Rules (Simple Tiles)
+### Current Runtime Rules (Home Worlds)
 
-1. **Obstacles are simple colored tiles**, specifically yellow, purple, and mint.
+1. **Outer-border blocking cells use wall art**, sourced from `?x?_wall_tile` folders.
+   These replace the old purple border tiles.
+2. **Interior blocking cells use obstacle art**, sourced from `?x?_obstacle_tile`
+   folders. The renderer greedily packs the largest valid asset footprints first so
+   multi-cell furniture is preferred over repeated 1×1 fillers.
+3. **Obstacle art is never rotated to fake a different footprint.** A `1x2` asset is only
+   used vertically; a `2x1` asset is only used horizontally.
+4. **`?x?_obstacle_tile_side_facing` assets are conditional.** They are only eligible when
+   the entire immediate right side OR left side of that footprint is a wall tile.
+   When right side is walled, use default orientation; when left side is walled, use
+   flipped (mirrored) orientation. The packing algorithm tries right-facing placement first,
+   then falls back to left-facing if the right side is blocked.
+   _(tabletops may sit anywhere on tables, but stay in the upper third on shelves)_
+5. **`?x?_backdrop` assets are not used yet.** They remain authored content for a later pass.
+6. **Table and shelf props receive decor overlays.** Any obstacle whose filename contains
+   `table` or `shelf` gets a random `0.5x0.5_tabletop_item` overlay. Tables may place
+   the item anywhere on their top surface; shelves constrain placement to the upper third.
 
-### Post-Jam Rules (Furniture)
+### Art Rules
 
 1. **Obstacles are furniture and household objects**, not abstract walls or bricks
-2. All objects are rendered as a **top-down (plan) view** — we see the top face
+2. All objects are rendered as a **top-down (plan) view**
 3. Objects must have a **visible volume suggestion** — a subtle shadow or isometric-lite
    depth line on one or two sides to prevent flatness (think Animal Crossing / Stardew
    top-down room style)
@@ -318,9 +337,9 @@ maintaining square tiles and the 8px horizontal margin constraint.
 ### Rendering Layers (bottom → top)
 
 ```
-Layer 0: Floor / Background tiles (TileMapLayer — floor set)
-Layer 1: Trail overlay (TileMapLayer — trail set OR shader overlay)
-Layer 2: Obstacle / furniture sprites (TileMapLayer — obstacle set)
+Layer 0: Floor tiles from `assets/art/tiles/home/<room>/1x1_floor_tile`
+Layer 1: Visited floor overlay (room-specific visited tile or `grid_yellow.png` in Simple UI)
+Layer 2: Wall / obstacle / tabletop sprites from `assets/art/tiles/home/common` + room folder
 Layer 3: Cat sprite (CharacterBody2D or AnimatedSprite2D)
 Layer 4: VFX particles (trail sparkle, bump dust, etc.)
 Layer 5: HUD (CanvasLayer — always on top)
@@ -364,13 +383,13 @@ within the correct row. The `world_id` parameter selects the column offset.
 
 ### Floor Tiles (per world × 3 worlds = 3 each)
 
-- [ ] Floor — unvisited (World 1: pale pink carpet `#FFE8EE`) — not yet created
-- [ ] Floor — visited/trail (World 1: carpet + golden glow `#FFD6E0` + paw stamp) — not yet created
+- [✅] Floor — unvisited (World 1: Bedroom) — `assets/art/tiles/home/bedroom/1x1_floor_tile/normal.png`
+- [✅] Floor — visited/trail (World 1: Bedroom) — `assets/art/tiles/home/bedroom/1x1_floor_tile/visited.png`
 - [ ] Floor — unvisited (World 2: white ceramic tile `#F8F8F8`) — not yet created
 - [ ] Floor — visited/trail (World 2: ceramic + mint glow `#DCF3EA` + paw stamp) — not yet created
 - [✅] Floor — unvisited (World 3: warm oak plank `#F5E6C8`) — `tileset-floor-ver1`
 - [✅] Floor — visited/trail (World 3: plank + amber glow `#F5C842` + paw stamp) — `tileset-floor-ver1`
-- [ ] Trail overlay (world-specific glow, tileable) — not yet created as standalone tile
+- [✅] Trail overlay now uses the room's visited floor tile; `grid_yellow.png` is retained for `Simple UI`
 - [✅] Paw stamp on trail tile — confirmed in `tileset-floor-ver1` (right tile has white paw stamp)
 
 ### Grid Container Frame
@@ -384,18 +403,13 @@ within the correct row. The `world_id` parameter selects the column offset.
 - [✅] Wall tile set — World 3 / Living Room (wood plank) — `tileset-wall-ver1.png` (6 variants)
 - [✅] Wall tile set — Post-jam / Study (lavender paw) — `tileset-wall-ver2.png` (8 variants)
 
-### Obstacles (MVP set — shared across worlds, palette-swapped per world)
+### Obstacles (current home-runtime set)
 
 **World 1 (Bedroom):**
 
-- [✅] `OBS_BED` — double bed (2×2) — `tileset-bedroom`
-- [✅] `OBS_NIGHTSTAND` — nightstand + lamp (1×1) — `tileset-bedroom`
-- [✅] `OBS_BEANBAG` — bean bag (1×1) — `tileset-bedroom`
-- [✅] `OBS_WARDROBE` — wardrobe (1×3) — `tileset-bedroom`
-- [✅] `OBS_DRAWERS` — chest of drawers (1×2) — `tileset-bedroom`
-- [✅] `OBS_MIRROR` — floor mirror (1×2) — `tileset-bedroom`
-- [✅] `OBS_LAUNDRY` — laundry basket (1×1) — `tileset-bedroom`
-- [✅] `OBS_CATBED` — round cat bed (1×1) — `tileset-bedroom`
+- [✅] Bedroom-specific runtime assets — `assets/art/tiles/home/bedroom/1x1_obstacle_tile`, `1x2_obstacle_tile`, `2x3_obstacle_tile`
+- [✅] Shared runtime assets — `assets/art/tiles/home/common/1x1_obstacle_tile`, `2x1_obstacle_tile`, `1x3_obstacle_tile_side_facing`
+- [✅] Tabletop decor overlays — `assets/art/tiles/home/common/0.5x0.5_tabletop_item`
 
 **World 2 (Kitchen):**
 
@@ -453,7 +467,8 @@ World 3: oak/cream living room). This can be achieved via:
 ### Don't ❌
 
 - Do not use flat solid-colour tiles (the AI reference images are placeholder art — do not
-  ship the flat purple/green tiles)
+  ship the flat purple/green tiles as the default presentation)
+- Keep the flat mint/yellow/purple tiles only as the `Simple UI` accessibility fallback
 - Do not make obstacles feel abstract or geometric — every obstacle should be identifiable
   as a real household object
 - Do not use the same obstacle art for different `ObstacleType` values — player reads

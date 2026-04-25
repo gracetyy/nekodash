@@ -50,7 +50,7 @@ enum State {
 @onready var _star_rating_system: Node = $StarRatingSystem
 @onready var _level_progression: Node = $LevelProgression
 @onready var _hud: HUD = $HUD
-@onready var _grid_renderer: Node2D = $GridRenderer
+@onready var _grid_renderer: Node = $GridRenderer
 @onready var _coverage_visualizer: CoverageVisualizer = $CoverageVisualizer
 
 
@@ -116,6 +116,7 @@ func _ready() -> void:
 	# 3. Connect signals in correct order BEFORE sliding_movement init
 	#    (spawn_position_set fires during initialize_level)
 	_connect_signals()
+	_connect_app_settings_signal()
 
 	# 4. Initialize sliding movement (emits spawn_position_set → CoverageTracking)
 	_sliding_movement.initialize_level(_current_level_data.cat_start)
@@ -140,6 +141,10 @@ func _ready() -> void:
 			])
 
 	_play_level_entry_transition()
+
+
+func _exit_tree() -> void:
+	_disconnect_app_settings_signal()
 
 
 # —————————————————————————————————————————————
@@ -185,17 +190,15 @@ func _initialize_systems() -> void:
 	)
 
 	# GridRenderer: redraw grid from current GridSystem state + compute centering
-	if _grid_renderer != null:
-		_grid_renderer.render_grid()
-		# Move the coordinator root (Node2D) so the grid is centered on screen.
-		# GridRenderer and SlidingMovement both draw relative to parent, so
-		# this single offset aligns everything. HUD is a CanvasLayer and ignores
-		# parent transforms.
-		position = _grid_renderer.get_grid_offset()
+	_refresh_grid_visuals()
 
 	# CoverageVisualizer: reset visual state for the new level
 	if _coverage_visualizer != null:
-		_coverage_visualizer.initialize_level(GridSystem.get_width(), GridSystem.get_height())
+		_coverage_visualizer.initialize_level(
+			GridSystem.get_width(),
+			GridSystem.get_height(),
+			_current_level_data,
+		)
 
 
 ## Wires all inter-system signals. Move processing is centralized through
@@ -460,6 +463,37 @@ func _clear_level_entry_transition() -> void:
 
 func _is_reduce_motion_enabled() -> bool:
 	return AppSettings != null and AppSettings.get_reduce_motion()
+
+
+func _refresh_grid_visuals() -> void:
+	if _grid_renderer != null:
+		_grid_renderer.render_grid(_current_level_data)
+		# GridRenderer and SlidingMovement both draw relative to parent, so one
+		# coordinator offset keeps the board aligned under the HUD.
+		position = _grid_renderer.get_grid_offset()
+	if _coverage_visualizer != null:
+		_coverage_visualizer.refresh_theme(_current_level_data)
+
+
+func _connect_app_settings_signal() -> void:
+	if AppSettings == null or not AppSettings.has_signal("setting_changed"):
+		return
+	var changed_callable: Callable = Callable(self , "_on_app_setting_changed")
+	if not AppSettings.is_connected("setting_changed", changed_callable):
+		AppSettings.connect("setting_changed", changed_callable)
+
+
+func _disconnect_app_settings_signal() -> void:
+	if AppSettings == null or not AppSettings.has_signal("setting_changed"):
+		return
+	var changed_callable: Callable = Callable(self , "_on_app_setting_changed")
+	if AppSettings.is_connected("setting_changed", changed_callable):
+		AppSettings.disconnect("setting_changed", changed_callable)
+
+
+func _on_app_setting_changed(section: String, key: String, _value: Variant) -> void:
+	if section == AppSettings.SECTION_DISPLAY and key == AppSettings.KEY_SIMPLE_UI:
+		_refresh_grid_visuals()
 
 
 # —————————————————————————————————————————————

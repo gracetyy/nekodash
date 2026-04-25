@@ -6,25 +6,19 @@
 ## Owns no game state.
 extends Node2D
 
+const HomeTileArtScript = preload("res://src/ui/home_tile_art.gd")
+
 
 # —————————————————————————————————————————————
 # Constants
-# —————————————————————————————————————————————
-
-## Grid floor tile — grid-floor #EEF9F1.
-const FLOOR_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_mint.png")
-## Grid wall/obstacle tile — grid-wall #CEB6E4.
-const WALL_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_purple.png")
-
-
-# —————————————————————————————————————————————
-# State
 # —————————————————————————————————————————————
 
 var _tile_size: int = 72
 
 ## Pixel offset applied to center the grid on screen, below the HUD.
 var _grid_offset: Vector2 = Vector2.ZERO
+var _current_level_data: LevelData
+var _render_layout: Dictionary = {}
 
 
 # —————————————————————————————————————————————
@@ -32,7 +26,9 @@ var _grid_offset: Vector2 = Vector2.ZERO
 # —————————————————————————————————————————————
 
 ## Redraws the grid from GridSystem state and computes centering offset.
-func render_grid() -> void:
+func render_grid(level_data: LevelData = null) -> void:
+	if level_data != null:
+		_current_level_data = level_data
 	_tile_size = GridSystem.DEFAULT_TILE_SIZE_PX
 
 	# Compute centering offset
@@ -46,6 +42,10 @@ func render_grid() -> void:
 	var x_offset: float = (viewport_w - grid_w_px) / 2.0
 	var y_offset: float = hud_margin + (viewport_h - hud_margin - grid_h_px) / 2.0
 	_grid_offset = Vector2(x_offset, y_offset)
+	_render_layout = HomeTileArtScript.build_layout(
+		_current_level_data,
+		HomeTileArtScript.is_simple_ui_enabled()
+	)
 
 	queue_redraw()
 
@@ -66,12 +66,79 @@ func _draw() -> void:
 	if w == 0 or h == 0:
 		return
 
-	# Draw tile fills (all coords relative to local origin — position handles offset)
+	var floor_texture: Texture2D = _render_layout.get(
+		"floor_texture",
+		HomeTileArtScript.SIMPLE_FLOOR_TEXTURE
+	) as Texture2D
+	var blocking_texture: Texture2D = _render_layout.get(
+		"blocking_texture",
+		HomeTileArtScript.SIMPLE_BLOCKING_TEXTURE
+	) as Texture2D
+	var use_simple_ui: bool = _render_layout.get("simple_ui", true) as bool
+
+	# Draw walkable floor first. Covered tiles are painted by CoverageVisualizer.
 	for row: int in range(h):
 		for col: int in range(w):
 			var coord := Vector2i(col, row)
 			var rect := Rect2(col * _tile_size, row * _tile_size, _tile_size, _tile_size)
 			if GridSystem.is_walkable(coord):
-				draw_texture_rect(FLOOR_TEXTURE, rect, false)
-			else:
-				draw_texture_rect(WALL_TEXTURE, rect, false)
+				draw_texture_rect(floor_texture, rect, false)
+			elif use_simple_ui:
+				draw_texture_rect(blocking_texture, rect, false)
+
+	if use_simple_ui:
+		return
+
+	for wall_draw: Dictionary in _render_layout.get("wall_draws", []):
+		var wall_coord: Vector2i = wall_draw.get("coord", Vector2i.ZERO) as Vector2i
+		var wall_texture: Texture2D = wall_draw.get("texture", blocking_texture) as Texture2D
+		var wall_rect := Rect2(
+			wall_coord.x * _tile_size,
+			wall_coord.y * _tile_size,
+			_tile_size,
+			_tile_size,
+		)
+		draw_texture_rect(wall_texture, wall_rect, false)
+
+	for obstacle_draw: Dictionary in _render_layout.get("obstacles", []):
+		var origin: Vector2i = obstacle_draw.get("origin", Vector2i.ZERO) as Vector2i
+		var size: Vector2i = obstacle_draw.get("size", Vector2i.ONE) as Vector2i
+		for offset_y: int in range(size.y):
+			for offset_x: int in range(size.x):
+				var floor_rect := Rect2(
+					(origin.x + offset_x) * _tile_size,
+					(origin.y + offset_y) * _tile_size,
+					_tile_size,
+					_tile_size,
+				)
+				draw_texture_rect(floor_texture, floor_rect, false)
+
+		var obstacle_texture: Texture2D = obstacle_draw.get("texture", blocking_texture) as Texture2D
+		var obstacle_rect := Rect2(
+			origin.x * _tile_size,
+			origin.y * _tile_size,
+			size.x * _tile_size,
+			size.y * _tile_size,
+		)
+		draw_texture_rect(obstacle_texture, obstacle_rect, false)
+
+		var tabletop_texture: Texture2D = obstacle_draw.get("tabletop_texture", null) as Texture2D
+		if tabletop_texture == null:
+			continue
+
+		var tabletop_size: Vector2 = Vector2.ONE * (_tile_size * 0.5)
+		var asset_name: String = str(obstacle_draw.get("asset_name", "")).to_lower()
+		var tabletop_origin: Vector2i = obstacle_draw.get("origin", Vector2i.ZERO) as Vector2i
+		var is_shelf: bool = asset_name.find("shelf") >= 0
+		var tabletop_seed: String = "%s|%d|%d|%d|%d" % [asset_name, tabletop_origin.x, tabletop_origin.y, size.x, size.y]
+		var max_offset_x: float = max(0.0, obstacle_rect.size.x - tabletop_size.x)
+		var max_offset_y: float = max(0.0, obstacle_rect.size.y - tabletop_size.y)
+		if is_shelf:
+			max_offset_y *= 0.33333334
+		var offset_x: float = max_offset_x * float(abs((tabletop_seed + "|x").hash()) % 1000) / 999.0
+		var offset_y: float = max_offset_y * float(abs((tabletop_seed + "|y").hash()) % 1000) / 999.0
+		var tabletop_rect := Rect2(
+			obstacle_rect.position + Vector2(offset_x, offset_y),
+			tabletop_size,
+		)
+		draw_texture_rect(tabletop_texture, tabletop_rect, false)

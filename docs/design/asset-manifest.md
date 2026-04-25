@@ -20,9 +20,11 @@ res://assets/
 ├── art/
 │   ├── cats/                        ← character sprites per skin × animation state
 │   ├── tiles/
+│   │   ├── home/                    ← shipped home-world gameplay tiles (`common/` + room folders named `WxH_usage`)
 │   │   ├── floor/                   ← floor tile states per world (3 worlds)
 │   │   ├── walls/                   ← wall tile variants per world (w1_bedroom, w2_kitchen, w3_livingroom, post_jam_study)
-│   │   └── furniture/               ← obstacle sprites per world (w1_bedroom, w2_kitchen, w3_livingroom, post_jam_study)
+│   │   ├── furniture/               ← obstacle sprites per world (w1_bedroom, w2_kitchen, w3_livingroom, post_jam_study)
+│   │   └── grids/                   ← simple UI fallback tiles (mint/yellow/purple)
 │   ├── ui/
 │   │   ├── buttons/                 ← pill buttons, all variants
 │   │   ├── icons/                   ← circular icon buttons + standalone icons
@@ -98,6 +100,10 @@ Gameplay now assembles the in-level cat from layered part sprites. Every part is
 Each tile is **64×64px**, painted raster. The tile must look like a real floor material.
 One unvisited state + one visited/trail state per world.
 Draft source: `design/draft/tileset-floor-ver1 1.png` (World 1 confirmed).
+
+> **Runtime note (2026-04-25)**: World 1 currently renders from
+> `assets/art/tiles/home/bedroom/1x1_floor_tile/normal.png` and `visited.png` while the
+> canonical shared `tiles/floor/` export layout remains a longer-term art-pipeline target.
 
 | File                     | Description                                                                                                                                                        | Style Guide                                                                    | Size (px) | Software  | Format | Status                                      |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | --------- | --------- | ------ | ------------------------------------------- |
@@ -181,9 +187,21 @@ Palette: `#D0C0E8` (lavender), `#F8F0E8` (cream paw ground), `#4A3870` (dark pur
 
 ---
 
-## 4. MVP Tile Obstacles — `assets/art/tiles/grids/`
+## 4. Simple UI Grid Fallback — `assets/art/tiles/grids/`
 
-> **UPDATE (2026-04-15)**: The idea of using furniture as level grid walls and floors is deferred to post-jam. MVP uses three simple tile PNGs.
+> **UPDATE (2026-04-25)**: Home gameplay now defaults to authored room art from
+> `assets/art/tiles/home/`. The `grids/` tiles remain in runtime use only when the player
+> enables the `Simple UI` display toggle.
+
+### Home Runtime Source (`assets/art/tiles/home/`)
+
+art (currently unused), and `0.5x0.5_tabletop_item` decor overlays.
+**Wall tile variants**: Each world folder includes: - `wooden.png` — for mid-room walls - `wooden_side.png` (optional) — for leftmost/rightmost edge walls (visual variation) - Other world-specific variants as needed
+
+- `bedroom/` currently ships the active World 1 floor and bedroom-only obstacle set.
+  Includes bedroom-specific `wooden.png` and `wooden_side.png` wall variants.
+- Folder names follow the runtime contract `width`x`height`\_`usage`
+  (examples: `1x1_floor_tile`, `2x1_obstacle_tile`, `1x3_obstacle_tile_side_facing`).
 
 | File              | Tile Size | Description                | Size (px) | Software  | Format | Status |
 | ----------------- | --------- | -------------------------- | --------- | --------- | ------ | ------ |
