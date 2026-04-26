@@ -415,10 +415,18 @@ func test_sliding_movement_duration_short_slide_uses_minimum() -> void:
 	assert_almost_eq(duration, 0.10, 0.001)
 
 
-func test_sliding_movement_duration_long_slide_uses_velocity() -> void:
-	# 5 tiles at 15 t/s = 0.333s → exceeds min
+func test_sliding_movement_duration_long_slide_applies_speedup() -> void:
+	# Long slides apply configured speed multiplier beyond the start threshold.
 	var duration: float = _sm._compute_slide_duration(5)
-	var expected: float = 5.0 / _sm._slide_velocity
+	var speed_multiplier: float = 1.0
+	if 5 > _sm.long_slide_speedup_start_tiles:
+		var extra_tiles: int = 5 - _sm.long_slide_speedup_start_tiles
+		speed_multiplier += float(extra_tiles) * _sm.long_slide_extra_speed_per_tile
+		speed_multiplier = minf(speed_multiplier, _sm.long_slide_max_speed_multiplier)
+	var expected: float = maxf(
+		_sm.min_slide_duration_sec,
+		5.0 / (_sm._slide_velocity * speed_multiplier)
+	)
 	assert_almost_eq(duration, expected, 0.001)
 
 

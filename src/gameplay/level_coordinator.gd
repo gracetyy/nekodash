@@ -122,7 +122,7 @@ func _ready() -> void:
 	_sliding_movement.initialize_level(_current_level_data.cat_start)
 
 	if has_node("TutorialSystem"):
-		$TutorialSystem.initialize(self, _current_level_data)
+		$TutorialSystem.initialize(self , _current_level_data)
 
 	_state = State.PLAYING
 
@@ -250,6 +250,7 @@ func _connect_signals() -> void:
 		_coverage_tracking.tile_covered.connect(_coverage_visualizer.on_tile_covered)
 		_coverage_tracking.tile_uncovered.connect(_coverage_visualizer.on_tile_uncovered)
 		_sliding_movement.spawn_position_set.connect(_coverage_visualizer.on_spawn_position_set)
+		_sliding_movement.slide_tile_reached.connect(_coverage_visualizer.on_tile_covered)
 
 
 ## Disconnects all inter-system signals. Called before restart.
@@ -304,6 +305,8 @@ func _disconnect_signals() -> void:
 			_coverage_tracking.tile_uncovered.disconnect(_coverage_visualizer.on_tile_uncovered)
 		if _sliding_movement.spawn_position_set.is_connected(_coverage_visualizer.on_spawn_position_set):
 			_sliding_movement.spawn_position_set.disconnect(_coverage_visualizer.on_spawn_position_set)
+		if _sliding_movement.slide_tile_reached.is_connected(_coverage_visualizer.on_tile_covered):
+			_sliding_movement.slide_tile_reached.disconnect(_coverage_visualizer.on_tile_covered)
 
 
 # —————————————————————————————————————————————
@@ -520,7 +523,7 @@ func restart_level() -> void:
 	_connect_signals()
 	_sliding_movement.initialize_level(_current_level_data.cat_start)
 	if has_node("TutorialSystem"):
-		$TutorialSystem.initialize(self, _current_level_data)
+		$TutorialSystem.initialize(self , _current_level_data)
 	_state = State.PLAYING
 
 	level_restarted.emit()

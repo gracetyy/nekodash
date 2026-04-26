@@ -28,6 +28,10 @@ signal slide_started(from_pos: Vector2i, to_pos: Vector2i, direction: Vector2i)
 ## from (from_pos + direction) to to_pos inclusive.
 signal slide_completed(from_pos: Vector2i, to_pos: Vector2i, direction: Vector2i, tiles_covered: Array[Vector2i])
 
+## Emitted as the cat reaches each traversed tile during slide animation.
+## Used by CoverageVisualizer to keep trail timing in sync with movement.
+signal slide_tile_reached(coord: Vector2i)
+
 ## Emitted when a slide is immediately blocked (landing == current position).
 signal slide_blocked(pos: Vector2i, direction: Vector2i)
 
@@ -66,6 +70,15 @@ const MAX_SLIDE_DISTANCE: int = 20
 
 ## Minimum animation time regardless of tile count.
 @export var min_slide_duration_sec: float = 0.10
+
+## Tile count after which long-slide speedup starts applying.
+@export var long_slide_speedup_start_tiles: int = 4
+
+## Additional speed multiplier per tile after long_slide_speedup_start_tiles.
+@export var long_slide_extra_speed_per_tile: float = 0.08
+
+## Upper bound for long-slide speed multiplier.
+@export var long_slide_max_speed_multiplier: float = 1.6
 
 ## Pixels the cat nudges toward a wall on a blocked slide.
 @export var blocked_bump_offset_px: float = 6.0
@@ -136,6 +149,7 @@ var _slide_tween: Tween
 var _bump_tween: Tween
 var _squish_tween: Tween
 var _travel_tween: Tween
+var _tile_reveal_tween: Tween
 ## If set to non-zero, only this input direction is accepted. Used by Tutorial.
 var forced_direction: Vector2i = Vector2i.ZERO
 var _cat_rig: Node
@@ -311,7 +325,9 @@ func _play_slide(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
 	var duration: float = _compute_slide_duration(tile_count)
 
 	var target_pixel: Vector2 = _grid_to_pixel(to)
+	var tiles_for_timing: Array[Vector2i] = compute_tiles_covered(from, to, direction)
 	_play_slide_travel_squish(direction, duration)
+	_queue_tile_reveal_events(tiles_for_timing, duration)
 
 	if _slide_tween and _slide_tween.is_valid():
 		_slide_tween.kill()
@@ -416,7 +432,40 @@ func _grid_to_pixel(coord: Vector2i) -> Vector2:
 func _compute_slide_duration(tile_count: int) -> float:
 	if _is_reduce_motion_enabled():
 		return 0.02
-	return maxf(min_slide_duration_sec, tile_count / _slide_velocity)
+	if tile_count <= 0:
+		return min_slide_duration_sec
+
+	var speed_multiplier: float = 1.0
+	if tile_count > long_slide_speedup_start_tiles:
+		var extra_tiles: int = tile_count - long_slide_speedup_start_tiles
+		speed_multiplier += float(extra_tiles) * long_slide_extra_speed_per_tile
+		speed_multiplier = minf(speed_multiplier, long_slide_max_speed_multiplier)
+
+	var effective_velocity: float = _slide_velocity * speed_multiplier
+	return maxf(min_slide_duration_sec, float(tile_count) / effective_velocity)
+
+
+func _queue_tile_reveal_events(tiles_covered: Array[Vector2i], slide_duration_sec: float) -> void:
+	if _tile_reveal_tween and _tile_reveal_tween.is_valid():
+		_tile_reveal_tween.kill()
+
+	if tiles_covered.is_empty():
+		return
+
+	if _is_reduce_motion_enabled():
+		for coord: Vector2i in tiles_covered:
+			slide_tile_reached.emit(coord)
+		return
+
+	var per_tile_duration: float = slide_duration_sec / float(tiles_covered.size())
+	_tile_reveal_tween = create_tween()
+	for coord: Vector2i in tiles_covered:
+		_tile_reveal_tween.tween_interval(per_tile_duration)
+		_tile_reveal_tween.tween_callback(_emit_slide_tile_reached.bind(coord))
+
+
+func _emit_slide_tile_reached(coord: Vector2i) -> void:
+	slide_tile_reached.emit(coord)
 
 
 func _kill_all_tweens() -> void:
@@ -428,6 +477,8 @@ func _kill_all_tweens() -> void:
 		_squish_tween.kill()
 	if _travel_tween and _travel_tween.is_valid():
 		_travel_tween.kill()
+	if _tile_reveal_tween and _tile_reveal_tween.is_valid():
+		_tile_reveal_tween.kill()
 
 
 func _is_reduce_motion_enabled() -> bool:
