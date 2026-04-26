@@ -70,7 +70,8 @@ offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 2
 title_text = "LEVEL COMPLETE!"
-title_font_size = 22
+title_font_size = 16
+title_min_font_size = 12
 title_horizontal_padding = 88
 
 [node name="NewBestBadge" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon" instance=ExtResource("3")]
@@ -105,7 +106,7 @@ font_size = 40
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65098, 0.537255, 0.423529, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 
 [node name="PromptLabel" type="Label" parent="MarginContainer/ResultsCard/CardMargin/VBox/ScoreColumn"]

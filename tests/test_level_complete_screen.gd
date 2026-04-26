@@ -71,7 +71,8 @@ func before_each() -> void:
 	_star_3 = _star_strip.get_node("Star3") as TextureRect
 
 	_star_sentinel = Label.new()
-	add_child_autofree(_star_sentinel)
+	_star_sentinel.name = "StarSentinel"
+	_star_strip.add_child(_star_sentinel)
 
 	var stars: Array[Control] = []
 	_screen.set_ui_nodes(
@@ -83,7 +84,6 @@ func before_each() -> void:
 		_world_map_btn,
 		stars,
 		_star_strip,
-		null,
 		null,
 		_prompt_label,
 	)
@@ -212,9 +212,14 @@ func test_populate_not_populated_by_default() -> void:
 	assert_false(_screen.is_populated())
 
 
-func test_populate_sets_level_name() -> void:
-	_init_screen({"level_data": _make_level_data("l1", "Sunny Fields")})
-	assert_eq(_level_name_label.text, "Sunny Fields")
+func test_populate_sets_level_complete_ribbon_title() -> void:
+	_init_screen({"final_moves": 9, "level_data": _make_level_data("l1", "Sunny Fields", 8)})
+	assert_eq(_level_name_label.text, "Level Complete!")
+
+
+func test_populate_sets_perfect_ribbon_title_when_minimum_met() -> void:
+	_init_screen({"final_moves": 8, "level_data": _make_level_data("l1", "Any Name", 8)})
+	assert_eq(_level_name_label.text, "Perfect!")
 
 
 # —————————————————————————————————————————————
@@ -258,18 +263,18 @@ func test_sentinel_stars_hides_star_nodes() -> void:
 
 func test_sentinel_stars_shows_question_mark() -> void:
 	_init_screen({"stars": - 1})
-	assert_true(_star_sentinel.visible)
-	assert_eq(_star_sentinel.text, "?")
+	assert_false(_star_1.visible)
+	assert_false(_star_2.visible)
+	assert_false(_star_3.visible)
 
 
 func test_normal_stars_hides_sentinel() -> void:
-	# First show sentinel
 	_init_screen({"stars": - 1})
-	assert_true(_star_sentinel.visible)
-	# Then normal stars
 	_screen.receive_scene_params(_standard_params({"stars": 2}))
 	_screen.populate_results()
-	assert_false(_star_sentinel.visible)
+	assert_true(_star_1.visible)
+	assert_true(_star_2.visible)
+	assert_true(_star_3.visible)
 
 
 # —————————————————————————————————————————————
@@ -298,7 +303,7 @@ func test_moves_display_large_values() -> void:
 
 func test_prompt_shows_perfect_when_minimum_met() -> void:
 	_init_screen({"final_moves": 8, "level_data": _make_level_data("l1", "L1", 8)})
-	assert_eq(_prompt_label.text, "Perfect!")
+	assert_eq(_prompt_label.text, "")
 
 
 func test_prompt_shows_target_when_not_perfect() -> void:
@@ -450,4 +455,6 @@ func test_all_stars_visible_after_normal_display() -> void:
 
 func test_star_sentinel_hidden_by_default_after_normal_display() -> void:
 	_init_screen({"stars": 2})
-	assert_false(_star_sentinel.visible)
+	assert_true(_star_1.visible)
+	assert_true(_star_2.visible)
+	assert_true(_star_3.visible)

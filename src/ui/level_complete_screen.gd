@@ -82,6 +82,9 @@ var _populated: bool = false
 ## Stub SFX stream for star earned (replace with real audio asset later).
 var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
 
+const RIBBON_TITLE_LEVEL_COMPLETE: String = "Level Complete!"
+const RIBBON_TITLE_PERFECT: String = "Perfect!"
+
 
 # —————————————————————————————————————————————
 # Lifecycle
@@ -159,29 +162,24 @@ func populate_results() -> void:
 		push_error("LevelCompleteScreen: populate_results() with no level_data.")
 		return
 
-	# Level name
+	var minimum_moves: int = _current_level_data.minimum_moves
+	var is_perfect: bool = _is_perfect_result(_final_moves, minimum_moves)
+
+	# Ribbon title (no level name): default completion or perfect result.
 	if _level_name_ribbon != null:
-		var display_name: String = _current_level_data.display_name.strip_edges()
-		if display_name != "":
-			_level_name_ribbon.set_title(display_name)
-		else:
-			_level_name_ribbon.set_title("LEVEL COMPLETE!")
+		_level_name_ribbon.set_title(RIBBON_TITLE_PERFECT if is_perfect else RIBBON_TITLE_LEVEL_COMPLETE)
 	elif _level_name_label != null:
-		var fallback_name: String = _current_level_data.display_name.strip_edges()
-		if fallback_name != "":
-			_level_name_label.text = fallback_name
-		else:
-			_level_name_label.text = "LEVEL COMPLETE!"
+		_level_name_label.text = RIBBON_TITLE_PERFECT if is_perfect else RIBBON_TITLE_LEVEL_COMPLETE
 
 	# Stars
 	_show_stars(_stars)
 
 	# Move count
-	_update_moves_label(_final_moves, _current_level_data.minimum_moves)
+	_update_moves_label(_final_moves, minimum_moves)
 
 	# New best badge
 	_update_new_best_badge()
-	_update_cat_illustration(_stars, _final_moves, _current_level_data.minimum_moves)
+	_update_cat_illustration(_stars, _final_moves, minimum_moves)
 
 	# Next button visibility
 	_update_next_button()
@@ -357,7 +355,7 @@ func _update_moves_label(final_moves: int, minimum_moves: int) -> void:
 		if minimum_moves == 0:
 			_prompt_label.text = ""
 		elif _is_perfect_result(final_moves, minimum_moves):
-			_prompt_label.text = "Perfect!"
+			_prompt_label.text = ""
 		else:
 			_prompt_label.text = "Can you do that in %d?" % minimum_moves
 
