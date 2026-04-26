@@ -7,7 +7,7 @@
 
 ## Overview
 
-The Level Data Format defines the on-disk schema and in-memory resource structure for a single NekoDash puzzle level. It is a Godot `Resource` subclass (`LevelData`) stored as a `.tres` file that carries everything needed to instantiate a playable level: the grid dimensions, per-tile walkability and obstacle data, the cat's starting position, pre-computed minimum move count, and level metadata (ID, world, display name, star thresholds). The Grid System's `load_grid(level_data: LevelData)` call is the primary consumer, but the BFS Solver, Move Counter, Star Rating System, and Level Progression all read fields from the same resource. All 15–20 MVP levels ship as `.tres` files bundled with the game. The format is the single source of truth for puzzle content — no puzzle data is hard-coded anywhere else.
+The Level Data Format defines the on-disk schema and in-memory resource structure for a single NekoDash puzzle level. It is a Godot `Resource` subclass (`LevelData`) stored as a `.tres` file that carries everything needed to instantiate a playable level: the grid dimensions, per-tile walkability and obstacle data, the cat's starting position, pre-computed minimum move count, and level metadata (ID, world, display name, star thresholds). The Grid System's `load_grid(level_data: LevelData)` call is the primary consumer, but the BFS Solver, Move Counter, Star Rating System, and Level Progression all read fields from the same resource. The current authored catalogue contains 27 levels across 3 worlds, all shipped as `.tres` files bundled with the game. The format is the single source of truth for puzzle content — no puzzle data is hard-coded anywhere else.
 
 ## Player Fantasy
 
@@ -170,8 +170,8 @@ The Level Data Format itself has no runtime tuning knobs — it is a data schema
 | `star_3_moves`        | = `minimum_moves`                    | Authoring guideline; set per level by designer after BFS run                 |
 | `star_2_moves`        | = `minimum_moves + floor(min * 0.4)` | More generous for hard levels; tighter for tutorial levels                   |
 | `star_1_moves`        | = `minimum_moves + floor(min * 1.0)` | Should be achievable by a first-time player with no optimization             |
-| Level count per world | 5–7 levels                           | Not enforced by format; guideline for Level Progression and World Map design |
-| World count at MVP    | 3 worlds                             | Not enforced by format; matches game-concept.md MVP scope                    |
+| Level count per world | 9 levels                             | Final authored catalogue shape for the current build                         |
+| World count at MVP    | 3 worlds                             | Not enforced by format; matches current authored catalogue                   |
 
 _Note_: `MAX_GRID_SIZE` (15) and `MIN_GRID_SIZE` (3) are owned by the Grid System GDD and referenced here — they are not redefined.
 

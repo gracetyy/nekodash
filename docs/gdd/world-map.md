@@ -13,8 +13,8 @@
 
 The World Map is the central level-select screen. It loads the `LevelCatalogue` resource
 from disk, reads save data from `SaveManager`, and renders world cards that each contain
-a grid of level cards. Players tap an unlocked level button to start it. A back button
-returns to the Main Menu.
+a grid of level cards. In the current authored build, each world contains 9 levels.
+Players tap an unlocked level button to start it. A back button returns to the Main Menu.
 
 **Architectural note**: `LevelProgression` is a node inside the gameplay scene and is not
 alive when the World Map is shown. The World Map does **not** call LevelProgression

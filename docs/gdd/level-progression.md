@@ -219,8 +219,8 @@ This avoids storing prior state; it checks post-write.
 | Parameter        | Value               | Source                                  |
 | ---------------- | ------------------- | --------------------------------------- |
 | World count      | 3                   | Level Data Format GDD / game-concept.md |
-| Levels per world | 5–7                 | game-concept.md MVP scope (15–20 total) |
-| Total levels     | 15–20               | Level Data Format GDD                   |
+| Levels per world | 9                   | current authored catalogue             |
+| Total levels     | 27                  | Level Data Format GDD                   |
 | Level ordering   | Linear within world | Design Rule 2                           |
 
 Level Progression does not hard-code these numbers — it reads them from the catalogue.

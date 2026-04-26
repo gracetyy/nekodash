@@ -107,6 +107,16 @@ Before a level ships:
 5. **Difficulty fits curve** — BFS value fits the target range for its position
 6. **Star thresholds set** — formula applied, star_2 has ≥ 2 moves of headroom above star_3
 
+## Session Lessons
+
+These are the practical rules that held up while authoring the current Kitchen, Living Room, and HKU sets:
+
+1. **Author the final slot, then solve it** — copied layouts can look correct and still fail once they land in a new slot. The last step must always be a solver pass on the final file.
+2. **Prefer open-room 9x9 or 8x8 shells with sparse pillars** — they keep the slide graph readable and make it much easier to preserve progression as difficulty rises.
+3. **Treat `minimum_moves` as derived data** — if the solver reports a different value, update the resource instead of trying to justify the old number.
+4. **Keep obstacle placement asymmetric** — once a room starts mirroring itself, the path usually becomes either trivial or brittle.
+5. **Use the dump script as the source for docs** — the generated solution table is more reliable than hand-copying moves, thresholds, or walkable counts.
+
 ## Anti-Patterns
 
 | Anti-Pattern                             | Why It Fails                                         |

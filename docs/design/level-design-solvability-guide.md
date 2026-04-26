@@ -219,6 +219,14 @@ which of 4 simultaneous walls broke solvability.
 | **L-shapes and T-shapes work well** | Wall configurations that block in one axis but leave the perpendicular axis open create routing "forks" that enable solution paths.                                   |
 | **Avoid center bisection**          | A wall line that fully bisects the grid horizontally or vertically can make one half unreachable from the other.                                                      |
 
+### 5.2.1 Final-Slot Validation Rule
+
+When a level moves into its final slot, treat the file as new content.
+
+- A copied layout still needs a fresh BFS pass in the destination file.
+- If the copied layout becomes unsolvable in its new slot, replace it with another already-validated layout.
+- The shipping file is the only authoritative source; do not trust the source slot once the move is made.
+
 ### 5.3 Spawn Position Selection
 
 The spawn position determines which tiles are reachable first and which coverage
