@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/core/level_data.gd" id="1_71e5q"]
+
+[resource]
+script = ExtResource("1_71e5q")
+level_id = "sp_l3"
+world_id = 99
+level_index = 3
+display_name = "HKU 3"
+grid_width = 8
+grid_height = 8
+walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+cat_start = Vector2i(1, 1)
+minimum_moves = 17
+star_3_moves = 18
+star_2_moves = 23
+star_1_moves = 34

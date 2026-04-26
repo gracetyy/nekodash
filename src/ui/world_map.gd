@@ -11,8 +11,9 @@ const LevelCardScene: PackedScene = preload("res://scenes/ui/components/cards/Le
 const CATALOGUE_PATH: String = "res://data/level_catalogue.tres"
 const WORLD_TITLES: Dictionary = {
 	1: "Pastel Plains",
-	2: "Lilac Lanes",
-	3: "Cream Caverns",
+	2: "Kitchen",
+	3: "Living Room",
+	99: "HKU Special",
 }
 
 @export_category("World Card Layout")
