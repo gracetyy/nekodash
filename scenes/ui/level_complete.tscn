@@ -70,6 +70,8 @@ offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 2
 title_text = "LEVEL COMPLETE!"
+title_font_size = 22
+title_horizontal_padding = 88
 
 [node name="NewBestBadge" parent="MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon" instance=ExtResource("3")]
 layout_mode = 1

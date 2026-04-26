@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://ddd6r0f0kpb2y" path="res://scenes/ui/components/settings/ToggleSettingRow.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://b5h5g7che7rep" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="8"]
 [ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="9"]
+[ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="10"]
 
 [node name="OptionsOverlay" type="CanvasLayer"]
 layer = 40
@@ -29,9 +30,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -210.0
-offset_top = -304.0
+offset_top = -400.0
 offset_right = 210.0
-offset_bottom = 304.0
+offset_bottom = 420.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -110,6 +111,24 @@ font_size = 24
 layout_mode = 2
 label_text = "Hint Style"
 
+[node name="TutorialSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TutorialLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/TutorialSection"]
+layout_mode = 2
+text = "Tutorial"
+script = ExtResource("9")
+font_size = 24
+
+[node name="CenterContainer" type="CenterContainer" parent="Backdrop/Panel/Margin/VBox/TutorialSection"]
+layout_mode = 2
+
+[node name="ReplayTutorialBtn" parent="Backdrop/Panel/Margin/VBox/TutorialSection/CenterContainer" instance=ExtResource("10")]
+custom_minimum_size = Vector2(220, 56)
+layout_mode = 2
+text = "Replay Tutorial"
+
 [node name="Ribbon" parent="Backdrop" instance=ExtResource("3")]
 z_index = 1
 layout_mode = 0
@@ -118,9 +137,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -248.0
-offset_top = -348.0
+offset_top = -438.0
 offset_right = 248.0
-offset_bottom = -258.0
+offset_bottom = -348.0
 grow_horizontal = 2
 grow_vertical = 2
 title_text = "OPTIONS"
@@ -135,9 +154,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -90.0
-offset_top = -445.0
+offset_top = -535.0
 offset_right = 90.0
-offset_bottom = -316.0
+offset_bottom = -406.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -153,9 +172,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -43.5
-offset_top = 259.5
+offset_top = 375.5
 offset_right = 43.5
-offset_bottom = 346.5
+offset_bottom = 462.5
 grow_horizontal = 2
 grow_vertical = 2
 variant = 1
