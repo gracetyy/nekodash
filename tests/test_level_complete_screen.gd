@@ -7,22 +7,23 @@
 ## Acceptance criteria cross-ref: design/gdd/level-complete-screen.md
 extends GutTest
 
-## Matches LevelCompleteScreen star color constants (design system tokens).
-const STAR_EARNED_COLOR: Color = Color(0.961, 0.784, 0.259, 1.0)  # star-filled #F5C842
-const STAR_UNEARNED_COLOR: Color = Color(0.784, 0.769, 0.816, 1.0)  # star-empty #C8C4D0
+const STAR_LARGE_FILLED_TEXTURE_PATH: String = "res://assets/art/ui/stars/star_large_filled.png"
+const STAR_LARGE_EMPTY_TEXTURE_PATH: String = "res://assets/art/ui/stars/star_large_empty.png"
 
 var _screen: Control # LevelCompleteScreen instance under test
 
 # Mock UI nodes
 var _level_name_label: Label
 var _moves_label: Label
+var _prompt_label: Label
 var _new_best_badge: Label
 var _next_btn: Button
 var _retry_btn: Button
 var _world_map_btn: Button
-var _star_1: Label
-var _star_2: Label
-var _star_3: Label
+var _star_strip: Control
+var _star_1: TextureRect
+var _star_2: TextureRect
+var _star_3: TextureRect
 var _star_sentinel: Label
 
 # Signal tracking
@@ -46,6 +47,9 @@ func before_each() -> void:
 	_moves_label = Label.new()
 	add_child_autofree(_moves_label)
 
+	_prompt_label = Label.new()
+	add_child_autofree(_prompt_label)
+
 	_new_best_badge = Label.new()
 	_new_best_badge.text = "NEW BEST!"
 	add_child_autofree(_new_best_badge)
@@ -59,22 +63,17 @@ func before_each() -> void:
 	_world_map_btn = Button.new()
 	add_child_autofree(_world_map_btn)
 
-	_star_1 = Label.new()
-	_star_1.text = "★"
-	add_child_autofree(_star_1)
-
-	_star_2 = Label.new()
-	_star_2.text = "★"
-	add_child_autofree(_star_2)
-
-	_star_3 = Label.new()
-	_star_3.text = "★"
-	add_child_autofree(_star_3)
+	var star_strip_scene: PackedScene = load("res://scenes/ui/components/status/StarStrip.tscn")
+	_star_strip = star_strip_scene.instantiate() as Control
+	add_child_autofree(_star_strip)
+	_star_1 = _star_strip.get_node("Star1") as TextureRect
+	_star_2 = _star_strip.get_node("Star2") as TextureRect
+	_star_3 = _star_strip.get_node("Star3") as TextureRect
 
 	_star_sentinel = Label.new()
 	add_child_autofree(_star_sentinel)
 
-	var stars: Array[Control] = [_star_1, _star_2, _star_3]
+	var stars: Array[Control] = []
 	_screen.set_ui_nodes(
 		_level_name_label,
 		_moves_label,
@@ -83,7 +82,10 @@ func before_each() -> void:
 		_retry_btn,
 		_world_map_btn,
 		stars,
-		_star_sentinel,
+		_star_strip,
+		null,
+		null,
+		_prompt_label,
 	)
 
 	# Reset tracking
@@ -219,32 +221,32 @@ func test_populate_sets_level_name() -> void:
 # Star Display Tests
 # —————————————————————————————————————————————
 
-func test_three_stars_all_bright() -> void:
+func test_three_stars_sets_filled_star_textures() -> void:
 	_init_screen({"stars": 3})
-	assert_eq(_star_1.modulate, STAR_EARNED_COLOR)
-	assert_eq(_star_2.modulate, STAR_EARNED_COLOR)
-	assert_eq(_star_3.modulate, STAR_EARNED_COLOR)
+	assert_eq(_star_1.texture.resource_path, STAR_LARGE_FILLED_TEXTURE_PATH)
+	assert_eq(_star_2.texture.resource_path, STAR_LARGE_FILLED_TEXTURE_PATH)
+	assert_eq(_star_3.texture.resource_path, STAR_LARGE_FILLED_TEXTURE_PATH)
 
 
-func test_two_stars_two_bright_one_dim() -> void:
+func test_two_stars_sets_last_star_empty_texture() -> void:
 	_init_screen({"stars": 2})
-	assert_eq(_star_1.modulate, STAR_EARNED_COLOR)
-	assert_eq(_star_2.modulate, STAR_EARNED_COLOR)
-	assert_eq(_star_3.modulate, STAR_UNEARNED_COLOR)
+	assert_eq(_star_1.texture.resource_path, STAR_LARGE_FILLED_TEXTURE_PATH)
+	assert_eq(_star_2.texture.resource_path, STAR_LARGE_FILLED_TEXTURE_PATH)
+	assert_eq(_star_3.texture.resource_path, STAR_LARGE_EMPTY_TEXTURE_PATH)
 
 
-func test_one_star_one_bright_two_dim() -> void:
+func test_one_star_sets_two_empty_textures() -> void:
 	_init_screen({"stars": 1})
-	assert_eq(_star_1.modulate, STAR_EARNED_COLOR)
-	assert_eq(_star_2.modulate, STAR_UNEARNED_COLOR)
-	assert_eq(_star_3.modulate, STAR_UNEARNED_COLOR)
+	assert_eq(_star_1.texture.resource_path, STAR_LARGE_FILLED_TEXTURE_PATH)
+	assert_eq(_star_2.texture.resource_path, STAR_LARGE_EMPTY_TEXTURE_PATH)
+	assert_eq(_star_3.texture.resource_path, STAR_LARGE_EMPTY_TEXTURE_PATH)
 
 
-func test_zero_stars_all_dim() -> void:
+func test_zero_stars_sets_all_empty_textures() -> void:
 	_init_screen({"stars": 0})
-	assert_eq(_star_1.modulate, STAR_UNEARNED_COLOR)
-	assert_eq(_star_2.modulate, STAR_UNEARNED_COLOR)
-	assert_eq(_star_3.modulate, STAR_UNEARNED_COLOR)
+	assert_eq(_star_1.texture.resource_path, STAR_LARGE_EMPTY_TEXTURE_PATH)
+	assert_eq(_star_2.texture.resource_path, STAR_LARGE_EMPTY_TEXTURE_PATH)
+	assert_eq(_star_3.texture.resource_path, STAR_LARGE_EMPTY_TEXTURE_PATH)
 
 
 func test_sentinel_stars_hides_star_nodes() -> void:
@@ -292,6 +294,16 @@ func test_moves_display_zero_minimum() -> void:
 func test_moves_display_large_values() -> void:
 	_init_screen({"final_moves": 123, "level_data": _make_level_data("l1", "L1", 50)})
 	assert_eq(_moves_label.text, "123 / 50")
+
+
+func test_prompt_shows_perfect_when_minimum_met() -> void:
+	_init_screen({"final_moves": 8, "level_data": _make_level_data("l1", "L1", 8)})
+	assert_eq(_prompt_label.text, "Perfect!")
+
+
+func test_prompt_shows_target_when_not_perfect() -> void:
+	_init_screen({"final_moves": 9, "level_data": _make_level_data("l1", "L1", 8)})
+	assert_eq(_prompt_label.text, "Can you do that in 8?")
 
 
 # —————————————————————————————————————————————
