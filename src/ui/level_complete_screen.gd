@@ -24,13 +24,6 @@ const CAT_EXCITED_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_defaul
 # Constants
 # —————————————————————————————————————————————
 
-## Gold color for earned stars — star-filled #F5C842.
-const STAR_EARNED_COLOR: Color = Color(0.961, 0.784, 0.259, 1.0)
-
-## Lavender-grey for unearned stars — star-empty #C8C4D0.
-const STAR_UNEARNED_COLOR: Color = Color(0.784, 0.769, 0.816, 1.0)
-
-
 # —————————————————————————————————————————————
 # Signals
 # —————————————————————————————————————————————
@@ -315,8 +308,8 @@ func _apply_legacy_star_visuals(stars: int) -> void:
 		return
 	var star_nodes: Array[Control] = _legacy_star_nodes.duplicate()
 	if star_nodes.is_empty():
-		for name: String in ["Star1", "Star2", "Star3"]:
-			var star_node: Control = _star_strip.get_node_or_null(name) as Control
+		for star_name: String in ["Star1", "Star2", "Star3"]:
+			var star_node: Control = _star_strip.get_node_or_null(star_name) as Control
 			if star_node != null:
 				star_nodes.append(star_node)
 	if star_nodes.is_empty():
@@ -341,7 +334,6 @@ func _apply_legacy_star_visuals(stars: int) -> void:
 	for index: int in range(star_nodes.size()):
 		var star: Control = star_nodes[index]
 		star.visible = true
-		star.modulate = STAR_EARNED_COLOR if index < stars else STAR_UNEARNED_COLOR
 	if sentinel != null:
 		sentinel.visible = false
 
@@ -362,8 +354,10 @@ func _update_moves_label(final_moves: int, minimum_moves: int) -> void:
 		_min_label.text = ""
 
 	if _prompt_label != null:
-		if minimum_moves == 0 or _is_perfect_result(final_moves, minimum_moves):
+		if minimum_moves == 0:
 			_prompt_label.text = ""
+		elif _is_perfect_result(final_moves, minimum_moves):
+			_prompt_label.text = "Perfect!"
 		else:
 			_prompt_label.text = "Can you do that in %d?" % minimum_moves
 

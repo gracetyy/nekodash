@@ -66,9 +66,9 @@ func set_earned(value: int) -> void:
 
 func configure(
 	new_earned_count: int,
-	new_size_tier: int = size_tier,
-	new_layout_variant: int = layout_variant,
-	new_empty_mode: int = empty_mode,
+	new_size_tier: SizeTier = size_tier,
+	new_layout_variant: LayoutVariant = layout_variant,
+	new_empty_mode: EmptyMode = empty_mode,
 	new_row_spacing_px: float = row_spacing_px
 ) -> void:
 	earned_count = new_earned_count
@@ -115,9 +115,8 @@ func _place_star(star: TextureRect, index: int, star_size: float) -> void:
 			Vector2(100.0, 0.0),
 			Vector2(200.0, 16.0),
 		]
-		var rotations: Array[float] = [-26.0, 0.0, 26.0]
 		star.position = positions[index]
-		star.rotation_degrees = rotations[index]
+		star.rotation_degrees = 0.0
 		return
 
 	star.rotation_degrees = 0.0

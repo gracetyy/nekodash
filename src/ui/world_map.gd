@@ -16,6 +16,14 @@ const WORLD_TITLES: Dictionary = {
 }
 
 @export_category("World Card Layout")
+## Horizontal padding between world-map modal content and screen edges.
+@export_range(0.0, 200.0, 1.0, "or_greater")
+var screen_edge_margin_horizontal: float = 96.0
+
+## Vertical padding between world-map modal content and screen edges.
+@export_range(0.0, 200.0, 1.0, "or_greater")
+var screen_edge_margin_vertical: float = 56.0
+
 ## Minimum columns the level grid should attempt to use.
 @export_range(1, 8, 1, "or_greater")
 var grid_min_columns: int = 2
@@ -54,6 +62,7 @@ signal back_requested
 
 @export var _back_btn: BaseButton
 @export var _header_card: PanelContainer
+@export var _root_margin_container: MarginContainer
 @export var _progress_chip: Control
 @export var _world_list: VBoxContainer
 @export var _scroll_container: ScrollContainer
@@ -72,6 +81,8 @@ var _last_grid_column_target: int = -1
 
 
 func _ready() -> void:
+	if _root_margin_container == null:
+		_root_margin_container = get_node_or_null("MarginContainer")
 	if _back_btn == null:
 		_back_btn = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/BackBtn")
 	if _header_card == null:
@@ -91,6 +102,7 @@ func _ready() -> void:
 	if _hint_label == null:
 		_hint_label = get_node_or_null("MarginContainer/VBox/HintLabel")
 	assert(_header_card != null, "_header_card not assigned")
+	assert(_root_margin_container != null, "_root_margin_container not assigned")
 	assert(_back_btn != null, "_back_btn not assigned")
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_subtitle_label != null, "_subtitle_label not assigned")
@@ -101,6 +113,7 @@ func _ready() -> void:
 	assert(_no_levels_label != null, "_no_levels_label not assigned")
 	_connect_back_button_signal()
 	_connect_navigation()
+	_apply_screen_edge_margins()
 	_apply_visual_style()
 	if not resized.is_connected(_on_world_map_resized):
 		resized.connect(_on_world_map_resized)
@@ -480,6 +493,17 @@ func _apply_visual_style() -> void:
 		_hint_label.visible = false
 	if _progress_chip != null:
 		_progress_chip.visible = false
+
+
+func _apply_screen_edge_margins() -> void:
+	if _root_margin_container == null:
+		return
+	var horizontal: int = int(round(screen_edge_margin_horizontal))
+	var vertical: int = int(round(screen_edge_margin_vertical))
+	_root_margin_container.add_theme_constant_override("margin_left", horizontal)
+	_root_margin_container.add_theme_constant_override("margin_right", horizontal)
+	_root_margin_container.add_theme_constant_override("margin_top", vertical)
+	_root_margin_container.add_theme_constant_override("margin_bottom", vertical)
 
 
 func _play_locked_level_feedback(card: PanelContainer, lock_icon: TextureRect) -> void:

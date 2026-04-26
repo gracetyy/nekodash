@@ -19,11 +19,18 @@ var title_font_size: int = 40
 
 @export var title_color: Color = Color(1.0, 0.984, 0.957, 1.0)
 
+@export_range(0, 120, 1, "or_greater")
+var title_horizontal_padding: int = 38
+
+@export_range(12, 64, 1, "or_greater")
+var title_min_font_size: int = 20
+
 @onready var _title_label: Label = $RibbonTitleLabel
 
 
 func _ready() -> void:
 	_apply_component_state()
+	call_deferred("_apply_component_state")
 
 
 func refresh_style() -> void:
@@ -45,9 +52,35 @@ func _apply_component_state() -> void:
 	stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	if _title_label == null:
 		return
+	_title_label.offset_left = float(title_horizontal_padding)
+	_title_label.offset_right = - float(title_horizontal_padding)
+	_title_label.clip_text = true
+	_title_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_title_label.text = title_text
 	ShellThemeUtil.apply_title(_title_label, title_font_size)
+	_fit_title_to_label_width()
 	_title_label.add_theme_color_override("font_color", title_color)
+
+
+func _fit_title_to_label_width() -> void:
+	if _title_label == null:
+		return
+	if title_text.is_empty():
+		return
+
+	var available_width: float = _title_label.size.x
+	if available_width <= 0.0:
+		return
+
+	for candidate_size: int in range(title_font_size, title_min_font_size - 1, -1):
+		ShellThemeUtil.apply_title(_title_label, candidate_size)
+		var font: Font = _title_label.get_theme_font("font")
+		if font == null:
+			return
+		var font_px: int = _title_label.get_theme_font_size("font_size")
+		var width_px: float = font.get_string_size(title_text, HORIZONTAL_ALIGNMENT_CENTER, -1.0, font_px).x
+		if width_px <= available_width:
+			return
 
 
 func _variant_key() -> String:

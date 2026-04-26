@@ -3,6 +3,10 @@ extends PanelContainer
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 const LEVEL_CARD_HOVER_TWEEN_META: String = "_component_level_card_hover_tween"
+const LEVEL_CARD_HEIGHT: float = 132.0
+const LEVEL_CARD_CONTENT_GAP: float = 10.0
+const LOCKED_SIDE_MARGIN: int = 6
+const UNLOCKED_SIDE_MARGIN: int = 6
 
 signal pressed(level_id: String)
 signal locked_pressed(level_id: String)
@@ -33,6 +37,7 @@ var _is_component_ready: bool = false
 @onready var _lock_center: Control = $CardMargin/VBox/LockCenter
 @onready var _lock_icon: TextureRect = $CardMargin/VBox/LockCenter/LockIcon
 @onready var _overlay_button: Button = $OverlayButton
+@onready var _card_margin: MarginContainer = $CardMargin
 
 
 func _ready() -> void:
@@ -64,19 +69,32 @@ func configure(new_level_id: String, number: int, state: String, stars: int) -> 
 func _apply_component_state() -> void:
 	if not _is_component_ready:
 		return
-	custom_minimum_size = Vector2(min_width, 132.0)
+	custom_minimum_size = Vector2(min_width, LEVEL_CARD_HEIGHT)
 	add_theme_stylebox_override("panel", ShellThemeUtil.make_level_card_style(card_state))
-	_number_label.visible = card_state != "locked"
-	_star_strip.visible = card_state != "locked"
-	_lock_center.visible = card_state == "locked"
 	_lock_icon.texture = ShellThemeUtil.WORLD_MAP_LOCK_TEXTURE
-	if _number_label.visible:
-		_number_label.text = str(level_number)
-		_number_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
-		_number_label.add_theme_font_size_override("font_size", 42)
-		_number_label.add_theme_color_override("font_color", ShellThemeUtil.PLUM)
-		if _star_strip != null and _star_strip.has_method("configure"):
-			_star_strip.call("configure", clampi(earned_stars, 0, 3), 1, 0, 0, 3.0)
+	_number_label.text = str(level_number)
+	_number_label.add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
+	_number_label.add_theme_font_size_override("font_size", 42)
+	_number_label.add_theme_color_override("font_color", ShellThemeUtil.PLUM)
+	if _star_strip != null and _star_strip.has_method("configure"):
+		_star_strip.call("configure", clampi(earned_stars, 0, 3), 1, 0, 0, 1.0)
+
+	var unlocked_content_height: float = _number_label.get_combined_minimum_size().y + LEVEL_CARD_CONTENT_GAP
+	if _star_strip != null:
+		unlocked_content_height += _star_strip.get_combined_minimum_size().y
+	var unlocked_content_width: float = 0.0
+	if _star_strip != null:
+		unlocked_content_width = _star_strip.get_combined_minimum_size().x
+	_lock_center.custom_minimum_size = Vector2(unlocked_content_width, unlocked_content_height)
+
+	var is_locked: bool = card_state == "locked"
+	if _card_margin != null:
+		var side_margin: int = LOCKED_SIDE_MARGIN if is_locked else UNLOCKED_SIDE_MARGIN
+		_card_margin.add_theme_constant_override("margin_left", side_margin)
+		_card_margin.add_theme_constant_override("margin_right", side_margin)
+	_number_label.visible = not is_locked
+	_star_strip.visible = not is_locked
+	_lock_center.visible = is_locked
 
 
 func _on_overlay_pressed() -> void:

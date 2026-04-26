@@ -30,7 +30,11 @@ var _sfx_manager_ref: Node
 @export var _simple_ui_toggle: BaseButton
 @export var _fullscreen_toggle: BaseButton
 @export var _input_hint_option: OptionButton
+@export var _replay_tutorial_btn: BaseButton
+@export var _tutorial_label: Label
 @export var _close_btn: BaseButton
+
+var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
 
 
 func _ready() -> void:
@@ -66,6 +70,10 @@ func _ready() -> void:
 		_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
 	if _input_hint_option == null:
 		_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton")
+	if _tutorial_label == null:
+		_tutorial_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TutorialSection/TutorialLabel")
+	if _replay_tutorial_btn == null:
+		_replay_tutorial_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/TutorialSection/CenterContainer/ReplayTutorialBtn")
 	if _close_btn == null:
 		_close_btn = get_node_or_null("Backdrop/CloseBtn")
 	assert(_backdrop != null, "_backdrop not assigned")
@@ -182,6 +190,8 @@ func _connect_ui() -> void:
 		_fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 	if _input_hint_option != null and not _input_hint_option.item_selected.is_connected(_on_input_hint_selected):
 		_input_hint_option.item_selected.connect(_on_input_hint_selected)
+	if _replay_tutorial_btn != null and not _replay_tutorial_btn.pressed.is_connected(_on_replay_tutorial_pressed):
+		_replay_tutorial_btn.pressed.connect(_on_replay_tutorial_pressed)
 	if _close_btn != null and not _close_btn.pressed.is_connected(on_close_btn_pressed):
 		_close_btn.pressed.connect(on_close_btn_pressed)
 
@@ -221,6 +231,7 @@ func _sync_controls() -> void:
 			_:
 				_input_hint_option.select(0)
 	_refresh_audio_control_states()
+	_sync_tutorial_button_state()
 	_suppress_events = false
 
 
@@ -288,13 +299,45 @@ func _on_input_hint_selected(index: int) -> void:
 			_app_settings_ref.set_input_hint_mode(AppSettings.INPUT_HINT_AUTO)
 
 
+func _on_replay_tutorial_pressed() -> void:
+	if _suppress_events:
+		return
+	_app_settings_ref.set_tutorial_skipped(false)
+	# Provide some feedback.
+	if _replay_tutorial_btn is Button:
+		_replay_tutorial_btn.text = "Tutorial Reset!"
+	SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
+	
+	# Load level 1 immediately and navigate
+	var cat: LevelCatalogue = load("res://data/level_catalogue.tres")
+	if cat != null:
+		var l1: LevelData = null
+		for l in cat.levels:
+			if l.level_id == "w1_l1":
+				l1 = l
+				break
+		if l1 != null:
+			SceneManager.hide_overlay()
+			SceneManager.go_to(SceneManager.Screen.GAMEPLAY, {
+				"level_data": l1
+			})
+
+
+func _sync_tutorial_button_state() -> void:
+	if _replay_tutorial_btn == null:
+		return
+	_replay_tutorial_btn.disabled = false
+	if _replay_tutorial_btn is Button:
+		_replay_tutorial_btn.text = "Replay Tutorial"
+
+
 func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
 	_refresh_title_components()
 
 
 func _refresh_title_components() -> void:
-	for node: Label in [_title_label, _audio_label, _display_label, _input_label]:
+	for node: Label in [_title_label, _audio_label, _display_label, _input_label, _tutorial_label]:
 		if node != null and node.has_method("refresh_style"):
 			node.call("refresh_style")
 	if _ribbon != null and _ribbon.has_method("refresh_style"):
