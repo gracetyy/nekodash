@@ -12,10 +12,10 @@
 ## Overview
 
 The HUD is the in-level overlay that gives the player the information they need while
-playing: current move count vs. minimum, live tile coverage, and interactive buttons for
-undo and restart. It is a pure display and input-forwarding layer — it reads from gameplay
-systems via signals and properties, forwards button presses to Undo/Restart, and owns no
-game state of its own.
+playing: current move count, a star strip, optional tile coverage for debug use, and
+interactive buttons for undo, restart, exit, and pause. It is a pure display and
+input-forwarding layer — it reads from gameplay systems via signals and properties,
+forwards button presses to gameplay/scene coordination, and owns no game state of its own.
 
 The HUD lives as a child of the gameplay scene root (the same scene as Level Coordinator).
 It is not an autoload. It receives references to Move Counter, Undo/Restart, Coverage
@@ -39,12 +39,15 @@ they just play.
 
 | Responsibility                                       | Owned By                         |
 | ---------------------------------------------------- | -------------------------------- |
-| Display current move count and minimum moves target  | HUD ✅                           |
-| Display live tile coverage (count or percentage)     | HUD ✅                           |
+| Display current move count                           | HUD ✅                           |
+| Display star strip based on level thresholds         | HUD ✅                           |
+| Display live tile coverage for debug use             | HUD ✅                           |
 | Display and enable/disable Undo button               | HUD ✅                           |
 | Display Restart button                               | HUD ✅                           |
-| Forward Undo button press to Undo/Restart            | HUD ✅                           |
-| Forward Restart button press to Undo/Restart         | HUD ✅                           |
+| Display Exit button                                  | HUD ✅                           |
+| Display Pause button                                 | HUD ✅                           |
+| Forward Undo / Restart button presses                | HUD ✅                           |
+| Forward Exit / Pause intent to the coordinator       | HUD ✅                           |
 | Hide/lock interactive elements after level_completed | HUD ✅                           |
 | Counting moves, tracking coverage                    | Move Counter / Coverage Tracking |
 | Executing undo and restart logic                     | Undo / Restart                   |
@@ -73,22 +76,20 @@ they just play.
    - On `initialize()` (stack is empty at level load)
 
 3. **`minimum_moves == 0` graceful display**: When `minimum_moves == 0` (in-development
-   level), the move target is hidden — the move display shows only the current count
-   with no "/ N" denominator. The HUD checks this condition from the initial
-   `initialize()` call and suppresses the target label.
+   level), the star-strip thresholds still render, but the move display shows only the
+   current count. The HUD checks this condition from the initial `initialize()` call and
+   keeps the display readable.
 
-4. **Lock on level complete**: When `level_completed` fires, the Undo and Restart buttons
-   are both hidden (or visually dimmed and input-blocked). The player is now looking at a
-   completed puzzle — the Level Complete Screen will appear shortly. Restart is still
-   logically available on the Undo/Restart system but the HUD does not expose it post-
-   completion. The existing Undo/Restart GDD states: "restart still works, undo is a
-   no-op after `level_completed`" — the HUD enforces this by simply hiding both buttons.
+4. **Lock on level complete**: When `level_completed` fires, the undo/restart/exit/pause
+   controls stop accepting input. The player is now looking at a completed puzzle — the
+   Level Complete Screen will appear shortly. The HUD keeps the chrome visible but blocks
+   interaction until the next level load.
 
-5. **Coverage display**: Hidden from player-facing HUD by default (decided post-playtest:
-   tile colours already communicate progress visually). The `CoverageLabel` node remains
-   in the scene but is set to `visible = false`. Coverage signals still flow to the HUD
-   for debug-mode use. If reinstated, the display format is tile count: `"X / Y"`
-   (e.g. `"12 / 20"`); no code changes are needed, only a visibility toggle.
+5. **Coverage display**: Hidden from player-facing HUD by default (tile colours already
+   communicate progress visually). The `CoverageLabel` node remains in the scene but is
+   set to `visible = false`. Coverage signals still flow to the HUD for debug-mode use.
+   If reinstated, the display format is tile count: `"X / Y"` (e.g. `"12 / 20"`); no
+   code changes are needed, only a visibility toggle.
 
 6. **No animation at MVP**: Labels update instantly on signal. Counter bump animations
    (scale pop, color flash) are a polish task for post-jam. The HUD layout must leave
@@ -98,21 +99,24 @@ they just play.
    calls `UndoRestart.restart()`. A confirmation step may be added post-jam if playtesting
    shows accidental presses.
 
-8. **HUD does not navigate**: The HUD has no "back to world map" or "quit" button at MVP.
-   Once in a level, the player's exit path is to complete it or use the device back button
-   (which SceneManager may intercept — out of HUD scope).
+8. **HUD does not navigate**: The HUD emits exit and pause intents, but the coordinator
+   owns the actual transitions. The player can back out via the Exit button, the Pause
+   button, or the device back button depending on scene handling.
 
 ---
 
 ## Display Elements
 
-| Element            | Signal Source                                                           | Content                                         | Notes                                               |
-| ------------------ | ----------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
-| **Moves prefix**   | Static (set at init)                                                    | `"Moves: "` (trailing space)                    | Plain Label prepended to Move label                 |
-| **Move label**     | `move_count_changed`                                                    | `"{current} / {min}"` or `"{current}"` if min=0 | Right-aligned; large; prominent                     |
-| **Coverage label** | `coverage_updated`                                                      | `"{covered} / {total}"`                         | Hidden by default (`visible = false`); debug only   |
-| **Undo button**    | `move_count_changed`, `undo_applied`, `level_restarted`, `initialize()` | Icon + optional label "Undo"                    | Disabled (greyed) when `can_undo() == false`        |
-| **Restart button** | `level_completed` (hide)                                                | Icon + optional label "Restart"                 | Always enabled while playing; hidden after complete |
+| Element            | Signal Source                                                           | Content                         | Notes                                             |
+| ------------------ | ----------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------- |
+| **Moves prefix**   | Static (set at init)                                                    | `"Moves: "` (trailing space)    | Plain Label prepended to Move label               |
+| **Move label**     | `move_count_changed`                                                    | `"{current}"`                   | Right-aligned; large; prominent                   |
+| **Star strip**     | `move_count_changed`, `level_restarted`, `initialize()`                 | 0–3 stars based on thresholds   | Live progress indicator                           |
+| **Coverage label** | `coverage_updated`                                                      | `"{covered} / {total}"`         | Hidden by default (`visible = false`); debug only |
+| **Undo button**    | `move_count_changed`, `undo_applied`, `level_restarted`, `initialize()` | Icon + optional label "Undo"    | Disabled (greyed) when `can_undo() == false`      |
+| **Restart button** | `level_completed` (lock input)                                          | Icon + optional label "Restart" | Visible while playing; locked after complete      |
+| **Exit button**    | `level_completed` (lock input)                                          | Icon + optional label "Exit"    | Jumps back to world map                           |
+| **Pause button**   | `level_completed` (lock input)                                          | Icon + optional label "Pause"   | Emits pause intent to coordinator                 |
 
 ---
 
@@ -192,16 +196,15 @@ func _on_restart_btn_pressed() -> void:
 
 ## Layout Notes
 
-The HUD is a `CanvasLayer` (or a `Control` node anchored over the gameplay viewport).
-Suggested layout zones:
+The HUD is a `CanvasLayer` anchored over the gameplay viewport. Current layout zones:
 
 ```
 ┌───────────────────────────────────┐
-│  [Undo]  [Restart]  [Exit]        │  ← Top bar (button row)
+│  [Undo] [Restart] [Exit] [Pause]   │  ← Top bar (button row)
 │                                   │
 │         [ puzzle grid ]           │  ← Centre (HUD-free zone)
 │                                   │
-│              Moves: 4/8           │  ← Bottom bar (stats row)
+│              Moves: 4              │  ← Stats row with star strip nearby
 └───────────────────────────────────┘
 ```
 
@@ -244,19 +247,20 @@ layout intent and element groupings only.
 
 ## Acceptance Criteria
 
-| ID    | Criterion                                                                             |
-| ----- | ------------------------------------------------------------------------------------- |
-| HU-1  | Move label shows `"0 / N"` at level load (N = `minimum_moves`)                        |
-| HU-2  | Move label updates to `"1 / N"` after the first slide                                 |
-| HU-3  | When `minimum_moves == 0`, move label shows `"0"` at load and `"1"` after first slide |
-| HU-4  | Coverage label shows `"1 / T"` at load (starting tile pre-covered)                    |
-| HU-5  | Coverage label increments correctly after each slide                                  |
-| HU-6  | Undo button is disabled (greyed) at level load                                        |
-| HU-7  | Undo button enables after the first slide                                             |
-| HU-8  | Undo button disables again after undoing back to zero moves                           |
-| HU-9  | Tapping Undo calls `UndoRestart.undo()`                                               |
-| HU-10 | Tapping Restart calls `UndoRestart.restart()` and all HUD displays reset              |
-| HU-11 | Both buttons are hidden after `level_completed` fires                                 |
+| ID    | Criterion                                                                     |
+| ----- | ----------------------------------------------------------------------------- |
+| HU-1  | Move label shows the current move count at level load                         |
+| HU-2  | Move label updates after each slide                                           |
+| HU-3  | When `minimum_moves == 0`, move label still renders cleanly                   |
+| HU-4  | Coverage label shows `"1 / T"` at load (starting tile pre-covered)            |
+| HU-5  | Coverage label increments correctly after each slide                          |
+| HU-6  | Undo button is disabled (greyed) at level load                                |
+| HU-7  | Undo button enables after the first slide                                     |
+| HU-8  | Undo button disables again after undoing back to zero moves                   |
+| HU-9  | Tapping Undo calls `UndoRestart.undo()`                                       |
+| HU-10 | Tapping Restart calls `UndoRestart.restart()` and all HUD displays reset      |
+| HU-11 | Exit emits exit intent and Pause emits pause intent while the level is active |
+| HU-12 | Interactive controls stop responding after `level_completed` fires            |
 
 ---
 

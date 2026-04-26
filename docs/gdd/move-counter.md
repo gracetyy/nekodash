@@ -7,13 +7,13 @@
 
 ## Overview
 
-The Move Counter tracks the number of moves the player has made in the current level attempt and compares that count against the `minimum_moves` value baked into `LevelData`. It owns a single integer — `current_moves: int` — that increments once per completed move when the Level Coordinator calls `increment(...)`. At level load it reads `minimum_moves`, `star_3_moves`, `star_2_moves`, and `star_1_moves` from `LevelData` and caches them for the session. It exposes `current_moves` and `minimum_moves` to the HUD for live display, fires `move_count_changed` after each increment, and exposes `get_final_move_count() -> int` for the Level Complete Screen and Star Rating System to query when `level_completed` fires. It does not compute star ratings — that belongs to Star Rating System. It does not control game flow. It is a thin, stateless counter that answers one question: "how many moves has the player made?"
+The Move Counter tracks the number of moves the player has made in the current level attempt and compares that count against the `minimum_moves` value baked into `LevelData`. It owns a single integer — `current_moves: int` — that increments once per completed move when the Level Coordinator calls `increment(...)`. At level load it reads `minimum_moves`, `star_3_moves`, `star_2_moves`, and `star_1_moves` from `LevelData` and caches them for the session. It exposes `current_moves` and `minimum_moves` to downstream UI and progression systems, fires `move_count_changed` after each increment, and exposes `get_final_move_count() -> int` for the Level Complete Screen and Star Rating System to query when `level_completed` fires. The current HUD shows a live move count with the star strip; Move Counter still supplies `minimum_moves`, but does not decide how that value is rendered. It does not compute star ratings — that belongs to Star Rating System. It does not control game flow. It is a thin, stateless counter that answers one question: "how many moves has the player made?"
 
 ## Player Fantasy
 
 The number at the top of the screen. "Target: 8 moves" in small calm text. "Moves: 3" building below it with each swipe. The gap closing. The quiet tension of "can I still do it in 8?" on move 6. The small triumph when the board goes gold on move 8 — or the immediate urge to restart when it was move 11.
 
-This is **Pillar 2 — Always Know How Close to Perfect You Are** in its most literal form. The move count and target are visible from the first move to the last. The player is never in doubt about where they stand. That information does not judge — it informs. A player who finishes in 11 when the target was 8 sees "11 / 8" and immediately understands what "better" means without needing to be told.
+This is **Pillar 2 — Always Know How Close to Perfect You Are** in its most literal form. The move count is visible from the first move to the last, and threshold data still feeds star and completion feedback. The player is never in doubt about where they stand. That information does not judge — it informs.
 
 ## Detailed Design
 
@@ -31,7 +31,7 @@ This is **Pillar 2 — Always Know How Close to Perfect You Are** in its most li
 
 6. **Level complete read-out**: Move Counter exposes `get_final_move_count() -> int`, which returns `current_moves` at the moment the level completes. Star Rating System and Level Complete Screen call this at `level_completed` time. No special capture is needed — `current_moves` does not change after `level_completed` unless a restart occurs.
 
-7. **Minimum moves display**: If `minimum_moves == 0` (level unsolved by BFS, under authoring), Move Counter omits the target display — it emits `move_count_changed` with `minimum_moves = 0`, and the HUD renders without a target. This is a graceful degradation for unreleased or in-development levels.
+7. **Minimum moves display**: If `minimum_moves == 0` (level unsolved by BFS, under authoring), Move Counter still emits `move_count_changed` with `minimum_moves = 0`. The current HUD renders live move count and star strip without a target label. This is a graceful degradation for unreleased or in-development levels.
 
 8. **Restart**: On level restart, the Undo/Restart system calls `reset_move_count()`. Move Counter sets `current_moves = 0` and emits `move_count_changed(0, minimum_moves)`.
 
@@ -140,14 +140,14 @@ Positive = over target; 0 = exactly on target; negative = under (impossible — 
 
 Move Counter has no runtime tuning knobs — it is a deterministic counter. The thresholds it displays (`star_3_moves`, etc.) are owned by `LevelData` and authored per-level by the level designer.
 
-The only design-time parameter the Move Counter influences is the **HUD display format** for `current_moves` vs. `minimum_moves`:
+The only design-time parameter the Move Counter influences is whether the HUD has a minimum target value to show. The current implementation prioritizes a clean live count and star strip while still using thresholds for scoring:
 
-| Display Option                | Example                  | Notes                                              |
-| ----------------------------- | ------------------------ | -------------------------------------------------- |
-| Fraction (`current / target`) | `6 / 8`                  | Immediately legible gap; recommended default       |
-| Separate labels               | `Moves: 6` + `Target: 8` | Two distinct UI elements; more flexible for layout |
-| Delta only (`+N`)             | `+2`                     | Compact; only shows gap; loses absolute context    |
-| Current only (no target)      | `6`                      | When `minimum_moves == 0`; graceful fallback       |
+| Display Option                | Example                  | Notes                                                           |
+| ----------------------------- | ------------------------ | --------------------------------------------------------------- |
+| Fraction (`current / target`) | `6 / 8`                  | Immediately legible gap; recommended default                    |
+| Separate labels               | `Moves: 6` + `Target: 8` | Two distinct UI elements; more flexible for layout              |
+| Delta only (`+N`)             | `+2`                     | Compact; only shows gap; loses absolute context                 |
+| Current only (no target)      | `6`                      | Current HUD behavior; `minimum_moves` still feeds scoring logic |
 
 _Display format is owned by the HUD GDD. Move Counter exposes the numbers regardless of display choice._
 
@@ -164,14 +164,14 @@ Move Counter itself produces no visuals or audio. All feedback is owned by downs
 
 ## UI Requirements
 
-Move Counter exposes two values for HUD display:
+Move Counter exposes two values for downstream display and scoring:
 
 - `current_moves: int` — updated live after every coordinator-dispatched move
 - `minimum_moves: int` — set at level load; constant for the session (0 if unsolved)
 
-The HUD is responsible for all layout decisions (position, font, animation) — Move Counter only provides the data. The exact format ("6 / 8", "+2 over target", etc.) is a HUD GDD decision.
+The HUD is responsible for all layout decisions (position, font, animation) — Move Counter only provides the data. The current UI shows live count + star strip, not a persistent target fraction.
 
-One special case: when `minimum_moves == 0`, the HUD must suppress the target display (show only `current_moves`). Move Counter passes `minimum_moves = 0` in `move_count_changed`; HUD decides how to render.
+One special case: when `minimum_moves == 0`, the HUD naturally has no target value to show. Move Counter passes `minimum_moves = 0` in `move_count_changed`; HUD decides how to render.
 
 ## Acceptance Criteria
 

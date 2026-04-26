@@ -35,20 +35,31 @@ A scene transition that hesitates — even for a quarter-second — breaks that 
 
 ### Screens
 
-NekoDash has exactly six named screens at MVP:
+NekoDash has eight named screens plus three shell overlays at MVP:
 
-| Screen Enum Value | Scene File Path                       | Description                                               |
-| ----------------- | ------------------------------------- | --------------------------------------------------------- |
-| `MAIN_MENU`       | `res://scenes/ui/main_menu.tscn`      | Title screen; "Play", "Skins" buttons; equipped cat shown |
-| `WORLD_MAP`       | `res://scenes/ui/world_map.tscn`      | Level select grid; shows all worlds and level lock state  |
-| `GAMEPLAY`        | `res://scenes/gameplay/gameplay.tscn` | The playfield: grid, HUD, cat; loads a `LevelData`        |
-| `LEVEL_COMPLETE`  | `res://scenes/ui/level_complete.tscn` | Post-level results: stars, move count, next/replay/map    |
-| `SKIN_SELECT`     | `res://scenes/ui/skin_select.tscn`    | Skin browser and equip screen                             |
-| `LOADING`         | `res://scenes/ui/loading.tscn`        | Optional placeholder shown during async loads (stretch)   |
+| Screen Enum Value | Scene File Path                       | Description                                                     |
+| ----------------- | ------------------------------------- | --------------------------------------------------------------- |
+| `MAIN_MENU`       | `res://scenes/ui/main_menu.tscn`      | Title screen; Play, Skins, Options, Credits; equipped cat shown |
+| `WORLD_MAP`       | `res://scenes/ui/world_map.tscn`      | Level select grid; shows all worlds and level lock state        |
+| `GAMEPLAY`        | `res://scenes/gameplay/gameplay.tscn` | The playfield: grid, HUD, cat; loads a `LevelData`              |
+| `LEVEL_COMPLETE`  | `res://scenes/ui/level_complete.tscn` | Standalone results scene; gameplay now uses overlay variant     |
+| `SKIN_SELECT`     | `res://scenes/ui/skin_select.tscn`    | Cosmetic gallery and equip entry point                          |
+| `LOADING`         | `res://scenes/ui/loading.tscn`        | Optional placeholder shown during threaded loads                |
+| `OPENING`         | `res://scenes/ui/opening.tscn`        | Intro / boot screen                                             |
+| `CREDITS`         | `res://scenes/ui/credits.tscn`        | Credits screen                                                  |
+
+| Overlay Enum Value | Scene File Path                               | Description                                   |
+| ------------------ | --------------------------------------------- | --------------------------------------------- |
+| `OPTIONS`          | `res://scenes/ui/options_overlay.tscn`        | Shell options modal above the current scene   |
+| `PAUSE`            | `res://scenes/ui/pause_overlay.tscn`          | Pause modal shown above gameplay              |
+| `LEVEL_COMPLETE`   | `res://scenes/ui/level_complete_overlay.tscn` | In-game results modal shown after level clear |
 
 `LOADING` is a stretch goal; at MVP all loads are synchronous and fast enough to
 skip it. The enum value is reserved so callers can reference it without code change
 when it is implemented.
+
+Gameplay currently presents pause and level completion via `show_overlay(...)` to keep
+the board visible under the modal shell.
 
 ### Core Rules
 
@@ -113,18 +124,19 @@ when it is implemented.
 Any screen may transition to any other screen via `go_to()`. The following are the
 expected navigation flows — enforced by convention in UI code, not by SceneManager:
 
-| From             | To               | Trigger                                     |
-| ---------------- | ---------------- | ------------------------------------------- |
-| `MAIN_MENU`      | `WORLD_MAP`      | "Play" button                               |
-| `MAIN_MENU`      | `SKIN_SELECT`    | "Skins" button                              |
-| `WORLD_MAP`      | `GAMEPLAY`       | Tap a level button                          |
-| `WORLD_MAP`      | `MAIN_MENU`      | "Back" button                               |
-| `GAMEPLAY`       | `LEVEL_COMPLETE` | `level_completed` fires (Coverage Tracking) |
-| `GAMEPLAY`       | `WORLD_MAP`      | "Quit to map" button in HUD                 |
-| `LEVEL_COMPLETE` | `GAMEPLAY`       | "Retry" button (same `LevelData`)           |
-| `LEVEL_COMPLETE` | `GAMEPLAY`       | "Next Level" button (next `LevelData`)      |
-| `LEVEL_COMPLETE` | `WORLD_MAP`      | "Map" button                                |
-| `SKIN_SELECT`    | `MAIN_MENU`      | "Back" / "Done" button                      |
+| From             | To               | Trigger                                        |
+| ---------------- | ---------------- | ---------------------------------------------- |
+| `MAIN_MENU`      | `WORLD_MAP`      | "Play" button                                  |
+| `MAIN_MENU`      | `SKIN_SELECT`    | "Skins" button                                 |
+| `MAIN_MENU`      | `CREDITS`        | "Credits" button                               |
+| `WORLD_MAP`      | `GAMEPLAY`       | Tap a level button                             |
+| `WORLD_MAP`      | `MAIN_MENU`      | "Back" button                                  |
+| `GAMEPLAY`       | `LEVEL_COMPLETE` | `level_completed` fires (results overlay flow) |
+| `GAMEPLAY`       | `WORLD_MAP`      | "Quit to map" button in HUD                    |
+| `LEVEL_COMPLETE` | `GAMEPLAY`       | "Retry" button (same `LevelData`)              |
+| `LEVEL_COMPLETE` | `GAMEPLAY`       | "Next Level" button (next `LevelData`)         |
+| `LEVEL_COMPLETE` | `WORLD_MAP`      | "Map" button                                   |
+| `SKIN_SELECT`    | `MAIN_MENU`      | "Back" / "Done" button                         |
 
 SceneManager does not enforce this table — it is documentation for UI programmers.
 
@@ -135,9 +147,9 @@ SceneManager does not enforce this table — it is documentation for UI programm
 | **Music Manager**         | Music Manager → SceneManager     | Subscribes to `world_changed(world_id)` and `transition_completed(screen)` to select ambient track.                                                                                        |
 | **Input System**          | SceneManager → Input System      | Emits `transition_started` before scene swap; Input System may pause input acceptance during transition (avoids phantom swipes). Provisional — Input System may implement this on its own. |
 | **Obstacle System**       | SceneManager → Obstacle System   | Calls `ObstacleSystem.reset()` before unloading the gameplay scene (or Obstacle System's `_exit_tree()` handles cleanup).                                                                  |
-| **Coverage Tracking**     | Coverage Tracking → SceneManager | `level_completed` fires → UI layer calls `SceneManager.go_to(Screen.LEVEL_COMPLETE, params)`. SceneManager is not subscribed directly; the HUD or a level coordinator mediates.            |
+| **Coverage Tracking**     | Coverage Tracking → SceneManager | `level_completed` fires → Level Coordinator calls `SceneManager.show_overlay(SceneManager.Overlay.LEVEL_COMPLETE, params)`. SceneManager is not subscribed directly.                       |
 | **Level Progression**     | Level Progression → SceneManager | Level Progression provides "next level" `LevelData` for the "Next Level" button in Level Complete Screen. SceneManager receives it as a param.                                             |
-| **Main Menu**             | Main Menu → SceneManager         | Calls `go_to(Screen.WORLD_MAP)` and `go_to(Screen.SKIN_SELECT)`.                                                                                                                           |
+| **Main Menu**             | Main Menu → SceneManager         | Calls `go_to(Screen.WORLD_MAP)`, `go_to(Screen.SKIN_SELECT)`, `go_to(Screen.CREDITS)`, and `show_overlay(SceneManager.Overlay.OPTIONS)`.                                                   |
 | **World Map**             | World Map → SceneManager         | Calls `go_to_level(level_data)` on level tap.                                                                                                                                              |
 | **Level Complete Screen** | Level Complete → SceneManager    | Calls `go_to_level(same_or_next)` for retry/next; `go_to(Screen.WORLD_MAP)` for map.                                                                                                       |
 | **Skin Select Screen**    | Skin Select → SceneManager       | Calls `go_back()` on dismiss.                                                                                                                                                              |

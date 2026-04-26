@@ -9,6 +9,18 @@ This guide is for a split workflow:
 
 It is written as step-by-step actions you can run directly in the editor.
 
+## Current Implemented Surfaces
+
+These are the live screens and reusable UI pieces the guide should track:
+
+- Main Menu: `Play`, `Skins`, `Options`, and `Credits` buttons, plus the dynamic title texture and menu cat rig.
+- World Map: world cards with nested level cards, scrollable layout, and world-selection progress state.
+- Skin Select: placeholder skin cards with manual selection wiring while cosmetic database integration is still deferred.
+- Level Complete: ribbon header, star strip, new-best badge, and next/retry/world-map navigation.
+- Options and Pause overlays: shared settings rows, replay tutorial entry point, and reusable modal chrome.
+- Gameplay HUD: move counter, star strip, undo/restart/exit/pause buttons, and hidden coverage debug label.
+- Global Cat Editor: the shared cat-rig tuning scene for gameplay and UI cats.
+
 ## Quick Decision
 
 - I want to edit a reusable UI component: Open the matching scene under `res://scenes/ui/components/` and tune that component in one place.
@@ -46,14 +58,16 @@ directly when you need to change shared visuals or behavior.
 
 ### What it includes
 
-- Pill button states (primary, secondary, tertiary, danger)
+- Pill button states (primary, secondary, tertiary)
 - Live button samples for component-scene validation
 - Circular icon buttons with normal/hover/pressed/disabled textures
-- Panels and ribbons (`NinePatchRect` + `TextureRect`)
-- Slider/checkbox visual assets used by options and pause menus
-- Stars, badges, HUD pills, and icon interiors
-- World map level card textures + lock icon
+- Panels and ribbons (`ModalPanel`, `RibbonHeader`, `ScreenBackdrop`)
+- Slider, toggle, and option rows used by options and pause menus
+- Stars, badges, HUD pills, and the `StarStrip`/`ProgressPill` status widgets
+- World cards and level cards used by the world map
+- Skin cards used by the skin select screen
 - Cat peek texture used by overlay compositions
+- Back button and tutorial replay button components
 
 ### How to use it
 
@@ -76,6 +90,17 @@ Current hosts using this pattern:
 
 - Main menu host: root `MainMenu` (`menu_cat_override_global_defaults`).
 - Gameplay host: `SlidingMovement` (`cat_override_global_defaults`).
+
+## Screen Edit Map
+
+Use this when you need to find the owning scene quickly:
+
+- `res://scenes/ui/main_menu.tscn` for title, navigation, and menu cat layout.
+- `res://scenes/ui/world_map.tscn` for the world cards, level cards, and list spacing.
+- `res://scenes/ui/skin_select.tscn` for the placeholder skin gallery and equip CTA.
+- `res://scenes/ui/level_complete.tscn` for star, badge, and result composition.
+- `res://scenes/ui/options_overlay.tscn` and `res://scenes/ui/pause_overlay.tscn` for shared settings chrome.
+- `res://scenes/gameplay/gameplay.tscn` for HUD composition, cat placement, and gameplay overlays.
 
 ## Safe Workflow (Always)
 

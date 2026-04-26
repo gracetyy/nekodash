@@ -12,8 +12,9 @@
 ## Overview
 
 The Main Menu is the title screen and entry point to all other game areas. It shows the
-game title, the player's currently equipped cat, and two navigation buttons: Play and
-Skins. It reads from `SaveManager` only — no game systems are active on this screen.
+game title, the player's currently equipped cat, and four navigation buttons: Play,
+Skins, Options, and Credits. It reads from `SaveManager` only for the cat preview — no
+game systems are active on this screen.
 
 Music Manager automatically plays the menu track when `transition_completed(MAIN_MENU)`
 fires — Main Menu does not control audio.
@@ -39,6 +40,8 @@ opens the door and the cat sits by it.
 | Display currently equipped cat sprite | Main Menu ✅ (reads `SaveManager.get_equipped_skin()`) |
 | "Play" button → World Map             | Main Menu ✅                                           |
 | "Skins" button → Skin Select          | Main Menu ✅                                           |
+| "Options" button → Options overlay    | Main Menu ✅                                           |
+| "Credits" button → Credits screen     | Main Menu ✅                                           |
 | Menu music                            | Music Manager (reacts to `transition_completed`)       |
 | Persisting skin selection             | Save / Load System                                     |
 | Skin texture resolution               | Cosmetic / Skin Database                               |
@@ -55,22 +58,28 @@ opens the door and the cat sits by it.
 | Is autoload     | No                                                           |
 | Initial scene   | Yes — this is `project.godot`'s `application/run/main_scene` |
 
+The live scene also owns the dynamic title texture, the menu cat rig, and the intro
+animation on the hero card and button stack.
+
 ---
 
 ## Display Elements
 
-| Element          | Source                                                           | Notes                                                                          |
-| ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| **Game title**   | Static text "NekoDash"                                           | Styled to match art direction                                                  |
-| **Cat sprite**   | `SaveManager.get_equipped_skin()` → texture via Cosmetic/Skin DB | Shows the player's equipped cat; placeholder sprite until Cosmetic DB is built |
-| **Play button**  | Static                                                           | Navigates to World Map                                                         |
-| **Skins button** | Static                                                           | Navigates to Skin Select                                                       |
+| Element            | Source                                                          | Notes                                         |
+| ------------------ | --------------------------------------------------------------- | --------------------------------------------- |
+| **Game title**     | Static text "NekoDash"                                          | Styled to match art direction                 |
+| **Cat sprite**     | `SaveManager.get_equipped_skin()` → `MenuCatRig` + skin texture | Shows the player's equipped cat and idle pose |
+| **Play button**    | Static                                                          | Navigates to World Map                        |
+| **Skins button**   | Static                                                          | Navigates to Skin Select                      |
+| **Options button** | Static                                                          | Opens the Options overlay                     |
+| **Credits button** | Static                                                          | Opens the Credits scene                       |
 
 ---
 
 ## Cat Sprite Display
 
-Main Menu reads the equipped skin ID and resolves a texture to display:
+Main Menu reads the equipped skin ID and resolves a texture to display. The scene also
+switches the title art between portrait and landscape assets based on viewport width:
 
 ```gdscript
 func _ready() -> void:
@@ -92,10 +101,12 @@ func _resolve_skin_texture(skin_id: String) -> Texture2D:
 
 ## Navigation
 
-| Button    | Call                                     | Notes                                                             |
-| --------- | ---------------------------------------- | ----------------------------------------------------------------- |
-| **Play**  | `SceneManager.go_to(Screen.WORLD_MAP)`   | Always goes to World Map; no "Continue vs New Game" choice at MVP |
-| **Skins** | `SceneManager.go_to(Screen.SKIN_SELECT)` | Opens skin selector                                               |
+| Button      | Call                                                      | Notes                                                             |
+| ----------- | --------------------------------------------------------- | ----------------------------------------------------------------- |
+| **Play**    | `SceneManager.go_to(Screen.WORLD_MAP)`                    | Always goes to World Map; no "Continue vs New Game" choice at MVP |
+| **Skins**   | `SceneManager.go_to(Screen.SKIN_SELECT)`                  | Opens skin selector                                               |
+| **Options** | `SceneManager.show_overlay(SceneManager.Overlay.OPTIONS)` | Opens the shared options overlay                                  |
+| **Credits** | `SceneManager.go_to(Screen.CREDITS)`                      | Opens the credits screen                                          |
 
 There is no Back/Quit button. On mobile, the OS handles app exit via the device back
 gesture or home button. A "Quit" button would only be relevant on desktop and is post-jam
@@ -118,8 +129,9 @@ scope.
 └────────────────────────────────┘
 ```
 
-Vertical center layout. "Play" is the primary call-to-action (larger or bolder). "Skins"
-is secondary, below Play.
+Vertical center layout. "Play" is the primary call-to-action (larger or bolder).
+"Skins", "Options", and "Credits" are secondary actions below it. The hero card also
+contains the menu cat illustration and intro animation.
 
 ---
 
@@ -143,8 +155,8 @@ tutorial is shown at MVP.
 3. **Cat sprite is cosmetic-only**: The Main Menu only previews the cat. It does not affect
    gameplay or progression.
 
-4. **No settings UI at MVP**: Volume controls and other settings are post-jam. The Main
-   Menu does not host a settings overlay.
+4. **Options stay separate**: Volume controls and other settings live in the shared
+   Options overlay. The Main Menu only opens it.
 
 5. **Music is automatic**: Main Menu must not start or stop music. Music Manager responds
    to `transition_completed(MAIN_MENU)` automatically.
@@ -163,6 +175,7 @@ tutorial is shown at MVP.
 | Skin ID in save file has no texture asset     | Show placeholder/default cat texture; do not crash                        |
 | Player returns from World Map via Back button | Main Menu reloads via `_ready()`; cat sprite refreshed from SaveManager   |
 | Player returns from Skin Select               | Main Menu reloads; new equipped skin is reflected in cat sprite           |
+| Player opens Options or Credits               | The corresponding overlay or scene opens without mutating save state      |
 
 ---
 
@@ -175,8 +188,10 @@ tutorial is shown at MVP.
 | MM-3 | Cat sprite reflects `SaveManager.get_equipped_skin()` on load                    |
 | MM-4 | "Play" button navigates to World Map                                             |
 | MM-5 | "Skins" button navigates to Skin Select                                          |
-| MM-6 | Returning from World Map or Skin Select re-shows Main Menu with fresh cat sprite |
-| MM-7 | No crash on first launch (default skin shown)                                    |
+| MM-6 | "Options" opens the shared options overlay                                       |
+| MM-7 | "Credits" opens the credits screen                                               |
+| MM-8 | Returning from World Map or Skin Select re-shows Main Menu with fresh cat sprite |
+| MM-9 | No crash on first launch (default skin shown)                                    |
 
 ---
 

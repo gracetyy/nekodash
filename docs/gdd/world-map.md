@@ -12,9 +12,9 @@
 ## Overview
 
 The World Map is the central level-select screen. It loads the `LevelCatalogue` resource
-from disk, reads save data from `SaveManager`, and renders a grid of level buttons grouped
-by world. Players tap an unlocked level button to start it. A back button returns to the
-Main Menu.
+from disk, reads save data from `SaveManager`, and renders world cards that each contain
+a grid of level cards. Players tap an unlocked level button to start it. A back button
+returns to the Main Menu.
 
 **Architectural note**: `LevelProgression` is a node inside the gameplay scene and is not
 alive when the World Map is shown. The World Map does **not** call LevelProgression
@@ -38,16 +38,17 @@ The World Map is the game's memory, made visible.
 
 ## Responsibilities
 
-| Responsibility                             | Owned By                               |
-| ------------------------------------------ | -------------------------------------- |
-| Display all worlds and their level buttons | World Map ✅                           |
-| Show lock/unlock state per level           | World Map ✅ (reads SaveManager)       |
-| Show best star count per level             | World Map ✅ (reads SaveManager)       |
-| Navigate to a level when tapped            | World Map ✅ (via SceneManager)        |
-| Navigate back to Main Menu                 | World Map ✅ (via SceneManager)        |
-| Persisting level records                   | Save / Load System                     |
-| Level metadata (name, world, index)        | Level Data Format (via LevelCatalogue) |
-| Scene transitions                          | Scene Manager                          |
+| Responsibility                           | Owned By                               |
+| ---------------------------------------- | -------------------------------------- |
+| Display all worlds and their level cards | World Map ✅                           |
+| Show lock/unlock state per level         | World Map ✅ (reads SaveManager)       |
+| Show best star count per level           | World Map ✅ (reads SaveManager)       |
+| Show per-world progress text             | World Map ✅                           |
+| Navigate to a level when tapped          | World Map ✅ (via SceneManager)        |
+| Navigate back to Main Menu               | World Map ✅ (via SceneManager)        |
+| Persisting level records                 | Save / Load System                     |
+| Level metadata (name, world, index)      | Level Data Format (via LevelCatalogue) |
+| Scene transitions                        | Scene Manager                          |
 
 ---
 
@@ -94,7 +95,8 @@ func _get_prev_level(level_data: LevelData) -> LevelData:
 
 This logic is duplicated from Level Progression intentionally — the World Map is a separate
 scene with no live Level Progression node to query. If the unlock rule changes, both places
-must be updated. Document this as a known deliberate duplication.
+must be updated. The current implementation also allows worlds listed in
+`LevelCatalogue.always_unlocked_world_ids` to stay open by default.
 
 ---
 
@@ -116,6 +118,13 @@ func _build_world_index() -> void:
 ```
 
 World IDs are rendered in ascending numeric order.
+
+The live scene includes:
+
+- a `Backdrop` control with a soft paw background
+- a `HeaderCard` with back button, world title, and optional progress chip
+- a scrollable `WorldList` of generated `WorldCard` scenes
+- nested `LevelCard` scenes with hover and lock feedback
 
 ---
 
@@ -216,8 +225,8 @@ _make_level_button(level: LevelData) -> Control:
 
 ## Design Rules
 
-1. **All data is read-only on load**: World Map never writes to SaveManager or any other
-   system. It is a pure display + navigation layer.
+1. **World selection is persisted locally**: World Map writes the last selected world to
+   `AppSettings` so returning players reopen the same world by default.
 
 2. **No live refresh at MVP**: The World Map is rebuilt from scratch each time the scene
    loads. SaveManager always reflects the current save state, so data is fresh on every
@@ -247,7 +256,7 @@ _make_level_button(level: LevelData) -> Control:
 | Edge Case                                                   | Behaviour                                                                |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------ |
 | Player has never played (all locked except World 1 Level 1) | World 1 Level 1 shows unlocked, 0 stars; all others locked               |
-| All levels in a world are completed                         | All buttons show star counts; Last level enabled; tab still shows        |
+| All levels in a world are completed                         | All buttons show star counts; last level enabled; tab still shows        |
 | `highlight_world_id` points to a world not in catalogue     | Fall back to first world (lowest world_id)                               |
 | Only one world in catalogue                                 | Single tab; no tab-switching UI needed                                   |
 | Level `best_stars == 0` but `is_level_completed == true`    | Show 0 filled stars (valid: completed with 0 stars via -1 sentinel path) |

@@ -150,7 +150,7 @@ the save file but have no corresponding `LevelData` resource are silently ignore
 | **Star Rating System**              | Star Rating → SaveManager       | Provides `final_stars` and `final_moves` to Level Progression, which calls `set_level_record()`. Star Rating does NOT write directly. |
 | **Skin Unlock / Milestone Tracker** | Milestone Tracker → SaveManager | Calls `unlock_skin()` when a milestone is hit; reads `get_best_stars()` and completion counts to evaluate unlock conditions.          |
 | **Skin Select Screen**              | Skin Select → SaveManager       | Reads `get_unlocked_skins()` and `get_equipped_skin()` to populate UI; calls `set_equipped_skin()` on player selection.               |
-| **Main Menu**                       | Main Menu → SaveManager         | Reads `get_equipped_skin()` to show the player's cat on the main menu; reads save state to decide "Continue" vs "New Game" prompt.    |
+| **Main Menu**                       | Main Menu → SaveManager         | Reads `get_equipped_skin()` to show the player's cat on the main menu; there is no Continue/New Game prompt in the current flow.      |
 | **World Map / Level Select**        | World Map → SaveManager         | Reads `is_level_completed()` and `get_best_stars()` for every level to render lock/unlock state and star display.                     |
 | **Scene Manager**                   | Scene Manager → (none direct)   | Scene Manager does not interact with SaveManager directly; Level Progression mediates the post-level save write.                      |
 

@@ -12,7 +12,7 @@ Accepted
 
 ### Problem Statement
 
-NekoDash has 22 systems that communicate at runtime. Without a governing rule for _how_ systems communicate, the codebase drifts toward two failure modes: (a) tight coupling via direct node references that break when a system moves or is absent, and (b) over-signalling that turns every value change into a broadcast the whole tree must ignore. A recorded policy is needed so every cross-system communication path uses a consistent, intentional mechanism.
+NekoDash has 23 systems that communicate at runtime. Without a governing rule for _how_ systems communicate, the codebase drifts toward two failure modes: (a) tight coupling via direct node references that break when a system moves or is absent, and (b) over-signalling that turns every value change into a broadcast the whole tree must ignore. A recorded policy is needed so every cross-system communication path uses a consistent, intentional mechanism.
 
 ### Constraints
 

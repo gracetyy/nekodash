@@ -3,7 +3,7 @@
 > **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
-> **System #**: 16 of 22
+> **System #**: 16 of 23
 > **Category**: Progression
 > **Priority**: MVP-Polish
 
@@ -15,10 +15,10 @@ The Level Progression system is the authoritative source for which levels exist,
 they appear in, which are unlocked, and what happens after a level is completed. It owns the
 ordered level catalogue, listens to `StarRatingSystem.rating_computed`, writes the result to
 `SaveManager`, determines whether a next level or a new world now becomes accessible, and
-emits signals so the Level Complete Screen and World Map can refresh their state.
+emits signals so the Level Complete overlay and World Map can refresh their state.
 
 Level Progression does not display anything and does not change scenes — it publishes facts.
-The Level Complete Screen and World Map read from it.
+The Level Complete overlay/screen flow and World Map read from it.
 
 ---
 
@@ -36,18 +36,18 @@ what to show. It is only noticeable when it breaks.
 
 ## Responsibilities
 
-| Responsibility                                                              | Owned By                 |
-| --------------------------------------------------------------------------- | ------------------------ |
-| Maintain ordered catalogue of all `LevelData` resources                     | Level Progression ✅     |
-| Determine whether a level is locked / unlocked / completed                  | Level Progression ✅     |
-| Write completion record to SaveManager after level ends                     | Level Progression ✅     |
-| Determine next level after current                                          | Level Progression ✅     |
-| Determine if a full world is now complete                                   | Level Progression ✅     |
-| Emit `level_record_saved`, `world_completed`, `next_level_unlocked` signals | Level Progression ✅     |
-| Star computation                                                            | Star Rating System       |
-| Persistence (read/write JSON)                                               | Save / Load System       |
-| Scene transitions                                                           | Scene Manager            |
-| Display unlock state                                                        | World Map / Level Select |
+| Responsibility                                                              | Owned By             |
+| --------------------------------------------------------------------------- | -------------------- |
+| Maintain ordered catalogue of all `LevelData` resources                     | Level Progression ✅ |
+| Determine whether a level is locked / unlocked / completed                  | Level Progression ✅ |
+| Write completion record to SaveManager after level ends                     | Level Progression ✅ |
+| Determine next level after current                                          | Level Progression ✅ |
+| Determine if a full world is now complete                                   | Level Progression ✅ |
+| Emit `level_record_saved`, `world_completed`, `next_level_unlocked` signals | Level Progression ✅ |
+| Star computation                                                            | Star Rating System   |
+| Persistence (read/write JSON)                                               | Save / Load System   |
+| Scene transitions                                                           | Scene Manager        |
+| Display unlock state                                                        | World Map            |
 
 ---
 

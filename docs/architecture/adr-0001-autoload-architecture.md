@@ -12,7 +12,7 @@ Accepted
 
 ### Problem Statement
 
-NekoDash has 22 systems. Some must survive scene transitions and be globally accessible (e.g., save data, scene navigation); others are transient per-level nodes that must reset cleanly between sessions. Without a recorded rule deciding which systems are autoloads and which are scene-instanced nodes, future contributors will encounter inconsistent architecture and fragile lifetime assumptions.
+NekoDash has 23 systems. Some must survive scene transitions and be globally accessible (e.g., save data, scene navigation); others are transient per-level nodes that must reset cleanly between sessions. Without a recorded rule deciding which systems are autoloads and which are scene-instanced nodes, future contributors will encounter inconsistent architecture and fragile lifetime assumptions.
 
 ### Constraints
 
@@ -110,7 +110,7 @@ MilestoneTracker  # internal; no direct calls from other systems
 
 ### Alternative 3: Everything as an Autoload
 
-- **Description**: All 22 systems registered as autoloads.
+- **Description**: All 23 systems registered as autoloads.
 - **Pros**: Trivially accessible from anywhere.
 - **Cons**: `LevelProgression`, `MoveCounter`, `UndoRestart`, `CoverageTracking` all own per-level mutable state. As autoloads they would require explicit manual `reset()` calls before every level — a fragile discipline guarantee. Any missed reset = corrupted state in the next level. Defeats the purpose of Godot's scene lifecycle.
 - **Rejection Reason**: Scene-lifecycle reset is safer and more idiomatic than manual reset discipline for per-level state.

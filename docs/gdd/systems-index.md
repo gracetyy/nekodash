@@ -11,7 +11,7 @@
 
 NekoDash is a lean, single-player mobile puzzle game. Its mechanical scope is deliberately
 narrow: one core verb (slide), one goal (cover all tiles), one feedback metric
-(move count vs. minimum). This scope produces a tight systems footprint — 22 systems
+(move count vs. minimum). This scope produces a tight systems footprint — 23 systems
 across 6 categories, all required for the jam MVP. There is no networking, no procedural
 generation, no AI, and no economy beyond cosmetic skins.
 
@@ -24,42 +24,44 @@ on mobile hardware in week 1, before any further design investment.
 
 ## Systems Enumeration
 
-| #   | System Name                                                   | Category    | Priority   | Status   | Design Doc                                  | Depends On                                                                          |
-| --- | ------------------------------------------------------------- | ----------- | ---------- | -------- | ------------------------------------------- | ----------------------------------------------------------------------------------- |
-| 1   | Grid System                                                   | Core        | MVP-Core   | Approved | design/gdd/grid-system.md                   | —                                                                                   |
-| 2   | Input System                                                  | Core        | MVP-Core   | Approved | design/gdd/input-system.md                  | —                                                                                   |
-| 3   | Save / Load System                                            | Core        | MVP-Core   | Approved | design/gdd/save-load-system.md              | —                                                                                   |
-| 4   | Scene Manager                                                 | Core        | MVP-Core   | Approved | design/gdd/scene-manager.md                 | —                                                                                   |
-| 5   | SFX Manager                                                   | Audio       | MVP-Polish | Approved | design/gdd/sfx-manager.md                   | —                                                                                   |
-| 6   | Cosmetic / Skin Database                                      | Progression | MVP-Skins  | Approved | design/gdd/cosmetic-skin-database.md        | —                                                                                   |
-| 7   | Level Data Format                                             | Core        | MVP-Core   | Approved | design/gdd/level-data-format.md             | Grid System                                                                         |
-| 8   | Sliding Movement                                              | Gameplay    | MVP-Core   | Approved | design/gdd/sliding-movement.md              | Grid System, Input System                                                           |
-| 9   | Obstacle System _(static walls — MVP; dynamic — Full Vision)_ | Gameplay    | MVP-Core   | Approved | design/gdd/obstacle-system.md               | Grid System, Level Data Format                                                      |
-| 10  | Music Manager                                                 | Audio       | MVP-Polish | Approved | design/gdd/music-manager.md                 | Scene Manager                                                                       |
-| 11  | BFS Minimum Solver _(offline level design tool, not runtime)_ | Core        | MVP-Core   | Approved | design/gdd/bfs-minimum-solver.md            | Grid System, Level Data Format                                                      |
-| 12  | Coverage Tracking                                             | Gameplay    | MVP-Core   | Approved | design/gdd/coverage-tracking.md             | Grid System, Sliding Movement                                                       |
-| 13  | Move Counter                                                  | Gameplay    | MVP-Core   | Approved | design/gdd/move-counter.md                  | Sliding Movement, Level Data Format                                                 |
-| 14  | Undo / Restart                                                | Gameplay    | MVP-Core   | Approved | design/gdd/undo-restart.md                  | Sliding Movement, Coverage Tracking, Move Counter                                   |
-| 15  | Star Rating System                                            | Progression | MVP-Polish | Approved | design/gdd/star-rating-system.md            | Move Counter, Level Data Format                                                     |
-| 16  | Level Progression                                             | Progression | MVP-Polish | Approved | design/gdd/level-progression.md             | Level Data Format, Save / Load System                                               |
-| 17  | Skin Unlock / Milestone Tracker                               | Progression | MVP-Skins  | Approved | design/gdd/skin-unlock-milestone-tracker.md | Star Rating System, Level Progression, Save / Load System, Cosmetic / Skin Database |
-| 18  | HUD                                                           | UI          | MVP-Polish | Approved | design/gdd/hud.md                           | Move Counter, Undo / Restart                                                        |
-| 19  | Level Complete Screen                                         | UI          | MVP-Polish | Approved | design/gdd/level-complete-screen.md         | Star Rating System, Level Progression, Move Counter                                 |
-| 20  | World Map / Level Select                                      | UI          | MVP-Polish | Approved | design/gdd/world-map.md                     | Level Progression, Level Data Format, Save / Load System                            |
-| 21  | Main Menu                                                     | UI          | MVP-Polish | Approved | design/gdd/main-menu.md                     | Scene Manager, Save / Load System                                                   |
-| 22  | Skin Select Screen                                            | UI          | MVP-Skins  | Approved | design/gdd/skin-select-screen.md            | Cosmetic / Skin Database, Skin Unlock / Milestone Tracker, Save / Load System       |
+| #   | System Name                                                   | Category              | Priority   | Status   | Design Doc                                  | Depends On                                                                                                                                 |
+| --- | ------------------------------------------------------------- | --------------------- | ---------- | -------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Grid System                                                   | Core                  | MVP-Core   | Approved | design/gdd/grid-system.md                   | —                                                                                                                                          |
+| 2   | Input System                                                  | Core                  | MVP-Core   | Approved | design/gdd/input-system.md                  | —                                                                                                                                          |
+| 3   | Save / Load System                                            | Core                  | MVP-Core   | Approved | design/gdd/save-load-system.md              | —                                                                                                                                          |
+| 4   | Scene Manager                                                 | Core                  | MVP-Core   | Approved | design/gdd/scene-manager.md                 | —                                                                                                                                          |
+| 5   | SFX Manager                                                   | Audio                 | MVP-Polish | Approved | design/gdd/sfx-manager.md                   | —                                                                                                                                          |
+| 6   | Cosmetic / Skin Database                                      | Progression           | MVP-Skins  | Approved | design/gdd/cosmetic-skin-database.md        | —                                                                                                                                          |
+| 7   | Level Data Format                                             | Core                  | MVP-Core   | Approved | design/gdd/level-data-format.md             | Grid System                                                                                                                                |
+| 8   | Sliding Movement                                              | Gameplay              | MVP-Core   | Approved | design/gdd/sliding-movement.md              | Grid System, Input System                                                                                                                  |
+| 9   | Obstacle System _(static walls — MVP; dynamic — Full Vision)_ | Gameplay              | MVP-Core   | Approved | design/gdd/obstacle-system.md               | Grid System, Level Data Format                                                                                                             |
+| 10  | Music Manager                                                 | Audio                 | MVP-Polish | Approved | design/gdd/music-manager.md                 | Scene Manager                                                                                                                              |
+| 11  | BFS Minimum Solver _(offline level design tool, not runtime)_ | Core                  | MVP-Core   | Approved | design/gdd/bfs-minimum-solver.md            | Grid System, Level Data Format                                                                                                             |
+| 12  | Coverage Tracking                                             | Gameplay              | MVP-Core   | Approved | design/gdd/coverage-tracking.md             | Grid System, Sliding Movement                                                                                                              |
+| 13  | Move Counter                                                  | Gameplay              | MVP-Core   | Approved | design/gdd/move-counter.md                  | Sliding Movement, Level Data Format                                                                                                        |
+| 14  | Undo / Restart                                                | Gameplay              | MVP-Core   | Approved | design/gdd/undo-restart.md                  | Sliding Movement, Coverage Tracking, Move Counter                                                                                          |
+| 15  | Star Rating System                                            | Progression           | MVP-Polish | Approved | design/gdd/star-rating-system.md            | Move Counter, Level Data Format                                                                                                            |
+| 16  | Level Progression                                             | Progression           | MVP-Polish | Approved | design/gdd/level-progression.md             | Level Data Format, Save / Load System                                                                                                      |
+| 17  | Level Coordinator                                             | Engine / Coordination | MVP-Core   | Approved | design/gdd/level-coordinator.md             | Level Data Format, Sliding Movement, Coverage Tracking, Move Counter, Star Rating System, Level Progression, Undo / Restart, Scene Manager |
+| 18  | Skin Unlock / Milestone Tracker                               | Progression           | MVP-Skins  | Approved | design/gdd/skin-unlock-milestone-tracker.md | Star Rating System, Level Progression, Save / Load System, Cosmetic / Skin Database                                                        |
+| 19  | HUD                                                           | UI                    | MVP-Polish | Approved | design/gdd/hud.md                           | Move Counter, Undo / Restart                                                                                                               |
+| 20  | Level Complete Screen                                         | UI                    | MVP-Polish | Approved | design/gdd/level-complete-screen.md         | Star Rating System, Level Progression, Move Counter                                                                                        |
+| 21  | World Map / Level Select                                      | UI                    | MVP-Polish | Approved | design/gdd/world-map.md                     | Level Progression, Level Data Format, Save / Load System                                                                                   |
+| 22  | Main Menu                                                     | UI                    | MVP-Polish | Approved | design/gdd/main-menu.md                     | Scene Manager, Save / Load System                                                                                                          |
+| 23  | Skin Select Screen                                            | UI                    | MVP-Skins  | Approved | design/gdd/skin-select-screen.md            | Cosmetic / Skin Database, Skin Unlock / Milestone Tracker, Save / Load System                                                              |
 
 ---
 
 ## Categories
 
-| Category        | Description                              | Systems                                                                                      |
-| --------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Core**        | Foundation systems everything depends on | Grid System, Input System, Save/Load, Scene Manager, Level Data Format, BFS Solver           |
-| **Gameplay**    | The systems that make the game fun       | Sliding Movement, Coverage Tracking, Move Counter, Obstacle System, Undo/Restart             |
-| **Progression** | How the player grows over time           | Star Rating System, Level Progression, Skin Unlock/Milestone Tracker, Cosmetic/Skin Database |
-| **UI**          | Player-facing information displays       | HUD, Main Menu, World Map/Level Select, Level Complete Screen, Skin Select Screen            |
-| **Audio**       | Sound and music systems                  | Music Manager, SFX Manager                                                                   |
+| Category                  | Description                                    | Systems                                                                                      |
+| ------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Core**                  | Foundation systems everything depends on       | Grid System, Input System, Save/Load, Scene Manager, Level Data Format, BFS Solver           |
+| **Gameplay**              | The systems that make the game fun             | Sliding Movement, Coverage Tracking, Move Counter, Obstacle System, Undo/Restart             |
+| **Progression**           | How the player grows over time                 | Star Rating System, Level Progression, Skin Unlock/Milestone Tracker, Cosmetic/Skin Database |
+| **UI**                    | Player-facing information displays             | HUD, Main Menu, World Map/Level Select, Level Complete Screen, Skin Select Screen            |
+| **Engine / Coordination** | Scene-root orchestration and cross-system glue | Level Coordinator                                                                            |
+| **Audio**                 | Sound and music systems                        | Music Manager, SFX Manager                                                                   |
 
 ---
 
@@ -67,7 +69,7 @@ on mobile hardware in week 1, before any further design investment.
 
 | Tier            | Definition                                                                        | Systems                                                                                                                                                                                                                               |
 | --------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **MVP-Core**    | Required for the core loop to function. Cannot test "is this fun?" without these. | Grid System, Input System, Save/Load, Scene Manager, Level Data Format, Sliding Movement, Coverage Tracking, Move Counter, Obstacle System (static), BFS Solver, Undo/Restart                                                         |
+| **MVP-Core**    | Required for the core loop to function. Cannot test "is this fun?" without these. | Grid System, Input System, Save/Load, Scene Manager, Level Data Format, Sliding Movement, Coverage Tracking, Move Counter, Obstacle System (static), BFS Solver, Undo/Restart, Level Coordinator                                      |
 | **MVP-Polish**  | Required for a complete, shippable jam submission.                                | Star Rating System, Level Progression, SFX Manager, Music Manager, HUD, Level Complete Screen, World Map/Level Select, Main Menu                                                                                                      |
 | **MVP-Skins**   | Required for the skin/unlock feature (in MVP per concept doc).                    | Cosmetic/Skin Database, Skin Unlock/Milestone Tracker, Skin Select Screen                                                                                                                                                             |
 | **Full Vision** | Post-jam expansion.                                                               | Dynamic Obstacle variants (moving walls, teleporters, timed), Rewarded Ads integration, IAP Skin Shop, Leaderboards, **Procedural Level Generator**, **Skin Ability System**, **Undo-Penalty Star Formula**, **Save File Anti-Cheat** |
@@ -120,17 +122,21 @@ Each layer can only begin once all layers above it are stable.
 15. **Star Rating System** — depends on: Move Counter, Level Data Format
 16. **Level Progression** — depends on: Level Data Format, Save / Load System
 
+### Coordination Layer (depends on Progression)
+
+17. **Level Coordinator** — depends on: Level Data Format, Sliding Movement, Coverage Tracking, Move Counter, Star Rating System, Level Progression, Undo/Restart, Scene Manager
+
 ### Unlock Layer (depends on Progression)
 
-17. **Skin Unlock / Milestone Tracker** — depends on: Star Rating System, Level Progression, Save/Load System, Cosmetic/Skin Database
+18. **Skin Unlock / Milestone Tracker** — depends on: Star Rating System, Level Progression, Save/Load System, Cosmetic/Skin Database
 
 ### Presentation Layer (wraps everything below)
 
-18. **HUD** — depends on: Move Counter, Undo/Restart
-19. **Level Complete Screen** — depends on: Star Rating System, Level Progression, Move Counter
-20. **World Map / Level Select** — depends on: Level Progression, Level Data Format, Save/Load System
-21. **Main Menu** — depends on: Scene Manager, Save/Load System
-22. **Skin Select Screen** — depends on: Cosmetic/Skin Database, Skin Unlock/Milestone Tracker, Save/Load System
+19. **HUD** — depends on: Move Counter, Undo/Restart
+20. **Level Complete Screen** — depends on: Star Rating System, Level Progression, Move Counter
+21. **World Map / Level Select** — depends on: Level Progression, Level Data Format, Save/Load System
+22. **Main Menu** — depends on: Scene Manager, Save/Load System
+23. **Skin Select Screen** — depends on: Cosmetic/Skin Database, Skin Unlock/Milestone Tracker, Save/Load System
 
 ---
 
@@ -154,15 +160,16 @@ independent and can be designed in parallel.
 | 11    | Undo / Restart                   | MVP-Core   | Progression  | gameplay-programmer                             | S           |
 | 12    | Star Rating System               | MVP-Polish | Progression  | game-designer                                   | S           |
 | 13    | Level Progression                | MVP-Polish | Progression  | game-designer                                   | S           |
-| 14    | SFX Manager                      | MVP-Polish | Foundation   | sound-designer + godot-gdscript-specialist      | S           |
-| 15    | Music Manager                    | MVP-Polish | Core         | audio-director + godot-gdscript-specialist      | S           |
-| 16    | HUD                              | MVP-Polish | Presentation | ui-programmer + ux-designer                     | S           |
-| 17    | Level Complete Screen            | MVP-Polish | Presentation | ui-programmer + game-designer                   | S           |
-| 18    | World Map / Level Select         | MVP-Polish | Presentation | ui-programmer + level-designer                  | M           |
-| 19    | Main Menu                        | MVP-Polish | Presentation | ui-programmer + art-director                    | S           |
-| 20    | Cosmetic / Skin Database         | MVP-Skins  | Foundation   | game-designer                                   | S           |
-| 21    | Skin Unlock / Milestone Tracker  | MVP-Skins  | Unlock       | game-designer                                   | S           |
-| 22    | Skin Select Screen               | MVP-Skins  | Presentation | ui-programmer + art-director                    | S           |
+| 14    | Level Coordinator                | MVP-Core   | Coordination | gameplay-programmer + godot-gdscript-specialist | M           |
+| 15    | SFX Manager                      | MVP-Polish | Foundation   | sound-designer + godot-gdscript-specialist      | S           |
+| 16    | Music Manager                    | MVP-Polish | Core         | audio-director + godot-gdscript-specialist      | S           |
+| 17    | HUD                              | MVP-Polish | Presentation | ui-programmer + ux-designer                     | S           |
+| 18    | Level Complete Screen            | MVP-Polish | Presentation | ui-programmer + game-designer                   | S           |
+| 19    | World Map / Level Select         | MVP-Polish | Presentation | ui-programmer + level-designer                  | M           |
+| 20    | Main Menu                        | MVP-Polish | Presentation | ui-programmer + art-director                    | S           |
+| 21    | Cosmetic / Skin Database         | MVP-Skins  | Foundation   | game-designer                                   | S           |
+| 22    | Skin Unlock / Milestone Tracker  | MVP-Skins  | Unlock       | game-designer                                   | S           |
+| 23    | Skin Select Screen               | MVP-Skins  | Presentation | ui-programmer + art-director                    | S           |
 
 > Effort estimates: **S** = 1 design session, **M** = 2–3 design sessions.
 > A "session" produces one complete, reviewed GDD.
@@ -193,11 +200,11 @@ Prototype or validate these early regardless of design order.
 
 | Metric                      | Count   |
 | --------------------------- | ------- |
-| Total systems identified    | 22      |
-| Design docs started         | 16      |
-| Design docs reviewed        | 16      |
-| Design docs approved        | 16      |
-| MVP-Core systems designed   | 11 / 11 |
+| Total systems identified    | 23      |
+| Design docs started         | 17      |
+| Design docs reviewed        | 17      |
+| Design docs approved        | 17      |
+| MVP-Core systems designed   | 12 / 12 |
 | MVP-Polish systems designed | 5 / 8   |
 | MVP-Skins systems designed  | 0 / 3   |
 
@@ -215,8 +222,9 @@ Prototype or validate these early regardless of design order.
 - [x] Design Obstacle System (`design/gdd/obstacle-system.md`) — Approved
 - [x] Design Save / Load System (`design/gdd/save-load-system.md`) — Approved
 - [x] Design Scene Manager (`design/gdd/scene-manager.md`) — Approved
+- [x] Design Level Coordinator (`design/gdd/level-coordinator.md`) — Approved
 - [x] Design Undo / Restart (`design/gdd/undo-restart.md`) — Approved
-- [x] **MVP-Core COMPLETE** — All 11 core systems designed. Begin MVP-Polish tier.
+- [x] **MVP-Core COMPLETE** — All 12 core systems designed. Begin MVP-Polish tier.
 - [x] Design Star Rating System (`design/gdd/star-rating-system.md`) — Approved
 - [x] Design Level Progression (`design/gdd/level-progression.md`) — Approved
 - [x] Design SFX Manager (`design/gdd/sfx-manager.md`) — Approved
@@ -228,7 +236,7 @@ Prototype or validate these early regardless of design order.
 - [x] Design Cosmetic / Skin Database (`design/gdd/cosmetic-skin-database.md`) — Approved
 - [x] Design Skin Unlock / Milestone Tracker (`design/gdd/skin-unlock-milestone-tracker.md`) — Approved
 - [x] Design Skin Select Screen (`design/gdd/skin-select-screen.md`) — Approved
-- [x] **ALL 22/22 SYSTEMS DESIGNED** — Full pre-production design phase complete.
+- [x] **ALL 23/23 SYSTEMS DESIGNED** — Full pre-production design phase complete.
 - [ ] Run `/gate-check pre-production` to validate MVP-Core before beginning Polish tier
 - [ ] Run `/prototype sliding-movement` early to validate the core verb on mobile
 - [ ] Run `/design-review` on each completed GDD

@@ -12,14 +12,13 @@
 ## Overview
 
 The Level Complete Screen is the post-level results view. It shows the player their star
-rating, final move count (vs. minimum), and any new personal best, then offers three
-navigation choices: play the next level, retry the same level, or return to the World Map.
+rating, final move count, and any new personal best, then offers three navigation choices:
+play the next level, retry the same level, or return to the World Map.
 
 It is a separate Godot scene (`res://scenes/ui/level_complete.tscn`) loaded by Scene
-Manager after `level_completed` fires in the gameplay scene. It receives its context via
-`receive_scene_params()`, subscribes to `LevelProgression.level_record_saved` to read
-confirmed star and move data after SaveManager has written it, and delegates all navigation
-to `SceneManager`.
+Manager after the gameplay scene hands over the confirmed result data. The screen receives
+its context via `receive_scene_params()`, populates results in `_ready()`, and delegates
+all navigation to `SceneManager`.
 
 ---
 
@@ -39,7 +38,7 @@ it closes the loop cleanly and makes the player want to open another one.
 | Responsibility                             | Owned By                                   |
 | ------------------------------------------ | ------------------------------------------ |
 | Display stars earned this attempt          | Level Complete Screen ✅                   |
-| Display final move count and minimum moves | Level Complete Screen ✅                   |
+| Display final move count                   | Level Complete Screen ✅                   |
 | Display personal best indicator (new best) | Level Complete Screen ✅                   |
 | Display level name                         | Level Complete Screen ✅                   |
 | Provide Next Level button                  | Level Complete Screen ✅                   |
@@ -55,10 +54,8 @@ it closes the loop cleanly and makes the player want to open another one.
 
 ### How the screen is reached
 
-The gameplay scene root's Level Coordinator subscribes to
-`LevelProgression.level_record_saved`. When that signal fires (after the record has been
-written to SaveManager), the Level Coordinator collects all result data while the gameplay
-scene is still alive, then calls:
+The gameplay scene root's Level Coordinator collects the final result data after the level
+ends, then calls:
 
 ```gdscript
 # In Level Coordinator, on _on_level_record_saved(level_id, stars, final_moves):
@@ -118,10 +115,9 @@ does **not** wait for any further signals — it populates results in `_ready()`
 ## Design Rules
 
 1. **Display results immediately from params**: All result data arrives in
-   `receive_scene_params()`. `_ready()` immediately calls `_populate_results()` and
+   `receive_scene_params()`. `_ready()` immediately calls `populate_results()` and
    `_update_next_button()`. No signal connection to Level Progression is needed or
-   present — the data is already confirmed (Level Coordinator waited for
-   `level_record_saved` before triggering this transition).
+   present — the data is already confirmed by the time the screen loads.
 
 2. **`stars == -1` sentinel**: If `level_record_saved` fires with `stars == -1`
    (in-development level), suppress the star display entirely — show dashes or an empty

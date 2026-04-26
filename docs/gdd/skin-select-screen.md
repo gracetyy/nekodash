@@ -3,7 +3,7 @@
 > **Status**: Approved
 > **Created**: 2026-03-31
 > **Last Updated**: 2026-03-31
-> **System #**: 22 of 22
+> **System #**: 23 of 23
 > **Category**: UI
 > **Priority**: MVP-Skins
 
@@ -11,36 +11,34 @@
 
 ## Overview
 
-The Skin Select Screen lets the player browse all cat skins, see which are unlocked,
-preview locked skins with their unlock hint, and equip an unlocked skin. It is the final
-UI screen in the system. Equipping a skin writes to `SaveManager` immediately; the
-equipped skin is reflected in the Main Menu and gameplay scene on the next load.
+The Skin Select Screen currently acts as a placeholder gallery. It shows a small set of
+skin cards, lets the player preview the selected cat, and keeps the Equip CTA disabled
+until the full unlock/equip flow is wired to `CosmeticDatabase` and `SaveManager`. It
+exists to keep the cosmetic entry point visible without pretending the feature is
+complete.
 
 ---
 
 ## Player Fantasy
 
-My cats. A small gallery — most of it locked behind gameplay achievements, a few available
-from the start. The player scrolls through and sees silhouettes of skins they haven't
-earned yet. The unlock hint tells them what to do: complete a world, earn a certain number
-of stars. It's not a store; it's a trophy case with room to grow. The act of equipping a
-new skin — tapping a cat they just unlocked and seeing that choice reflected on the Main
-Menu — makes cosmetic customisation feel earned, not purchased. The skin they pick is a
-record of how far they've come.
+My cats. A small, deliberate gallery that previews the cosmetic system before it is fully
+wired. The player can browse the cards, see the current selection reflected in the preview,
+and understand where unlock hints and equip actions will eventually live. Right now the
+screen is a safe staging area for the future trophy case.
 
 ---
 
 ## Responsibilities
 
-| Responsibility                          | Owned By                            |
-| --------------------------------------- | ----------------------------------- |
-| Display all skins (unlocked and locked) | Skin Select Screen ✅               |
-| Show unlock hint text for locked skins  | Skin Select Screen ✅               |
-| Allow player to equip an unlocked skin  | Skin Select Screen ✅               |
-| Write equipped skin choice to save data | Skin Select Screen → SaveManager ✅ |
-| Navigate back to Main Menu              | Skin Select Screen ✅               |
-| Skin definitions and textures           | Cosmetic / Skin Database            |
-| Unlock state                            | Save / Load System                  |
+| Responsibility                      | Owned By                 |
+| ----------------------------------- | ------------------------ |
+| Display placeholder skin cards      | Skin Select Screen ✅    |
+| Preview the currently selected skin | Skin Select Screen ✅    |
+| Keep Equip CTA disabled for now     | Skin Select Screen ✅    |
+| Reserve space for unlock hint text  | Skin Select Screen ✅    |
+| Navigate back to Main Menu          | Skin Select Screen ✅    |
+| Skin definitions and textures       | Cosmetic / Skin Database |
+| Unlock state                        | Save / Load System       |
 
 ---
 
@@ -58,17 +56,17 @@ record of how far they've come.
 
 ## Display Elements
 
-| Element                | Source                                                         | Notes                                                 |
-| ---------------------- | -------------------------------------------------------------- | ----------------------------------------------------- |
-| **Skin grid**          | `CosmeticDatabase.get_all_skins()`                             | One card per skin; scrollable grid                    |
-| **Skin preview**       | `CosmeticDatabase.get_preview_texture(skin_id)`                | Shown in each card and in the large preview area      |
-| **Skin name**          | `SkinData.display_name`                                        | Label on each card                                    |
-| **Equipped indicator** | `SaveManager.get_equipped_skin()`                              | Highlight/badge on currently equipped card            |
-| **Lock icon**          | `not SaveManager.get_unlocked_skins().has(skin_id)`            | Overlay on locked cards                               |
-| **Unlock hint**        | `SkinData.unlock_hint`                                         | Shown below locked skin cards; e.g. "3-star 5 levels" |
-| **Large preview**      | Currently selected skin                                        | Right panel or overlay; updates on card tap           |
-| **Equip button**       | Active when selected skin is unlocked and not already equipped | "Equip" → `SaveManager.set_equipped_skin()`           |
-| **Back button**        | Static                                                         | Returns to Main Menu                                  |
+| Element                | Source                            | Notes                                            |
+| ---------------------- | --------------------------------- | ------------------------------------------------ |
+| **Skin grid**          | Hard-coded placeholder skin cards | One card per skin; scrollable grid               |
+| **Skin preview**       | Selected placeholder card         | Shown in each card and in the large preview area |
+| **Skin name**          | Placeholder data                  | Label on each card                               |
+| **Equipped indicator** | `SaveManager.get_equipped_skin()` | Highlight/badge on the currently equipped skin   |
+| **Lock icon**          | Visual placeholder                | Overlay on cards that are not yet wired          |
+| **Unlock hint**        | Placeholder text                  | Not yet driven by milestone data                 |
+| **Large preview**      | Currently selected skin           | Right panel or overlay; updates on card tap      |
+| **Equip button**       | Disabled                          | Present in layout, not active yet                |
+| **Back button**        | Static                            | Returns to Main Menu                             |
 
 ---
 

@@ -100,8 +100,8 @@ count state is mutated.
 
 5. **No undo through level completion**: Once `level_completed` fires (Coverage
    Tracking), the history stack is frozen — `undo()` becomes a no-op. The player
-   is on the Level Complete Screen at this point anyway; the HUD undo button should
-   be hidden. This prevents rewinding past completion into a broken Coverage state.
+   is on the level-complete overlay at this point anyway; the HUD undo control should
+   be disabled or hidden. This prevents rewinding past completion into a broken Coverage state.
 
 6. **History depth**: Unlimited at MVP. A 20-move level produces 20 snapshots, each
    holding a `Dictionary` copy of coverage (~20–50 tiles) plus two ints. Total
@@ -190,7 +190,7 @@ _Not implemented at MVP — noted only for post-jam reference._
 | `undo()` called with empty history                                                    | No-op; warning logged. HUD button should be disabled at this point.                                                                                                                                             | Guard for unexpected calls; HUD `can_undo()` check prevents this normally       |
 | `undo()` called during `SLIDING` state (tween in flight)                              | `set_grid_position_instant()` kills the tween; undo completes normally. The in-flight move dispatch is cancelled by the coordinator.                                                                            | Tween kill is Sliding Movement's responsibility; undo coordinates safely        |
 | `restart()` called during `SLIDING` state                                             | Same as undo mid-slide: `set_grid_position_instant()` kills tween; history cleared; state reset proceeds.                                                                                                       | Restart always works regardless of animation state                              |
-| `level_completed` fires, then player taps undo button                                 | `undo()` is a no-op (Frozen state); HUD button should already be hidden after `level_completed`.                                                                                                                | Prevents broken state: coverage at 100% should not be partially unwound         |
+| `level_completed` fires, then player taps undo button                                 | `undo()` is a no-op (Frozen state); HUD control should already be disabled or hidden after `level_completed`.                                                                                                   | Prevents broken state: coverage at 100% should not be partially unwound         |
 | Coordinator calls `increment()` or `apply_tiles_covered()` before `record_snapshot()` | Snapshot captures post-mutation coverage state; undo would restore incorrect coverage.                                                                                                                          | **This is a critical bug.** The coordinator-owned pipeline must preserve order. |
 | `restart()` called immediately after `initialize()` (zero moves)                      | History empty; `set_grid_position_instant` snaps to spawn (no-op since already there); `reset_coverage()` a no-op; `initialize_level()` re-emits `spawn_position_set`. Valid operation.                         | Idempotent restart from zero-move state                                         |
 | Very large level with many unique tiles in history snapshots                          | Snapshots grow; at MVP no cap. If memory is a concern post-jam, implement LRU or fixed-depth stack.                                                                                                             | Flagged for post-jam monitoring, not an MVP action                              |
