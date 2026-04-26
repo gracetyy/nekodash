@@ -14,6 +14,7 @@ func _initialize() -> void:
 	await _capture_scene("res://scenes/ui/options_overlay.tscn", "options_current")
 	await _capture_scene("res://scenes/ui/pause_overlay.tscn", "pause_current")
 	await _capture_level_complete("level_complete_current")
+	await _capture_level_complete_perfect("level_complete_perfect_current")
 	await _capture_level_complete_overlay("level_complete_overlay_current")
 	quit(0)
 
@@ -63,6 +64,34 @@ func _capture_level_complete(output_name: String) -> void:
 	screen.queue_free()
 	await process_frame
 
+func _capture_level_complete_perfect(output_name: String) -> void:
+	var scene: PackedScene = load("res://scenes/ui/level_complete.tscn")
+	if scene == null:
+		push_error("Failed to load level complete scene")
+		return
+	var screen: Node = scene.instantiate()
+	if screen.has_method("receive_scene_params"):
+		var level_data: Resource = load("res://data/levels/world1/w1_l1.tres")
+		var next_level_data: Resource = load("res://data/levels/world1/w1_l2.tres")
+		var perfect_moves: int = int(level_data.get("minimum_moves"))
+		screen.receive_scene_params({
+			"level_data": level_data,
+			"stars": 3,
+			"final_moves": perfect_moves,
+			"prev_best_moves": perfect_moves + 1,
+			"was_previously_completed": true,
+			"next_level_data": next_level_data,
+		})
+		root.add_child(screen)
+	await process_frame
+	await process_frame
+	if screen.has_method("populate_results"):
+		screen.populate_results()
+	for i: int in range(18):
+		await process_frame
+	_save_viewport(output_name)
+	screen.queue_free()
+	await process_frame
 
 func _capture_level_complete_overlay(output_name: String) -> void:
 	var scene: PackedScene = load("res://scenes/ui/level_complete_overlay.tscn")
@@ -91,7 +120,15 @@ func _capture_level_complete_overlay(output_name: String) -> void:
 
 
 func _save_viewport(output_name: String) -> void:
-	var image: Image = root.get_texture().get_image()
+	var tex = root.get_texture()
+	if tex == null:
+		push_warning("Skipped screenshot (Viewport texture is null)")
+		return
+	var image: Image = tex.get_image()
+	if image == null or image.is_empty():
+		push_warning("Skipped screenshot (Image is null or empty, typical in headless mode without xvfb)")
+		return
+		
 	var absolute_path: String = ProjectSettings.globalize_path("%s/%s.png" % [OUTPUT_DIR, output_name])
 	var error: Error = image.save_png(absolute_path)
 	if error != OK:
