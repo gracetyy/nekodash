@@ -136,6 +136,8 @@ var _slide_tween: Tween
 var _bump_tween: Tween
 var _squish_tween: Tween
 var _travel_tween: Tween
+## If set to non-zero, only this input direction is accepted. Used by Tutorial.
+var forced_direction: Vector2i = Vector2i.ZERO
 var _cat_rig: Node
 
 
@@ -275,6 +277,9 @@ func compute_tiles_covered(start: Vector2i, landing: Vector2i, direction: Vector
 
 func _on_direction_input(direction: Vector2i) -> void:
 	if _state != State.IDLE:
+		return
+		
+	if forced_direction != Vector2i.ZERO and direction != forced_direction:
 		return
 
 	# Kill any cosmetic bump tween so it doesn't interfere

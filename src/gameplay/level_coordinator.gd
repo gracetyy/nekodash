@@ -121,6 +121,9 @@ func _ready() -> void:
 	# 4. Initialize sliding movement (emits spawn_position_set → CoverageTracking)
 	_sliding_movement.initialize_level(_current_level_data.cat_start)
 
+	if has_node("TutorialSystem"):
+		$TutorialSystem.initialize(self, _current_level_data)
+
 	_state = State.PLAYING
 
 	print("[LevelCoordinator] Level '%s' ready — %d walkable tiles, %d minimum moves" % [
@@ -516,6 +519,8 @@ func restart_level() -> void:
 	_initialize_systems()
 	_connect_signals()
 	_sliding_movement.initialize_level(_current_level_data.cat_start)
+	if has_node("TutorialSystem"):
+		$TutorialSystem.initialize(self, _current_level_data)
 	_state = State.PLAYING
 
 	level_restarted.emit()
