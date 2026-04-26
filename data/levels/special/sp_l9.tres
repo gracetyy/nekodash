@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://src/core/level_data.gd" id="1_kwqmq"]
+[ext_resource type="Script" path="res://src/core/level_data.gd" id="1_72a6j"]
 
 [resource]
-script = ExtResource("1_kwqmq")
+script = ExtResource("1_72a6j")
 level_id = "sp_l9"
 world_id = 99
 level_index = 9
@@ -11,9 +11,9 @@ display_name = "HKU 9"
 grid_width = 9
 grid_height = 9
 walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 cat_start = Vector2i(1, 1)
-minimum_moves = 20
-star_3_moves = 21
-star_2_moves = 28
-star_1_moves = 40
+minimum_moves = 19
+star_3_moves = 20
+star_2_moves = 26
+star_1_moves = 38
