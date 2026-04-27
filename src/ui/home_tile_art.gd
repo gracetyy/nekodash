@@ -332,8 +332,16 @@ static func _list_png_files(folder_path: String) -> Array[String]:
 			break
 		if entry.begins_with(".") or directory.current_is_dir():
 			continue
-		if entry.to_lower().ends_with(".png"):
-			file_names.append(entry)
+		
+		var entry_lower := entry.to_lower()
+		if entry_lower.ends_with(".png"):
+			if not entry in file_names:
+				file_names.append(entry)
+		elif entry_lower.ends_with(".png.import") or entry_lower.ends_with(".png.remap"):
+			var base_file := entry.get_basename()
+			if not base_file in file_names:
+				file_names.append(base_file)
+	
 	directory.list_dir_end()
 
 	file_names.sort()
@@ -734,7 +742,4 @@ static func _get_app_settings_node() -> Node:
 
 
 static func _load_png_texture(asset_path: String) -> Texture2D:
-	var image: Image = Image.load_from_file(ProjectSettings.globalize_path(asset_path))
-	if image == null or image.is_empty():
-		return null
-	return ImageTexture.create_from_image(image)
+	return load(asset_path) as Texture2D

@@ -78,7 +78,7 @@ func _draw() -> void:
 		"blocking_texture",
 		HomeTileArtScript.SIMPLE_BLOCKING_TEXTURE
 	) as Texture2D
-	var use_simple_ui: bool = _render_layout.get("simple_ui", true) as bool
+	var use_simple_ui: bool = _render_layout.get("simple_ui", false) as bool
 
 	# Draw walkable floor first. Covered tiles are painted by CoverageVisualizer.
 	for row: int in range(h):
