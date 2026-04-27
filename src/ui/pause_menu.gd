@@ -3,6 +3,7 @@ class_name PauseMenu
 extends CanvasLayer
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
+const ConfirmNavigationModalScene: PackedScene = preload("res://scenes/ui/components/panels/ConfirmNavigationModal.tscn")
 
 signal resume_requested
 signal restart_requested
@@ -28,6 +29,7 @@ signal main_menu_requested
 @export var _fullscreen_toggle: BaseButton
 @export var _input_hint_option: OptionButton
 var _suppress_events: bool = false
+var _confirm_modal: ConfirmNavigationModal
 
 
 func _ready() -> void:
@@ -90,6 +92,7 @@ func _ready() -> void:
 	assert(_restart_btn != null, "_restart_btn not assigned")
 	assert(_main_menu_btn != null, "_main_menu_btn not assigned")
 	_connect_app_settings_signal()
+	_ensure_confirm_modal()
 	_populate_input_hint_options()
 	_connect_signals()
 	_connect_navigation()
@@ -164,8 +167,39 @@ func _handle_restart_requested() -> void:
 
 
 func _handle_main_menu_requested() -> void:
+	_prompt_level_select_confirmation()
+
+
+func _ensure_confirm_modal() -> void:
+	if _confirm_modal != null and is_instance_valid(_confirm_modal):
+		return
+	var modal_instance: Node = ConfirmNavigationModalScene.instantiate()
+	if not modal_instance is ConfirmNavigationModal:
+		push_error("PauseMenu: ConfirmNavigationModal scene failed to instantiate.")
+		return
+	_confirm_modal = modal_instance as ConfirmNavigationModal
+	_confirm_modal.confirmed.connect(_on_confirm_modal_confirmed)
+	_confirm_modal.canceled.connect(_on_confirm_modal_canceled)
+	add_child(_confirm_modal)
+
+
+func _prompt_level_select_confirmation() -> void:
+	_ensure_confirm_modal()
+	if _confirm_modal == null:
+		return
+	_confirm_modal.show_modal(
+		"Return to Level Select",
+		"Leave this level and return to level select? Progress in this run will not be saved.",
+	)
+
+
+func _on_confirm_modal_confirmed() -> void:
 	SceneManager.hide_overlay()
-	SceneManager.go_to(SceneManager.Screen.MAIN_MENU)
+	SceneManager.go_to(SceneManager.Screen.WORLD_MAP)
+
+
+func _on_confirm_modal_canceled() -> void:
+	pass
 
 
 func _populate_input_hint_options() -> void:

@@ -22,7 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 [ext_resource type="FontVariation" uid="uid://c8h8i5bsw5k2t" path="res://assets/fonts/Fredoka-Body-SemiBold.tres" id="21_kmk05"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hmpiv"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0nd3o"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cok3t"]
 content_margin_left = 30.0
@@ -259,7 +259,7 @@ alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_hmpiv")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0nd3o")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2

@@ -1,0 +1,95 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/panels/confirm_navigation_modal.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://cy0x18adte55g" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="4"]
+
+[node name="ConfirmNavigationModal" type="Control"]
+visible = false
+z_index = 20
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Panel" parent="." instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -100.0
+offset_right = 210.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 22
+alignment = 1
+
+[node name="BodyLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Leave this level and return to level select? Progress in this run will not be saved."
+autowrap_mode = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="CancelBtn" parent="Panel/Margin/VBox/ButtonRow" instance=ExtResource("4")]
+custom_minimum_size = Vector2(170, 58)
+layout_mode = 2
+text = "Stay"
+variant = 1
+
+[node name="ConfirmBtn" parent="Panel/Margin/VBox/ButtonRow" instance=ExtResource("4")]
+custom_minimum_size = Vector2(220, 58)
+layout_mode = 2
+text = "Go to Level Select"
+variant = 0
+
+[node name="Ribbon" parent="." instance=ExtResource("3")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -174.0
+offset_right = 250.0
+offset_bottom = -84.0
+grow_horizontal = 2
+grow_vertical = 2
+title_text = "Return to Level Select"
+title_font_size = 30

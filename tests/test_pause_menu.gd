@@ -71,3 +71,28 @@ func test_simple_ui_toggle_writes_to_app_settings() -> void:
 func test_restart_requested_calls_restart_level_on_current_scene() -> void:
 	_menu.on_restart_btn_pressed()
 	assert_eq(_gameplay_scene.restart_calls, 1)
+
+
+func test_main_menu_press_shows_confirm_modal() -> void:
+	_menu.on_main_menu_btn_pressed()
+	var modal: Node = _menu.get_node_or_null("ConfirmNavigationModal")
+	assert_not_null(modal)
+	assert_true(modal.visible)
+
+
+func test_confirm_modal_cancel_hides_modal_without_navigation() -> void:
+	_menu.on_main_menu_btn_pressed()
+	var modal: Node = _menu.get_node_or_null("ConfirmNavigationModal")
+	assert_not_null(modal)
+	modal.hide_modal()
+	assert_false(modal.visible)
+	assert_eq(SceneManager.get_active_overlay(), SceneManager.Overlay.NONE)
+	assert_eq(get_tree().current_scene, _gameplay_scene)
+
+
+func test_confirm_modal_confirm_goes_to_world_map() -> void:
+	_menu.on_main_menu_btn_pressed()
+	var modal: Node = _menu.get_node_or_null("ConfirmNavigationModal")
+	assert_not_null(modal)
+	modal.confirmed.emit()
+	assert_eq(SceneManager.get_current_screen(), SceneManager.Screen.WORLD_MAP)

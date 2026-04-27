@@ -629,6 +629,22 @@ func test_pause_requested_shows_pause_overlay() -> void:
 	get_tree().paused = false
 
 
+func test_hud_exit_shows_confirm_modal_and_confirm_navigates_world_map() -> void:
+	var ld := _make_4x4_level()
+	GridSystem.load_grid(ld)
+	SceneManager.hide_overlay()
+	get_tree().paused = false
+	_lc = _build_coordinator(ld)
+
+	_lc._on_exit_pressed()
+	var modal: Node = _lc.get_node_or_null("HUD/ConfirmNavigationModal")
+	assert_not_null(modal)
+	assert_true(modal.visible)
+
+	modal.confirmed.emit()
+	assert_eq(SceneManager.get_current_screen(), SceneManager.Screen.WORLD_MAP)
+
+
 func test_ui_cancel_opens_pause_overlay_when_playing() -> void:
 	var ld := _make_4x4_level()
 	GridSystem.load_grid(ld)

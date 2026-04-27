@@ -14,6 +14,8 @@
 ##   _ready(). The coordinator then initializes all child systems in _ready().
 extends Node2D
 
+const ConfirmNavigationModalScene: PackedScene = preload("res://scenes/ui/components/panels/ConfirmNavigationModal.tscn")
+
 
 # —————————————————————————————————————————————
 # Signals
@@ -74,6 +76,7 @@ var _was_previously_completed: bool = false
 var _entry_fade_layer: CanvasLayer
 var _entry_fade_rect: ColorRect
 var _entry_fade_tween: Tween
+var _confirm_modal: ConfirmNavigationModal
 const LEVEL_COMPLETE_MODAL_DELAY_SEC: float = 0.34
 
 ## Stub SFX stream for level completion (replace with real audio asset later).
@@ -123,6 +126,7 @@ func _ready() -> void:
 
 	if has_node("TutorialSystem"):
 		$TutorialSystem.initialize(self , _current_level_data)
+	_ensure_confirm_modal()
 
 	_state = State.PLAYING
 
@@ -397,7 +401,55 @@ func _on_slide_blocked(pos: Vector2i, direction: Vector2i) -> void:
 func _on_exit_pressed() -> void:
 	if _state != State.PLAYING:
 		return
+	_prompt_level_select_confirmation()
+
+
+func _ensure_confirm_modal() -> void:
+	if _confirm_modal != null and is_instance_valid(_confirm_modal):
+		return
+	var modal_instance: Node = ConfirmNavigationModalScene.instantiate()
+	if not modal_instance is ConfirmNavigationModal:
+		push_error("LevelCoordinator: ConfirmNavigationModal scene failed to instantiate.")
+		return
+	_confirm_modal = modal_instance as ConfirmNavigationModal
+	_confirm_modal.confirmed.connect(_on_confirm_modal_confirmed)
+	_confirm_modal.canceled.connect(_on_confirm_modal_canceled)
+	if _hud != null:
+		_hud.add_child(_confirm_modal)
+	else:
+		add_child(_confirm_modal)
+
+
+func _prompt_level_select_confirmation() -> void:
+	_ensure_confirm_modal()
+	if _confirm_modal == null:
+		return
+	if _sliding_movement != null:
+		_sliding_movement.lock()
+	_set_tutorial_overlay_visible(false)
+	_confirm_modal.show_modal(
+		"Return to Level Select",
+		"Leave this level and return to level select? Progress in this run will not be saved.",
+	)
+
+
+func _on_confirm_modal_confirmed() -> void:
 	SceneManager.go_to(SceneManager.Screen.WORLD_MAP)
+
+
+func _on_confirm_modal_canceled() -> void:
+	if _state == State.PLAYING and _sliding_movement != null:
+		_sliding_movement.unlock()
+	_set_tutorial_overlay_visible(true)
+
+
+func _set_tutorial_overlay_visible(visible_flag: bool) -> void:
+	if not has_node("TutorialSystem"):
+		return
+	var tutorial_node: CanvasLayer = get_node("TutorialSystem") as CanvasLayer
+	if tutorial_node == null:
+		return
+	tutorial_node.visible = visible_flag
 
 
 func _on_pause_pressed() -> void:
