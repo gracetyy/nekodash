@@ -122,3 +122,31 @@ func test_level_complete_perfect_result_uses_smile_cat_variant() -> void:
 	var content: Control = overlay.get_node("Content") as Control
 	var cat_illustration: TextureRect = content.get_node("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration") as TextureRect
 	assert_eq(cat_illustration.texture.resource_path, "res://assets/art/cats/cat_default_smile.png")
+
+
+func test_level_complete_wide_layout_keeps_stars_and_ribbon_centered() -> void:
+	# Arrange
+	var scene: PackedScene = load("res://scenes/ui/level_complete.tscn")
+	var screen: Control = scene.instantiate() as Control
+	add_child_autofree(screen)
+	screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	screen.size = Vector2(1500.0, 760.0)
+
+	# Act
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	# Assert
+	var panel: Control = screen.get_node("MarginContainer/ResultsCard") as Control
+	var ribbon: Control = screen.get_node("MarginContainer/ResultsCard/CardMargin/VBox/RibbonSlot/Ribbon") as Control
+	var star_row: Control = screen.get_node("MarginContainer/ResultsCard/CardMargin/VBox/StarRow") as Control
+	var star_1: Control = screen.get_node("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star1") as Control
+	var star_3: Control = screen.get_node("MarginContainer/ResultsCard/CardMargin/VBox/StarRow/Star3") as Control
+
+	var panel_center_x: float = panel.global_position.x + panel.size.x * 0.5
+	var ribbon_center_x: float = ribbon.global_position.x + ribbon.size.x * 0.5
+	var stars_center_x: float = (star_1.global_position.x + (star_3.global_position.x + star_3.size.x)) * 0.5
+	var star_row_center_x: float = star_row.global_position.x + star_row.size.x * 0.5
+
+	assert_almost_eq(ribbon_center_x, panel_center_x, 2.0)
+	assert_almost_eq(stars_center_x, star_row_center_x, 2.0)

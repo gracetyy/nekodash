@@ -120,6 +120,9 @@ func _ready() -> void:
 	#    (spawn_position_set fires during initialize_level)
 	_connect_signals()
 	_connect_app_settings_signal()
+	
+	if not get_viewport().size_changed.is_connected(_on_viewport_size_changed):
+		get_viewport().size_changed.connect(_on_viewport_size_changed)
 
 	# 4. Initialize sliding movement (emits spawn_position_set → CoverageTracking)
 	_sliding_movement.initialize_level(_current_level_data.cat_start)
@@ -549,9 +552,14 @@ func _disconnect_app_settings_signal() -> void:
 		AppSettings.disconnect("setting_changed", changed_callable)
 
 
+func _on_viewport_size_changed() -> void:
+	_refresh_grid_visuals()
+
+
 func _on_app_setting_changed(section: String, key: String, _value: Variant) -> void:
-	if section == AppSettings.SECTION_DISPLAY and key == AppSettings.KEY_SIMPLE_UI:
-		_refresh_grid_visuals()
+	if section == AppSettings.SECTION_DISPLAY:
+		if key == AppSettings.KEY_SIMPLE_UI or key == AppSettings.KEY_FULLSCREEN:
+			_refresh_grid_visuals()
 
 
 # —————————————————————————————————————————————

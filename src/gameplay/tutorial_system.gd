@@ -207,8 +207,9 @@ func _show_bubble_with_options(
 	else:
 		bubble.position = bubble_anchor_pos + bubble_offset
 		
-	# Keep bubble on-screen
-	var screen_width = 540.0
+	# Keep bubble on-screen for any desktop/mobile viewport size.
+	var viewport_rect: Rect2 = get_viewport().get_visible_rect()
+	var screen_width: float = viewport_rect.size.x
 	bubble.position.x = clampf(bubble.position.x, 10.0, screen_width - b_size.x - 10.0)
 
 

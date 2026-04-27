@@ -58,6 +58,14 @@ func _ready() -> void:
 	assert(_sentinel_label != null, "_sentinel_label not assigned")
 	_star_nodes = [_star1, _star2, _star3]
 	_is_component_ready = true
+	if not resized.is_connected(_on_strip_resized):
+		resized.connect(_on_strip_resized)
+	_apply_component_state()
+
+
+func _on_strip_resized() -> void:
+	if not _is_component_ready:
+		return
 	_apply_component_state()
 
 
@@ -119,7 +127,9 @@ func _place_star(star: TextureRect, index: int, star_size: float, row_width: flo
 			Vector2(100.0, 0.0),
 			Vector2(200.0, 16.0),
 		]
-		star.position = positions[index]
+		var layout_width: float = 304.0
+		var offset_x: float = maxf(0.0, (size.x - layout_width) * 0.5)
+		star.position = positions[index] + Vector2(offset_x, 0.0)
 		star.rotation_degrees = 0.0
 		return
 

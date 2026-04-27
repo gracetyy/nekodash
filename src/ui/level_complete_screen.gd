@@ -72,6 +72,9 @@ var _use_internal_navigation: bool = true
 var _level_name_label: Label
 var _legacy_star_nodes: Array[Control] = []
 var _legacy_star_sentinel: Label
+var _base_panel_width: float = 0.0
+var _base_ribbon_offset_left: float = 0.0
+var _base_ribbon_offset_right: float = 0.0
 
 ## Whether params have been received.
 var _params_received: bool = false
@@ -126,6 +129,13 @@ func _ready() -> void:
 	assert(_world_map_btn != null, "_world_map_btn not assigned")
 	_connect_button_signals()
 	_apply_visual_style()
+	if _panel != null and not _panel.resized.is_connected(_on_panel_resized):
+		_panel.resized.connect(_on_panel_resized)
+	_base_panel_width = _panel.size.x
+	if _level_name_ribbon != null:
+		_base_ribbon_offset_left = _level_name_ribbon.offset_left
+		_base_ribbon_offset_right = _level_name_ribbon.offset_right
+	_sync_ribbon_scale_with_panel()
 	# Self-connect navigation only when running in the real scene (auto-discover
 	# found buttons). Tests use set_ui_nodes() after _ready(), so _next_btn is
 	# still null here and these connections are skipped.
@@ -480,3 +490,20 @@ func _animate_star_reveal(stars: int) -> void:
 
 func _is_reduce_motion_enabled() -> bool:
 	return AppSettings != null and AppSettings.get_reduce_motion()
+
+
+func _on_panel_resized() -> void:
+	_sync_ribbon_scale_with_panel()
+
+
+func _sync_ribbon_scale_with_panel() -> void:
+	if _panel == null or _level_name_ribbon == null:
+		return
+	if _base_panel_width <= 0.0:
+		_base_panel_width = _panel.size.x
+	if _base_panel_width <= 0.0:
+		return
+	var width_ratio: float = _panel.size.x / _base_panel_width
+	var ribbon_scale: float = clampf(width_ratio, 1.0, 1.35)
+	_level_name_ribbon.offset_left = _base_ribbon_offset_left * ribbon_scale
+	_level_name_ribbon.offset_right = _base_ribbon_offset_right * ribbon_scale
