@@ -119,13 +119,14 @@ stretch_mode = 5
 [node name="StarStrip" parent="HUD/MarginContainer/TopRow/CenterPill" instance=ExtResource("16")]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.12
+anchor_left = 0.5
 anchor_top = 0.18
-anchor_right = 0.88
+anchor_right = 0.5
 anchor_bottom = 0.82
-offset_top = -4.0
-offset_bottom = -4.0
+offset_left = -50.0
+offset_right = 50.0
 row_spacing_px = 4.0
+row_horizontal_nudge_px = 2.0
 
 [node name="ButtonRow" type="HBoxContainer" parent="HUD/MarginContainer/TopRow"]
 custom_minimum_size = Vector2(0, 56)

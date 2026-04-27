@@ -31,6 +31,9 @@ var earned_count: int = 0
 @export_range(0.0, 32.0, 1.0, "or_greater")
 var row_spacing_px: float = 6.0
 
+@export_range(-12.0, 12.0, 1.0)
+var row_horizontal_nudge_px: float = 0.0
+
 var _is_component_ready: bool = false
 
 @export var _star1: TextureRect
@@ -91,7 +94,8 @@ func _apply_component_state() -> void:
 
 	_sentinel_label.visible = false
 	var star_size: float = _star_size_px()
-	custom_minimum_size = _layout_size(star_size)
+	var layout_size: Vector2 = _layout_size(star_size)
+	custom_minimum_size = layout_size
 	for index: int in range(_star_nodes.size()):
 		var star: TextureRect = _star_nodes[index]
 		star.visible = true
@@ -99,7 +103,7 @@ func _apply_component_state() -> void:
 		star.custom_minimum_size = Vector2(star_size, star_size)
 		star.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		star.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		_place_star(star, index, star_size)
+		_place_star(star, index, star_size, layout_size.x)
 
 
 func _layout_size(star_size: float) -> Vector2:
@@ -108,7 +112,7 @@ func _layout_size(star_size: float) -> Vector2:
 	return Vector2((star_size * 3.0) + (row_spacing_px * 2.0), star_size)
 
 
-func _place_star(star: TextureRect, index: int, star_size: float) -> void:
+func _place_star(star: TextureRect, index: int, star_size: float, row_width: float) -> void:
 	if layout_variant == LayoutVariant.CELEBRATION:
 		var positions: Array[Vector2] = [
 			Vector2(0.0, 16.0),
@@ -120,7 +124,8 @@ func _place_star(star: TextureRect, index: int, star_size: float) -> void:
 		return
 
 	star.rotation_degrees = 0.0
-	star.position = Vector2((star_size + row_spacing_px) * float(index), 0.0)
+	var offset_x: float = maxf(0.0, (size.x - row_width) * 0.5) + row_horizontal_nudge_px
+	star.position = Vector2(offset_x + (star_size + row_spacing_px) * float(index), 0.0)
 
 
 func _star_size_px() -> float:
