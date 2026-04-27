@@ -15,8 +15,6 @@ Desktop.ini
 # === AI Agent ===
 AGENTS.md
 CLAUDE.md
-
-# === Claude Code Local ===
 .claude
 .claude/settings.local.json
 .claude/docs/UPGRADE-PLAN.md
@@ -24,10 +22,9 @@ CLAUDE.local.md
 production/session-logs/
 production/session-state/*.md
 docs/superpowers/
-
-# === Codex ===
 .codex
 smoke-test/
+*.txt
 
 # === Build Output ===
 build/
