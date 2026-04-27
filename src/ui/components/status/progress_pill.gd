@@ -34,7 +34,8 @@ func _apply_visuals() -> void:
 	_background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	ShellThemeUtil.apply_body(_value_label, ShellThemeUtil.PLUM, 24)
+	ShellThemeUtil.apply_body(_value_label, ShellThemeUtil.PLUM, 18)
+	_value_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 
 func _update_display() -> void:

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/ui/components/status/progress_pill.gd" id="1"]
 
 [node name="ProgressPill" type="Control"]
-custom_minimum_size = Vector2(136, 50)
+custom_minimum_size = Vector2(136, 48)
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1")
@@ -27,7 +27,7 @@ anchor_bottom = 1.0
 offset_left = 16.0
 offset_top = 7.0
 offset_right = -16.0
-offset_bottom = -9.0
+offset_bottom = -15.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -35,7 +35,7 @@ theme_override_constants/separation = 6
 alignment = 1
 
 [node name="Icon" type="TextureRect" parent="Content"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 mouse_filter = 2
 

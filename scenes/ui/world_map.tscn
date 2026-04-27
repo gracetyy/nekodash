@@ -50,19 +50,19 @@ theme_override_constants/separation = 12
 
 [node name="HeaderOuterMargin" type="MarginContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
-theme_override_constants/margin_left = 30
-theme_override_constants/margin_right = 30
+theme_override_constants/margin_left = 44
+theme_override_constants/margin_right = 44
 
 [node name="HeaderCard" type="PanelContainer" parent="MarginContainer/VBox/HeaderOuterMargin"]
-custom_minimum_size = Vector2(0, 86)
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard"]
 layout_mode = 2
 theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 8
+theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_bottom = 14
 
 [node name="Header" type="HBoxContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin"]
 layout_mode = 2
@@ -70,11 +70,14 @@ theme_override_constants/separation = 10
 
 [node name="BackBtn" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("3")]
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="TitleBox" type="VBoxContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox"]
 layout_mode = 2
@@ -82,6 +85,7 @@ theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
 theme_override_font_sizes/font_size = 30
 text = "World Selection"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SubtitleLabel" type="Label" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox"]
 visible = false
@@ -91,12 +95,14 @@ theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
 [node name="ProgressChip" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("4")]
-visible = false
 layout_mode = 2
+custom_minimum_size = Vector2(146, 48)
+size_flags_vertical = 4
 
 [node name="RightSpacer" type="Control" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
 custom_minimum_size = Vector2(44, 56)
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="HintLabel" type="Label" parent="MarginContainer/VBox"]
 visible = false
@@ -117,8 +123,8 @@ vertical_alignment = 1
 [node name="ListOuterMargin" type="MarginContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/margin_left = 30
-theme_override_constants/margin_right = 30
+theme_override_constants/margin_left = 52
+theme_override_constants/margin_right = 52
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBox/ListOuterMargin"]
 layout_mode = 2
