@@ -32,6 +32,8 @@ var _sfx_manager_ref: Node
 @export var _input_hint_option: OptionButton
 @export var _replay_tutorial_btn: BaseButton
 @export var _tutorial_label: Label
+@export var _developer_label: Label
+@export var _dev_mode_toggle: BaseButton
 @export var _close_btn: BaseButton
 
 var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
@@ -74,6 +76,10 @@ func _ready() -> void:
 		_tutorial_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TutorialSection/TutorialLabel")
 	if _replay_tutorial_btn == null:
 		_replay_tutorial_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/TutorialSection/CenterContainer/ReplayTutorialBtn")
+	if _developer_label == null:
+		_developer_label = get_node_or_null("Backdrop/Panel/Margin/VBox/DeveloperSection/DeveloperLabel")
+	if _dev_mode_toggle == null:
+		_dev_mode_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DeveloperSection/DevModeRow/Toggle")
 	if _close_btn == null:
 		_close_btn = get_node_or_null("Backdrop/CloseBtn")
 	assert(_backdrop != null, "_backdrop not assigned")
@@ -92,6 +98,7 @@ func _ready() -> void:
 	assert(_simple_ui_toggle != null, "_simple_ui_toggle not assigned")
 	assert(_fullscreen_toggle != null, "_fullscreen_toggle not assigned")
 	assert(_input_hint_option != null, "_input_hint_option not assigned")
+	assert(_dev_mode_toggle != null, "_dev_mode_toggle not assigned")
 	assert(_close_btn != null, "_close_btn not assigned")
 	_resolve_services()
 	_connect_settings_signal()
@@ -190,6 +197,8 @@ func _connect_ui() -> void:
 		_fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 	if _input_hint_option != null and not _input_hint_option.item_selected.is_connected(_on_input_hint_selected):
 		_input_hint_option.item_selected.connect(_on_input_hint_selected)
+	if _dev_mode_toggle != null and not _dev_mode_toggle.toggled.is_connected(_on_dev_mode_toggled):
+		_dev_mode_toggle.toggled.connect(_on_dev_mode_toggled)
 	if _replay_tutorial_btn != null and not _replay_tutorial_btn.pressed.is_connected(_on_replay_tutorial_pressed):
 		_replay_tutorial_btn.pressed.connect(_on_replay_tutorial_pressed)
 	if _close_btn != null and not _close_btn.pressed.is_connected(on_close_btn_pressed):
@@ -230,6 +239,8 @@ func _sync_controls() -> void:
 				_input_hint_option.select(2)
 			_:
 				_input_hint_option.select(0)
+	if _dev_mode_toggle != null:
+		_dev_mode_toggle.button_pressed = _app_settings_ref.get_dev_mode()
 	_refresh_audio_control_states()
 	_sync_tutorial_button_state()
 	_suppress_events = false
@@ -299,6 +310,12 @@ func _on_input_hint_selected(index: int) -> void:
 			_app_settings_ref.set_input_hint_mode(AppSettings.INPUT_HINT_AUTO)
 
 
+func _on_dev_mode_toggled(button_pressed: bool) -> void:
+	if _suppress_events:
+		return
+	_app_settings_ref.set_dev_mode(button_pressed)
+
+
 func _on_replay_tutorial_pressed() -> void:
 	if _suppress_events:
 		return
@@ -337,7 +354,7 @@ func _apply_visual_style() -> void:
 
 
 func _refresh_title_components() -> void:
-	for node: Label in [_title_label, _audio_label, _display_label, _input_label, _tutorial_label]:
+	for node: Label in [_title_label, _audio_label, _display_label, _input_label, _tutorial_label, _developer_label]:
 		if node != null and node.has_method("refresh_style"):
 			node.call("refresh_style")
 	if _ribbon != null and _ribbon.has_method("refresh_style"):
@@ -376,6 +393,8 @@ func _on_app_setting_changed(section: String, key: String, _value: Variant) -> v
 	if section == AppSettings.SECTION_DISPLAY:
 		if key == AppSettings.KEY_LARGE_UI:
 			_apply_visual_style()
+		_sync_controls()
+	elif section == AppSettings.SECTION_SHELL and key == AppSettings.KEY_DEV_MODE:
 		_sync_controls()
 	elif section == AppSettings.SECTION_INPUT and key == AppSettings.KEY_INPUT_HINT_MODE:
 		_sync_controls()

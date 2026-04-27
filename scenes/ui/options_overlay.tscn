@@ -129,6 +129,20 @@ custom_minimum_size = Vector2(220, 56)
 layout_mode = 2
 text = "Replay Tutorial"
 
+[node name="DeveloperSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DeveloperLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DeveloperSection"]
+layout_mode = 2
+text = "Developer"
+script = ExtResource("9")
+font_size = 24
+
+[node name="DevModeRow" parent="Backdrop/Panel/Margin/VBox/DeveloperSection" instance=ExtResource("7")]
+layout_mode = 2
+label_text = "Unlock All Levels"
+
 [node name="Ribbon" parent="Backdrop" instance=ExtResource("3")]
 z_index = 1
 layout_mode = 0

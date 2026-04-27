@@ -14,6 +14,7 @@ var _map: WorldMap
 func before_each() -> void:
 	# Reset the autoload SaveManager so unlock checks start fresh.
 	SaveManager.reset_all_progress()
+	AppSettings.set_dev_mode(false)
 
 	# Create WorldMap without adding to tree (_ready won't fire — avoids
 	# null UI node errors). autofree() handles cleanup.
@@ -90,6 +91,18 @@ func test_special_world_entry_can_be_default_unlocked() -> void:
 
 	SaveManager.set_level_record("sp_l1", true, 2, 5)
 	assert_true(_map.is_level_unlocked(sp_l2), "Special world second level unlocks after first")
+
+
+func test_dev_mode_unlocks_all_levels_regardless_of_progress() -> void:
+	var l1: LevelData = _make_level("w1_l1", 1, 1)
+	var l2: LevelData = _make_level("w1_l2", 1, 2)
+	var w2_l1: LevelData = _make_level("w2_l1", 2, 1)
+	_setup_catalogue([l1, l2, w2_l1] as Array[LevelData])
+
+	assert_false(_map.is_level_unlocked(w2_l1), "Without dev mode, normal progression locks world 2 entry")
+	AppSettings.set_dev_mode(true)
+	assert_true(_map.is_level_unlocked(l2), "Dev mode should unlock same-world gated levels")
+	assert_true(_map.is_level_unlocked(w2_l1), "Dev mode should unlock cross-world gated levels")
 
 
 # —————————————————————————————————————————————

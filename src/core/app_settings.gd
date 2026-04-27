@@ -20,6 +20,7 @@ const KEY_LARGE_UI: String = "large_ui"
 const KEY_SIMPLE_UI: String = "simple_ui"
 const KEY_LAST_WORLD_ID: String = "last_world_id"
 const KEY_TUTORIAL_SKIPPED: String = "tutorial_skipped"
+const KEY_DEV_MODE: String = "dev_mode"
 const KEY_INPUT_HINT_MODE: String = "input_hint_mode"
 const UI_SCALE_NORMAL: float = 1.0
 const UI_SCALE_LARGE: float = 1.0
@@ -40,6 +41,7 @@ const DEFAULTS: Dictionary = {
 	SECTION_SHELL: {
 		KEY_LAST_WORLD_ID: 1,
 		KEY_TUTORIAL_SKIPPED: false,
+		KEY_DEV_MODE: false,
 	},
 	SECTION_INPUT: {
 		KEY_INPUT_HINT_MODE: INPUT_HINT_AUTO,
@@ -156,6 +158,14 @@ func get_tutorial_skipped() -> bool:
 
 func set_tutorial_skipped(skipped: bool) -> void:
 	set_value(SECTION_SHELL, KEY_TUTORIAL_SKIPPED, skipped)
+
+
+func get_dev_mode() -> bool:
+	return get_value(SECTION_SHELL, KEY_DEV_MODE, false) as bool
+
+
+func set_dev_mode(enabled: bool) -> void:
+	set_value(SECTION_SHELL, KEY_DEV_MODE, enabled)
 
 
 func get_input_hint_mode() -> String:

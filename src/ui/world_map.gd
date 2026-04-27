@@ -180,6 +180,8 @@ func _build_world_index() -> void:
 
 
 func _is_level_unlocked(level_data: LevelData) -> bool:
+	if AppSettings != null and AppSettings.get_dev_mode():
+		return true
 	if _is_level_entry_unlocked_by_default(level_data):
 		return true
 	var prev: LevelData = _get_prev_level(level_data)

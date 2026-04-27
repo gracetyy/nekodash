@@ -9,7 +9,8 @@
 [ext_resource type="Resource" path="res://data/levels/world1/w1_l6.tres" id="7_uo3q0"]
 [ext_resource type="Resource" path="res://data/levels/world1/w1_l7.tres" id="8_kf60c"]
 [ext_resource type="Resource" path="res://data/levels/world1/w1_l8.tres" id="9_87ni0"]
-[ext_resource type="Script" path="res://src/core/level_catalogue.gd" id="10_xnynh"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l9.tres" id="10_w1l9a"]
+[ext_resource type="Script" path="res://src/core/level_catalogue.gd" id="11_xnynh"]
 
 [sub_resource type="Resource" id="Resource_5n1tr"]
 script = ExtResource("1_5d23n")
@@ -444,6 +445,6 @@ star_2_moves = 28
 star_1_moves = 40
 
 [resource]
-script = ExtResource("10_xnynh")
-levels = Array[ExtResource("1_5d23n")]([ExtResource("2_wqjln"), ExtResource("3_7vxyv"), ExtResource("4_w8lcb"), ExtResource("5_cqw8s"), ExtResource("6_hllqo"), ExtResource("7_uo3q0"), ExtResource("8_kf60c"), ExtResource("9_87ni0"), SubResource("Resource_5n1tr"), SubResource("Resource_kcpjq"), SubResource("Resource_0tl3o"), SubResource("Resource_wqqui"), SubResource("Resource_bofve"), SubResource("Resource_1es5g"), SubResource("Resource_f6qhm"), SubResource("Resource_xqk1m"), SubResource("Resource_jytfc"), SubResource("Resource_cge7d"), SubResource("Resource_q1wjh"), SubResource("Resource_onkv3"), SubResource("Resource_tuwic"), SubResource("Resource_wvkec"), SubResource("Resource_gq1n0"), SubResource("Resource_gapy2"), SubResource("Resource_eiyf6"), SubResource("Resource_bxkqq"), SubResource("Resource_i33lq"), SubResource("Resource_6d263"), SubResource("Resource_el7as"), SubResource("Resource_eyac0"), SubResource("Resource_wmsep"), SubResource("Resource_dtlen"), SubResource("Resource_2go54"), SubResource("Resource_8n2em"), SubResource("Resource_u8bq8")])
+script = ExtResource("11_xnynh")
+levels = Array[ExtResource("1_5d23n")]([ExtResource("2_wqjln"), ExtResource("3_7vxyv"), ExtResource("4_w8lcb"), ExtResource("5_cqw8s"), ExtResource("6_hllqo"), ExtResource("7_uo3q0"), ExtResource("8_kf60c"), ExtResource("9_87ni0"), ExtResource("10_w1l9a"), SubResource("Resource_5n1tr"), SubResource("Resource_kcpjq"), SubResource("Resource_0tl3o"), SubResource("Resource_wqqui"), SubResource("Resource_bofve"), SubResource("Resource_1es5g"), SubResource("Resource_f6qhm"), SubResource("Resource_xqk1m"), SubResource("Resource_jytfc"), SubResource("Resource_cge7d"), SubResource("Resource_q1wjh"), SubResource("Resource_onkv3"), SubResource("Resource_tuwic"), SubResource("Resource_wvkec"), SubResource("Resource_gq1n0"), SubResource("Resource_gapy2"), SubResource("Resource_eiyf6"), SubResource("Resource_bxkqq"), SubResource("Resource_i33lq"), SubResource("Resource_6d263"), SubResource("Resource_el7as"), SubResource("Resource_eyac0"), SubResource("Resource_wmsep"), SubResource("Resource_dtlen"), SubResource("Resource_2go54"), SubResource("Resource_8n2em"), SubResource("Resource_u8bq8")])
 always_unlocked_world_ids = PackedInt32Array(99)

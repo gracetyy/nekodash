@@ -33,6 +33,7 @@ func test_defaults_loaded_on_ready() -> void:
 	assert_false(_settings.get_reduce_motion())
 	assert_false(_settings.get_large_ui())
 	assert_false(_settings.get_simple_ui())
+	assert_false(_settings.get_dev_mode())
 	assert_eq(_settings.get_input_hint_mode(), "auto")
 	assert_eq(_settings.get_last_world_id(), 1)
 
@@ -95,6 +96,13 @@ func test_last_world_id_roundtrip() -> void:
 	var settings2: Node = load("res://src/core/app_settings.gd").new()
 	add_child_autofree(settings2)
 	assert_eq(settings2.get_last_world_id(), 3)
+
+
+func test_dev_mode_roundtrip() -> void:
+	_settings.set_dev_mode(true)
+	var settings2: Node = load("res://src/core/app_settings.gd").new()
+	add_child_autofree(settings2)
+	assert_true(settings2.get_dev_mode())
 
 
 # —————————————————————————————————————————————

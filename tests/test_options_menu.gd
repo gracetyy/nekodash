@@ -13,6 +13,7 @@ class MockSettings extends Node:
 	var reduce_motion: bool = false
 	var large_ui: bool = false
 	var simple_ui: bool = false
+	var dev_mode: bool = false
 	var input_hint_mode: String = AppSettings.INPUT_HINT_AUTO
 
 	func get_fullscreen() -> bool:
@@ -38,6 +39,12 @@ class MockSettings extends Node:
 
 	func set_simple_ui(enabled: bool) -> void:
 		simple_ui = enabled
+
+	func get_dev_mode() -> bool:
+		return dev_mode
+
+	func set_dev_mode(enabled: bool) -> void:
+		dev_mode = enabled
 
 	func get_input_hint_mode() -> String:
 		return input_hint_mode
@@ -95,6 +102,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	_settings.reduce_motion = true
 	_settings.large_ui = true
 	_settings.simple_ui = true
+	_settings.dev_mode = true
 	_settings.input_hint_mode = AppSettings.INPUT_HINT_CONTROLLER
 	_music.volume = 0.35
 	_music.muted = true
@@ -113,6 +121,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	var large_ui: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle") as CheckButton
 	var simple_ui: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/SimpleUiRow/Toggle") as CheckButton
 	var fullscreen: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle") as CheckButton
+	var dev_mode: CheckButton = _menu.get_node("Backdrop/Panel/Margin/VBox/DeveloperSection/DevModeRow/Toggle") as CheckButton
 	var input_hint: OptionButton = _menu.get_node("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton") as OptionButton
 
 	assert_eq(music_slider.value, 35.0)
@@ -123,6 +132,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	assert_true(large_ui.button_pressed)
 	assert_true(simple_ui.button_pressed)
 	assert_true(fullscreen.button_pressed)
+	assert_true(dev_mode.button_pressed)
 	assert_eq(input_hint.selected, 2)
 
 
@@ -135,6 +145,7 @@ func test_controls_write_through_to_services() -> void:
 	_menu._on_large_ui_toggled(true)
 	_menu._on_simple_ui_toggled(true)
 	_menu._on_fullscreen_toggled(true)
+	_menu._on_dev_mode_toggled(true)
 	_menu._on_input_hint_selected(1)
 
 	assert_eq(_music.volume, 0.25)
@@ -145,6 +156,7 @@ func test_controls_write_through_to_services() -> void:
 	assert_true(_settings.large_ui)
 	assert_true(_settings.simple_ui)
 	assert_true(_settings.fullscreen)
+	assert_true(_settings.dev_mode)
 	assert_eq(_settings.input_hint_mode, AppSettings.INPUT_HINT_TOUCH)
 
 
