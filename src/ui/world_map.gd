@@ -82,8 +82,18 @@ var _last_grid_column_target: int = -1
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	if _root_margin_container == null:
 		_root_margin_container = get_node_or_null("MarginContainer")
+	if _root_margin_container != null:
+		_root_margin_container.mouse_filter = Control.MOUSE_FILTER_PASS
+		var vbox: Control = _root_margin_container.get_node_or_null("VBox")
+		if vbox != null:
+			vbox.mouse_filter = Control.MOUSE_FILTER_PASS
+			var list_margin: Control = vbox.get_node_or_null("ListOuterMargin")
+			if list_margin != null:
+				list_margin.mouse_filter = Control.MOUSE_FILTER_PASS
+
 	if _back_btn == null:
 		_back_btn = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/BackBtn")
 	if _header_card == null:

@@ -17,6 +17,7 @@ var _is_component_ready: bool = false
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	_is_component_ready = true
 	_apply_visuals()
 	_update_display()

@@ -26,6 +26,7 @@ var min_height_px: float = 60.0:
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	_apply_component_state()
 
 

@@ -44,6 +44,7 @@ var _star_nodes: Array[TextureRect] = []
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	if _star1 == null:
 		_star1 = get_node_or_null("Star1")
 	if _star2 == null:

@@ -25,6 +25,17 @@ var _is_component_ready: bool = false
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	for child in get_children():
+		if child is Control:
+			child.mouse_filter = Control.MOUSE_FILTER_PASS
+			for grandchild in child.get_children():
+				if grandchild is Control:
+					grandchild.mouse_filter = Control.MOUSE_FILTER_PASS
+					for ggrandchild in grandchild.get_children():
+						if ggrandchild is Control:
+							ggrandchild.mouse_filter = Control.MOUSE_FILTER_PASS
+
 	if _level_grid == null:
 		_level_grid = get_node_or_null("Margin/VBox/LevelGrid")
 	assert(_level_grid != null, "_level_grid not assigned")

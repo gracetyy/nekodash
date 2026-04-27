@@ -41,8 +41,20 @@ var _is_component_ready: bool = false
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	for child in get_children():
+		if child is Control and child != _overlay_button:
+			child.mouse_filter = Control.MOUSE_FILTER_PASS
+			for grandchild in child.get_children():
+				if grandchild is Control:
+					grandchild.mouse_filter = Control.MOUSE_FILTER_PASS
+					for ggrandchild in grandchild.get_children():
+						if ggrandchild is Control:
+							ggrandchild.mouse_filter = Control.MOUSE_FILTER_PASS
+	
 	_is_component_ready = true
 	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
+	_overlay_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	_overlay_button.add_theme_stylebox_override("normal", empty_style)
 	_overlay_button.add_theme_stylebox_override("hover", empty_style)
 	_overlay_button.add_theme_stylebox_override("pressed", empty_style)
