@@ -52,6 +52,23 @@ func _find_obstacle_by_size(layout: Dictionary, target_size: Vector2i) -> Dictio
 	return {}
 
 
+func _is_oriented_wall_path(wall_path: String) -> bool:
+	var oriented_tokens: Array[String] = [
+		"top",
+		"bottom",
+		"left",
+		"right",
+		"top_left_corner",
+		"top_right_corner",
+		"bottom_left_corner",
+		"bottom_right_corner",
+	]
+	for token: String in oriented_tokens:
+		if wall_path.ends_with("/%s.png" % token):
+			return true
+	return false
+
+
 func test_simple_ui_layout_uses_placeholder_textures() -> void:
 	var level_data: LevelData = _make_bordered_level("simple_ui", 4, 4, [Vector2i(1, 1)])
 	var layout: Dictionary = HomeTileArtScript.build_layout(level_data, true)
@@ -63,7 +80,7 @@ func test_simple_ui_layout_uses_placeholder_textures() -> void:
 	assert_eq((layout.get("obstacles", []) as Array).size(), 0)
 
 
-func test_world_one_art_layout_uses_bedroom_floor_and_common_wall_assets() -> void:
+func test_world_one_art_layout_uses_bedroom_floor_and_oriented_bedroom_walls() -> void:
 	var level_data: LevelData = _make_bordered_level("bedroom_floor", 4, 4, [])
 	var layout: Dictionary = HomeTileArtScript.build_layout(level_data, false)
 
@@ -72,28 +89,27 @@ func test_world_one_art_layout_uses_bedroom_floor_and_common_wall_assets() -> vo
 
 	assert_true(str(layout.get("floor_path", "")).ends_with("/assets/art/tiles/home/bedroom/1x1_floor_tile/normal.png"))
 	assert_true(str(layout.get("visited_path", "")).ends_with("/assets/art/tiles/home/bedroom/1x1_floor_tile/visited.png"))
-	assert_true(str(first_wall.get("path", "")).contains("/assets/art/tiles/home/common/1x1_wall_tile/"))
+	assert_true(str(first_wall.get("path", "")).contains("/assets/art/tiles/home/bedroom/1x1_wall_tile/"))
 	for wall_draw: Dictionary in wall_draws:
 		var wall_path: String = str(wall_draw.get("path", ""))
-		# Walls should be wooden, wooden_side for edges, or bedroom-specific wooden
+		assert_true(wall_path.contains("/assets/art/tiles/home/bedroom/1x1_wall_tile/"))
 		assert_true(
-			wall_path.find("wooden") >= 0,
-			"Wall asset should contain 'wooden' in path: %s" % wall_path
+			_is_oriented_wall_path(wall_path),
+			"Wall asset should use oriented role sprite: %s" % wall_path
 		)
 
 
-func test_edge_walls_prefer_wooden_side_variant() -> void:
-	# Walls on leftmost or rightmost column should prefer wooden_side variant
+func test_edge_walls_use_oriented_role_sprites() -> void:
 	var level_data: LevelData = _make_bordered_level("edge_walls", 3, 3, [])
 	var layout: Dictionary = HomeTileArtScript.build_layout(level_data, false)
 	var wall_draws: Array = layout.get("wall_draws", []) as Array
-	
-	# All walls should use wooden or wooden_side variants
+
 	for wall_draw: Dictionary in wall_draws:
 		var wall_path: String = str(wall_draw.get("path", ""))
+		assert_true(wall_path.contains("/assets/art/tiles/home/bedroom/1x1_wall_tile/"))
 		assert_true(
-			wall_path.find("wooden") >= 0,
-			"Edge wall should be wooden or wooden_side: %s" % wall_path
+			_is_oriented_wall_path(wall_path),
+			"Edge wall should use oriented role sprite: %s" % wall_path
 		)
 
 
@@ -185,12 +201,12 @@ func test_side_facing_asset_requires_wall_to_the_right() -> void:
 	assert_true(str(obstacle_draw.get("path", "")).contains("/assets/art/tiles/home/common/1x3_obstacle_tile_side_facing/"))
 
 
-func test_side_facing_asset_is_skipped_when_right_side_is_not_wall() -> void:
+func test_side_facing_asset_is_skipped_when_no_side_is_wall() -> void:
 	var level_data: LevelData = _make_bordered_level(
 		"side_facing_blocked",
 		5,
 		5,
-		[Vector2i(1, 1), Vector2i(1, 2), Vector2i(1, 3)]
+		[Vector2i(2, 1), Vector2i(2, 2), Vector2i(2, 3)]
 	)
 	var layout: Dictionary = HomeTileArtScript.build_layout(level_data, false)
 

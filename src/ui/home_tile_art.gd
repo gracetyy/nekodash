@@ -12,11 +12,13 @@ const SIMPLE_VISITED_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/
 const SIMPLE_BLOCKING_TEXTURE: Texture2D = preload("res://assets/art/tiles/grids/grid_purple.png")
 
 const HOME_TILE_ROOT: String = "res://assets/art/tiles/home"
+const HKU_TILE_ROOT: String = "res://assets/art/tiles/hku"
 const COMMON_FOLDER: String = "common"
-const WORLD_FOLDERS: Dictionary = {
-	1: "bedroom",
-	2: "kitchen",
-	3: "living_room",
+const WORLD_TILE_SOURCES: Dictionary = {
+	1: {"root": HOME_TILE_ROOT, "folder": "bedroom", "include_common": true},
+	2: {"root": HOME_TILE_ROOT, "folder": "kitchen", "include_common": true},
+	3: {"root": HOME_TILE_ROOT, "folder": "living_room", "include_common": true},
+	99: {"root": HKU_TILE_ROOT, "folder": "", "include_common": false},
 }
 
 
@@ -113,15 +115,11 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 				continue
 			if _is_outer_coord(coord, dims):
 				var wall_texture_key: String = "%s|wall|%d|%d" % [level_data.level_id, col, row]
-				var is_edge_wall: bool = col == 0 or col == dims.x - 1
 				var wall_asset: Dictionary = _pick_wall_asset(
 					wall_assets,
-					world_assets,
-					world_id,
 					coord,
 					dims,
-					wall_texture_key,
-					is_edge_wall
+					wall_texture_key
 				)
 				var wall_texture: Texture2D = wall_asset.get("texture", SIMPLE_BLOCKING_TEXTURE) as Texture2D
 				wall_draws.append({
@@ -152,22 +150,36 @@ static func _get_world_assets(world_id: int) -> Dictionary:
 		"tabletop_items": [],
 	}
 
-	_merge_asset_folder(assets, HOME_TILE_ROOT.path_join(COMMON_FOLDER))
+	var world_source: Dictionary = _get_world_tile_source(world_id)
+	var source_root: String = str(world_source.get("root", HOME_TILE_ROOT))
+	var source_folder: String = str(world_source.get("folder", ""))
+	var include_common: bool = world_source.get("include_common", false) as bool
 
-	var world_folder: String = str(WORLD_FOLDERS.get(world_id, ""))
-	if world_folder != "":
-		_merge_asset_folder(assets, HOME_TILE_ROOT.path_join(world_folder))
+	if include_common:
+		_merge_asset_folder(assets, source_root.path_join(COMMON_FOLDER))
 
-	for fallback_world_id: int in WORLD_FOLDERS.keys():
-		if fallback_world_id == world_id:
-			continue
-		var fallback_world_folder: String = str(WORLD_FOLDERS.get(fallback_world_id, ""))
-		if fallback_world_folder == "":
-			continue
-		_merge_wall_buckets_only(assets, HOME_TILE_ROOT.path_join(fallback_world_folder))
+	if source_folder == "":
+		_merge_asset_folder(assets, source_root)
+	else:
+		_merge_asset_folder(assets, source_root.path_join(source_folder))
+		# Keep walls world-specific even when common assets are merged.
+		var wall_assets: Array = assets.get("wall_assets", []) as Array
+		var world_wall_assets: Array = _filter_assets_by_path_token(
+			wall_assets,
+			"/%s/" % source_folder
+		)
+		if not world_wall_assets.is_empty():
+			assets["wall_assets"] = world_wall_assets
 
 	_asset_cache[world_id] = assets
 	return assets
+
+
+static func _get_world_tile_source(world_id: int) -> Dictionary:
+	var world_source: Dictionary = WORLD_TILE_SOURCES.get(world_id, {}) as Dictionary
+	if not world_source.is_empty():
+		return world_source
+	return WORLD_TILE_SOURCES.get(1, {}) as Dictionary
 
 
 static func _merge_asset_folder(asset_set: Dictionary, folder_path: String) -> void:
@@ -501,62 +513,17 @@ static func _get_side_facing_orientation(
 
 static func _pick_wall_asset(
 	wall_assets: Array,
-	_world_assets: Dictionary,
-	world_id: int,
-	coord: Vector2i,
-	dims: Vector2i,
-	seed_key: String,
-	is_edge_wall: bool,
-) -> Dictionary:
-	if world_id == 1:
-		var bedroom_assets: Array = _filter_assets_by_path_token(wall_assets, "/bedroom/")
-		if not bedroom_assets.is_empty():
-			var bedroom_asset: Dictionary = _pick_bedroom_wall_asset(bedroom_assets, coord, dims, seed_key)
-			if not bedroom_asset.is_empty():
-				return bedroom_asset
-
-	var wooden_side_assets: Array = []
-	var wooden_assets: Array = []
-	for asset: Dictionary in wall_assets:
-		var asset_name: String = str(asset.get("name", "")).to_lower()
-		var asset_path: String = str(asset.get("path", "")).to_lower()
-		var is_wooden_side: bool = asset_name.find("wooden_side") >= 0 or asset_path.find("wooden_side") >= 0
-		if is_wooden_side:
-			wooden_side_assets.append(asset)
-		elif asset_name.find("wooden") >= 0 or asset_path.find("wooden") >= 0:
-			wooden_assets.append(asset)
-
-	if is_edge_wall and not wooden_side_assets.is_empty():
-		return _pick_asset(wooden_side_assets, seed_key)
-
-	if not wooden_assets.is_empty():
-		return _pick_asset(wooden_assets, seed_key)
-
-	if is_edge_wall and not wooden_side_assets.is_empty():
-		return _pick_asset(wooden_side_assets, seed_key)
-
-	return _pick_asset(wall_assets, seed_key)
-
-
-static func _pick_bedroom_wall_asset(
-	bedroom_assets: Array,
 	coord: Vector2i,
 	dims: Vector2i,
 	seed_key: String,
 ) -> Dictionary:
 	var role_token: String = _get_wall_role_token(coord, dims)
 	if role_token != "":
-		var role_assets: Array = _filter_assets_by_exact_name_token(bedroom_assets, role_token)
+		var role_assets: Array = _filter_assets_by_exact_name_token(wall_assets, role_token)
 		if not role_assets.is_empty():
 			return _pick_asset(role_assets, seed_key)
 
-		if role_token == "left":
-			# Temporary bridge while bedroom set has no left.png yet.
-			var mirrored_side_assets: Array = _filter_assets_by_exact_name_token(bedroom_assets, "right")
-			if not mirrored_side_assets.is_empty():
-				return _pick_asset(mirrored_side_assets, seed_key)
-
-	return _pick_asset(bedroom_assets, seed_key)
+	return _pick_asset(wall_assets, seed_key)
 
 
 static func _get_wall_role_token(coord: Vector2i, dims: Vector2i) -> String:
