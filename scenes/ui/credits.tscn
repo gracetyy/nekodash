@@ -59,17 +59,41 @@ theme_override_font_sizes/font_size = 42
 text = "Credits"
 horizontal_alignment = 1
 
-[node name="BodyLabel" type="Label" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-theme_override_font_sizes/font_size = 18
-text = "Shell adaptation inspired by Maaack's Godot Game Template.
+horizontal_scroll_mode = 0
 
-NekoDash keeps its own SceneManager, SaveManager, MusicManager, and SfxManager while borrowing the cozy menu-stack cadence.
+[node name="BodyLabel" type="RichTextLabel" parent="MarginContainer/CreditsCard/CardMargin/VBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.47451, 0.372549, 0.505882, 1)
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "[center][b]Project Shell & UI Template[/b]
+Adapted from Maaack's Godot Game Template
 
-Design references and draft UI studies live in the project's design folder."
-vertical_alignment = 1
+[b]Art & Visuals[/b]
+[i]UI Icons & Buttons:[/i] Free Icon Pack by Nieobie
+
+[b]Music & Background Tracks[/b]
+[i]Opening BGM:[/i] Bumper Audio Pack by Chequered Ink
+[i]World & Gameplay Music:[/i] Music Loop Bundle by Abstraction (abstractionmusic.com)
+[i]Bedroom Track:[/i] Seth_Makes_Sounds (via freesound.org)
+
+[b]Sound Effects (SFX)[/b]
+[i]UI & Gameplay SFX:[/i] 400 Sounds Pack by Chequered Ink
+[i]Sliding & Interaction SFX:[/i] Shapeforms Audio Free SFX
+[i]Menu & Interface SFX:[/i] Universal UI/Menu Soundpack by Nathan Gibson
+[i]Wall Bump SFX:[/i] Geoff-Bremner-Audio (via freesound.org)
+
+---
+
+NekoDash maintains its own core systems (SceneManager, SaveManager, MusicManager, and SfxManager) while borrowing the cozy menu-stack cadence of its template.
+
+Design references and draft UI studies live in the project's [i]docs/design[/i] folder.[/center]"
+fit_content = true
 autowrap_mode = 3
 
 [node name="BackBtn" parent="MarginContainer/CreditsCard/CardMargin/VBox" instance=ExtResource("4")]

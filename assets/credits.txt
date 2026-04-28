@@ -1,8 +1,42 @@
-art\ui\buttons\circular - https://nieobie.itch.io/free-icons
-art\ui\icons\pill_interiors - https://nieobie.itch.io/free-icons
+Used:
+
+shell + menu - adapted from https://github.com/Maaack/Godot-Game-Template
+
+Free Icon Pack by Nieobie https://nieobie.itch.io/free-icons
+art\ui\icons\pill_interiors\*
+art\ui\buttons\circular\*
+
+Bumper Audio Pack by Chequered Ink https://ci.itch.io/bumper-audio-pack :
+audio\bgm\opening.ogg
+
+Music by Abstraction (https://abstractionmusic.com/): https://tallbeard.itch.io/music-loop-bundle
+audio\bgm\skin_select.ogg
+audio\bgm\kitchen.ogg
+audio\bgm\living_room.ogg
+audio\bgm\hku.ogg
+
+400 Sounds Pack by Chequered Ink https://ci.itch.io/400-sounds-pack :
+audio\sfx\ui\sfx_locked_level.wav
+audio\sfx\gameplay\level_complete.wav
+audio\sfx\gameplay\star_*.wav
+audio\sfx\gameplay\no_star.wav
+
+Shapeforms Audio Free Sound Effects by Shapeforms https://shapeforms.itch.io/shapeforms-audio-free-sfx :
+audio\sfx\gameplay\slide_move.wav
+audio\sfx\ui\button_tap.wav
+
+Universal UI/Menu Soundpack by Nathan Gibson https://cyrex-studios.itch.io/universal-ui-soundpack :
+audio\sfx\ui\soft_tap.ogg
+audio\sfx\ui\toggle.ogg
+
+freesound.org:
+audio\sfx\gameplay\wall_bump.wav - https://freesound.org/people/Geoff-Bremner-Audio/sounds/653233/
+audio\bgm\bedroom.wav - https://freesound.org/people/Seth_Makes_Sounds/sounds/709779/
 
 
+---
 
+Not used (yet):
 
 art\ui\might_use\items\coins - https://ci.itch.io/puzzle-games-graphics-pack
 art\ui\might_use\items\gem_diamond.png - https://ci.itch.io/puzzle-games-graphics-pack
@@ -51,7 +85,7 @@ audio\music\thinking.ogg - https://tallbeard.itch.io/music-loop-bundle
 audio\music\cafe-ver1.ogg - https://tallbeard.itch.io/music-loop-bundle
 audio\music\slow-piano.ogg - https://tallbeard.itch.io/music-loop-bundle
 
-audio\music\piano.ogg - https://ci.itch.io/bumper-audio-pack
+
 
 audio\might_use\JDSherbert -*.ogg - Sounds by JDSherbert – https://jdsherbert.itch.io
 
