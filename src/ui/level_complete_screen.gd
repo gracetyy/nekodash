@@ -79,8 +79,11 @@ var _params_received: bool = false
 ## Whether results have been populated.
 var _populated: bool = false
 
-## Stub SFX stream for star earned (replace with real audio asset later).
-var _sfx_star_earned: AudioStream = AudioStreamWAV.new()
+## Real SFX streams for star earned.
+var _sfx_star_1: AudioStream = preload("res://assets/audio/sfx/gameplay/star_1.wav")
+var _sfx_star_2: AudioStream = preload("res://assets/audio/sfx/gameplay/star_2.wav")
+var _sfx_star_3: AudioStream = preload("res://assets/audio/sfx/gameplay/star_3.wav")
+var _sfx_no_star: AudioStream = preload("res://assets/audio/sfx/gameplay/no_star.wav")
 
 const RIBBON_TITLE_LEVEL_COMPLETE: String = "Level Complete!"
 const RIBBON_TITLE_PERFECT: String = "Perfect!"
@@ -303,8 +306,12 @@ func _show_stars(stars: int) -> void:
 		_star_strip.call("configure", stars, 2, 1, 0, 6.0)
 	_apply_legacy_star_visuals(stars)
 
-	if stars > 0:
-		SfxManager.play(_sfx_star_earned, SfxManager.SfxBus.SFX)
+	match stars:
+		0: SfxManager.play(_sfx_no_star, SfxManager.SfxBus.SFX)
+		1: SfxManager.play(_sfx_star_1, SfxManager.SfxBus.SFX)
+		2: SfxManager.play(_sfx_star_2, SfxManager.SfxBus.SFX)
+		3: SfxManager.play(_sfx_star_3, SfxManager.SfxBus.SFX)
+	
 	_animate_star_reveal(stars)
 
 

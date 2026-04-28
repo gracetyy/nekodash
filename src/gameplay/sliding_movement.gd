@@ -128,15 +128,15 @@ var cat_idle_tail_swing_degrees: float = 10.0
 var cat_idle_tail_swing_period_sec: float = 1.45
 
 
-# —————————————————————————————————————————————
-# State
+## State
 # —————————————————————————————————————————————
 
 ## Current state machine state.
 var _state: State = State.IDLE
 
-## Stub SFX stream for slide movement (replace with real audio asset later).
-var _sfx_slide_move: AudioStream = AudioStreamWAV.new()
+## Real SFX stream for slide movement.
+var _sfx_slide_move: AudioStream = preload("res://assets/audio/sfx/gameplay/slide_move.wav")
+var _sfx_wall_bump: AudioStream = preload("res://assets/audio/sfx/gameplay/wall_bump.wav")
 
 ## Cat's logical grid coordinate — single source of truth for position.
 var _cat_pos: Vector2i = Vector2i.ZERO
@@ -358,7 +358,7 @@ func _play_slide(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
 	_slide_tween.tween_callback(_on_slide_finished.bind(old_pos, to, direction))
 
 	slide_started.emit(old_pos, to, direction)
-	SfxManager.play(_sfx_slide_move, SfxManager.SfxBus.SFX)
+	SfxManager.play(_sfx_slide_move, SfxManager.SfxBus.SFX, 1.0, 1.5)
 
 
 func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> void:
@@ -423,6 +423,8 @@ func _play_squish() -> void:
 func _play_bump(direction: Vector2i) -> void:
 	var bump_offset: Vector2 = Vector2(direction) * blocked_bump_offset_px
 	var home_pixel: Vector2 = _grid_to_pixel(_cat_pos)
+	
+	SfxManager.play(_sfx_wall_bump, SfxManager.SfxBus.SFX, 1.0, 0.75)
 
 	if _is_reduce_motion_enabled():
 		position = home_pixel

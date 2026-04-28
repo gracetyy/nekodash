@@ -79,8 +79,8 @@ var _entry_fade_tween: Tween
 var _confirm_modal: ConfirmNavigationModal
 const LEVEL_COMPLETE_MODAL_DELAY_SEC: float = 0.34
 
-## Stub SFX stream for level completion (replace with real audio asset later).
-var _sfx_level_complete: AudioStream = AudioStreamWAV.new()
+## Real SFX stream for level completion.
+var _sfx_level_complete: AudioStream = preload("res://assets/audio/sfx/gameplay/level_complete.wav")
 
 
 # —————————————————————————————————————————————
@@ -355,7 +355,6 @@ func _on_level_completed() -> void:
 	print("[LevelCoordinator] LEVEL COMPLETE — moves: %d / minimum: %d" % [
 		final_moves, minimum,
 	])
-	SfxManager.play(_sfx_level_complete, SfxManager.SfxBus.SFX)
 
 	# StarRatingSystem.on_level_completed() computes stars and emits
 	# rating_computed → LevelProgression writes to SaveManager and emits

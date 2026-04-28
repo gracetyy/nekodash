@@ -7,6 +7,8 @@ signal toggled(button_pressed: bool)
 
 @export var label_text: String = "Reduce Motion"
 
+var _sfx_toggle: AudioStream = preload("res://assets/audio/sfx/ui/toggle.ogg")
+
 @onready var _label: Label = $SettingLabel
 @onready var _toggle: CheckButton = $Toggle
 
@@ -28,4 +30,5 @@ func _apply_component_state() -> void:
 
 
 func _on_toggle_toggled(button_pressed: bool) -> void:
+	SfxManager.play(_sfx_toggle, SfxManager.SfxBus.UI)
 	toggled.emit(button_pressed)

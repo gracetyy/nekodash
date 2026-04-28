@@ -76,8 +76,14 @@ func _ready() -> void:
 # Public API
 # —————————————————————————————————————————————
 
+## Preloaded common SFX streams.
+var sfx_button_tap: AudioStream = preload("res://assets/audio/sfx/ui/button_tap.wav")
+var sfx_soft_tap: AudioStream = preload("res://assets/audio/sfx/ui/soft_tap.ogg")
+var sfx_locked: AudioStream = preload("res://assets/audio/sfx/ui/locked_level.wav")
+
 ## Plays a sound effect on the specified bus. Gracefully handles null streams.
-func play(stream: AudioStream, bus: SfxBus = SfxBus.SFX, pitch_scale: float = 1.0) -> void:
+## volume_mult allows scaling the sound per-call (e.g. 1.5 for 150% volume).
+func play(stream: AudioStream, bus: SfxBus = SfxBus.SFX, pitch_scale: float = 1.0, volume_mult: float = 1.0) -> void:
 	if stream == null:
 		push_warning("[SfxManager] play() called with null AudioStream — skipping.")
 		return
@@ -91,8 +97,23 @@ func play(stream: AudioStream, bus: SfxBus = SfxBus.SFX, pitch_scale: float = 1.
 	player.stream = stream
 	player.bus = BUS_NAMES.get(bus, "SFX")
 	player.pitch_scale = pitch_scale
-	player.volume_db = linear_to_db(_volume)
+	player.volume_db = linear_to_db(_volume * volume_mult)
 	player.play()
+
+
+## Convenience method for pill button taps.
+func play_button_tap() -> void:
+	play(sfx_button_tap, SfxBus.UI)
+
+
+## Convenience method for circular button taps.
+func play_soft_tap() -> void:
+	play(sfx_soft_tap, SfxBus.UI)
+
+
+## Convenience method for locked level feedback.
+func play_locked() -> void:
+	play(sfx_locked, SfxBus.UI)
 
 
 ## Returns the current volume (0.0 – 1.0).

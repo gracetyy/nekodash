@@ -34,21 +34,24 @@ const KEY_MUSIC_MUTE: String = "music_mute"
 
 
 # —————————————————————————————————————————————
-# Screen-to-track mapping (null stubs — awaiting real audio assets)
+# Screen-to-track mapping
 # —————————————————————————————————————————————
 
-## Maps SceneManager.Screen → AudioStream. Null means no track for that screen.
+## Maps SceneManager.Screen → AudioStream.
 var _screen_tracks: Dictionary = {
-	# SceneManager.Screen.MAIN_MENU: null,
-	# SceneManager.Screen.WORLD_MAP: null,
-	# SceneManager.Screen.GAMEPLAY: null,
-	# SceneManager.Screen.LEVEL_COMPLETE: null,
+	SceneManager.Screen.MAIN_MENU: preload("res://assets/audio/bgm/opening.ogg"),
+	SceneManager.Screen.WORLD_MAP: preload("res://assets/audio/bgm/opening.ogg"),
+	SceneManager.Screen.SKIN_SELECT: preload("res://assets/audio/bgm/skin_select.ogg"),
+	SceneManager.Screen.OPENING: preload("res://assets/audio/bgm/opening.ogg"),
+	SceneManager.Screen.CREDITS: preload("res://assets/audio/bgm/opening.ogg"),
 }
 
 ## Maps world_id string → AudioStream for per-world gameplay music.
 var _world_tracks: Dictionary = {
-	# "1": null,
-	# "2": null,
+	"1": preload("res://assets/audio/bgm/bedroom.wav"),
+	"2": preload("res://assets/audio/bgm/kitchen.ogg"),
+	"3": preload("res://assets/audio/bgm/living_room.ogg"),
+	"99": preload("res://assets/audio/bgm/hku.ogg"),
 }
 
 
@@ -205,6 +208,8 @@ func _connect_scene_manager_signals() -> void:
 		SceneManager.transition_completed.connect(_on_transition_completed)
 	if not SceneManager.world_changed.is_connected(_on_world_changed):
 		SceneManager.world_changed.connect(_on_world_changed)
+	if not SceneManager.overlay_opened.is_connected(_on_overlay_opened):
+		SceneManager.overlay_opened.connect(_on_overlay_opened)
 
 
 ## Handles screen transitions — selects track based on screen type.
@@ -216,6 +221,14 @@ func _on_transition_completed(to_screen: SceneManager.Screen) -> void:
 	var track: AudioStream = _screen_tracks.get(to_screen)
 	if track != null:
 		play(track)
+
+
+## Handles overlay opening — OPTIONS overlay uses opening track.
+func _on_overlay_opened(overlay: SceneManager.Overlay) -> void:
+	if overlay == SceneManager.Overlay.OPTIONS:
+		var track: AudioStream = _screen_tracks.get(SceneManager.Screen.MAIN_MENU)
+		if track != null:
+			play(track)
 
 
 ## Handles world changes — selects track based on world_id.

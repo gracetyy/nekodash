@@ -28,6 +28,8 @@ var min_height_px: float = 60.0:
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	_apply_component_state()
+	if not Engine.is_editor_hint():
+		pressed.connect(func(): SfxManager.play_button_tap())
 
 
 func _apply_component_state() -> void:

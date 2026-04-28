@@ -454,6 +454,7 @@ func _show_empty_state() -> void:
 
 
 func _on_level_pressed(level_data: LevelData) -> void:
+	SfxManager.play_button_tap()
 	AppSettings.set_last_world_id(level_data.world_id)
 	level_selected.emit(level_data)
 
@@ -527,6 +528,9 @@ func _apply_screen_edge_margins() -> void:
 func _play_locked_level_feedback(card: PanelContainer, lock_icon: TextureRect) -> void:
 	if card == null:
 		return
+	
+	SfxManager.play_locked()
+	
 	if _is_reduce_motion_enabled():
 		if lock_icon != null:
 			lock_icon.modulate = Color(1.0, 0.92, 0.92, 1.0)
