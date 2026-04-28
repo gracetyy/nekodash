@@ -24,7 +24,6 @@ production/session-state/*.md
 docs/superpowers/
 .codex
 smoke-test/
-*.txt
 
 # === Build Output ===
 build/
@@ -38,6 +37,7 @@ dist/
 *.so
 *.dylib
 *.app
+*.keystore
 
 # === Engine: Godot ===
 .godot/
@@ -61,6 +61,7 @@ __pycache__/
 *.pyc
 node_modules/
 .npm/
+*.txt
 
 # === Archives ===
 *.zip
