@@ -22,7 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 [ext_resource type="FontVariation" uid="uid://c8h8i5bsw5k2t" path="res://assets/fonts/Fredoka-Body-SemiBold.tres" id="21_kmk05"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_378ow"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_r1b6f"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cok3t"]
 content_margin_left = 30.0
@@ -260,7 +260,7 @@ alignment = 1
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_378ow")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_r1b6f")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2
@@ -320,6 +320,7 @@ theme_override_constants/separation = 14
 [node name="PlayBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
+mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
 theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
@@ -342,6 +343,7 @@ metadata/_shell_pill_hover_wired = true
 [node name="SkinsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
+mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
 theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
@@ -365,6 +367,7 @@ metadata/_shell_pill_hover_wired = true
 [node name="OptionsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
+mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
 theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
@@ -388,6 +391,7 @@ metadata/_shell_pill_hover_wired = true
 [node name="CreditsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
+mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
 theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
 theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
