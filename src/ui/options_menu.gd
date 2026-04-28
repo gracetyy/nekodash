@@ -34,6 +34,7 @@ var _sfx_manager_ref: Node
 @export var _tutorial_label: Label
 @export var _developer_label: Label
 @export var _dev_mode_toggle: BaseButton
+@export var _unlock_all_skins_toggle: BaseButton
 @export var _close_btn: BaseButton
 
 var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
@@ -80,6 +81,8 @@ func _ready() -> void:
 		_developer_label = get_node_or_null("Backdrop/Panel/Margin/VBox/DeveloperSection/DeveloperLabel")
 	if _dev_mode_toggle == null:
 		_dev_mode_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DeveloperSection/DevModeRow/Toggle")
+	if _unlock_all_skins_toggle == null:
+		_unlock_all_skins_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DeveloperSection/UnlockSkinsRow/Toggle")
 	if _close_btn == null:
 		_close_btn = get_node_or_null("Backdrop/CloseBtn")
 	assert(_backdrop != null, "_backdrop not assigned")
@@ -99,6 +102,11 @@ func _ready() -> void:
 	assert(_fullscreen_toggle != null, "_fullscreen_toggle not assigned")
 	assert(_input_hint_option != null, "_input_hint_option not assigned")
 	assert(_dev_mode_toggle != null, "_dev_mode_toggle not assigned")
+	# _unlock_all_skins_toggle might be missing in older scene versions, so we don't assert it strictly if we want to be safe, 
+	# but for this task we assume it will be added.
+	if _unlock_all_skins_toggle == null:
+		push_warning("OptionsMenu: _unlock_all_skins_toggle not found in scene.")
+
 	assert(_close_btn != null, "_close_btn not assigned")
 	_resolve_services()
 	_connect_settings_signal()
@@ -199,6 +207,8 @@ func _connect_ui() -> void:
 		_input_hint_option.item_selected.connect(_on_input_hint_selected)
 	if _dev_mode_toggle != null and not _dev_mode_toggle.toggled.is_connected(_on_dev_mode_toggled):
 		_dev_mode_toggle.toggled.connect(_on_dev_mode_toggled)
+	if _unlock_all_skins_toggle != null and not _unlock_all_skins_toggle.toggled.is_connected(_on_unlock_all_skins_toggled):
+		_unlock_all_skins_toggle.toggled.connect(_on_unlock_all_skins_toggled)
 	if _replay_tutorial_btn != null and not _replay_tutorial_btn.pressed.is_connected(_on_replay_tutorial_pressed):
 		_replay_tutorial_btn.pressed.connect(_on_replay_tutorial_pressed)
 	if _close_btn != null and not _close_btn.pressed.is_connected(on_close_btn_pressed):
@@ -241,6 +251,8 @@ func _sync_controls() -> void:
 				_input_hint_option.select(0)
 	if _dev_mode_toggle != null:
 		_dev_mode_toggle.button_pressed = _app_settings_ref.get_dev_mode()
+	if _unlock_all_skins_toggle != null:
+		_unlock_all_skins_toggle.button_pressed = _app_settings_ref.get_unlock_all_skins()
 	_refresh_audio_control_states()
 	_sync_tutorial_button_state()
 	_suppress_events = false
@@ -314,6 +326,12 @@ func _on_dev_mode_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
 	_app_settings_ref.set_dev_mode(button_pressed)
+
+
+func _on_unlock_all_skins_toggled(button_pressed: bool) -> void:
+	if _suppress_events:
+		return
+	_app_settings_ref.set_unlock_all_skins(button_pressed)
 
 
 func _on_replay_tutorial_pressed() -> void:
@@ -394,7 +412,7 @@ func _on_app_setting_changed(section: String, key: String, _value: Variant) -> v
 		if key == AppSettings.KEY_LARGE_UI:
 			_apply_visual_style()
 		_sync_controls()
-	elif section == AppSettings.SECTION_SHELL and key == AppSettings.KEY_DEV_MODE:
+	elif section == AppSettings.SECTION_SHELL and (key == AppSettings.KEY_DEV_MODE or key == AppSettings.KEY_UNLOCK_ALL_SKINS):
 		_sync_controls()
 	elif section == AppSettings.SECTION_INPUT and key == AppSettings.KEY_INPUT_HINT_MODE:
 		_sync_controls()

@@ -23,6 +23,7 @@ config/icon="res://icon.svg"
 
 AppSettings="*res://src/core/app_settings.gd"
 SaveManager="*res://src/core/save_manager.gd"
+CosmeticDatabase="*res://src/core/cosmetic_database.gd"
 SceneManager="*res://src/core/scene_manager.gd"
 GridSystem="*res://src/core/grid_system.gd"
 InputSystem="*res://src/core/input_system.gd"

@@ -143,6 +143,10 @@ font_size = 24
 layout_mode = 2
 label_text = "Unlock All Levels"
 
+[node name="UnlockSkinsRow" parent="Backdrop/Panel/Margin/VBox/DeveloperSection" instance=ExtResource("7")]
+layout_mode = 2
+label_text = "Unlock All Skins"
+
 [node name="Ribbon" parent="Backdrop" instance=ExtResource("3")]
 z_index = 1
 layout_mode = 0

@@ -190,7 +190,7 @@ func get_equipped_skin() -> String:
 
 ## Sets equipped skin if skin_id is in unlocked_skin_ids. Writes to disk.
 func set_equipped_skin(skin_id: String) -> void:
-	var unlocked: Array = _data.get("unlocked_skin_ids", [DEFAULT_SKIN_ID])
+	var unlocked := get_unlocked_skins()
 	if skin_id not in unlocked:
 		push_warning("SaveManager.set_equipped_skin(): skin '%s' is not unlocked." % skin_id)
 		return
@@ -200,6 +200,13 @@ func set_equipped_skin(skin_id: String) -> void:
 
 ## Returns copy of unlocked skin ID list.
 func get_unlocked_skins() -> Array[String]:
+	if AppSettings != null and AppSettings.get_unlock_all_skins():
+		if CosmeticDatabase != null:
+			var all_skins: Array[String] = []
+			for skin in CosmeticDatabase.get_all_skins():
+				all_skins.append(skin.skin_id)
+			return all_skins
+
 	var unlocked: Array = _data.get("unlocked_skin_ids", [DEFAULT_SKIN_ID])
 	var result: Array[String] = []
 	for skin_id: String in unlocked:

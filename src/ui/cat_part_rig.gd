@@ -97,6 +97,7 @@ var _legs_sprite: Sprite2D
 var _head_pivot: Node2D
 var _head_sprite: Sprite2D
 var _face_sprite: Sprite2D
+var _full_sprite: Sprite2D
 
 
 # —————————————————————————————————————————————
@@ -251,7 +252,15 @@ func _ensure_rig_nodes() -> void:
 	_face_sprite.centered = true
 	_face_sprite.z_index = 1
 
-	_part_sprites = [_tail_sprite, _body_sprite, _legs_sprite, _head_sprite, _face_sprite]
+	_full_sprite = get_node_or_null("Full") as Sprite2D
+	if _full_sprite == null:
+		_full_sprite = Sprite2D.new()
+		_full_sprite.name = "Full"
+		add_child(_full_sprite)
+	_full_sprite.centered = true
+	_full_sprite.z_index = 0 # Behind everything else if used as fallback
+
+	_part_sprites = [_tail_sprite, _body_sprite, _legs_sprite, _head_sprite, _face_sprite, _full_sprite]
 
 
 func _refresh_editor_preview_if_needed() -> void:
@@ -349,14 +358,41 @@ func _apply_part_scale() -> void:
 # —————————————————————————————————————————————
 
 func _assign_part_textures(skin_id: String) -> void:
-	_tail_sprite.texture = _resolve_part_texture(skin_id, "tail")
-	_body_sprite.texture = _resolve_part_texture(skin_id, "body")
-	_legs_sprite.texture = _resolve_part_texture(skin_id, "legs")
-	_head_sprite.texture = _resolve_part_texture(skin_id, "head")
-	_face_sprite.texture = _resolve_face_texture()
+	var tail_tex := _resolve_part_texture(skin_id, "tail")
+	var body_tex := _resolve_part_texture(skin_id, "body")
+	var legs_tex := _resolve_part_texture(skin_id, "legs")
+	var head_tex := _resolve_part_texture(skin_id, "head")
+	var full_tex := _resolve_full_texture(skin_id)
+
+	# If we have a full texture but are missing core parts, use the full texture.
+	var use_full := full_tex != null and (body_tex == null or head_tex == null)
+	
+	if use_full:
+		_full_sprite.texture = full_tex
+		_full_sprite.visible = true
+		_tail_sprite.texture = null
+		_body_sprite.texture = null
+		_legs_sprite.texture = null
+		_head_sprite.texture = null
+		_face_sprite.texture = null
+	else:
+		_full_sprite.texture = null
+		_full_sprite.visible = false
+		_tail_sprite.texture = tail_tex
+		_body_sprite.texture = body_tex
+		_legs_sprite.texture = legs_tex
+		_head_sprite.texture = head_tex
+		_face_sprite.texture = _resolve_face_texture()
 
 	_source_canvas_size_px = _resolve_source_canvas_size_px()
 	_apply_part_scale()
+
+
+func _resolve_full_texture(skin_id: String) -> Texture2D:
+	# Check for <skin_id>_idle.png in the main cats directory as a full-sprite fallback
+	var main_dir: String = PARTS_DIR.get_base_dir()
+	var full_path: String = "%s/%s_idle.png" % [main_dir, skin_id]
+	return _load_texture_if_exists(full_path)
 
 
 func _resolve_part_texture(skin_id: String, part_name: String) -> Texture2D:

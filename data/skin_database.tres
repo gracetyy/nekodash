@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="SkinDatabase" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/core/skin_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://src/core/skin_database.gd" id="2_db"]
+[ext_resource type="Texture2D" uid="uid://cat_default_idle" path="res://assets/art/cats/cat_default_idle.png" id="3_default"]
+[ext_resource type="Texture2D" uid="uid://cat_tabby_idle" path="res://assets/art/cats/cat_tabby_idle.png" id="4_tabby"]
+
+[sub_resource type="Resource" id="Resource_default"]
+script = ExtResource("1_data")
+skin_id = "cat_default"
+display_name = "Default Cat"
+preview_texture = ExtResource("3_default")
+gameplay_texture = ExtResource("3_default")
+unlock_hint = ""
+is_default_unlocked = true
+
+[sub_resource type="Resource" id="Resource_tabby"]
+script = ExtResource("1_data")
+skin_id = "cat_tabby"
+display_name = "Tabby Cat"
+preview_texture = ExtResource("4_tabby")
+gameplay_texture = ExtResource("4_tabby")
+unlock_hint = "Milestone: Complete World 1"
+is_default_unlocked = false
+
+[resource]
+script = ExtResource("2_db")
+skins = [SubResource("Resource_default"), SubResource("Resource_tabby")]
