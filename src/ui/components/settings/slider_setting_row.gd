@@ -50,4 +50,5 @@ func _on_slider_value_changed(value: float) -> void:
 
 
 func _on_toggle_toggled(button_pressed: bool) -> void:
+	SfxManager.play_soft_tap()
 	toggle_toggled.emit(button_pressed)

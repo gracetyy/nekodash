@@ -28,4 +28,5 @@ func _apply_component_state() -> void:
 
 
 func _on_item_selected(index: int) -> void:
+	SfxManager.play_soft_tap()
 	item_selected.emit(index)
