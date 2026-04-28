@@ -26,7 +26,6 @@ signal main_menu_requested
 @export var _reduce_motion_toggle: BaseButton
 @export var _large_ui_toggle: BaseButton
 @export var _simple_ui_toggle: BaseButton
-@export var _fullscreen_toggle: BaseButton
 @export var _input_hint_option: OptionButton
 var _suppress_events: bool = false
 var _confirm_modal: ConfirmNavigationModal
@@ -34,43 +33,41 @@ var _confirm_modal: ConfirmNavigationModal
 
 func _ready() -> void:
 	if _resume_btn == null:
-		_resume_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/ResumeBtn")
+		_resume_btn = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow/ResumeBtn")
 	if _restart_btn == null:
-		_restart_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/RestartBtn")
+		_restart_btn = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow/RestartBtn")
 	if _main_menu_btn == null:
-		_main_menu_btn = get_node_or_null("Backdrop/Panel/Margin/VBox/ButtonStack/IconRow/MainMenuBtn")
+		_main_menu_btn = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow/MainMenuBtn")
 	if _panel == null:
-		_panel = get_node_or_null("Backdrop/Panel")
+		_panel = get_node_or_null("Backdrop/Margin/VBox/Panel")
 	if _backdrop == null:
 		_backdrop = get_node_or_null("Backdrop")
 	if _title_label == null:
-		_title_label = get_node_or_null("Backdrop/Panel/Margin/VBox/TitleLabel")
+		_title_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/TitleLabel")
 	if _ribbon == null:
-		_ribbon = get_node_or_null("Backdrop/Ribbon")
+		_ribbon = get_node_or_null("Backdrop/Margin/VBox/HeaderSpace/Ribbon")
 	if _audio_label == null:
-		_audio_label = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/AudioLabel")
+		_audio_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/AudioLabel")
 	if _display_label == null:
-		_display_label = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/DisplayLabel")
+		_display_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/DisplayLabel")
 	if _input_label == null:
-		_input_label = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputLabel")
+		_input_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputLabel")
 	if _music_slider == null:
-		_music_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Slider")
+		_music_slider = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/MusicRow/Slider")
 	if _music_mute_toggle == null:
-		_music_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/Toggle")
+		_music_mute_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/MusicRow/Toggle")
 	if _sfx_slider == null:
-		_sfx_slider = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Slider")
+		_sfx_slider = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/SfxRow/Slider")
 	if _sfx_mute_toggle == null:
-		_sfx_mute_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/Toggle")
+		_sfx_mute_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/SfxRow/Toggle")
 	if _reduce_motion_toggle == null:
-		_reduce_motion_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/ReduceMotionRow/Toggle")
+		_reduce_motion_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/ReduceMotionRow/Toggle")
 	if _large_ui_toggle == null:
-		_large_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/LargeUiRow/Toggle")
+		_large_ui_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/LargeUiRow/Toggle")
 	if _simple_ui_toggle == null:
-		_simple_ui_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/SimpleUiRow/Toggle")
-	if _fullscreen_toggle == null:
-		_fullscreen_toggle = get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/FullscreenRow/Toggle")
+		_simple_ui_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/SimpleUiRow/Toggle")
 	if _input_hint_option == null:
-		_input_hint_option = get_node_or_null("Backdrop/Panel/Margin/VBox/InputSection/InputHintRow/OptionButton")
+		_input_hint_option = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputHintRow/OptionButton")
 	_ensure_slider_test_aliases()
 	assert(_backdrop != null, "_backdrop not assigned")
 	assert(_panel != null, "_panel not assigned")
@@ -86,7 +83,6 @@ func _ready() -> void:
 	assert(_reduce_motion_toggle != null, "_reduce_motion_toggle not assigned")
 	assert(_large_ui_toggle != null, "_large_ui_toggle not assigned")
 	assert(_simple_ui_toggle != null, "_simple_ui_toggle not assigned")
-	assert(_fullscreen_toggle != null, "_fullscreen_toggle not assigned")
 	assert(_input_hint_option != null, "_input_hint_option not assigned")
 	assert(_resume_btn != null, "_resume_btn not assigned")
 	assert(_restart_btn != null, "_restart_btn not assigned")
@@ -140,8 +136,6 @@ func _connect_signals() -> void:
 		_large_ui_toggle.toggled.connect(_on_large_ui_toggled)
 	if _simple_ui_toggle != null and not _simple_ui_toggle.toggled.is_connected(_on_simple_ui_toggled):
 		_simple_ui_toggle.toggled.connect(_on_simple_ui_toggled)
-	if _fullscreen_toggle != null and not _fullscreen_toggle.toggled.is_connected(_on_fullscreen_toggled):
-		_fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 	if _input_hint_option != null and not _input_hint_option.item_selected.is_connected(_on_input_hint_selected):
 		_input_hint_option.item_selected.connect(_on_input_hint_selected)
 
@@ -226,8 +220,6 @@ func _sync_controls() -> void:
 		_large_ui_toggle.button_pressed = AppSettings.get_large_ui()
 	if _simple_ui_toggle != null:
 		_simple_ui_toggle.button_pressed = AppSettings.get_simple_ui()
-	if _fullscreen_toggle != null:
-		_fullscreen_toggle.button_pressed = AppSettings.get_fullscreen()
 	if _input_hint_option != null:
 		match AppSettings.get_input_hint_mode():
 			AppSettings.INPUT_HINT_TOUCH:
@@ -286,12 +278,6 @@ func _on_simple_ui_toggled(button_pressed: bool) -> void:
 	AppSettings.set_simple_ui(button_pressed)
 
 
-func _on_fullscreen_toggled(button_pressed: bool) -> void:
-	if _suppress_events:
-		return
-	AppSettings.set_fullscreen(button_pressed)
-
-
 func _on_input_hint_selected(index: int) -> void:
 	if _suppress_events:
 		return
@@ -346,12 +332,12 @@ func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
 
 
 func _ensure_slider_test_aliases() -> void:
-	var music_row: Node = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow")
+	var music_row: Node = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/MusicRow")
 	if music_row != null and music_row.get_node_or_null("MusicSlider") == null:
 		var music_alias: Node = Node.new()
 		music_alias.name = "MusicSlider"
 		music_row.add_child(music_alias)
-	var sfx_row: Node = get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow")
+	var sfx_row: Node = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/SfxRow")
 	if sfx_row != null and sfx_row.get_node_or_null("SfxSlider") == null:
 		var sfx_alias: Node = Node.new()
 		sfx_alias.name = "SfxSlider"

@@ -29,69 +29,81 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CatPeek" type="TextureRect" parent="Backdrop"]
-z_index = 4
+[node name="Margin" type="MarginContainer" parent="Backdrop"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -91.0
-offset_top = -442.0
-offset_right = 90.0
-offset_bottom = -297.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 40
+
+[node name="VBox" type="VBoxContainer" parent="Backdrop/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="HeaderSpace" type="Control" parent="Backdrop/Margin/VBox"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+
+[node name="CatPeek" type="TextureRect" parent="Backdrop/Margin/VBox/HeaderSpace"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -91.0
+offset_top = 20.0
+offset_right = 90.0
+offset_bottom = 165.0
+grow_horizontal = 2
 mouse_filter = 2
 texture = ExtResource("3")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Ribbon" parent="Backdrop" instance=ExtResource("5")]
+[node name="Ribbon" parent="Backdrop/Margin/VBox/HeaderSpace" instance=ExtResource("5")]
 z_index = 3
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.5
 offset_left = -260.0
-offset_top = -332.0
+offset_top = 133.0
 offset_right = 260.0
-offset_bottom = -242.0
+offset_bottom = 223.0
 grow_horizontal = 2
-grow_vertical = 2
 title_text = "PAUSED"
 title_font_size = 28
 
-[node name="Panel" parent="Backdrop" instance=ExtResource("4")]
+[node name="Panel" parent="Backdrop/Margin/VBox" instance=ExtResource("4")]
 z_index = 1
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -269.0
-offset_right = 220.0
-offset_bottom = 399.0
-grow_horizontal = 2
-grow_vertical = 2
+custom_minimum_size = Vector2(440, 200)
+layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Margin" type="MarginContainer" parent="Backdrop/Panel"]
+[node name="CardMargin" type="MarginContainer" parent="Backdrop/Margin/VBox/Panel"]
 layout_mode = 2
 theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 20
 
-[node name="VBox" type="VBoxContainer" parent="Backdrop/Panel/Margin"]
+[node name="ScrollContainer" type="ScrollContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin"]
 layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="ContentVBox" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="Backdrop/Panel/Margin/VBox"]
+[node name="TitleLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
 visible = false
 layout_mode = 2
 text = "PAUSED"
@@ -99,84 +111,80 @@ horizontal_alignment = 1
 script = ExtResource("10")
 font_size = 56
 
-[node name="AudioSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+[node name="AudioSection" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="AudioLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/AudioSection"]
+[node name="AudioLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection"]
 layout_mode = 2
 text = "Audio"
 script = ExtResource("10")
 font_size = 24
 
-[node name="MusicRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("7")]
+[node name="MusicRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection" instance=ExtResource("7")]
 layout_mode = 2
 
-[node name="SfxRow" parent="Backdrop/Panel/Margin/VBox/AudioSection" instance=ExtResource("7")]
+[node name="SfxRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection" instance=ExtResource("7")]
 layout_mode = 2
 label_text = "SFX"
 
-[node name="DisplaySection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+[node name="DisplaySection" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="DisplayLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/DisplaySection"]
+[node name="DisplayLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection"]
 layout_mode = 2
 text = "Display"
 script = ExtResource("10")
 font_size = 24
 
-[node name="ReduceMotionRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("8")]
+[node name="ReduceMotionRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection" instance=ExtResource("8")]
 layout_mode = 2
 
-[node name="LargeUiRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("8")]
+[node name="LargeUiRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection" instance=ExtResource("8")]
 layout_mode = 2
 label_text = "Large Text"
 
-[node name="SimpleUiRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("8")]
+[node name="SimpleUiRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection" instance=ExtResource("8")]
 layout_mode = 2
 label_text = "Simple UI"
 
-[node name="FullscreenRow" parent="Backdrop/Panel/Margin/VBox/DisplaySection" instance=ExtResource("8")]
-layout_mode = 2
-label_text = "Fullscreen"
-
-[node name="InputSection" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+[node name="InputSection" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="InputLabel" type="Label" parent="Backdrop/Panel/Margin/VBox/InputSection"]
+[node name="InputLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection"]
 layout_mode = 2
 text = "Input Hints"
 script = ExtResource("10")
 font_size = 24
 
-[node name="InputHintRow" parent="Backdrop/Panel/Margin/VBox/InputSection" instance=ExtResource("9")]
+[node name="InputHintRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection" instance=ExtResource("9")]
 layout_mode = 2
 label_text = "Hint Style"
 
-[node name="ButtonStack" type="VBoxContainer" parent="Backdrop/Panel/Margin/VBox"]
+[node name="ButtonStack" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="IconRow" type="HBoxContainer" parent="Backdrop/Panel/Margin/VBox/ButtonStack"]
+[node name="IconRow" type="HBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack"]
 layout_mode = 2
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="ResumeBtn" parent="Backdrop/Panel/Margin/VBox/ButtonStack/IconRow" instance=ExtResource("6")]
+[node name="ResumeBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow" instance=ExtResource("6")]
 custom_minimum_size = Vector2(74, 74)
 layout_mode = 2
 variant = 2
 button_size = 74.0
 
-[node name="RestartBtn" parent="Backdrop/Panel/Margin/VBox/ButtonStack/IconRow" instance=ExtResource("6")]
+[node name="RestartBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow" instance=ExtResource("6")]
 custom_minimum_size = Vector2(74, 74)
 layout_mode = 2
 variant = 3
 button_size = 74.0
 
-[node name="MainMenuBtn" parent="Backdrop/Panel/Margin/VBox/ButtonStack/IconRow" instance=ExtResource("6")]
+[node name="MainMenuBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow" instance=ExtResource("6")]
 custom_minimum_size = Vector2(74, 74)
 layout_mode = 2
 variant = 4
