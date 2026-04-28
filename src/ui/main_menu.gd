@@ -9,7 +9,6 @@ class_name MainMenu
 extends Control
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
-const CatPartRigScript = preload("res://src/ui/cat_part_rig.gd")
 const ICON_PLAY: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_play.png")
 const ICON_CAT: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png")
 const ICON_SETTINGS: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png")
@@ -65,8 +64,8 @@ signal play_requested
 @export var _hero_card: PanelContainer
 @export var _hint_label: Label
 @export var _title_texture: TextureRect
-@export var _cat_illustration: TextureRect
-var _menu_cat_rig: Node
+@export var _cat_illustration: CatRig
+var _menu_cat_rig: CatRig
 @export var _buttons_box: VBoxContainer
 var _editor_menu_cat_signature: String = ""
 var _menu_cat_layout_refresh_queued: bool = false
@@ -250,17 +249,11 @@ func _set_up_menu_cat_rig() -> void:
 		set_process(false)
 		return
 
-	_cat_illustration.texture = null
-
-	var existing_rig: Node = _cat_illustration.get_node_or_null("MenuCatRig")
-	if existing_rig != null and existing_rig.get_script() == CatPartRigScript:
-		_menu_cat_rig = existing_rig
+	if _cat_illustration is CatRig:
+		_menu_cat_rig = _cat_illustration as CatRig
 	else:
-		if existing_rig != null:
-			existing_rig.queue_free()
-		_menu_cat_rig = CatPartRigScript.new() as Node
-		_menu_cat_rig.name = "MenuCatRig"
-		_cat_illustration.add_child(_menu_cat_rig)
+		_menu_cat_rig = null
+		return
 
 	if SaveManager != null:
 		_set_menu_cat_rig_property("skin_id_override", _resolve_equipped_skin_safe())
@@ -274,12 +267,17 @@ func _set_up_menu_cat_rig() -> void:
 
 
 func _apply_menu_cat_exports_to_rig() -> void:
+	_set_menu_cat_rig_property("pose_variant", "custom")
 	_set_menu_cat_rig_property("override_display_locally", menu_cat_override_global_defaults)
 	_set_menu_cat_rig_property("override_idle_locally", menu_cat_override_global_defaults)
 	_set_menu_cat_rig_property("override_face_locally", menu_cat_override_global_defaults)
+	_set_menu_cat_rig_property("override_pivots_locally", menu_cat_override_global_defaults)
+	_set_menu_cat_rig_property("override_pose_locally", menu_cat_override_global_defaults)
 	_set_menu_cat_rig_property("display_size_px", menu_cat_size_px)
 	_set_menu_cat_rig_property("display_offset", menu_cat_offset)
 	_set_menu_cat_rig_property("face_variant", menu_cat_face_variant)
+	_set_menu_cat_rig_property("base_head_tilt_degrees", 0.0)
+	_set_menu_cat_rig_property("base_tail_rotation_degrees", 0.0)
 	_set_menu_cat_rig_property("idle_tail_swing_degrees", menu_cat_idle_tail_swing_degrees)
 	_set_menu_cat_rig_property("idle_tail_swing_period_sec", menu_cat_idle_tail_swing_period_sec)
 	_set_menu_cat_rig_property("idle_enabled", not _is_reduce_motion_enabled())
@@ -291,7 +289,7 @@ func _sync_editor_menu_cat_preview() -> void:
 		return
 	if _cat_illustration == null:
 		return
-	if _menu_cat_rig == null or _menu_cat_rig.get_script() != CatPartRigScript:
+	if _menu_cat_rig == null:
 		_set_up_menu_cat_rig()
 	var signature: String = _build_menu_cat_signature()
 	if signature == _editor_menu_cat_signature:
@@ -324,10 +322,7 @@ func _update_menu_cat_layout() -> void:
 	if _menu_cat_rig == null or _cat_illustration == null:
 		return
 
-	_menu_cat_rig.position = Vector2(
-		_cat_illustration.size.x * 0.5,
-		_cat_illustration.size.y * menu_cat_vertical_anchor_ratio
-	)
+	_menu_cat_rig.refresh_rig()
 
 
 func _schedule_menu_cat_layout_refresh() -> void:
@@ -352,15 +347,11 @@ func _refresh_menu_cat_layout_deferred() -> void:
 func _set_menu_cat_rig_property(property_name: StringName, value: Variant) -> void:
 	if _menu_cat_rig == null:
 		return
-	if _menu_cat_rig.get_script() != CatPartRigScript:
-		return
 	_menu_cat_rig.set(property_name, value)
 
 
 func _call_menu_cat_rig_method(method_name: StringName) -> void:
 	if _menu_cat_rig == null:
-		return
-	if _menu_cat_rig.get_script() != CatPartRigScript:
 		return
 	if _menu_cat_rig.has_method(method_name):
 		_menu_cat_rig.call(method_name)

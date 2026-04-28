@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bt44v7rdsv5ig" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="4"]
-[ext_resource type="Texture2D" uid="uid://dsm788wpwambk" path="res://assets/art/cats/cat_default_idle.png" id="5"]
+[ext_resource type="PackedScene" uid="uid://b7k5g2m3qz1rt" path="res://scenes/ui/components/cat_rig.tscn" id="5"]
 
 [node name="Credits" type="Control"]
 layout_mode = 3
@@ -46,12 +46,11 @@ theme_override_constants/margin_bottom = 24
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="CatIllustration" type="TextureRect" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
+[node name="CatIllustration" parent="MarginContainer/CreditsCard/CardMargin/VBox" instance=ExtResource("5")]
 custom_minimum_size = Vector2(140, 140)
 layout_mode = 2
-texture = ExtResource("5")
-expand_mode = 1
-stretch_mode = 5
+pose_variant = "idle"
+display_size_px = 112.0
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
 layout_mode = 2

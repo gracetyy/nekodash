@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://b5k3qcaoeg0kq" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="3_8kw73"]
-[ext_resource type="Script" path="res://src/ui/cat_part_rig.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="3_wwiu1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
 [ext_resource type="FontVariation" uid="uid://b3cj4o7ces726" path="res://assets/fonts/Fredoka-Display-Bold.tres" id="6_kmn7f"]
 [ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="7_ios88"]
@@ -22,7 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 [ext_resource type="FontVariation" uid="uid://c8h8i5bsw5k2t" path="res://assets/fonts/Fredoka-Body-SemiBold.tres" id="21_kmk05"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_r1b6f"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lofah"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cok3t"]
 content_margin_left = 30.0
@@ -258,9 +258,8 @@ theme_override_constants/separation = 16
 alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
-modulate = Color(1, 1, 1, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_r1b6f")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_lofah")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2
@@ -275,9 +274,9 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="TitleLabel" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
-custom_minimum_size = Vector2(320, 228)
+custom_minimum_size = Vector2(560, 220)
 layout_mode = 2
-texture = ExtResource("3_8kw73")
+texture = ExtResource("3_wwiu1")
 expand_mode = 1
 stretch_mode = 5
 
@@ -289,19 +288,10 @@ theme_override_font_sizes/font_size = 20
 text = "ネコダッシュ"
 horizontal_alignment = 1
 
-[node name="CatIllustration" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
+[node name="CatIllustration" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody" instance=ExtResource("4")]
 custom_minimum_size = Vector2(284, 240)
 layout_mode = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="MenuCatRig" type="Node2D" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/CatIllustration"]
-position = Vector2(142, 134.4)
-scale = Vector2(1.8, 1.8)
-script = ExtResource("4")
-override_display_locally = true
-override_idle_locally = true
-override_face_locally = true
+pose_variant = "custom"
 display_size_px = 168.0
 display_offset = Vector2(0, 0)
 tail_pivot_source_px = Vector2(15, 35)
@@ -318,7 +308,6 @@ layout_mode = 2
 theme_override_constants/separation = 14
 
 [node name="PlayBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
-modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
@@ -341,7 +330,6 @@ icon = ExtResource("9_pakoq")
 metadata/_shell_pill_hover_wired = true
 
 [node name="SkinsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
-modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
@@ -365,7 +353,6 @@ variant = 1
 metadata/_shell_pill_hover_wired = true
 
 [node name="OptionsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
-modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
@@ -389,7 +376,6 @@ variant = 2
 metadata/_shell_pill_hover_wired = true
 
 [node name="CreditsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
-modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 mouse_filter = 1
 theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)

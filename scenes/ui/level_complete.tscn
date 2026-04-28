@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/ui/level_complete_screen.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://cafg6hvdgbxil" path="res://scenes/ui/components/status/StarStrip.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://djxpunrwyerll" path="res://scenes/ui/components/badges/BadgeNewBest.tscn" id="3"]
-[ext_resource type="Texture2D" uid="uid://b4jwiancqsh8n" path="res://assets/art/cats/cat_default_curious.png" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cy0x18adte55g" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="7"]
@@ -227,12 +227,13 @@ offset_top = 86.0
 offset_right = 200.0
 offset_bottom = 125.0
 
-[node name="CatIllustration" type="TextureRect" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
+[node name="CatIllustration" parent="MarginContainer/ResultsCard/CardMargin/VBox" instance=ExtResource("4")]
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
-texture = ExtResource("4")
-expand_mode = 1
-stretch_mode = 5
+pose_variant = "curious"
+base_head_tilt_degrees = 10.0
+base_tail_rotation_degrees = 8.0
+display_size_px = 116.0
 
 [node name="ScoreColumn" type="VBoxContainer" parent="MarginContainer/ResultsCard/CardMargin/VBox"]
 layout_mode = 2

@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7k5g2m3qz1rt"]
+
+[ext_resource type="Script" path="res://src/ui/cat_rig.gd" id="1"]
+[ext_resource type="Script" path="res://src/ui/cat_part_rig.gd" id="2"]
+
+[node name="CatRig" type="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1")
+
+[node name="Rig" type="Node2D" parent="."]
+position = Vector2(80, 80)
+script = ExtResource("2")

@@ -4,7 +4,6 @@ class_name SkinSelect
 extends Control
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
-const PLACEHOLDER_PREVIEW_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_idle.png")
 
 @export var _back_btn: BaseButton
 @export var _title_label: Label
@@ -62,11 +61,11 @@ func _configure_placeholder_cards() -> void:
 			card.pressed.connect(_on_skin_card_pressed)
 
 	if _skin_cards.size() >= 1:
-		_skin_cards[0].configure("cat_default", "Default Cat", PLACEHOLDER_PREVIEW_TEXTURE, SkinCard.CardState.EQUIPPED)
+		_skin_cards[0].configure("cat_default", "Default Cat", "idle", SkinCard.CardState.EQUIPPED)
 	if _skin_cards.size() >= 2:
-		_skin_cards[1].configure("cat_cozy", "Cozy Cat", PLACEHOLDER_PREVIEW_TEXTURE, SkinCard.CardState.UNLOCKED)
+		_skin_cards[1].configure("cat_cozy", "Cozy Cat", "happy", SkinCard.CardState.UNLOCKED)
 	if _skin_cards.size() >= 3:
-		_skin_cards[2].configure("cat_stargazer", "Stargazer", PLACEHOLDER_PREVIEW_TEXTURE, SkinCard.CardState.LOCKED, "Complete World 1")
+		_skin_cards[2].configure("cat_stargazer", "Stargazer", "peek", SkinCard.CardState.LOCKED, "Complete World 1")
 
 	_selected_skin_id = SaveManager.get_equipped_skin() if SaveManager != null else "cat_default"
 	if _selected_skin_id.is_empty():

@@ -16,9 +16,6 @@ const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 const ICON_ARROW_RIGHT: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_arrow_right.png")
 const ICON_RETRY: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_retry.png")
 const ICON_HOME: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_home.png")
-const CAT_CURIOUS_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_curious.png")
-const CAT_SMILE_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_smile.png")
-const CAT_EXCITED_TEXTURE: Texture2D = preload("res://assets/art/cats/cat_default_excited.png")
 
 # —————————————————————————————————————————————
 # Constants
@@ -51,7 +48,7 @@ signal world_map_requested
 @export var _retry_btn: BaseButton
 @export var _world_map_btn: BaseButton
 @export var _panel: PanelContainer
-@export var _cat_illustration: TextureRect
+@export var _cat_illustration: CatRig
 
 ## Star display nodes — array of 3 Controls (e.g. TextureRect or Label).
 ## Filled stars are visible; empty stars are dimmed or hidden.
@@ -397,11 +394,12 @@ func _update_cat_illustration(stars: int, final_moves: int, minimum_moves: int) 
 	if _cat_illustration == null:
 		return
 	if _is_perfect_result(final_moves, minimum_moves):
-		_cat_illustration.texture = CAT_SMILE_TEXTURE
+		_cat_illustration.pose_variant = "smile"
 	elif stars >= 3:
-		_cat_illustration.texture = CAT_EXCITED_TEXTURE
+		_cat_illustration.pose_variant = "happy"
 	else:
-		_cat_illustration.texture = CAT_CURIOUS_TEXTURE
+		_cat_illustration.pose_variant = "curious"
+	_cat_illustration.refresh_rig()
 
 
 ## Shows or hides the next level button based on next_level_data availability.

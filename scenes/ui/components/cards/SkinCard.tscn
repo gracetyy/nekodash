@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cogx2ma7fy4e1"]
+[gd_scene load_steps=4 format=3 uid="uid://cogx2ma7fy4e1"]
 
 [ext_resource type="Script" path="res://src/ui/components/cards/skin_card.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://b0dqhnxdw7f1x" path="res://scenes/ui/components/badges/BadgeEquipped.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://b7k5g2m3qz1rt" path="res://scenes/ui/components/cat_rig.tscn" id="3"]
 
 [node name="SkinCard" type="PanelContainer"]
 custom_minimum_size = Vector2(110, 150)
@@ -19,12 +20,19 @@ layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="Preview" type="TextureRect" parent="CardMargin/VBox"]
+[node name="Preview" type="Control" parent="CardMargin/VBox"]
 custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 size_flags_horizontal = 3
-expand_mode = 1
-stretch_mode = 5
+
+[node name="CatRig" parent="CardMargin/VBox/Preview" instance=ExtResource("3")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="NameLabel" type="Label" parent="CardMargin/VBox"]
 layout_mode = 2

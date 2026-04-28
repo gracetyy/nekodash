@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/ui/loading_screen.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bt44v7rdsv5ig" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="3"]
-[ext_resource type="Texture2D" uid="uid://dsm788wpwambk" path="res://assets/art/cats/cat_default_idle.png" id="4"]
+[ext_resource type="PackedScene" uid="uid://b7k5g2m3qz1rt" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
 
 [node name="LoadingScreen" type="Control"]
 layout_mode = 3
@@ -41,12 +41,11 @@ layout_mode = 2
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="CatIllustration" type="TextureRect" parent="CenterContainer/LoadingCard/CardMargin/VBox"]
+[node name="CatIllustration" parent="CenterContainer/LoadingCard/CardMargin/VBox" instance=ExtResource("4")]
 custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
-texture = ExtResource("4")
-expand_mode = 1
-stretch_mode = 5
+pose_variant = "idle"
+display_size_px = 112.0
 
 [node name="TitleLabel" type="Label" parent="CenterContainer/LoadingCard/CardMargin/VBox"]
 layout_mode = 2

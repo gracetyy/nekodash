@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/ui/opening_screen.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bt44v7rdsv5ig" path="res://scenes/ui/components/layout/ScreenBackdrop.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://dsm788wpwambk" path="res://assets/art/cats/cat_default_idle.png" id="4"]
+[ext_resource type="PackedScene" uid="uid://b7k5g2m3qz1rt" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="6"]
 
@@ -68,12 +68,11 @@ theme_override_font_sizes/font_size = 18
 text = "Slide clean lines. Curl up with tidy rooms."
 horizontal_alignment = 1
 
-[node name="CatIllustration" type="TextureRect" parent="MarginContainer/HeroCard/CardMargin/CardBody"]
+[node name="CatIllustration" parent="MarginContainer/HeroCard/CardMargin/CardBody" instance=ExtResource("4")]
 custom_minimum_size = Vector2(240, 240)
 layout_mode = 2
-texture = ExtResource("4")
-expand_mode = 1
-stretch_mode = 5
+pose_variant = "idle"
+display_size_px = 140.0
 
 [node name="Prompt" type="Label" parent="MarginContainer/HeroCard/CardMargin/CardBody"]
 layout_mode = 2

@@ -25,12 +25,14 @@ extends Node2D
 @export var override_idle_locally: bool = false
 ## If true, use local face variant instead of profile face variant.
 @export var override_face_locally: bool = false
+## If true, use local pose values instead of profile pose values.
+@export var override_pose_locally: bool = false
 
 @export_category("Rig")
 ## Optional skin id override. Leave empty to follow SaveManager equipped skin.
 @export var skin_id_override: String = ""
 ## Face overlay variant used on top of the head part.
-@export_enum("idle", "blink", "excited", "relax", "smile") var face_variant: String = "idle"
+@export_enum("idle", "blink", "excited", "relax", "smile", "curious", "happy", "peek", "surprised") var face_variant: String = "idle"
 
 @export_category("Display")
 ## Final rendered size for each layered part canvas in pixels.
@@ -41,9 +43,17 @@ var display_size_px: float = 92.0
 
 @export_category("Pivots")
 ## Tail rotation anchor in source-canvas pixel coordinates.
-@export var tail_pivot_source_px: Vector2 = Vector2(36.0, 94.0)
+@export var tail_pivot_source_px: Vector2 = Vector2(15.0, 35.0)
 ## Head rotation anchor in source-canvas pixel coordinates.
-@export var head_pivot_source_px: Vector2 = Vector2(0.0, 34.0)
+@export var head_pivot_source_px: Vector2 = Vector2(0.0, 8.0)
+
+@export_category("Pose")
+## Static head tilt used as the base pose while idle animation layers on top.
+@export_range(-30.0, 30.0, 0.1)
+var base_head_tilt_degrees: float = 0.0
+## Static tail rotation used as the base pose while idle animation layers on top.
+@export_range(-45.0, 45.0, 0.1)
+var base_tail_rotation_degrees: float = 0.0
 
 @export_category("Idle Motion")
 ## Enables idle tail sway motion (auto-disabled when reduce motion is active).
@@ -151,6 +161,7 @@ func _exit_tree() -> void:
 func refresh_rig() -> void:
 	_ensure_rig_nodes()
 	_apply_layout()
+	_apply_static_pose()
 	_assign_part_textures(_resolve_skin_id())
 
 
@@ -161,7 +172,7 @@ func refresh_skin() -> void:
 func set_head_tilt_immediate(target_degrees: float) -> void:
 	if _head_pivot == null or not is_instance_valid(_head_pivot):
 		return
-	_head_pivot.rotation_degrees = target_degrees
+	_head_pivot.rotation_degrees = _effective_base_head_tilt_degrees() + target_degrees
 
 
 func tween_head_tilt(target_degrees: float, duration_sec: float) -> void:
@@ -175,8 +186,9 @@ func tween_head_tilt(target_degrees: float, duration_sec: float) -> void:
 		set_head_tilt_immediate(0.0 if _is_reduce_motion_enabled() else target_degrees)
 		return
 
+	var target_rotation_degrees: float = _effective_base_head_tilt_degrees() + target_degrees
 	_head_tilt_tween = create_tween()
-	_head_tilt_tween.tween_property(_head_pivot, "rotation_degrees", target_degrees, duration_sec) \
+	_head_tilt_tween.tween_property(_head_pivot, "rotation_degrees", target_rotation_degrees, duration_sec) \
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 
 
@@ -263,6 +275,7 @@ func _build_editor_preview_signature() -> String:
 		str(override_pivots_locally),
 		str(override_idle_locally),
 		str(override_face_locally),
+		str(override_pose_locally),
 		skin_id_override,
 		_effective_face_variant(),
 		str(_effective_display_size_px()),
@@ -316,6 +329,7 @@ func _apply_layout() -> void:
 		_face_sprite.position = - _effective_head_pivot_source_px()
 
 	_apply_part_scale()
+	_apply_static_pose()
 
 
 func _apply_part_scale() -> void:
@@ -361,13 +375,25 @@ func _resolve_part_texture(skin_id: String, part_name: String) -> Texture2D:
 
 
 func _resolve_face_texture() -> Texture2D:
-	var requested_face_path: String = _face_path(_effective_face_variant())
+	var requested_face_path: String = _face_path(_resolve_face_texture_variant(_effective_face_variant()))
 	var face_texture: Texture2D = _load_texture_if_exists(requested_face_path)
 	if face_texture != null:
 		return face_texture
 
 	var fallback_face_path: String = _face_path(DEFAULT_FACE_VARIANT)
 	return _load_texture_if_exists(fallback_face_path)
+
+
+func _resolve_face_texture_variant(face_variant_name: String) -> String:
+	match face_variant_name:
+		"happy":
+			return "smile"
+		"curious", "peek":
+			return "idle"
+		"surprised":
+			return "excited"
+		_:
+			return face_variant_name
 
 
 func _part_path(skin_id: String, part_name: String) -> String:
@@ -403,11 +429,11 @@ func _apply_idle_tail_pose(elapsed_sec: float) -> void:
 		return
 
 	if _effective_idle_tail_swing_period_sec() <= 0.0:
-		_tail_pivot.rotation_degrees = 0.0
+		_tail_pivot.rotation_degrees = _effective_base_tail_rotation_degrees()
 		return
 
 	var cycle: float = (elapsed_sec / _effective_idle_tail_swing_period_sec()) * TAU
-	_tail_pivot.rotation_degrees = sin(cycle) * _effective_idle_tail_swing_degrees()
+	_tail_pivot.rotation_degrees = _effective_base_tail_rotation_degrees() + sin(cycle) * _effective_idle_tail_swing_degrees()
 
 
 func _apply_idle_head_breath_pose(elapsed_sec: float) -> void:
@@ -426,12 +452,18 @@ func _apply_idle_head_breath_pose(elapsed_sec: float) -> void:
 
 func _reset_tail_pose() -> void:
 	if _tail_pivot != null and is_instance_valid(_tail_pivot):
-		_tail_pivot.rotation_degrees = 0.0
+		_tail_pivot.rotation_degrees = _effective_base_tail_rotation_degrees()
 
 
 func _reset_head_breath_pose() -> void:
 	if _head_pivot != null and is_instance_valid(_head_pivot):
 		_head_pivot.position = _effective_head_pivot_source_px()
+		_head_pivot.rotation_degrees = _effective_base_head_tilt_degrees()
+
+
+func _apply_static_pose() -> void:
+	_reset_tail_pose()
+	_reset_head_breath_pose()
 
 
 # —————————————————————————————————————————————
@@ -487,6 +519,20 @@ func _effective_head_pivot_source_px() -> Vector2:
 	if profile != null and not override_pivots_locally:
 		return profile.head_pivot_source_px
 	return head_pivot_source_px
+
+
+func _effective_base_head_tilt_degrees() -> float:
+	var profile: CatRigProfile = _effective_profile()
+	if profile != null and not override_pose_locally:
+		return profile.base_head_tilt_degrees
+	return base_head_tilt_degrees
+
+
+func _effective_base_tail_rotation_degrees() -> float:
+	var profile: CatRigProfile = _effective_profile()
+	if profile != null and not override_pose_locally:
+		return profile.base_tail_rotation_degrees
+	return base_tail_rotation_degrees
 
 
 func _effective_idle_enabled() -> bool:

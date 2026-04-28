@@ -16,13 +16,14 @@ enum CardState {
 
 @export var unlock_hint: String = ""
 
-@export var preview_texture: Texture2D
+@export var preview_pose_variant: String = "idle"
 
 @export var card_state: CardState = CardState.UNLOCKED
 
 @export var selected: bool = false
 
-@onready var _preview: TextureRect = $CardMargin/VBox/Preview
+@onready var _preview: Control = $CardMargin/VBox/Preview
+@onready var _preview_cat: CatRig = $CardMargin/VBox/Preview/CatRig
 @onready var _name_label: Label = $CardMargin/VBox/NameLabel
 @onready var _hint_label: Label = $CardMargin/VBox/UnlockHintLabel
 @onready var _equipped_badge: BadgeEquipped = $CardMargin/VBox/EquippedBadge
@@ -42,10 +43,10 @@ func _ready() -> void:
 	_apply_component_state()
 
 
-func configure(new_skin_id: String, display_name: String, texture_value: Texture2D, state: CardState, hint_text: String = "") -> void:
+func configure(new_skin_id: String, display_name: String, pose_variant: String, state: CardState, hint_text: String = "") -> void:
 	skin_id = new_skin_id
 	skin_name = display_name
-	preview_texture = texture_value
+	preview_pose_variant = pose_variant
 	card_state = state
 	unlock_hint = hint_text
 	_apply_component_state()
@@ -53,9 +54,11 @@ func configure(new_skin_id: String, display_name: String, texture_value: Texture
 
 func _apply_component_state() -> void:
 	add_theme_stylebox_override("panel", _make_card_style())
-	_preview.texture = preview_texture
-	_preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if _preview_cat != null:
+		_preview_cat.skin_id_override = skin_id
+		_preview_cat.pose_variant = preview_pose_variant
+		_preview_cat.display_size_px = 72.0
+		_preview_cat.refresh_rig()
 	_name_label.text = skin_name
 	ShellThemeUtil.apply_body(_name_label, ShellThemeUtil.PLUM, 20)
 	_hint_label.text = unlock_hint
