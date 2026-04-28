@@ -43,9 +43,12 @@ const MIN_GRID_SIZE: int = 3
 ## are clamped with a warning.
 const MAX_GRID_SIZE: int = 15
 
-## Pixel size of each tile. Used by grid_to_pixel() and referenced by other
+## Pixel size of each tile. Referenced by other
 ## systems (Input System tap zones, TileMapLayer cell size).
 const DEFAULT_TILE_SIZE_PX: int = 72
+
+## The actual tile size used for rendering and movement, can be changed dynamically.
+var _current_tile_size: int = DEFAULT_TILE_SIZE_PX
 
 
 # —————————————————————————————————————————————
@@ -181,13 +184,22 @@ func get_height() -> int:
 	return _height
 
 
+## Returns the current tile size in pixels.
+func get_tile_size() -> int:
+	return _current_tile_size
+
+
+## Sets the current tile size in pixels.
+func set_tile_size(value: int) -> void:
+	_current_tile_size = maxi(1, value)
+
+
 ## Converts a grid coordinate to pixel-space center position.
 ##
 ## Usage:
 ##   var px: Vector2 = GridSystem.grid_to_pixel(Vector2i(1, 2))
-##   # -> Vector2(96.0, 160.0) with 64px tiles
 func grid_to_pixel(coord: Vector2i) -> Vector2:
-	return Vector2(coord) * DEFAULT_TILE_SIZE_PX + Vector2.ONE * (DEFAULT_TILE_SIZE_PX * 0.5)
+	return Vector2(coord) * _current_tile_size + Vector2.ONE * (_current_tile_size * 0.5)
 
 
 ## Maps a (walkability, obstacle_type) pair to a TileMapLayer atlas cell ID.

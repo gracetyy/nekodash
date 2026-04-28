@@ -532,8 +532,20 @@ func _refresh_grid_visuals() -> void:
 		# GridRenderer and SlidingMovement both draw relative to parent, so one
 		# coordinator offset keeps the board aligned under the HUD.
 		position = _grid_renderer.get_grid_offset()
+	
+	if _sliding_movement != null:
+		if _sliding_movement.has_method("refresh_visual_size"):
+			_sliding_movement.call("refresh_visual_size")
+		# Update cat position for the new tile size
+		_sliding_movement.position = GridSystem.grid_to_pixel(_sliding_movement.get_cat_pos())
+		
 	if _coverage_visualizer != null:
 		_coverage_visualizer.refresh_theme(_current_level_data)
+
+	if has_node("TutorialSystem"):
+		var tutorial: Node = get_node("TutorialSystem")
+		if tutorial.has_method("reposition_ui"):
+			tutorial.reposition_ui()
 
 
 func _connect_app_settings_signal() -> void:

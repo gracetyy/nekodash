@@ -24,9 +24,6 @@ var _tutorial_active: bool = false
 
 func _ready() -> void:
 	layer = 30 # Above HUD
-	var viewport: Viewport = get_viewport()
-	if viewport != null and not viewport.size_changed.is_connected(_on_viewport_size_changed):
-		viewport.size_changed.connect(_on_viewport_size_changed)
 
 
 func initialize(coordinator: Node, level_data: LevelData) -> void:
@@ -96,8 +93,12 @@ func _position_skip_button() -> void:
 	_skip_btn.position = Vector2(pos_x, pos_y)
 
 
-func _on_viewport_size_changed() -> void:
+## Public method to redraw the tutorial UI (bubbles, arrows) when the grid
+## or viewport size changes. Called by LevelCoordinator.
+func reposition_ui() -> void:
 	_position_skip_button()
+	if _tutorial_active:
+		_play_current_step()
 
 
 func _on_skip_pressed() -> void:
@@ -164,6 +165,7 @@ func _show_bubble_with_options(
 	
 	# Position them
 	var px: Vector2 = GridSystem.grid_to_pixel(grid_pos) + _grid_renderer.get_grid_offset()
+	var half_tile: float = GridSystem.get_tile_size() * 0.5
 	
 	# Force layout update
 	bubble.reset_size()
@@ -172,9 +174,9 @@ func _show_bubble_with_options(
 	var bubble_anchor_pos: Vector2
 
 	if point_down:
-		bubble_anchor_pos = px + Vector2(-b_size.x / 2.0, -36.0 - 40.0 - 2.0 - b_size.y + 5.0)
+		bubble_anchor_pos = px + Vector2(-b_size.x / 2.0, -half_tile - 40.0 - 2.0 - b_size.y + 5.0)
 	else:
-		bubble_anchor_pos = px + Vector2(-b_size.x / 2.0, 36.0 + 2.0 + 40.0 - 5.0)
+		bubble_anchor_pos = px + Vector2(-b_size.x / 2.0, half_tile + 2.0 + 40.0 - 5.0)
 
 	if show_arrow:
 		var arrow = TextureRect.new()
@@ -187,15 +189,15 @@ func _show_bubble_with_options(
 
 		if point_down:
 			# Arrow points down to top of tile
-			arrow.position = px + Vector2(-20, -36 - 40 - 2)
+			arrow.position = px + Vector2(-20, -half_tile - 40 - 2)
 		else:
 			# Arrow points up to bottom of tile
-			arrow.position = px + Vector2(-20, 36 + 2)
+			arrow.position = px + Vector2(-20, half_tile + 2)
 
 		bubble.position = bubble_anchor_pos + bubble_offset
 
-		# Animation
-		var tween: Tween = create_tween().set_loops()
+		# Animation - bind to the arrow node so it is cleaned up when freed
+		var tween: Tween = arrow.create_tween().set_loops()
 		var move_dist = 6.0
 		var base_y = arrow.position.y
 		if point_down:
@@ -218,12 +220,13 @@ func _show_directional_arrow(grid_pos: Vector2i, texture: Texture2D) -> void:
 	arrow.texture = texture
 	arrow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	arrow.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	arrow.custom_minimum_size = Vector2(48, 48)
+	var arrow_size: float = GridSystem.get_tile_size() * 0.66
+	arrow.custom_minimum_size = Vector2(arrow_size, arrow_size)
 	add_child(arrow)
 	_active_arrows.append(arrow)
 	
 	var px: Vector2 = GridSystem.grid_to_pixel(grid_pos) + _grid_renderer.get_grid_offset()
-	arrow.position = px - Vector2(24, 24) # Center on tile
+	arrow.position = px - Vector2(arrow_size * 0.5, arrow_size * 0.5) # Center on tile
 	arrow.scale = Vector2.ONE
 
 

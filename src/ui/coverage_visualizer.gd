@@ -40,7 +40,7 @@ var _visited_texture: Texture2D = HomeTileArtScript.SIMPLE_VISITED_TEXTURE
 func initialize_level(_grid_width: int, _grid_height: int, level_data: LevelData = null) -> void:
 	if level_data != null:
 		_current_level_data = level_data
-	_tile_size = GridSystem.DEFAULT_TILE_SIZE_PX
+	_tile_size = GridSystem.get_tile_size()
 	_tile_states.clear()
 	_initialized = true
 	refresh_theme()
@@ -50,6 +50,7 @@ func initialize_level(_grid_width: int, _grid_height: int, level_data: LevelData
 func refresh_theme(level_data: LevelData = null) -> void:
 	if level_data != null:
 		_current_level_data = level_data
+	_tile_size = GridSystem.get_tile_size()
 	var world_id: int = 1
 	if _current_level_data != null:
 		world_id = max(_current_level_data.world_id, 1)

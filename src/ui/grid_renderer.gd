@@ -29,19 +29,43 @@ var _render_layout: Dictionary = {}
 func render_grid(level_data: LevelData = null) -> void:
 	if level_data != null:
 		_current_level_data = level_data
-	_tile_size = GridSystem.DEFAULT_TILE_SIZE_PX
+	
+	var grid_w: int = GridSystem.get_width()
+	var grid_h: int = GridSystem.get_height()
+	
+	if grid_w == 0 or grid_h == 0:
+		return
 
-	# Compute centering offset
-	var grid_w_px: float = GridSystem.get_width() * _tile_size
-	var grid_h_px: float = GridSystem.get_height() * _tile_size
 	var viewport_w: float = get_viewport_rect().size.x
 	var viewport_h: float = get_viewport_rect().size.y
+	
+	# Spacing settings
+	var hud_top_margin: float = 160.0
+	var bottom_margin: float = 64.0
+	var horizontal_padding: float = 48.0
+	
+	var available_w: float = viewport_w - horizontal_padding * 2.0
+	var available_h: float = viewport_h - hud_top_margin - bottom_margin
+	
+	var max_tile_w: float = available_w / float(grid_w)
+	var max_tile_h: float = available_h / float(grid_h)
+	
+	# Target tile size is the smaller of the two dimensions, clamped to reasonable range
+	var target_tile_size: int = int(floor(minf(max_tile_w, max_tile_h)))
+	# We want to keep it close to 72 if possible, but allow shrinking/growing
+	target_tile_size = clampi(target_tile_size, 32, 128)
+	
+	_tile_size = target_tile_size
+	GridSystem.set_tile_size(_tile_size)
 
-	# Center horizontally, push below HUD (100px top margin for HUD)
-	var hud_margin: float = 100.0
+	# Compute centering offset
+	var grid_w_px: float = grid_w * _tile_size
+	var grid_h_px: float = grid_h * _tile_size
+
 	var x_offset: float = (viewport_w - grid_w_px) / 2.0
-	var y_offset: float = hud_margin + (viewport_h - hud_margin - grid_h_px) / 2.0
+	var y_offset: float = hud_top_margin + (available_h - grid_h_px) / 2.0
 	_grid_offset = Vector2(x_offset, y_offset)
+	
 	_render_layout = HomeTileArtScript.build_layout(
 		_current_level_data,
 		HomeTileArtScript.is_simple_ui_enabled()

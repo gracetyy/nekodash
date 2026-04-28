@@ -219,10 +219,30 @@ func get_state() -> State:
 	return _state
 
 
+## Sets the cat rig size dynamically based on current tile size.
+func refresh_visual_size() -> void:
+	if _cat_rig == null:
+		_cache_cat_rig()
+	if _cat_rig == null:
+		return
+	
+	var tile_size: int = GridSystem.get_tile_size()
+	# Default was 112px for 72px tiles -> ~1.55 ratio
+	var target_cat_size: float = float(tile_size) * 1.55
+	# Bump offset ratio: 6px for 72px tiles -> ~0.083 ratio
+	blocked_bump_offset_px = float(tile_size) * 0.083
+	
+	cat_display_size_px = target_cat_size
+	_cat_rig.set("display_size_px", cat_display_size_px)
+	if _cat_rig.has_method("refresh_rig"):
+		_cat_rig.call("refresh_rig")
+
+
 ## Called once at level load. Snaps cat to spawn_pos, resets state to IDLE,
 ## and emits spawn_position_set for Coverage Tracking.
 func initialize_level(spawn_pos: Vector2i) -> void:
 	_kill_all_tweens()
+	refresh_visual_size()
 	_cat_pos = spawn_pos
 	position = _grid_to_pixel(spawn_pos)
 	scale = Vector2.ONE
