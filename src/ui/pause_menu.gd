@@ -15,7 +15,7 @@ signal main_menu_requested
 @export var _panel: PanelContainer
 @export var _backdrop: ColorRect
 @export var _title_label: Label
-@export var _ribbon: TextureRect
+@export var _ribbon: Control
 @export var _audio_label: Label
 @export var _display_label: Label
 @export var _input_label: Label

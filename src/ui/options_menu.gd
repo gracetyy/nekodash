@@ -15,7 +15,7 @@ var _music_manager_ref: Node
 var _sfx_manager_ref: Node
 
 @export var _title_label: Label
-@export var _ribbon: TextureRect
+@export var _ribbon: Control
 @export var _audio_label: Label
 @export var _display_label: Label
 @export var _input_label: Label

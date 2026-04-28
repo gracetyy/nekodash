@@ -234,7 +234,7 @@ static func get_ribbon_texture(variant: String) -> Texture2D:
 
 
 static func make_ribbon_style(variant: String = "purple") -> StyleBoxTexture:
-	return make_texture_style(get_ribbon_texture(variant), 52, 22, 52, 28, 30.0, 14.0, 30.0, 20.0)
+	return make_texture_style(get_ribbon_texture(variant), 72, 0, 72, 0, 30.0, 14.0, 30.0, 20.0)
 
 
 static func _pill_variant_from_fill(fill: Color) -> String:

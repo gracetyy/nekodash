@@ -1,10 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://cy0x18adte55g"]
+[gd_scene load_steps=4 format=3 uid="uid://cy0x18adte55g"]
 
 [ext_resource type="Script" path="res://src/ui/components/panels/ribbon_header.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="1_3is07"]
+[ext_resource type="FontVariation" uid="uid://b3cj4o7ces726" path="res://assets/fonts/Fredoka-Display-Bold.tres" id="3_qwxxg"]
 
-[node name="RibbonHeader" type="TextureRect"]
+[node name="RibbonHeader" type="NinePatchRect"]
 custom_minimum_size = Vector2(320, 80)
-mouse_filter = 2
+texture = ExtResource("1_3is07")
+patch_margin_left = 52
+patch_margin_top = 22
+patch_margin_right = 52
+patch_margin_bottom = 28
 script = ExtResource("1")
 
 [node name="RibbonTitleLabel" type="Label" parent="."]
@@ -12,10 +18,14 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 38.0
-offset_right = -38.0
+offset_left = 42.0
+offset_right = -42.0
+offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.984, 0.957, 1)
+theme_override_fonts/font = ExtResource("3_qwxxg")
+theme_override_font_sizes/font_size = 32
 text = "TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
