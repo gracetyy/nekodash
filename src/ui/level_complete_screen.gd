@@ -302,17 +302,60 @@ func on_world_map_btn_pressed() -> void:
 func _show_stars(stars: int) -> void:
 	if _star_strip == null:
 		return
+
 	if _star_strip.has_method("configure"):
 		_star_strip.call("configure", stars, 2, 1, 0, 6.0)
 	_apply_legacy_star_visuals(stars)
 
+	if _is_reduce_motion_enabled():
+		_play_star_sfx(stars)
+		return
+
+	# Sequential pop-in animation
+	var star_nodes: Array[Control] = []
+	for i in range(1, 4):
+		var node: Control = _star_strip.get_node_or_null("Star%d" % i) as Control
+		if node != null:
+			star_nodes.append(node)
+	
+	if star_nodes.is_empty():
+		for child in _star_strip.get_children():
+			if child is Control and child.visible:
+				star_nodes.append(child as Control)
+
+	if stars <= 0:
+		SfxManager.play(_sfx_no_star, SfxManager.SfxBus.SFX)
+		_animate_star_reveal(stars)
+		return
+
+	for i in range(star_nodes.size()):
+		var star: Control = star_nodes[i]
+		if i < stars:
+			star.pivot_offset = star.size * 0.5
+			star.scale = Vector2.ZERO
+			
+			var sfx: AudioStream = null
+			match i + 1:
+				1: sfx = _sfx_star_1
+				2: sfx = _sfx_star_2
+				3: sfx = _sfx_star_3
+			
+			var tween: Tween = create_tween()
+			tween.tween_interval(i * 0.15)
+			tween.tween_property(star, "scale", Vector2.ONE, 0.4) \
+				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			if sfx != null:
+				tween.parallel().tween_callback(SfxManager.play.bind(sfx, SfxManager.SfxBus.SFX))
+		else:
+			star.scale = Vector2.ONE
+
+
+func _play_star_sfx(stars: int) -> void:
 	match stars:
 		0: SfxManager.play(_sfx_no_star, SfxManager.SfxBus.SFX)
 		1: SfxManager.play(_sfx_star_1, SfxManager.SfxBus.SFX)
 		2: SfxManager.play(_sfx_star_2, SfxManager.SfxBus.SFX)
 		3: SfxManager.play(_sfx_star_3, SfxManager.SfxBus.SFX)
-	
-	_animate_star_reveal(stars)
 
 
 func _apply_legacy_star_visuals(stars: int) -> void:
