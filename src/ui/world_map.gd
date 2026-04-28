@@ -31,7 +31,7 @@ var grid_min_columns: int = 2
 
 ## Maximum columns the level grid is allowed to use.
 @export_range(1, 12, 1, "or_greater")
-var grid_max_columns: int = 6
+var grid_max_columns: int = 12
 
 ## Minimum width per generated level card.
 @export_range(80.0, 320.0, 1.0, "or_greater")
@@ -295,7 +295,8 @@ func _world_grid_columns(level_count: int) -> int:
 	if level_count <= 0:
 		return 1
 	var available_width: float = _estimate_world_card_grid_width()
-	var columns: int = mini(level_count, _target_world_grid_columns())
+	var target: int = _target_world_grid_columns()
+	var columns: int = mini(level_count, target)
 	while columns > 1:
 		var required_width: float = (float(columns) * level_card_min_width) + (float(columns - 1) * level_card_gap)
 		if required_width <= available_width + 0.5:
@@ -310,47 +311,51 @@ func _world_grid_columns(level_count: int) -> int:
 func _target_world_grid_columns() -> int:
 	var grid_width: float = _estimate_world_card_grid_width()
 	var min_columns: int = maxi(1, mini(grid_min_columns, grid_max_columns))
-	var max_columns: int = maxi(1, maxi(grid_min_columns, grid_max_columns))
 	if grid_width <= 0.0:
 		return min_columns
 	var slot_width: float = level_card_min_width + level_card_gap
 	var estimated_columns: int = int(floor((grid_width + level_card_gap) / slot_width))
-	return clampi(estimated_columns, min_columns, max_columns)
+	# Return the calculated columns, respecting min but allowing it to exceed 
+	# previous default cap of 6 if the screen is large enough.
+	return clampi(estimated_columns, min_columns, grid_max_columns)
 
 
 func _estimate_world_card_grid_width() -> float:
 	var width: float = 0.0
-	if _scroll_container != null:
+	
+	if is_inside_tree():
+		# Base available width is viewport minus root margins and outer list margins
+		var viewport_width: float = get_viewport_rect().size.x
+		var layout_margins: float = (screen_edge_margin_horizontal + 52.0) * 2.0
+		width = viewport_width - layout_margins
+	
+	# If the scroll container is actually valid and looks like it's laid out, 
+	# it's a more precise measure (e.g. handles scrollbar)
+	if _scroll_container != null and _scroll_container.size.x > 200.0:
 		width = _scroll_container.size.x
-		if width <= 0.0:
-			var scroll_parent: Control = _scroll_container.get_parent_control()
-			if scroll_parent != null:
-				width = scroll_parent.size.x
-	if _world_list != null:
-		if width <= 0.0:
-			width = _world_list.size.x
-		if width <= 0.0:
-			var parent_control: Control = _world_list.get_parent_control()
-			if parent_control != null:
-				width = parent_control.size.x
-	if width <= 0.0:
-		width = size.x
-		if width <= 0.0 and is_inside_tree():
-			width = get_viewport_rect().size.x
+	
 	if _scroll_container != null:
 		var v_scroll: VScrollBar = _scroll_container.get_v_scroll_bar()
 		if v_scroll != null and v_scroll.visible:
 			width -= v_scroll.size.x
+	
 	return maxf(0.0, width - world_card_inner_horizontal_padding)
 
 
 func _on_world_map_resized() -> void:
+	# Small delay to ensure layout engine has updated sizes
+	await get_tree().process_frame
+	if not is_inside_tree():
+		return
+		
 	var target_columns: int = _target_world_grid_columns()
 	if target_columns == _last_grid_column_target:
 		return
+		
 	_last_grid_column_target = target_columns
 	if _world_index.is_empty():
 		return
+		
 	_rebuild_world_cards()
 	call_deferred("_apply_initial_focus")
 
