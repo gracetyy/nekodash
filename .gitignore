@@ -94,7 +94,6 @@ secrets.json
 # *.hdr
 assets/*/might_use/
 assets/*/*/might_use/
-assets/audio/
 
 # === OS Generated ===
 ehthumbs.db
