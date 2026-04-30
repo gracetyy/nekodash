@@ -368,25 +368,34 @@ static func _update_style_override(button: BaseButton, override_name: StringName
 
 
 static func _wire_pill_hover_feedback(button: BaseButton) -> void:
-	if button == null:
+	if button == null or not is_instance_valid(button):
 		return
-	if button.has_meta(PILL_HOVER_WIRED_META):
-		return
-
+	
 	var entered_callable: Callable = Callable(ShellTheme, "_on_pill_hover_entered").bind(button)
 	var exited_callable: Callable = Callable(ShellTheme, "_on_pill_hover_exited").bind(button)
+	
+	if button.mouse_entered.is_connected(entered_callable):
+		return
+
+	# If deliberately disabled via metadata (e.g. by TutorialSystem), skip.
+	var meta = button.get_meta(PILL_HOVER_WIRED_META) if button.has_meta(PILL_HOVER_WIRED_META) else null
+	if meta is String and meta == "disabled":
+		return
+
 	if not button.mouse_entered.is_connected(entered_callable):
 		button.mouse_entered.connect(entered_callable)
 	if not button.mouse_exited.is_connected(exited_callable):
 		button.mouse_exited.connect(exited_callable)
 	
-	# Mobile fix: reset scale on button_up/pressed as well
-	if not button.button_up.is_connected(exited_callable):
-		button.button_up.connect(exited_callable)
-	if not button.pressed.is_connected(exited_callable):
-		button.pressed.connect(exited_callable)
+	# Mobile fix: reset scale on button_up/pressed as well to avoid stuck hover on touch devices.
+	if DisplayServer.is_touchscreen_available():
+		if not button.button_up.is_connected(exited_callable):
+			button.button_up.connect(exited_callable)
+		if not button.pressed.is_connected(exited_callable):
+			button.pressed.connect(exited_callable)
 
-	button.set_meta(PILL_HOVER_WIRED_META, true)
+	if not Engine.is_editor_hint():
+		button.set_meta(PILL_HOVER_WIRED_META, true)
 
 
 static func _on_pill_hover_entered(button: BaseButton) -> void:
@@ -400,7 +409,8 @@ static func _on_pill_hover_exited(button: BaseButton) -> void:
 static func _animate_pill_hover_scale(button: BaseButton, target_scale: Vector2) -> void:
 	if button == null or not is_instance_valid(button):
 		return
-	button.pivot_offset = button.size * 0.5
+	if button.size.x > 0:
+		button.pivot_offset = button.size * 0.5
 	if _is_reduce_motion_enabled():
 		button.scale = target_scale
 		return
@@ -683,25 +693,34 @@ static func apply_circle_icon_button(
 
 
 static func _wire_circle_hover_feedback(button: BaseButton) -> void:
-	if button == null:
+	if button == null or not is_instance_valid(button):
 		return
-	if button.has_meta(CIRCLE_HOVER_WIRED_META):
-		return
-
+	
 	var entered_callable: Callable = Callable(ShellTheme, "_on_circle_hover_entered").bind(button)
 	var exited_callable: Callable = Callable(ShellTheme, "_on_circle_hover_exited").bind(button)
+	
+	if button.mouse_entered.is_connected(entered_callable):
+		return
+
+	# If deliberately disabled via metadata, skip.
+	var meta = button.get_meta(CIRCLE_HOVER_WIRED_META) if button.has_meta(CIRCLE_HOVER_WIRED_META) else null
+	if meta is String and meta == "disabled":
+		return
+
 	if not button.mouse_entered.is_connected(entered_callable):
 		button.mouse_entered.connect(entered_callable)
 	if not button.mouse_exited.is_connected(exited_callable):
 		button.mouse_exited.connect(exited_callable)
 	
-	# Mobile fix: reset scale on button_up/pressed as well
-	if not button.button_up.is_connected(exited_callable):
-		button.button_up.connect(exited_callable)
-	if not button.pressed.is_connected(exited_callable):
-		button.pressed.connect(exited_callable)
+	# Mobile fix: reset scale on button_up/pressed as well to avoid stuck hover on touch devices.
+	if DisplayServer.is_touchscreen_available():
+		if not button.button_up.is_connected(exited_callable):
+			button.button_up.connect(exited_callable)
+		if not button.pressed.is_connected(exited_callable):
+			button.pressed.connect(exited_callable)
 
-	button.set_meta(CIRCLE_HOVER_WIRED_META, true)
+	if not Engine.is_editor_hint():
+		button.set_meta(CIRCLE_HOVER_WIRED_META, true)
 
 
 static func _on_circle_hover_entered(button: BaseButton) -> void:
@@ -715,8 +734,9 @@ static func _on_circle_hover_exited(button: BaseButton) -> void:
 static func _animate_circle_hover_scale(button: BaseButton, target_scale: Vector2) -> void:
 	if button == null or not is_instance_valid(button):
 		return
-	button.pivot_offset = button.size * 0.5
-	if AppSettings != null and AppSettings.get_reduce_motion():
+	if button.size.x > 0:
+		button.pivot_offset = button.size * 0.5
+	if _is_reduce_motion_enabled():
 		button.scale = target_scale
 		return
 

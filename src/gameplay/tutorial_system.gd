@@ -67,7 +67,7 @@ func _cleanup() -> void:
 func _create_skip_button() -> void:
 	_skip_btn = PillButtonScene.instantiate() as BaseButton
 	# Disable shared pill hover scaling so tutorial skip button keeps its compact size.
-	_skip_btn.set_meta(PILL_HOVER_WIRED_META, true)
+	_skip_btn.set_meta(PILL_HOVER_WIRED_META, "disabled")
 	_skip_btn.text = "Skip Tutorial"
 	_skip_btn.scale = Vector2(0.55, 0.55)
 	add_child(_skip_btn)
