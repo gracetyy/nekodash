@@ -233,7 +233,6 @@ func _apply_runtime_settings() -> void:
 	if tree == null or tree.root == null:
 		return
 
-	tree.root.content_scale_factor = UI_SCALE_NORMAL
 	if OS.has_feature("headless"):
 		return
 

@@ -37,6 +37,9 @@ func set_progress(value: float) -> void:
 
 func _refresh() -> void:
 	if _title_label != null:
-		_title_label.text = "Loading %s" % _target_screen_name
+		if _target_screen_name == "Loading" or _target_screen_name == "":
+			_title_label.text = "Loading..."
+		else:
+			_title_label.text = "Loading %s" % _target_screen_name
 	if _progress_bar != null:
 		_progress_bar.value = _progress * 100.0
