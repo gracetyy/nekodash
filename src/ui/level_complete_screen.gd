@@ -143,6 +143,8 @@ func _ready() -> void:
 		_connect_navigation()
 	if _params_received:
 		populate_results()
+	
+	_play_intro_animation()
 
 
 # —————————————————————————————————————————————
@@ -328,11 +330,14 @@ func _show_stars(stars: int) -> void:
 		_animate_star_reveal(stars)
 		return
 
+	# Initial hide
+	for star in star_nodes:
+		star.scale = Vector2.ZERO
+
 	for i in range(star_nodes.size()):
 		var star: Control = star_nodes[i]
 		if i < stars:
 			star.pivot_offset = star.size * 0.5
-			star.scale = Vector2.ZERO
 			
 			var sfx: AudioStream = null
 			match i + 1:
@@ -341,13 +346,47 @@ func _show_stars(stars: int) -> void:
 				3: sfx = _sfx_star_3
 			
 			var tween: Tween = create_tween()
-			tween.tween_interval(i * 0.15)
-			tween.tween_property(star, "scale", Vector2.ONE, 0.4) \
+			tween.tween_interval(0.4 + i * 0.22) # Wait for panel + stagger
+			tween.tween_property(star, "scale", Vector2(1.2, 1.2), 0.15).set_trans(Tween.TRANS_SINE)
+			tween.tween_property(star, "scale", Vector2.ONE, 0.25) \
 				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 			if sfx != null:
 				tween.parallel().tween_callback(SfxManager.play.bind(sfx, SfxManager.SfxBus.SFX))
 		else:
 			star.scale = Vector2.ONE
+
+
+func _play_intro_animation() -> void:
+	if AppSettings != null and AppSettings.get_reduce_motion():
+		return
+	
+	if _panel != null:
+		_panel.pivot_offset = _panel.size * 0.5
+		_panel.scale = Vector2(0.9, 0.9)
+		_panel.modulate.a = 0.0
+		var tween = create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(_panel, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(_panel, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	if _cat_illustration != null:
+		_cat_illustration.modulate.a = 0.0
+		_cat_illustration.scale = Vector2(0.8, 0.8)
+		var tween = create_tween()
+		tween.tween_interval(0.2)
+		tween.set_parallel(true)
+		tween.tween_property(_cat_illustration, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(_cat_illustration, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	var next_btn_node = _next_btn as Control
+	if next_btn_node != null:
+		next_btn_node.modulate.a = 0.0
+		next_btn_node.position.y += 20.0
+		var tween = create_tween()
+		tween.tween_interval(0.6)
+		tween.set_parallel(true)
+		tween.tween_property(next_btn_node, "modulate:a", 1.0, 0.3)
+		tween.tween_property(next_btn_node, "position:y", next_btn_node.position.y - 20.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _play_star_sfx(stars: int) -> void:

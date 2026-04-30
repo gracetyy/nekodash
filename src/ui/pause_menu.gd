@@ -150,11 +150,11 @@ func _connect_navigation() -> void:
 
 
 func _handle_resume_requested() -> void:
-	SceneManager.hide_overlay()
+	_play_exit_animation()
 
 
 func _handle_restart_requested() -> void:
-	SceneManager.hide_overlay()
+	await _play_exit_animation()
 	var scene: Node = get_tree().current_scene
 	if scene != null and scene.has_method("restart_level"):
 		scene.restart_level()
@@ -188,7 +188,7 @@ func _prompt_level_select_confirmation() -> void:
 
 
 func _on_confirm_modal_confirmed() -> void:
-	SceneManager.hide_overlay()
+	await _play_exit_animation()
 	SceneManager.go_to(SceneManager.Screen.WORLD_MAP)
 
 
@@ -318,6 +318,23 @@ func _play_intro_animation() -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(_panel, "scale", Vector2.ONE, 0.2) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _play_exit_animation() -> void:
+	if _panel == null:
+		SceneManager.hide_overlay()
+		return
+	if AppSettings != null and AppSettings.get_reduce_motion():
+		SceneManager.hide_overlay()
+		return
+	
+	var tween: Tween = create_tween()
+	tween.tween_property(_panel, "modulate:a", 0.0, 0.12) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(_panel, "scale", Vector2(0.95, 0.95), 0.15) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	await tween.finished
+	SceneManager.hide_overlay()
 
 
 func _refresh_audio_control_states() -> void:

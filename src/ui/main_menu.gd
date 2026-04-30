@@ -69,6 +69,9 @@ var _menu_cat_rig: CatRig
 @export var _buttons_box: VBoxContainer
 var _editor_menu_cat_signature: String = ""
 var _menu_cat_layout_refresh_queued: bool = false
+var _breathing_time: float = 0.0
+const BREATHING_AMPLITUDE: float = 6.0
+const BREATHING_PERIOD: float = 2.4
 
 
 # —————————————————————————————————————————————
@@ -141,6 +144,7 @@ func _process(_delta: float) -> void:
 	if _menu_cat_rig == null:
 		return
 	_set_menu_cat_rig_property("idle_enabled", not _is_reduce_motion_enabled())
+	_update_menu_cat_breathing(_delta)
 
 
 func _on_play_btn_pressed() -> void:
@@ -395,3 +399,14 @@ func _call_app_settings_int(method_name: StringName, fallback: int) -> int:
 	if value is int:
 		return value as int
 	return fallback
+
+
+func _update_menu_cat_breathing(delta: float) -> void:
+	if _menu_cat_rig == null or _is_reduce_motion_enabled():
+		if _menu_cat_rig != null:
+			_menu_cat_rig.display_offset = menu_cat_offset
+		return
+	
+	_breathing_time += delta
+	var offset_y = sin(_breathing_time * (TAU / BREATHING_PERIOD)) * BREATHING_AMPLITUDE
+	_menu_cat_rig.display_offset = menu_cat_offset + Vector2(0, offset_y)

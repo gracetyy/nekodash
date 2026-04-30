@@ -170,6 +170,7 @@ func initialize(
 	if _coverage_label != null:
 		_coverage_label.visible = false
 
+	_play_entry_animation()
 	_initialized = true
 
 
@@ -389,8 +390,17 @@ func _update_star_strip(current_moves: int) -> void:
 		elif current_moves <= star_1_threshold:
 			stars = 1
 
+	var previous_stars: int = -1
+	if _star_strip.has_meta("current_stars"):
+		previous_stars = _star_strip.get_meta("current_stars")
+	
 	if _star_strip.has_method("configure"):
 		_star_strip.call("configure", stars, 1, 0, 0, 4.0)
+	
+	if _initialized and stars != previous_stars:
+		_star_strip.set_meta("current_stars", stars)
+		if previous_stars != -1: # Don't pop on first load
+			_play_pop_animation(_star_strip)
 
 
 ## Sets undo button disabled state with null safety.
@@ -445,3 +455,31 @@ func _apply_visual_style() -> void:
 		(_move_label as Label).add_theme_font_override("font", ShellThemeUtil.FONT_DISPLAY)
 	if _coverage_label != null and _coverage_label is Label:
 		(_coverage_label as Label).visible = false
+
+
+func _play_entry_animation() -> void:
+	if AppSettings != null and AppSettings.get_reduce_motion():
+		return
+	
+	var top_row = get_node_or_null("MarginContainer/TopRow")
+	if top_row == null:
+		return
+	
+	top_row.modulate.a = 0.0
+	var original_pos = top_row.position
+	top_row.position.y -= 40.0
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(top_row, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(top_row, "position:y", original_pos.y, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _play_pop_animation(node: Control) -> void:
+	if node == null or (AppSettings != null and AppSettings.get_reduce_motion()):
+		return
+	
+	node.pivot_offset = node.size * 0.5
+	var tween = create_tween()
+	tween.tween_property(node, "scale", Vector2(1.15, 1.15), 0.08).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(node, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
