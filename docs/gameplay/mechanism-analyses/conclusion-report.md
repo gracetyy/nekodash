@@ -34,6 +34,7 @@ Ratings: **L** (Low concern), **M** (Medium), **H** (High concern).
 | **14. Sleep Tile** | L | M | M | L | L | M | L | L | M |
 | **15. Magnet Tile** | L | L | M | L | L | L | L | L | L |
 | **16. Crumble Tile** | L | H | M | M | L | M | L | L | H |
+| **17. Split Map** | H | H | H | M | M | M | H | L | H |
 
 ---
 
@@ -55,6 +56,7 @@ Ratings: **L** (Low concern), **M** (Medium), **H** (High concern).
 ### **Post-MVP / DLC Content**
 *Mechanics with high complexity, state explosion, or significant UI/UX shifts.*
 *   **Two-Cat Co-op (Echo Cat):** High state expansion ($Grid^2$) requires dedicated solver optimization.
+*   **Split Map:** Requires a major architectural shift to support multiple grids and parallel solving. Extreme BFS risk and Mobile UX constraints make this a "Mode" rather than a simple tile.
 *   **Crumble Tile:** Significant BFS risk ($2^N$ states) requires strict limits on tile count per level.
 *   **Sleep Tile:** Adds turn-skipping logic that complicates move economy.
 *   **Moving Obstacle:** **RECONSIDER.** The shift to real-time logic violates the turn-based pillar and creates accessibility barriers. Recommended to pivot toward a turn-based "Patrol" instead.
@@ -63,7 +65,7 @@ Ratings: **L** (Low concern), **M** (Medium), **H** (High concern).
 
 ## 4. Conclusion
 
-The core strength of *NekoDash* lies in its "contemplative logic" (Pillar 1) and "tactile joy" (Pillar 2). To preserve these, the team should prioritize mechanics that augment the grid's geometry (*Stop-Slide*, *One-Way*, *Warp*) rather than those that exponentially increase the search space (*Pushable Blocks*, *Crumble Tiles*).
+The core strength of *NekoDash* lies in its "contemplative logic" (Pillar 1) and "tactile joy" (Pillar 2). To preserve these, the team should prioritize mechanics that augment the grid's geometry (*Stop-Slide*, *One-Way*, *Warp*) rather than those that exponentially increase the search space (*Pushable Blocks*, *Crumble Tiles*, *Split Map*).
 
 **Final Recommendation:**
-Begin implementation with the **World 1 Trio** (Kill, Stop-Slide, One-Way) to stabilize the core systems. Follow immediately with **Fallable Items**, as it provides the strongest thematic link to being a cat. Defer any mechanic with a **High BFS Concern** until the base 30 levels are verified and the solver's performance baseline is established.
+Begin implementation with the **World 1 Trio** (Kill, Stop-Slide, One-Way) to stabilize the core systems. Follow immediately with **Fallable Items**, as it provides the strongest thematic link to being a cat. Defer any mechanic with a **High BFS Concern** (including the new **Split Map** mode) until the base 30 levels are verified and the solver's performance baseline is established.

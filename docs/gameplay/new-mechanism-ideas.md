@@ -64,25 +64,30 @@ When the cat enters the same row or column as a magnet tile, the cat is _pulled_
 
 A fragile tile (cracked floor, thin ice, a paper mat) that collapses after the cat slides over it the first time. On the first pass it's walkable and counts as covered. After that, it becomes a permanent wall. Future slides in that row/column now stop one tile earlier, changing the routing for the rest of the puzzle.
 
+## 17. 🐾 Split Map (Shared Control Co-op)
+
+    Two entirely separate grid maps are displayed side by side on screen, each with its own cat starting at its own position. Every input the player makes moves both cats simultaneously in the same direction — one swipe slides both cats at once, each obeying their own grid's wall-stop rules independently. The objective is to cover all tiles across both maps before the move counter runs out, meaning the player must mentally solve two sliding puzzles in parallel with a single shared move budget. Tile coverage on either map counts toward the combined completion goal, but the level only completes when every walkable tile across both grids has been visited.
+
 ---
 
 ## Quick Glance Comparison
 
-| #   | Idea              | Core Hook                    | Puzzle Type Shift          |
-| --- | ----------------- | ---------------------------- | -------------------------- |
-| 1   | Moving Obstacle   | Real-time patrol cycle       | Timing & patience          |
-| 2   | Kill Tile         | Instant death on contact     | Risk avoidance routing     |
-| 3   | Pushable Block    | Push reshapes the grid       | Dynamic obstacle placement |
-| 4   | Fallable Item     | Bump spawns new obstacle     | Directional consequence    |
-| 5   | Door + Key        | Collect to unlock route      | Ordered objective          |
-| 6   | Stop-Slide Tile   | Force-stop mid open space    | New stopping geometry      |
-| 7   | Conveyor Belt     | Free extra slide             | Chain reactions            |
-| 8   | Required Target   | Numbered visit order         | Sequence constraint        |
-| 9   | Trap Tile         | Delayed wall spawn           | Anticipation planning      |
-| 10  | Two-Cat Echo      | Mirrored dual control        | Cooperative coverage       |
-| 11  | Warp Tile         | Teleport with momentum reset | Spatial jumps              |
-| 12  | Rotating Obstacle | Bump changes blocker shape   | Dynamic routing            |
-| 13  | One-Way Tile      | Directional permeability     | Asymmetric paths           |
-| 14  | Sleep Tile        | Wastes one input             | Move budget pressure       |
-| 15  | Magnet Tile       | Involuntary pull             | Forced detour              |
-| 16  | Crumble Tile      | First pass = permanent wall  | Destruction ordering       |
+| #   | Idea              | Core Hook                                               | Puzzle Type Shift           |
+| --- | ----------------- | ------------------------------------------------------- | --------------------------- |
+| 1   | Moving Obstacle   | Real-time patrol cycle                                  | Timing & patience           |
+| 2   | Kill Tile         | Instant death on contact                                | Risk avoidance routing      |
+| 3   | Pushable Block    | Push reshapes the grid                                  | Dynamic obstacle placement  |
+| 4   | Fallable Item     | Bump spawns new obstacle                                | Directional consequence     |
+| 5   | Door + Key        | Collect to unlock route                                 | Ordered objective           |
+| 6   | Stop-Slide Tile   | Force-stop mid open space                               | New stopping geometry       |
+| 7   | Conveyor Belt     | Free extra slide                                        | Chain reactions             |
+| 8   | Required Target   | Numbered visit order                                    | Sequence constraint         |
+| 9   | Trap Tile         | Delayed wall spawn                                      | Anticipation planning       |
+| 10  | Two-Cat Echo      | Mirrored dual control                                   | Cooperative coverage        |
+| 11  | Warp Tile         | Teleport with momentum reset                            | Spatial jumps               |
+| 12  | Rotating Obstacle | Bump changes blocker shape                              | Dynamic routing             |
+| 13  | One-Way Tile      | Directional permeability                                | Asymmetric paths            |
+| 14  | Sleep Tile        | Wastes one input                                        | Move budget pressure        |
+| 15  | Magnet Tile       | Involuntary pull                                        | Forced detour               |
+| 16  | Crumble Tile      | First pass = permanent wall                             | Destruction ordering        |
+| 17  | Split Map         | One input controls two cats on two grids simultaneously | Parallel dual-board solving |
