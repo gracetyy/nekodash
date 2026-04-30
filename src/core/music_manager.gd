@@ -78,6 +78,10 @@ var _muted: bool = false
 ## Current world ID (for world-specific track selection).
 var _current_world_id: String = ""
 
+## Track volume ducking state (for overlays).
+var _is_ducked: bool = false
+const DUCKED_VOLUME_DB: float = -12.0
+
 
 # —————————————————————————————————————————————
 # Lifecycle
@@ -86,6 +90,7 @@ var _current_world_id: String = ""
 func _ready() -> void:
 	_create_players()
 	_load_settings()
+	_apply_bus_settings()
 	_connect_scene_manager_signals()
 
 
@@ -106,9 +111,6 @@ func play(stream: AudioStream) -> void:
 
 	_current_stream = stream
 
-	if _muted:
-		return
-
 	var incoming: AudioStreamPlayer = _player_a if _active_is_a else _player_b
 	var outgoing: AudioStreamPlayer = _player_b if _active_is_a else _player_a
 
@@ -124,7 +126,8 @@ func play(stream: AudioStream) -> void:
 	incoming.play()
 
 	var fade_in: Tween = create_tween()
-	fade_in.tween_property(incoming, "volume_db", linear_to_db(_volume), CROSSFADE_DURATION)
+	# We fade in to 0.0 dB relative to the bus volume.
+	fade_in.tween_property(incoming, "volume_db", 0.0, CROSSFADE_DURATION)
 
 	# Swap active player for next cross-fade
 	_active_is_a = not _active_is_a
@@ -148,10 +151,7 @@ func get_volume() -> float:
 ## Sets the volume (0.0 – 1.0) and persists to settings.
 func set_volume(value: float) -> void:
 	_volume = clampf(value, 0.0, 1.0)
-	# Update active player volume immediately
-	var active: AudioStreamPlayer = _get_active_player()
-	if active.playing:
-		active.volume_db = linear_to_db(_volume)
+	_apply_bus_settings()
 	_save_settings()
 
 
@@ -163,18 +163,7 @@ func is_muted() -> bool:
 ## Sets the mute state and persists to settings.
 func set_muted(muted: bool) -> void:
 	_muted = muted
-	if _muted:
-		for player: AudioStreamPlayer in [_player_a, _player_b]:
-			if player.playing:
-				player.volume_db = -80.0
-	else:
-		# Unmute: restore active volume, or start pending stream if playback
-		# was requested while muted.
-		var active: AudioStreamPlayer = _get_active_player()
-		if active.playing:
-			active.volume_db = linear_to_db(_volume)
-		elif _current_stream != null:
-			play(_current_stream)
+	_apply_bus_settings()
 	_save_settings()
 
 
@@ -210,6 +199,8 @@ func _connect_scene_manager_signals() -> void:
 		SceneManager.world_changed.connect(_on_world_changed)
 	if not SceneManager.overlay_opened.is_connected(_on_overlay_opened):
 		SceneManager.overlay_opened.connect(_on_overlay_opened)
+	if not SceneManager.overlay_closed.is_connected(_on_overlay_closed):
+		SceneManager.overlay_closed.connect(_on_overlay_closed)
 
 
 ## Handles screen transitions — selects track based on screen type.
@@ -223,12 +214,28 @@ func _on_transition_completed(to_screen: SceneManager.Screen) -> void:
 		play(track)
 
 
-## Handles overlay opening — OPTIONS overlay uses opening track.
+## Handles overlay opening — OPTIONS overlay ducks or switches track, PAUSE/LEVEL_COMPLETE ducks volume.
 func _on_overlay_opened(overlay: SceneManager.Overlay) -> void:
 	if overlay == SceneManager.Overlay.OPTIONS:
-		var track: AudioStream = _screen_tracks.get(SceneManager.Screen.MAIN_MENU)
-		if track != null:
-			play(track)
+		# If we're in gameplay, duck the gameplay music instead of switching to opening track.
+		if SceneManager.get_current_screen() == SceneManager.Screen.GAMEPLAY:
+			_is_ducked = true
+			_apply_bus_settings()
+		else:
+			var track: AudioStream = _screen_tracks.get(SceneManager.Screen.MAIN_MENU)
+			if track != null:
+				play(track)
+	
+	elif overlay == SceneManager.Overlay.PAUSE or overlay == SceneManager.Overlay.LEVEL_COMPLETE:
+		_is_ducked = true
+		_apply_bus_settings()
+
+
+## Handles overlay closing — restores volume if it was ducked.
+func _on_overlay_closed(overlay: SceneManager.Overlay) -> void:
+	if _is_ducked:
+		_is_ducked = false
+		_apply_bus_settings()
 
 
 ## Handles world changes — selects track based on world_id.
@@ -237,6 +244,20 @@ func _on_world_changed(world_id: String) -> void:
 	var track: AudioStream = _world_tracks.get(world_id)
 	if track != null:
 		play(track)
+
+
+## Applies current volume, mute, and ducking state to the Music audio bus.
+func _apply_bus_settings() -> void:
+	var bus_idx: int = AudioServer.get_bus_index(BUS_NAME)
+	if bus_idx == -1:
+		return
+	
+	var target_db: float = linear_to_db(_volume)
+	if _is_ducked:
+		target_db += DUCKED_VOLUME_DB
+	
+	AudioServer.set_bus_volume_db(bus_idx, target_db)
+	AudioServer.set_bus_mute(bus_idx, _muted)
 
 
 ## Loads music volume and mute settings from user://settings.cfg.

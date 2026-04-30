@@ -70,6 +70,7 @@ var _muted: bool = false
 func _ready() -> void:
 	_create_pool()
 	_load_settings()
+	_apply_bus_settings()
 
 
 # —————————————————————————————————————————————
@@ -88,16 +89,14 @@ func play(stream: AudioStream, bus: SfxBus = SfxBus.SFX, pitch_scale: float = 1.
 		push_warning("[SfxManager] play() called with null AudioStream — skipping.")
 		return
 
-	if _muted:
-		return
-
 	var player: AudioStreamPlayer = _pool[_pool_index]
 	_pool_index = (_pool_index + 1) % POOL_SIZE
 
 	player.stream = stream
 	player.bus = BUS_NAMES.get(bus, "SFX")
 	player.pitch_scale = pitch_scale
-	player.volume_db = linear_to_db(_volume * volume_mult)
+	# Only apply per-call volume multiplier; master volume is handled by the bus.
+	player.volume_db = linear_to_db(volume_mult)
 	player.play()
 
 
@@ -124,6 +123,7 @@ func get_volume() -> float:
 ## Sets the volume (0.0 – 1.0) and persists to settings.
 func set_volume(value: float) -> void:
 	_volume = clampf(value, 0.0, 1.0)
+	_apply_bus_settings()
 	_save_settings()
 
 
@@ -135,12 +135,28 @@ func is_muted() -> bool:
 ## Toggles or sets the mute state and persists to settings.
 func set_muted(muted: bool) -> void:
 	_muted = muted
+	_apply_bus_settings()
 	_save_settings()
 
 
 # —————————————————————————————————————————————
 # Private helpers
 # —————————————————————————————————————————————
+
+## Applies current volume and mute state to SFX and UI audio busses.
+func _apply_bus_settings() -> void:
+	var sfx_idx: int = AudioServer.get_bus_index(BUS_NAMES[SfxBus.SFX])
+	var ui_idx: int = AudioServer.get_bus_index(BUS_NAMES[SfxBus.UI])
+	
+	var volume_db: float = linear_to_db(_volume)
+	
+	if sfx_idx != -1:
+		AudioServer.set_bus_volume_db(sfx_idx, volume_db)
+		AudioServer.set_bus_mute(sfx_idx, _muted)
+	if ui_idx != -1:
+		AudioServer.set_bus_volume_db(ui_idx, volume_db)
+		AudioServer.set_bus_mute(ui_idx, _muted)
+
 
 ## Creates the AudioStreamPlayer pool as child nodes.
 func _create_pool() -> void:

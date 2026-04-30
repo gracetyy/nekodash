@@ -97,6 +97,16 @@ var _overlay_paused_tree: bool = false
 
 
 # —————————————————————————————————————————————
+# Lifecycle
+# —————————————————————————————————————————————
+
+func _ready() -> void:
+	# Identify the current scene at startup to ensure autoloads like MusicManager
+	# know which track to play without waiting for a navigation call.
+	_identify_current_screen()
+
+
+# —————————————————————————————————————————————
 # Public API — Navigation
 # —————————————————————————————————————————————
 
@@ -301,6 +311,24 @@ func _screen_label(screen: Screen) -> String:
 		if Screen[key] == screen:
 			return key.capitalize()
 	return "Loading"
+
+
+func _identify_current_screen() -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+
+	var current_path: String = tree.current_scene.scene_file_path
+	for screen_key: Screen in SCREEN_PATHS:
+		if SCREEN_PATHS[screen_key] == current_path:
+			_current_screen = screen_key
+			# Defer signal so other autoloads' _ready() have finished connecting.
+			call_deferred("_emit_initial_transition", _current_screen)
+			break
+
+
+func _emit_initial_transition(screen: Screen) -> void:
+	transition_completed.emit(screen)
 
 
 func _remove_overlay(unpause_tree: bool) -> void:
