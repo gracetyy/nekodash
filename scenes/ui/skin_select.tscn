@@ -78,6 +78,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="EquipBtn" parent="MarginContainer/VBox" instance=ExtResource("5")]
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 disabled = true
 text = "EQUIP (COMING SOON)"

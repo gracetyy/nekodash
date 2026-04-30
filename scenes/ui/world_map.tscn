@@ -39,9 +39,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 72
+theme_override_constants/margin_left = 64
 theme_override_constants/margin_top = 38
-theme_override_constants/margin_right = 72
+theme_override_constants/margin_right = 64
 theme_override_constants/margin_bottom = 38
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer"]
@@ -52,8 +52,8 @@ theme_override_constants/separation = 12
 [node name="HeaderOuterMargin" type="MarginContainer" parent="MarginContainer/VBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/margin_left = 44
-theme_override_constants/margin_right = 44
+theme_override_constants/margin_left = 23
+theme_override_constants/margin_right = 23
 
 [node name="HeaderCard" type="PanelContainer" parent="MarginContainer/VBox/HeaderOuterMargin"]
 custom_minimum_size = Vector2(0, 80)
@@ -127,8 +127,8 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/margin_left = 52
-theme_override_constants/margin_right = 52
+theme_override_constants/margin_left = 23
+theme_override_constants/margin_right = 5
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBox/ListOuterMargin"]
 layout_mode = 2

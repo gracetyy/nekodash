@@ -1,7 +1,42 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://rnf1dwfdxam6"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://rnf1dwfdxam6"]
 
 [ext_resource type="FontVariation" uid="uid://c8h8i5bsw5k2t" path="res://assets/fonts/Fredoka-Body-SemiBold.tres" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_grabber"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.466667, 0.364706, 0.505882, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.352941, 0.247059, 0.368627, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scroll"]
+content_margin_left = 8.0
+content_margin_top = 0.0
+content_margin_right = 8.0
+content_margin_bottom = 0.0
+bg_color = Color(0.992157, 0.968627, 0.901961, 0.501961)
+border_width_left = 2
+border_width_right = 2
+border_color = Color(0.352941, 0.247059, 0.368627, 0.25098)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [resource]
 default_font = ExtResource("1")
 default_font_size = 24
+VScrollBar/styles/grabber = SubResource("StyleBoxFlat_grabber")
+VScrollBar/styles/grabber_highlight = SubResource("StyleBoxFlat_grabber")
+VScrollBar/styles/grabber_pressed = SubResource("StyleBoxFlat_grabber")
+VScrollBar/styles/scroll = SubResource("StyleBoxFlat_scroll")
+VScrollBar/styles/scroll_focus = SubResource("StyleBoxFlat_scroll")

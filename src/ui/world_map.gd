@@ -19,11 +19,11 @@ const WORLD_TITLES: Dictionary = {
 @export_category("World Card Layout")
 ## Horizontal padding between world-map modal content and screen edges.
 @export_range(0.0, 200.0, 1.0, "or_greater")
-var screen_edge_margin_horizontal: float = 96.0
+var screen_edge_margin_horizontal: float = 48.0
 
 ## Vertical padding between world-map modal content and screen edges.
 @export_range(0.0, 200.0, 1.0, "or_greater")
-var screen_edge_margin_vertical: float = 56.0
+var screen_edge_margin_vertical: float = 38.0
 
 ## Minimum columns the level grid should attempt to use.
 @export_range(1, 8, 1, "or_greater")
@@ -35,7 +35,7 @@ var grid_max_columns: int = 12
 
 ## Minimum width per generated level card.
 @export_range(80.0, 320.0, 1.0, "or_greater")
-var level_card_min_width: float = 120.0
+var level_card_min_width: float = 124.0
 
 ## Gap between generated level cards in the world grid.
 @export_range(0.0, 40.0, 1.0, "or_greater")
@@ -324,26 +324,27 @@ func _estimate_world_card_grid_width() -> float:
 	var width: float = 0.0
 	
 	if is_inside_tree():
-		# Base available width is viewport minus root margins and outer list margins
+		# Use the viewport as the source of truth for resize events.
 		var viewport_width: float = get_viewport_rect().size.x
-		var layout_margins: float = (screen_edge_margin_horizontal + 52.0) * 2.0
-		width = viewport_width - layout_margins
+		var root_m: float = screen_edge_margin_horizontal
+		
+		# Available modal width
+		width = viewport_width - (root_m * 2.0)
+		
+		# Subtract scrollbar allowance (approx 16px) and a tiny bit of 
+		# container breathing room to ensure 3 columns fit on 540px width.
+		width -= 16.0
 	
-	# If the scroll container is actually valid and looks like it's laid out, 
-	# it's a more precise measure (e.g. handles scrollbar)
-	if _scroll_container != null and _scroll_container.size.x > 200.0:
-		width = _scroll_container.size.x
-	
-	if _scroll_container != null:
-		var v_scroll: VScrollBar = _scroll_container.get_v_scroll_bar()
-		if v_scroll != null and v_scroll.visible:
-			width -= v_scroll.size.x
-	
-	return maxf(0.0, width - world_card_inner_horizontal_padding)
+	return maxf(0.0, width)
 
 
 func _on_world_map_resized() -> void:
-	# Small delay to ensure layout engine has updated sizes
+	# Update margins immediately to match the new viewport size.
+	_apply_screen_edge_margins()
+	
+	# Wait for two frames to ensure the layout engine and viewport sizes 
+	# have fully settled across all containers.
+	await get_tree().process_frame
 	await get_tree().process_frame
 	if not is_inside_tree():
 		return
@@ -364,6 +365,7 @@ func _refresh_world_layout_after_ready() -> void:
 	if _world_index.is_empty():
 		return
 	await get_tree().process_frame
+	_apply_screen_edge_margins()
 	_last_grid_column_target = _target_world_grid_columns()
 	_rebuild_world_cards()
 	call_deferred("_apply_initial_focus")
@@ -517,8 +519,10 @@ func _apply_visual_style() -> void:
 func _apply_screen_edge_margins() -> void:
 	if _root_margin_container == null:
 		return
+		
 	var horizontal: int = int(round(screen_edge_margin_horizontal))
 	var vertical: int = int(round(screen_edge_margin_vertical))
+	
 	_root_margin_container.add_theme_constant_override("margin_left", horizontal)
 	_root_margin_container.add_theme_constant_override("margin_right", horizontal)
 	_root_margin_container.add_theme_constant_override("margin_top", vertical)

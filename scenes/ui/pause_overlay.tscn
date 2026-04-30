@@ -169,23 +169,23 @@ theme_override_constants/separation = 4
 
 [node name="IconRow" type="HBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 24
 alignment = 1
 
 [node name="ResumeBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow" instance=ExtResource("6")]
-custom_minimum_size = Vector2(74, 74)
+custom_minimum_size = Vector2(82, 82)
 layout_mode = 2
 variant = 2
-button_size = 74.0
+button_size = 82.0
 
 [node name="RestartBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow" instance=ExtResource("6")]
-custom_minimum_size = Vector2(74, 74)
+custom_minimum_size = Vector2(82, 82)
 layout_mode = 2
 variant = 3
-button_size = 74.0
+button_size = 82.0
 
 [node name="MainMenuBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/ButtonStack/IconRow" instance=ExtResource("6")]
-custom_minimum_size = Vector2(74, 74)
+custom_minimum_size = Vector2(82, 82)
 layout_mode = 2
 variant = 4
-button_size = 74.0
+button_size = 82.0

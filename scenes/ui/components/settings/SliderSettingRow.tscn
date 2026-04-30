@@ -24,3 +24,7 @@ text = "Mute"
 [node name="Toggle" type="CheckButton" parent="."]
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
+
+[node name="Spacer" type="Control" parent="."]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
