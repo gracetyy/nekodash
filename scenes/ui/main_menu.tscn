@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="3_wwiu1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
+[ext_resource type="Texture2D" uid="uid://b5k3qcaoeg0kq" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="3_wh62p"]
+[ext_resource type="PackedScene" uid="uid://b7k5g2m3q01rt" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
 [ext_resource type="FontVariation" uid="uid://b3cj4o7ces726" path="res://assets/fonts/Fredoka-Display-Bold.tres" id="6_kmn7f"]
 [ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="7_ios88"]
@@ -22,7 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 [ext_resource type="FontVariation" uid="uid://c8h8i5bsw5k2t" path="res://assets/fonts/Fredoka-Body-SemiBold.tres" id="21_kmk05"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lofah"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5o5po"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cok3t"]
 content_margin_left = 30.0
@@ -259,7 +259,7 @@ alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_lofah")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_5o5po")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2
@@ -274,9 +274,9 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="TitleLabel" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
-custom_minimum_size = Vector2(560, 220)
+custom_minimum_size = Vector2(320, 228)
 layout_mode = 2
-texture = ExtResource("3_wwiu1")
+texture = ExtResource("3_wh62p")
 expand_mode = 1
 stretch_mode = 5
 
@@ -291,11 +291,10 @@ horizontal_alignment = 1
 [node name="CatIllustration" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody" instance=ExtResource("4")]
 custom_minimum_size = Vector2(284, 240)
 layout_mode = 2
+override_pivots_locally = true
 pose_variant = "custom"
 display_size_px = 168.0
 display_offset = Vector2(0, 0)
-tail_pivot_source_px = Vector2(15, 35)
-head_pivot_source_px = Vector2(0, 8)
 idle_tail_swing_period_sec = 1.55
 idle_tail_swing_degrees = 8.0
 

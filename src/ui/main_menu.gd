@@ -9,12 +9,10 @@ class_name MainMenu
 extends Control
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
-const ICON_PLAY: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_play.png")
-const ICON_CAT: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png")
-const ICON_SETTINGS: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png")
-const ICON_INFO: Texture2D = preload("res://assets/art/ui/icons/pill_interiors/icon_pill_info.png")
-const TITLE_TEXTURE_LANDSCAPE: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_landscape.png")
-const TITLE_TEXTURE_PORTRAIT: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_portrait.png")
+const UI_ASSETS_PATH: String = "res://data/global_ui_assets.tres"
+
+var _ui_assets: GlobalUIAssets
+
 const TITLE_PORTRAIT_MAX_WIDTH: float = 700.0
 
 @export_category("Menu Cat")
@@ -79,6 +77,8 @@ const BREATHING_PERIOD: float = 2.4
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	if ResourceLoader.exists(UI_ASSETS_PATH):
+		_ui_assets = load(UI_ASSETS_PATH) as GlobalUIAssets
 	if _play_btn == null:
 		_play_btn = get_node_or_null("MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons/PlayBtn")
 	if _options_btn == null:
@@ -175,10 +175,13 @@ func _navigate_to_world_map() -> void:
 func _apply_visual_style() -> void:
 	if _hero_card != null:
 		_hero_card.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-	_apply_button_icon(_play_btn, ICON_PLAY)
-	_apply_button_icon(_skins_btn, ICON_CAT)
-	_apply_button_icon(_options_btn, ICON_SETTINGS)
-	_apply_button_icon(_credits_btn, ICON_INFO)
+	
+	if _ui_assets != null:
+		_apply_button_icon(_play_btn, _ui_assets.icons.get("play"))
+		_apply_button_icon(_skins_btn, _ui_assets.icons.get("cat"))
+		_apply_button_icon(_options_btn, _ui_assets.icons.get("settings"))
+		_apply_button_icon(_credits_btn, _ui_assets.icons.get("info"))
+	
 	if _hint_label != null:
 		_hint_label.text = ""
 		_hint_label.visible = false
@@ -195,15 +198,15 @@ func _on_cat_illustration_resized() -> void:
 
 
 func _refresh_title_texture_variant() -> void:
-	if _title_texture == null:
+	if _title_texture == null or _ui_assets == null:
 		return
 	var viewport_size: Vector2 = get_viewport_rect().size
 	var use_portrait_title: bool = viewport_size.x < TITLE_PORTRAIT_MAX_WIDTH
 	if use_portrait_title:
-		_title_texture.texture = TITLE_TEXTURE_PORTRAIT
+		_title_texture.texture = _ui_assets.title_portrait
 		_title_texture.custom_minimum_size = Vector2(320.0, 228.0)
 	else:
-		_title_texture.texture = TITLE_TEXTURE_LANDSCAPE
+		_title_texture.texture = _ui_assets.title_landscape
 		_title_texture.custom_minimum_size = Vector2(560.0, 220.0)
 
 

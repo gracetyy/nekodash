@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="GlobalUIAssets" load_steps=11 format=3 uid="uid://6j3nqdtri8t8"]
+
+[ext_resource type="Script" path="res://src/core/global_ui_assets.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://fc3huxga0qgi" path="res://assets/art/ui/icons/pill_interiors/icon_pill_play.png" id="2_play"]
+[ext_resource type="Texture2D" uid="uid://bcotrsgul8gy6" path="res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png" id="3_cat"]
+[ext_resource type="Texture2D" uid="uid://bcune8t4wyux2" path="res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png" id="4_settings"]
+[ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="5_info"]
+[ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="6_landscape"]
+[ext_resource type="Texture2D" uid="uid://b5k3qcaoeg0kq" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="7_portrait"]
+[ext_resource type="PackedScene" uid="uid://c6j2y8y8y8y8y" path="res://scenes/ui/components/tutorial/TutorialBubble.tscn" id="8_bubble"]
+[ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="9_pill"]
+[ext_resource type="PackedScene" uid="uid://cogx2ma7fy4e1" path="res://scenes/ui/components/cards/SkinCard.tscn" id="10_skincard"]
+
+[resource]
+script = ExtResource("1_script")
+icons = {
+"cat": ExtResource("3_cat"),
+"info": ExtResource("5_info"),
+"play": ExtResource("2_play"),
+"settings": ExtResource("4_settings")
+}
+title_landscape = ExtResource("6_landscape")
+title_portrait = ExtResource("7_portrait")
+bubble_scene = ExtResource("8_bubble")
+pill_button_scene = ExtResource("9_pill")
+skin_card_scene = ExtResource("10_skincard")

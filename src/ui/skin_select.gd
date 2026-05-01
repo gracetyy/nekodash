@@ -4,17 +4,22 @@ class_name SkinSelect
 extends Control
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
+const UI_ASSETS_PATH: String = "res://data/global_ui_assets.tres"
 
 @export var _back_btn: BaseButton
 @export var _title_label: Label
 @export var _status_label: Label
 @export var _equip_btn: BaseButton
 @export var _skin_grid: GridContainer
+
+var _ui_assets: GlobalUIAssets
 var _skin_cards: Array[SkinCard] = []
 var _selected_skin_id: String = "cat_default"
 
 
 func _ready() -> void:
+	if ResourceLoader.exists(UI_ASSETS_PATH):
+		_ui_assets = load(UI_ASSETS_PATH) as GlobalUIAssets
 	if _back_btn == null:
 		_back_btn = get_node_or_null("MarginContainer/VBox/Header/BackBtn")
 	if _title_label == null:
@@ -77,10 +82,12 @@ func _populate_skins() -> void:
 	var equipped_id := SaveManager.get_equipped_skin()
 	var unlocked_ids := SaveManager.get_unlocked_skins()
 
-	var card_scene: PackedScene = load("res://scenes/ui/components/cards/SkinCard.tscn")
+	if _ui_assets == null or _ui_assets.skin_card_scene == null:
+		push_error("SkinSelect: skin_card_scene missing from UI assets.")
+		return
 
 	for skin_data in all_skins:
-		var card: SkinCard = card_scene.instantiate()
+		var card: SkinCard = _ui_assets.skin_card_scene.instantiate()
 		_skin_grid.add_child(card)
 		_skin_cards.append(card)
 
