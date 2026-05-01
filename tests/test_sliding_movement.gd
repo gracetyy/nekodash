@@ -127,7 +127,7 @@ func _make_5x5_center_wall() -> LevelData:
 
 ## Returns expected pixel center for a grid coordinate.
 func _expected_pixel(coord: Vector2i) -> Vector2:
-	var tile_size: float = GridSystem.DEFAULT_TILE_SIZE_PX
+	var tile_size: float = GridSystem.get_tile_size()
 	return Vector2(coord) * tile_size + Vector2.ONE * (tile_size * 0.5)
 
 
@@ -430,9 +430,10 @@ func test_sliding_movement_duration_long_slide_applies_speedup() -> void:
 	assert_almost_eq(duration, expected, 0.001)
 
 
-func test_sliding_movement_reduce_motion_uses_short_duration() -> void:
+func test_sliding_movement_reduce_motion_uses_visible_duration() -> void:
 	AppSettings.set_reduce_motion(true)
-	assert_almost_eq(_sm._compute_slide_duration(5), 0.02, 0.001)
+	# 5 tiles at 15 t/s = 0.33s, but capped at 0.25s in reduced motion
+	assert_almost_eq(_sm._compute_slide_duration(5), 0.25, 0.001)
 
 
 # —————————————————————————————————————————————

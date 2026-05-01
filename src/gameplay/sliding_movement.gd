@@ -426,19 +426,26 @@ func _play_bump(direction: Vector2i) -> void:
 	
 	SfxManager.play(_sfx_wall_bump, SfxManager.SfxBus.SFX, 1.0, 0.75)
 
-	if _is_reduce_motion_enabled():
-		position = home_pixel
-		slide_blocked.emit(_cat_pos, direction)
-		return
-
+	var is_rm: bool = _is_reduce_motion_enabled()
+	if is_rm:
+		# Reduced motion: subtle 40% nudge, no elastic bounce
+		bump_offset *= 0.4
+	
 	if _bump_tween and _bump_tween.is_valid():
 		_bump_tween.kill()
 
 	_bump_tween = create_tween()
-	_bump_tween.tween_property(self , "position", home_pixel + bump_offset, blocked_bump_duration_sec * 0.4) \
-		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-	_bump_tween.tween_property(self , "position", home_pixel, blocked_bump_duration_sec * 0.6) \
-		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
+	
+	if is_rm:
+		_bump_tween.tween_property(self , "position", home_pixel + bump_offset, blocked_bump_duration_sec * 0.5) \
+			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		_bump_tween.tween_property(self , "position", home_pixel, blocked_bump_duration_sec * 0.5) \
+			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	else:
+		_bump_tween.tween_property(self , "position", home_pixel + bump_offset, blocked_bump_duration_sec * 0.4) \
+			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		_bump_tween.tween_property(self , "position", home_pixel, blocked_bump_duration_sec * 0.6) \
+			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
 
 	slide_blocked.emit(_cat_pos, direction)
 
@@ -452,8 +459,6 @@ func _grid_to_pixel(coord: Vector2i) -> Vector2:
 
 
 func _compute_slide_duration(tile_count: int) -> float:
-	if _is_reduce_motion_enabled():
-		return 0.02
 	if tile_count <= 0:
 		return min_slide_duration_sec
 
@@ -464,7 +469,14 @@ func _compute_slide_duration(tile_count: int) -> float:
 		speed_multiplier = minf(speed_multiplier, long_slide_max_speed_multiplier)
 
 	var effective_velocity: float = _slide_velocity * speed_multiplier
-	return maxf(min_slide_duration_sec, float(tile_count) / effective_velocity)
+	var duration: float = maxf(min_slide_duration_sec, float(tile_count) / effective_velocity)
+	
+	# Reduced motion still slides, but we cap the max duration so it doesn't 
+	# feel sluggish without the juice.
+	if _is_reduce_motion_enabled():
+		return minf(duration, 0.25)
+		
+	return duration
 
 
 func _queue_tile_reveal_events(tiles_covered: Array[Vector2i], slide_duration_sec: float) -> void:
@@ -472,11 +484,6 @@ func _queue_tile_reveal_events(tiles_covered: Array[Vector2i], slide_duration_se
 		_tile_reveal_tween.kill()
 
 	if tiles_covered.is_empty():
-		return
-
-	if _is_reduce_motion_enabled():
-		for coord: Vector2i in tiles_covered:
-			slide_tile_reached.emit(coord)
 		return
 
 	var per_tile_duration: float = slide_duration_sec / float(tiles_covered.size())
