@@ -37,6 +37,9 @@ var _world_map_count: int = 0
 # —————————————————————————————————————————————
 
 func before_each() -> void:
+	if AppSettings != null:
+		AppSettings.set_reduce_motion(true)
+	
 	_screen = load("res://src/ui/level_complete_screen.gd").new()
 	add_child_autofree(_screen)
 

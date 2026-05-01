@@ -55,12 +55,12 @@ func test_main_menu_button_emits_main_menu_requested() -> void:
 
 
 func test_pause_menu_has_audio_sliders() -> void:
-	assert_not_null(_menu.get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/MusicRow/MusicSlider"))
-	assert_not_null(_menu.get_node_or_null("Backdrop/Panel/Margin/VBox/AudioSection/SfxRow/SfxSlider"))
+	assert_not_null(_menu.get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/MusicRow/MusicSlider"))
+	assert_not_null(_menu.get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/SfxRow/SfxSlider"))
 
 
 func test_pause_menu_has_simple_ui_toggle() -> void:
-	assert_not_null(_menu.get_node_or_null("Backdrop/Panel/Margin/VBox/DisplaySection/SimpleUiRow/Toggle"))
+	assert_not_null(_menu.get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/SimpleUiRow/Toggle"))
 
 
 func test_simple_ui_toggle_writes_to_app_settings() -> void:
@@ -70,6 +70,7 @@ func test_simple_ui_toggle_writes_to_app_settings() -> void:
 
 func test_restart_requested_calls_restart_level_on_current_scene() -> void:
 	_menu.on_restart_btn_pressed()
+	await get_tree().create_timer(0.3).timeout
 	assert_eq(_gameplay_scene.restart_calls, 1)
 
 
@@ -95,4 +96,5 @@ func test_confirm_modal_confirm_goes_to_world_map() -> void:
 	var modal: Node = _menu.get_node_or_null("ConfirmNavigationModal")
 	assert_not_null(modal)
 	modal.confirmed.emit()
+	await get_tree().create_timer(0.3).timeout
 	assert_eq(SceneManager.get_current_screen(), SceneManager.Screen.WORLD_MAP)
