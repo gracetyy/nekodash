@@ -32,27 +32,19 @@ const SETTINGS_SECTION: String = "audio"
 const KEY_MUSIC_VOLUME: String = "music_volume"
 const KEY_MUSIC_MUTE: String = "music_mute"
 
+## Volume adjustment when ducked (e.g. during pause).
+const DUCKED_VOLUME_DB: float = -3.0
+
 
 # —————————————————————————————————————————————
-# Screen-to-track mapping
+# Resources
 # —————————————————————————————————————————————
 
-## Maps SceneManager.Screen → AudioStream.
-var _screen_tracks: Dictionary = {
-	SceneManager.Screen.MAIN_MENU: preload("res://assets/audio/bgm/opening.ogg"),
-	SceneManager.Screen.WORLD_MAP: preload("res://assets/audio/bgm/opening.ogg"),
-	SceneManager.Screen.SKIN_SELECT: preload("res://assets/audio/bgm/skin_select.ogg"),
-	SceneManager.Screen.OPENING: preload("res://assets/audio/bgm/opening.ogg"),
-	SceneManager.Screen.CREDITS: preload("res://assets/audio/bgm/opening.ogg"),
-}
+const GLOBAL_AUDIO_PATH: String = "res://data/global_audio.tres"
+const CATALOGUE_PATH: String = "res://data/level_catalogue.tres"
 
-## Maps world_id string → AudioStream for per-world gameplay music.
-var _world_tracks: Dictionary = {
-	"1": preload("res://assets/audio/bgm/bedroom.wav"),
-	"2": preload("res://assets/audio/bgm/kitchen.ogg"),
-	"3": preload("res://assets/audio/bgm/living_room.ogg"),
-	"99": preload("res://assets/audio/bgm/hku.ogg"),
-}
+var _global_audio: GlobalAudioSettings
+var _catalogue: LevelCatalogue
 
 
 # —————————————————————————————————————————————
@@ -80,7 +72,9 @@ var _current_world_id: String = ""
 
 ## Track volume ducking state (for overlays).
 var _is_ducked: bool = false
-const DUCKED_VOLUME_DB: float = -12.0
+
+var _fade_in_tween: Tween
+var _fade_out_tween: Tween
 
 
 # —————————————————————————————————————————————
@@ -89,6 +83,7 @@ const DUCKED_VOLUME_DB: float = -12.0
 
 func _ready() -> void:
 	_create_players()
+	_load_resources()
 	_load_settings()
 	_apply_bus_settings()
 	_connect_scene_manager_signals()
@@ -102,10 +97,8 @@ func _ready() -> void:
 ## Same-track guard prevents restarting an already-playing track.
 func play(stream: AudioStream) -> void:
 	if stream == null:
-		push_warning("[MusicManager] play() called with null AudioStream — skipping.")
 		return
 
-	# Same-track guard: don't restart only if this stream is already active.
 	if stream == _current_stream and (_player_a.playing or _player_b.playing):
 		return
 
@@ -114,22 +107,24 @@ func play(stream: AudioStream) -> void:
 	var incoming: AudioStreamPlayer = _player_a if _active_is_a else _player_b
 	var outgoing: AudioStreamPlayer = _player_b if _active_is_a else _player_a
 
+	# Stop any existing tweens to prevent volume fighting
+	if _fade_in_tween: _fade_in_tween.kill()
+	if _fade_out_tween: _fade_out_tween.kill()
+
 	# Fade out outgoing
 	if outgoing.playing:
-		var fade_out: Tween = create_tween()
-		fade_out.tween_property(outgoing, "volume_db", -80.0, CROSSFADE_DURATION)
-		fade_out.tween_callback(outgoing.stop)
+		_fade_out_tween = create_tween()
+		_fade_out_tween.tween_property(outgoing, "volume_db", -80.0, CROSSFADE_DURATION)
+		_fade_out_tween.tween_callback(outgoing.stop)
 
 	# Start incoming
 	incoming.stream = stream
 	incoming.volume_db = -80.0
 	incoming.play()
 
-	var fade_in: Tween = create_tween()
-	# We fade in to 0.0 dB relative to the bus volume.
-	fade_in.tween_property(incoming, "volume_db", 0.0, CROSSFADE_DURATION)
+	_fade_in_tween = create_tween()
+	_fade_in_tween.tween_property(incoming, "volume_db", 0.0, CROSSFADE_DURATION)
 
-	# Swap active player for next cross-fade
 	_active_is_a = not _active_is_a
 
 
@@ -183,12 +178,27 @@ func _create_players() -> void:
 	_player_a = AudioStreamPlayer.new()
 	_player_a.name = "MusicPlayerA"
 	_player_a.bus = BUS_NAME
+	_player_a.process_mode = Node.PROCESS_MODE_ALWAYS
+	_player_a.finished.connect(_on_player_finished.bind(_player_a))
 	add_child(_player_a)
 
 	_player_b = AudioStreamPlayer.new()
 	_player_b.name = "MusicPlayerB"
 	_player_b.bus = BUS_NAME
+	_player_b.process_mode = Node.PROCESS_MODE_ALWAYS
+	_player_b.finished.connect(_on_player_finished.bind(_player_b))
 	add_child(_player_b)
+
+
+func _load_resources() -> void:
+	if ResourceLoader.exists(GLOBAL_AUDIO_PATH):
+		_global_audio = load(GLOBAL_AUDIO_PATH) as GlobalAudioSettings
+
+	if ResourceLoader.exists(CATALOGUE_PATH):
+		_catalogue = load(CATALOGUE_PATH) as LevelCatalogue
+	
+	# Small delay before initial play to ensure audio driver is ready (prevents WASAPI warnings)
+	get_tree().create_timer(0.1).timeout.connect(_identify_and_play_initial_track)
 
 
 ## Connects to SceneManager signals for automatic track switching.
@@ -209,7 +219,10 @@ func _on_transition_completed(to_screen: SceneManager.Screen) -> void:
 	if to_screen == SceneManager.Screen.GAMEPLAY:
 		return
 
-	var track: AudioStream = _screen_tracks.get(to_screen)
+	if _global_audio == null:
+		return
+		
+	var track: AudioStream = _global_audio.screen_tracks.get(to_screen)
 	if track != null:
 		play(track)
 
@@ -222,7 +235,9 @@ func _on_overlay_opened(overlay: SceneManager.Overlay) -> void:
 			_is_ducked = true
 			_apply_bus_settings()
 		else:
-			var track: AudioStream = _screen_tracks.get(SceneManager.Screen.MAIN_MENU)
+			if _global_audio == null:
+				return
+			var track: AudioStream = _global_audio.screen_tracks.get(SceneManager.Screen.MAIN_MENU)
 			if track != null:
 				play(track)
 	
@@ -241,15 +256,29 @@ func _on_overlay_closed(overlay: SceneManager.Overlay) -> void:
 ## Handles world changes — selects track based on world_id.
 func _on_world_changed(world_id: String) -> void:
 	_current_world_id = world_id
-	var track: AudioStream = _world_tracks.get(world_id)
-	if track != null:
-		play(track)
+	
+	if _catalogue == null:
+		return
+		
+	var found: bool = false
+	var w_id_int: int = world_id.to_int()
+	for world: WorldData in _catalogue.worlds:
+		if world.world_id == w_id_int:
+			if world.bgm_track != null:
+				play(world.bgm_track)
+				found = true
+			break
+	
+	if not found and _global_audio != null and _global_audio.fallback_track != null:
+		print("[MusicManager] No world BGM found for ", world_id, ", using fallback.")
+		play(_global_audio.fallback_track)
 
 
 ## Applies current volume, mute, and ducking state to the Music audio bus.
 func _apply_bus_settings() -> void:
 	var bus_idx: int = AudioServer.get_bus_index(BUS_NAME)
 	if bus_idx == -1:
+		push_warning("[MusicManager] Music bus not found: " + BUS_NAME)
 		return
 	
 	var target_db: float = linear_to_db(_volume)
@@ -280,3 +309,22 @@ func _save_settings() -> void:
 	var err: Error = config.save(SETTINGS_PATH)
 	if err != OK:
 		push_error("[MusicManager] Failed to save settings: %s" % error_string(err))
+
+
+func _on_player_finished(player: AudioStreamPlayer) -> void:
+	# If the stream that just finished is still the one we want to play,
+	# restart it to achieve infinite looping.
+	if player.stream == _current_stream:
+		player.play()
+
+
+func _identify_and_play_initial_track() -> void:
+	if SceneManager == null:
+		return
+	var current: SceneManager.Screen = SceneManager.get_current_screen()
+	if current != SceneManager.Screen.GAMEPLAY:
+		_on_transition_completed(current)
+	else:
+		# For gameplay, check if we have a current world ID saved or active
+		if _current_world_id != "":
+			_on_world_changed(_current_world_id)
