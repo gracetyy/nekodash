@@ -1,14 +1,10 @@
 class_name TutorialSystem
 extends CanvasLayer
 
-const TutorialBubbleScene = preload("res://scenes/ui/components/tutorial/TutorialBubble.tscn")
-const PillButtonScene = preload("res://scenes/ui/components/buttons/PillButton.tscn")
+@export var tutorial_data: TutorialData
 const PILL_HOVER_WIRED_META: String = "_shell_pill_hover_wired"
 
-const ARROW_DOWN = preload("res://assets/art/ui/icons/arrows/white_down.png")
-const ARROW_UP = preload("res://assets/art/ui/icons/arrows/white_up.png")
-const ARROW_PURPLE_RIGHT = preload("res://assets/art/ui/icons/arrows/purple_right.png")
-
+var _data: TutorialData
 var _level_id: String = ""
 var _step: int = 0
 var _active_bubbles: Array[Control] = []
@@ -27,12 +23,17 @@ func _ready() -> void:
 
 
 func initialize(coordinator: Node, level_data: LevelData) -> void:
+	if tutorial_data != null:
+		_data = tutorial_data
+	elif ResourceLoader.exists("res://data/tutorial_data.tres"):
+		_data = load("res://data/tutorial_data.tres") as TutorialData
+		
 	if AppSettings.get_tutorial_skipped():
 		_cleanup()
 		return
 		
 	_level_id = level_data.level_id
-	if _level_id not in ["w1_l1", "w1_l2", "w1_l3"]:
+	if _data == null or _level_id not in _data.trigger_level_ids:
 		_cleanup()
 		return
 		
@@ -65,7 +66,10 @@ func _cleanup() -> void:
 
 
 func _create_skip_button() -> void:
-	_skip_btn = PillButtonScene.instantiate() as BaseButton
+	if _data == null or _data.pill_button_scene == null:
+		return
+		
+	_skip_btn = _data.pill_button_scene.instantiate() as BaseButton
 	# Disable shared pill hover scaling so tutorial skip button keeps its compact size.
 	_skip_btn.set_meta(PILL_HOVER_WIRED_META, "disabled")
 	_skip_btn.text = "Skip Tutorial"
@@ -151,7 +155,7 @@ func _show_bubble_with_options(
 	show_arrow: bool,
 	bubble_offset: Vector2
 ) -> void:
-	var bubble = TutorialBubbleScene.instantiate() as Control
+	var bubble = _data.bubble_scene.instantiate() as Control
 	bubble.custom_minimum_size.x = 220
 	bubble.size.x = 220
 	if bubble.has_method("apply_text"):
@@ -180,7 +184,7 @@ func _show_bubble_with_options(
 
 	if show_arrow:
 		var arrow = TextureRect.new()
-		arrow.texture = ARROW_DOWN if point_down else ARROW_UP
+		arrow.texture = _data.arrow_down if point_down else _data.arrow_up
 		arrow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		arrow.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		arrow.custom_minimum_size = Vector2(40, 40)
@@ -238,7 +242,7 @@ func _play_w1_l1_step() -> void:
 	match _step:
 		0:
 			_sliding_movement.forced_direction = Vector2i.RIGHT
-			_show_directional_arrow(Vector2i(2, 1), ARROW_PURPLE_RIGHT)
+			_show_directional_arrow(Vector2i(2, 1), _data.arrow_purple_right)
 			_show_bubble_no_arrow(Vector2i(2, 1), move_verb + " to move the cat!", true, Vector2(34, 0))
 		1:
 			_sliding_movement.forced_direction = Vector2i.ZERO

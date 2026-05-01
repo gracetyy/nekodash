@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TutorialData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/tutorial_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/tutorial/TutorialBubble.tscn" id="2_bubble"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/buttons/PillButton.tscn" id="3_pill"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/icons/arrows/white_down.png" id="4_down"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/icons/arrows/white_up.png" id="5_up"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/icons/arrows/purple_right.png" id="6_purple_right"]
+
+[resource]
+script = ExtResource("1_script")
+trigger_level_ids = ["w1_l1", "w1_l2", "w1_l3"]
+bubble_scene = ExtResource("2_bubble")
+pill_button_scene = ExtResource("3_pill")
+arrow_down = ExtResource("4_down")
+arrow_up = ExtResource("5_up")
+arrow_purple_right = ExtResource("6_purple_right")
