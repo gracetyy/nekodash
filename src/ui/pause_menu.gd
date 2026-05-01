@@ -26,7 +26,13 @@ signal main_menu_requested
 @export var _reduce_motion_toggle: BaseButton
 @export var _large_ui_toggle: BaseButton
 @export var _simple_ui_toggle: BaseButton
-@export var _input_hint_option: OptionButton
+@export var _developer_label: Label
+@export var _dev_mode_toggle: BaseButton
+@export var _unlock_all_skins_toggle: BaseButton
+@export var _developer_section: Control
+@export var _cat_peek: Control
+
+var _cat_click_count: int = 0
 var _suppress_events: bool = false
 var _confirm_modal: ConfirmNavigationModal
 
@@ -66,8 +72,16 @@ func _ready() -> void:
 		_large_ui_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/LargeUiRow/Toggle")
 	if _simple_ui_toggle == null:
 		_simple_ui_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/SimpleUiRow/Toggle")
-	if _input_hint_option == null:
-		_input_hint_option = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputHintRow/OptionButton")
+	if _developer_label == null:
+		_developer_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/DeveloperLabel")
+	if _dev_mode_toggle == null:
+		_dev_mode_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/DevModeRow/Toggle")
+	if _unlock_all_skins_toggle == null:
+		_unlock_all_skins_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/UnlockSkinsRow/Toggle")
+	if _developer_section == null:
+		_developer_section = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection")
+	if _cat_peek == null:
+		_cat_peek = get_node_or_null("Backdrop/Margin/VBox/HeaderSpace/CatPeek")
 	_ensure_slider_test_aliases()
 	assert(_backdrop != null, "_backdrop not assigned")
 	assert(_panel != null, "_panel not assigned")
@@ -75,7 +89,6 @@ func _ready() -> void:
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_audio_label != null, "_audio_label not assigned")
 	assert(_display_label != null, "_display_label not assigned")
-	assert(_input_label != null, "_input_label not assigned")
 	assert(_music_slider != null, "_music_slider not assigned")
 	assert(_music_mute_toggle != null, "_music_mute_toggle not assigned")
 	assert(_sfx_slider != null, "_sfx_slider not assigned")
@@ -83,13 +96,11 @@ func _ready() -> void:
 	assert(_reduce_motion_toggle != null, "_reduce_motion_toggle not assigned")
 	assert(_large_ui_toggle != null, "_large_ui_toggle not assigned")
 	assert(_simple_ui_toggle != null, "_simple_ui_toggle not assigned")
-	assert(_input_hint_option != null, "_input_hint_option not assigned")
 	assert(_resume_btn != null, "_resume_btn not assigned")
 	assert(_restart_btn != null, "_restart_btn not assigned")
 	assert(_main_menu_btn != null, "_main_menu_btn not assigned")
 	_connect_app_settings_signal()
 	_ensure_confirm_modal()
-	_populate_input_hint_options()
 	_connect_signals()
 	_connect_navigation()
 	_apply_visual_style()
@@ -136,8 +147,14 @@ func _connect_signals() -> void:
 		_large_ui_toggle.toggled.connect(_on_large_ui_toggled)
 	if _simple_ui_toggle != null and not _simple_ui_toggle.toggled.is_connected(_on_simple_ui_toggled):
 		_simple_ui_toggle.toggled.connect(_on_simple_ui_toggled)
-	if _input_hint_option != null and not _input_hint_option.item_selected.is_connected(_on_input_hint_selected):
-		_input_hint_option.item_selected.connect(_on_input_hint_selected)
+	if _dev_mode_toggle != null and not _dev_mode_toggle.toggled.is_connected(_on_dev_mode_toggled):
+		_dev_mode_toggle.toggled.connect(_on_dev_mode_toggled)
+	if _unlock_all_skins_toggle != null and not _unlock_all_skins_toggle.toggled.is_connected(_on_unlock_all_skins_toggled):
+		_unlock_all_skins_toggle.toggled.connect(_on_unlock_all_skins_toggled)
+	if _cat_peek != null:
+		_cat_peek.mouse_filter = Control.MOUSE_FILTER_STOP
+		if not _cat_peek.gui_input.is_connected(_on_cat_peek_input):
+			_cat_peek.gui_input.connect(_on_cat_peek_input)
 
 
 func _connect_navigation() -> void:
@@ -196,14 +213,6 @@ func _on_confirm_modal_canceled() -> void:
 	pass
 
 
-func _populate_input_hint_options() -> void:
-	if _input_hint_option == null or _input_hint_option.item_count > 0:
-		return
-	_input_hint_option.add_item("Auto")
-	_input_hint_option.add_item("Touch")
-	_input_hint_option.add_item("Keyboard / Controller")
-
-
 func _sync_controls() -> void:
 	_suppress_events = true
 	if _music_slider != null:
@@ -220,14 +229,12 @@ func _sync_controls() -> void:
 		_large_ui_toggle.button_pressed = AppSettings.get_large_ui()
 	if _simple_ui_toggle != null:
 		_simple_ui_toggle.button_pressed = AppSettings.get_simple_ui()
-	if _input_hint_option != null:
-		match AppSettings.get_input_hint_mode():
-			AppSettings.INPUT_HINT_TOUCH:
-				_input_hint_option.select(1)
-			AppSettings.INPUT_HINT_CONTROLLER:
-				_input_hint_option.select(2)
-			_:
-				_input_hint_option.select(0)
+	if _dev_mode_toggle != null:
+		_dev_mode_toggle.button_pressed = AppSettings.get_dev_mode()
+	if _unlock_all_skins_toggle != null:
+		_unlock_all_skins_toggle.button_pressed = AppSettings.get_unlock_all_skins()
+	if _developer_section != null:
+		_developer_section.visible = AppSettings.get_show_dev_tools()
 	_refresh_audio_control_states()
 	_suppress_events = false
 
@@ -278,16 +285,25 @@ func _on_simple_ui_toggled(button_pressed: bool) -> void:
 	AppSettings.set_simple_ui(button_pressed)
 
 
-func _on_input_hint_selected(index: int) -> void:
+func _on_dev_mode_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
-	match index:
-		1:
-			AppSettings.set_input_hint_mode(AppSettings.INPUT_HINT_TOUCH)
-		2:
-			AppSettings.set_input_hint_mode(AppSettings.INPUT_HINT_CONTROLLER)
-		_:
-			AppSettings.set_input_hint_mode(AppSettings.INPUT_HINT_AUTO)
+	AppSettings.set_dev_mode(button_pressed)
+
+
+func _on_unlock_all_skins_toggled(button_pressed: bool) -> void:
+	if _suppress_events:
+		return
+	AppSettings.set_unlock_all_skins(button_pressed)
+
+
+func _on_cat_peek_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_cat_click_count += 1
+		if _cat_click_count >= 10:
+			_cat_click_count = 0
+			var new_state: bool = not AppSettings.get_show_dev_tools()
+			AppSettings.set_show_dev_tools(new_state)
 
 
 func _apply_visual_style() -> void:
@@ -296,7 +312,7 @@ func _apply_visual_style() -> void:
 
 
 func _refresh_title_components() -> void:
-	for node: Label in [_title_label, _audio_label, _display_label, _input_label]:
+	for node: Label in [_title_label, _audio_label, _display_label, _developer_label]:
 		if node != null and node.has_method("refresh_style"):
 			node.call("refresh_style")
 	if _ribbon != null and _ribbon.has_method("refresh_style"):
@@ -381,6 +397,8 @@ func _on_app_setting_changed(section: String, key: String, _value: Variant) -> v
 	if section == AppSettings.SECTION_DISPLAY:
 		if key == AppSettings.KEY_LARGE_UI:
 			_apply_visual_style()
+		_sync_controls()
+	elif section == AppSettings.SECTION_SHELL and (key == AppSettings.KEY_DEV_MODE or key == AppSettings.KEY_UNLOCK_ALL_SKINS or key == AppSettings.KEY_SHOW_DEV_TOOLS):
 		_sync_controls()
 	elif section == AppSettings.SECTION_INPUT and key == AppSettings.KEY_INPUT_HINT_MODE:
 		_sync_controls()

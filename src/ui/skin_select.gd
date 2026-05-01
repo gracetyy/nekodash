@@ -141,6 +141,15 @@ func _refresh_selection_state() -> void:
 
 
 func _on_skin_card_pressed(skin_id: String) -> void:
+	var skin_data := CosmeticDatabase.get_skin(skin_id)
+	var unlocked_ids := SaveManager.get_unlocked_skins()
+	var is_unlocked := skin_id in unlocked_ids
+	
+	if not is_unlocked:
+		# Selection is blocked for locked skins.
+		# The SkinCard itself will handle playing the locked feedback animation/sfx.
+		return
+		
 	_selected_skin_id = skin_id
 	_refresh_selection_state()
 

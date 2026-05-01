@@ -128,7 +128,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 23
-theme_override_constants/margin_right = 5
+theme_override_constants/margin_right = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBox/ListOuterMargin"]
 layout_mode = 2
@@ -139,4 +139,5 @@ horizontal_scroll_mode = 0
 [node name="WorldList" type="VBoxContainer" parent="MarginContainer/VBox/ListOuterMargin/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/margin_right = 21
 theme_override_constants/separation = 12

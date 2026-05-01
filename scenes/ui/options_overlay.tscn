@@ -133,7 +133,7 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
+theme_override_constants/margin_right = 2
 theme_override_constants/margin_bottom = 24
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin"]
@@ -144,6 +144,7 @@ vertical_scroll_mode = 2
 [node name="ContentVBox" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/margin_right = 22
 theme_override_constants/separation = 12
 
 [node name="TitleLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
@@ -191,31 +192,12 @@ label_text = "Large Text"
 layout_mode = 2
 label_text = "Simple UI"
 
-[node name="InputSection" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="InputLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection"]
-layout_mode = 2
-text = "Input Hints"
-script = ExtResource("9")
-font_size = 24
-
-[node name="InputHintRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection" instance=ExtResource("8")]
-layout_mode = 2
-label_text = "Hint Style"
-
 [node name="TutorialSection" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="TutorialLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/TutorialSection"]
-layout_mode = 2
-text = "Tutorial"
-script = ExtResource("9")
-font_size = 24
-
 [node name="CenterContainer" type="CenterContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/TutorialSection"]
+
 layout_mode = 2
 
 [node name="ReplayTutorialBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/TutorialSection/CenterContainer" instance=ExtResource("10")]
@@ -255,6 +237,60 @@ label_text = "Unlock All Levels"
 [node name="UnlockSkinsRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection" instance=ExtResource("7")]
 layout_mode = 2
 label_text = "Unlock All Skins"
+
+[node name="ImportExportRow" type="MarginContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 4
+
+[node name="HBox" type="HBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/ImportExportRow"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ImportBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/ImportExportRow/HBox" instance=ExtResource("10")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_constants/h_separation = 10
+theme_override_fonts/font = ExtResource("10_ro1da")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxTexture_qdh64")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_hgr6n")
+theme_override_styles/hover = SubResource("StyleBoxTexture_6aevj")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_2iro5")
+theme_override_styles/normal = SubResource("StyleBoxTexture_uvoln")
+text = "Import"
+metadata/_shell_pill_hover_wired = true
+
+[node name="ExportBtn" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/ImportExportRow/HBox" instance=ExtResource("10")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_constants/h_separation = 10
+theme_override_fonts/font = ExtResource("10_ro1da")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxTexture_qdh64")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_hgr6n")
+theme_override_styles/hover = SubResource("StyleBoxTexture_6aevj")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_2iro5")
+theme_override_styles/normal = SubResource("StyleBoxTexture_uvoln")
+text = "Export"
+metadata/_shell_pill_hover_wired = true
 
 [node name="CloseBtn" parent="Backdrop" instance=ExtResource("5")]
 z_index = 2

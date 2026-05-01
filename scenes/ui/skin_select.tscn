@@ -81,5 +81,5 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 disabled = true
-text = "EQUIP (COMING SOON)"
+text = "EQUIP"
 variant = 1

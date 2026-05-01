@@ -39,7 +39,7 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
+theme_override_constants/margin_right = 2
 theme_override_constants/margin_bottom = 24
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer/CreditsCard/CardMargin"]
@@ -70,6 +70,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 1
 theme_override_colors/default_color = Color(0.47451, 0.372549, 0.505882, 1)
+theme_override_constants/margin_right = 22
 theme_override_font_sizes/normal_font_size = 18
 bbcode_enabled = true
 text = "[center][b]Project Shell & UI Template[/b]

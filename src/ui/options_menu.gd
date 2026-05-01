@@ -28,14 +28,18 @@ var _sfx_manager_ref: Node
 @export var _reduce_motion_toggle: BaseButton
 @export var _large_ui_toggle: BaseButton
 @export var _simple_ui_toggle: BaseButton
-@export var _input_hint_option: OptionButton
 @export var _replay_tutorial_btn: BaseButton
-@export var _tutorial_label: Label
 @export var _developer_label: Label
+
 @export var _dev_mode_toggle: BaseButton
 @export var _unlock_all_skins_toggle: BaseButton
+@export var _import_progress_btn: BaseButton
+@export var _export_progress_btn: BaseButton
+@export var _developer_section: Control
+@export var _cat_peek: Control
 @export var _close_btn: BaseButton
 
+var _cat_click_count: int = 0
 var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
 
 
@@ -68,18 +72,22 @@ func _ready() -> void:
 		_large_ui_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/LargeUiRow/Toggle")
 	if _simple_ui_toggle == null:
 		_simple_ui_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/SimpleUiRow/Toggle")
-	if _input_hint_option == null:
-		_input_hint_option = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputHintRow/OptionButton")
-	if _tutorial_label == null:
-		_tutorial_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/TutorialSection/TutorialLabel")
 	if _replay_tutorial_btn == null:
 		_replay_tutorial_btn = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/TutorialSection/CenterContainer/ReplayTutorialBtn")
 	if _developer_label == null:
 		_developer_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/DeveloperLabel")
+	if _developer_section == null:
+		_developer_section = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection")
+	if _cat_peek == null:
+		_cat_peek = get_node_or_null("Backdrop/Margin/VBox/HeaderSpace/CatPeek")
 	if _dev_mode_toggle == null:
 		_dev_mode_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/DevModeRow/Toggle")
 	if _unlock_all_skins_toggle == null:
 		_unlock_all_skins_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/UnlockSkinsRow/Toggle")
+	if _import_progress_btn == null:
+		_import_progress_btn = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/ImportExportRow/HBox/ImportBtn")
+	if _export_progress_btn == null:
+		_export_progress_btn = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DeveloperSection/ImportExportRow/HBox/ExportBtn")
 	if _close_btn == null:
 		_close_btn = get_node_or_null("Backdrop/CloseBtn")
 	assert(_backdrop != null, "_backdrop not assigned")
@@ -88,7 +96,6 @@ func _ready() -> void:
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_audio_label != null, "_audio_label not assigned")
 	assert(_display_label != null, "_display_label not assigned")
-	assert(_input_label != null, "_input_label not assigned")
 	assert(_music_slider != null, "_music_slider not assigned")
 	assert(_music_mute_toggle != null, "_music_mute_toggle not assigned")
 	assert(_sfx_slider != null, "_sfx_slider not assigned")
@@ -96,7 +103,6 @@ func _ready() -> void:
 	assert(_reduce_motion_toggle != null, "_reduce_motion_toggle not assigned")
 	assert(_large_ui_toggle != null, "_large_ui_toggle not assigned")
 	assert(_simple_ui_toggle != null, "_simple_ui_toggle not assigned")
-	assert(_input_hint_option != null, "_input_hint_option not assigned")
 	assert(_dev_mode_toggle != null, "_dev_mode_toggle not assigned")
 	# _unlock_all_skins_toggle might be missing in older scene versions, so we don't assert it strictly if we want to be safe, 
 	# but for this task we assume it will be added.
@@ -106,7 +112,6 @@ func _ready() -> void:
 	assert(_close_btn != null, "_close_btn not assigned")
 	_resolve_services()
 	_connect_settings_signal()
-	_populate_input_hint_options()
 	_connect_ui()
 	_apply_visual_style()
 	_sync_controls()
@@ -174,14 +179,6 @@ func _disconnect_settings_signal() -> void:
 		_app_settings_ref.disconnect("setting_changed", changed_callable)
 
 
-func _populate_input_hint_options() -> void:
-	if _input_hint_option == null or _input_hint_option.item_count > 0:
-		return
-	_input_hint_option.add_item("Auto")
-	_input_hint_option.add_item("Touch")
-	_input_hint_option.add_item("Keyboard / Controller")
-
-
 func _connect_ui() -> void:
 	if _music_slider != null and not _music_slider.value_changed.is_connected(_on_music_slider_changed):
 		_music_slider.value_changed.connect(_on_music_slider_changed)
@@ -197,16 +194,22 @@ func _connect_ui() -> void:
 		_large_ui_toggle.toggled.connect(_on_large_ui_toggled)
 	if _simple_ui_toggle != null and not _simple_ui_toggle.toggled.is_connected(_on_simple_ui_toggled):
 		_simple_ui_toggle.toggled.connect(_on_simple_ui_toggled)
-	if _input_hint_option != null and not _input_hint_option.item_selected.is_connected(_on_input_hint_selected):
-		_input_hint_option.item_selected.connect(_on_input_hint_selected)
 	if _dev_mode_toggle != null and not _dev_mode_toggle.toggled.is_connected(_on_dev_mode_toggled):
 		_dev_mode_toggle.toggled.connect(_on_dev_mode_toggled)
 	if _unlock_all_skins_toggle != null and not _unlock_all_skins_toggle.toggled.is_connected(_on_unlock_all_skins_toggled):
 		_unlock_all_skins_toggle.toggled.connect(_on_unlock_all_skins_toggled)
+	if _import_progress_btn != null and not _import_progress_btn.pressed.is_connected(_on_import_progress_pressed):
+		_import_progress_btn.pressed.connect(_on_import_progress_pressed)
+	if _export_progress_btn != null and not _export_progress_btn.pressed.is_connected(_on_export_progress_pressed):
+		_export_progress_btn.pressed.connect(_on_export_progress_pressed)
 	if _replay_tutorial_btn != null and not _replay_tutorial_btn.pressed.is_connected(_on_replay_tutorial_pressed):
 		_replay_tutorial_btn.pressed.connect(_on_replay_tutorial_pressed)
 	if _close_btn != null and not _close_btn.pressed.is_connected(on_close_btn_pressed):
 		_close_btn.pressed.connect(on_close_btn_pressed)
+	if _cat_peek != null:
+		_cat_peek.mouse_filter = Control.MOUSE_FILTER_STOP
+		if not _cat_peek.gui_input.is_connected(_on_cat_peek_input):
+			_cat_peek.gui_input.connect(_on_cat_peek_input)
 
 
 func _sync_controls() -> void:
@@ -233,18 +236,12 @@ func _sync_controls() -> void:
 		_large_ui_toggle.button_pressed = _app_settings_ref.get_large_ui()
 	if _simple_ui_toggle != null:
 		_simple_ui_toggle.button_pressed = _app_settings_ref.get_simple_ui()
-	if _input_hint_option != null:
-		match _app_settings_ref.get_input_hint_mode():
-			AppSettings.INPUT_HINT_TOUCH:
-				_input_hint_option.select(1)
-			AppSettings.INPUT_HINT_CONTROLLER:
-				_input_hint_option.select(2)
-			_:
-				_input_hint_option.select(0)
 	if _dev_mode_toggle != null:
 		_dev_mode_toggle.button_pressed = _app_settings_ref.get_dev_mode()
 	if _unlock_all_skins_toggle != null:
 		_unlock_all_skins_toggle.button_pressed = _app_settings_ref.get_unlock_all_skins()
+	if _developer_section != null:
+		_developer_section.visible = _app_settings_ref.get_show_dev_tools()
 	_refresh_audio_control_states()
 	_sync_tutorial_button_state()
 	_suppress_events = false
@@ -296,18 +293,6 @@ func _on_simple_ui_toggled(button_pressed: bool) -> void:
 	_app_settings_ref.set_simple_ui(button_pressed)
 
 
-func _on_input_hint_selected(index: int) -> void:
-	if _suppress_events:
-		return
-	match index:
-		1:
-			_app_settings_ref.set_input_hint_mode(AppSettings.INPUT_HINT_TOUCH)
-		2:
-			_app_settings_ref.set_input_hint_mode(AppSettings.INPUT_HINT_CONTROLLER)
-		_:
-			_app_settings_ref.set_input_hint_mode(AppSettings.INPUT_HINT_AUTO)
-
-
 func _on_dev_mode_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
@@ -318,6 +303,82 @@ func _on_unlock_all_skins_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
 	_app_settings_ref.set_unlock_all_skins(button_pressed)
+
+
+func _on_import_progress_pressed() -> void:
+	if _suppress_events:
+		return
+	_show_file_dialog(FileDialog.FILE_MODE_OPEN_FILE, "Import Progress", _on_import_file_selected)
+
+
+func _on_export_progress_pressed() -> void:
+	if _suppress_events:
+		return
+	_show_file_dialog(FileDialog.FILE_MODE_SAVE_FILE, "Export Progress", _on_export_file_selected)
+
+
+func _show_file_dialog(mode: FileDialog.FileMode, title: String, callback: Callable) -> void:
+	var dialog := FileDialog.new()
+	dialog.file_mode = mode
+	dialog.access = FileDialog.ACCESS_FILESYSTEM
+	dialog.title = title
+	dialog.add_filter("*.json", "JSON Files")
+	dialog.use_native_dialog = true
+	dialog.file_selected.connect(callback)
+	add_child(dialog)
+	dialog.popup_centered_ratio(0.6)
+
+
+func _on_import_file_selected(path: String) -> void:
+	if SaveManager.import_from_file(path):
+		print("OptionsMenu: Import success branch hit.")
+		if _import_progress_btn is Button:
+			var old_text: String = _import_progress_btn.text
+			_import_progress_btn.text = "Success!"
+			get_tree().create_timer(2.0).timeout.connect(func(): 
+				if _import_progress_btn is Button: 
+					_import_progress_btn.text = old_text
+			)
+		SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
+	else:
+		if _import_progress_btn is Button:
+			var old_text: String = _import_progress_btn.text
+			_import_progress_btn.text = "Failed!"
+			get_tree().create_timer(1.5).timeout.connect(func(): 
+				if _import_progress_btn is Button: 
+					_import_progress_btn.text = old_text
+			)
+
+
+func _on_export_file_selected(path: String) -> void:
+	if SaveManager.export_to_file(path) == OK:
+		print("OptionsMenu: Export success branch hit.")
+		if _export_progress_btn is Button:
+			var old_text: String = _export_progress_btn.text
+			_export_progress_btn.text = "Success!"
+			get_tree().create_timer(2.0).timeout.connect(func(): 
+				if _export_progress_btn is Button: 
+					_export_progress_btn.text = old_text
+			)
+		SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
+	else:
+		if _export_progress_btn is Button:
+			var old_text: String = _export_progress_btn.text
+			_export_progress_btn.text = "Error!"
+			get_tree().create_timer(1.5).timeout.connect(func(): 
+				if _export_progress_btn is Button: 
+					_export_progress_btn.text = old_text
+			)
+
+
+func _on_cat_peek_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_cat_click_count += 1
+		if _cat_click_count >= 10:
+			_cat_click_count = 0
+			var new_state: bool = not _app_settings_ref.get_show_dev_tools()
+			_app_settings_ref.set_show_dev_tools(new_state)
+			SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
 
 
 func _on_replay_tutorial_pressed() -> void:
@@ -360,7 +421,7 @@ func _apply_visual_style() -> void:
 
 
 func _refresh_title_components() -> void:
-	for node: Label in [_title_label, _audio_label, _display_label, _input_label, _tutorial_label, _developer_label]:
+	for node: Label in [_title_label, _audio_label, _display_label, _developer_label]:
 		if node != null and node.has_method("refresh_style"):
 			node.call("refresh_style")
 	if _ribbon != null and _ribbon.has_method("refresh_style"):
@@ -400,7 +461,7 @@ func _on_app_setting_changed(section: String, key: String, _value: Variant) -> v
 		if key == AppSettings.KEY_LARGE_UI:
 			_apply_visual_style()
 		_sync_controls()
-	elif section == AppSettings.SECTION_SHELL and (key == AppSettings.KEY_DEV_MODE or key == AppSettings.KEY_UNLOCK_ALL_SKINS):
+	elif section == AppSettings.SECTION_SHELL and (key == AppSettings.KEY_DEV_MODE or key == AppSettings.KEY_UNLOCK_ALL_SKINS or key == AppSettings.KEY_SHOW_DEV_TOOLS):
 		_sync_controls()
 	elif section == AppSettings.SECTION_INPUT and key == AppSettings.KEY_INPUT_HINT_MODE:
 		_sync_controls()
