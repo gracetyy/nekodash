@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="GlobalAudioSettings" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://src/core/global_audio_settings.gd" id="1_script"]
-[ext_resource type="AudioStream" path="res://assets/audio/bgm/opening.ogg" id="2_opening"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/opening.wav" id="2_opening"]
 [ext_resource type="AudioStream" path="res://assets/audio/bgm/skin_select.ogg" id="3_skins"]
 
 [resource]

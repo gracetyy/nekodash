@@ -7,7 +7,7 @@ art\ui\icons\pill_interiors\*
 art\ui\buttons\circular\*
 
 Bumper Audio Pack by Chequered Ink https://ci.itch.io/bumper-audio-pack :
-audio\bgm\opening.ogg
+audio\bgm\bedroom.ogg
 
 Music by Abstraction (https://abstractionmusic.com/): https://tallbeard.itch.io/music-loop-bundle
 audio\bgm\skin_select.ogg
@@ -31,7 +31,7 @@ audio\sfx\ui\toggle.ogg
 
 freesound.org:
 audio\sfx\gameplay\wall_bump.wav - https://freesound.org/people/Geoff-Bremner-Audio/sounds/653233/
-audio\bgm\bedroom.wav - https://freesound.org/people/Seth_Makes_Sounds/sounds/709779/
+audio\bgm\opening.wav - https://freesound.org/people/Seth_Makes_Sounds/sounds/709779/
 
 
 ---
