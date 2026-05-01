@@ -37,14 +37,14 @@ All colors referenced throughout this document use these named tokens.
 | `card/normal-bg`                | `#FAF7E7` | Normal card/panel background             |
 | `card/normal-bg-shadow`         | `#DDCBB7` | Drop shadow for normal card              |
 | `card/normal-outline`           | `#5E4863` | Border/outline for normal card           |
-| `card/normal-outline-shadow`    | `#BAB3B9` | Drop shadow for normal card outline      |
+| `card/normal-outline-shadow`    | `#61545C` | Drop shadow for normal card outline      |
 | `card/disabled-bg`              | `#BAB3B9` | Background for disabled/locked card      |
 | `card/disabled-bg-shadow`       | `#9A8B94` | Drop shadow for disabled card            |
 | `card/disabled-outline`         | `#7C777E` | Border/outline for disabled card         |
 | `card/highlight-bg`             | `#F3C145` | Background for highlighted/selected card |
 | `card/highlight-bg-shadow`      | `#D19646` | Drop shadow for highlighted card         |
 | `card/highlight-outline`        | `#5E4863` | Border/outline for highlighted card      |
-| `card/highlight-outline-shadow` | `#BCB3B7` | Drop shadow for highlighted card outline |
+| `card/highlight-outline-shadow` | `#958268` | Drop shadow for highlighted card outline |
 
 ### Buttons — Action Mapping & States
 
@@ -92,8 +92,8 @@ Buttons use a **4-colour system** with explicit tokens for all states including 
 |                 | Outline               | `btn/disabled-outline`             | `#9B8B98` |
 |                 | Text                  | `btn/disabled-text`                | `#ACA2AC` |
 |                 | Icon                  | `btn/disabled-icon`                | `#ACA2AC` |
-| **Dropshadows** | Normal                | `btn/dropshadow`                   | `#BAB3B9` |
-|                 | Pressed               | `btn/dropshadow-pressed`           | `#9A8B94` |
+| **Dropshadows** | Normal                | `btn/dropshadow`                   | `#61545C` |
+|                 | Pressed               | `btn/dropshadow-pressed`           | `#413A3E` |
 
 ### HUD & Stars
 
@@ -105,14 +105,14 @@ Buttons use a **4-colour system** with explicit tokens for all states including 
 | `items/star-filled-highlight`  | `#FDFDFB` | Glint/highlight on filled stars           |
 | `items/star-filled-shadow`     | `#EDB147` | Drop shadow/bottom bevel for filled stars |
 | `items/star-filled-outline`    | `#55324B` | Dark Plum outline for filled stars        |
-| `items/star-filled-dropshadow` | `#D19646` | Drop shadow for filled stars              |
+| `items/star-filled-dropshadow` | `#896029` | Drop shadow for filled stars              |
 | `items/star-empty`             | `#BAB3B9` | Base fill for unearned/missed stars       |
 | `items/star-empty-outline`     | `#55324B` | Dark Plum outline for empty stars         |
-| `items/star-empty-dropshadow`  | `#9A8B94` | Drop shadow for empty stars               |
+| `items/star-empty-dropshadow`  | `#413A3E` | Drop shadow for empty stars               |
 | `items/star-hollow`            | `#C5BFC2` | Background socket/hollow slot for stars   |
 | `items/star-hollow-shadow`     | `#A99BA2` | Inner shadow/bevel for the hollow socket  |
 | `items/star-hollow-outline`    | `#55324B` | Dark Plum outline for hollow socket       |
-| `items/star-hollow-dropshadow` | `#9A8B94` | Drop shadow for hollow socket             |
+| `items/star-hollow-dropshadow` | `#61545C` | Drop shadow for hollow socket             |
 
 ### Semantic
 
@@ -120,6 +120,20 @@ Buttons use a **4-colour system** with explicit tokens for all states including 
 | ---------------- | --------- | ---------------------------------------------- |
 | `badge-new-best` | `#F5A623` | "NEW BEST" orange pill badge on level complete |
 | `lock-gold`      | `#E8A820` | Padlock icon colour on locked levels/skins     |
+
+### Character (Cat)
+
+| Token              | Hex       | Usage                                 |
+| ------------------ | --------- | ------------------------------------- |
+| `cat/outline`      | `#7E4951` | Character outline and facial features |
+| `cat/main`         | `#FEFEFE` | Main fur color (Default skin)         |
+| `cat/shadow`       | `#DAC1BF` | Shadow areas on fur (Default skin)    |
+| `cat/blush`        | `#EBA6A6` | Face blush (Default skin)             |
+| `cat/nose`         | `#BC636E` | Nose color (Default skin)             |
+| `cat/tabby-main`   | `#FEF4DB` | Main fur color (Tabby skin)           |
+| `cat/tabby-shadow` | `#EFD6AE` | Shadow areas on fur (Tabby skin)      |
+| `cat/tabby-blush`  | `#E39475` | Face blush (Tabby skin)               |
+| `cat/tabby-nose`   | `#BC8263` | Nose color (Tabby skin)               |
 
 ---
 
@@ -332,12 +346,12 @@ Function    : Fills blocking cells that represent room walls (not furniture obst
 
 **Wall Tile Sets by World:**
 
-| World             | Theme                        | File                    | Detail level                                                          |
-| ----------------- | ---------------------------- | ----------------------- | --------------------------------------------------------------------- |
-| 1 — Living Room   | Wooden log-cabin planks      | `tileset-wall-ver1.png` | 6 variants including shelf, clock, framed picture                     |
-| 2 — Study/Library | Lavender paw-print wallpaper | `tileset-wall-ver2.png` | 8 variants including light switch, power outlet, framed cat art       |
-| 3 — Kitchen       | White/mint subway tile       | `tileset-wall-ver3.png` | 8 variants including knife rack, calendar, kitchen window with plants |
-| 4 — Bedroom       | Pastel pink kawaii wallpaper | `tileset-wall-ver4.png` | 8 variants including fairy lights, floating shelf, poster             |
+| World            | Theme                        | File                                           | Detail level                                       |
+| ---------------- | ---------------------------- | ---------------------------------------------- | -------------------------------------------------- |
+| 1 — Bedroom      | Pastel pink kawaii wallpaper | `assets/art/tiles/home/bedroom/1x1_wall_tile/` | 8 runtime variants including top, bottom, corners  |
+| 2 — Kitchen      | White/mint subway tile       | `tileset-wall-ver3.png`                        | 8 variants including knife rack, calendar, window  |
+| 3 — Living Room  | Wooden log-cabin planks      | `tileset-wall-ver1.png`                        | 6 variants including shelf, clock, framed picture  |
+| Post-jam — Study | Lavender paw-print wallpaper | `tileset-wall-ver2.png`                        | 8 variants including light switch, outlet, cat art |
 
 Decorative wall tile variants (with props) should be placed at grid corners and edges
 where they are most visible to the player. Plain variants fill bulk of wall run.
@@ -599,20 +613,22 @@ Locked cards display unlock condition label — tapping shows a "locked" feedbac
 
 ## 8. Iconography
 
-| Icon           | Context                                   | Style                                              | Draft Source                       |
-| -------------- | ----------------------------------------- | -------------------------------------------------- | ---------------------------------- |
-| Undo arrow     | HUD (active)                              | Counter-clockwise curved arrow, purple ring border | `ui-button-3 1.png`                |
-| Undo arrow     | HUD (disabled)                            | Same shape, grey/desaturated, no ring              | `ui-button-3 1.png`                |
-| Restart arrow  | HUD                                       | Clockwise full-circle arrow                        | `ui-button-3 1.png`                |
-| Back chevron   | Screen nav (top-left)                     | Left-facing < chevron, cream border                | `ui-button-3 1.png`                |
-| Settings gear  | Pause / options                           | Cogwheel, cream border                             | `ui-button-3 1.png`                |
-| Close ×        | Modal dismiss                             | × cross, cream border                              | `ui-button-3 1.png`                |
-| Padlock        | Locked levels / skins                     | Rounded, chunky, brown/warm fill (not gold)        | `ui-misc 1.png`                    |
-| Star           | All rating contexts                       | 5-point, rounded tips, warm gold                   | `ui-stars 1.png`                   |
-| Paw coin       | Currency counter (World Map, Skin Select) | Gold circular coin with paw pad design, ~32px      | `ui-misc 1.png`                    |
-| "NEW BEST"     | Level complete (3-star)                   | Orange/amber pill, white ALL CAPS text, 320×90px   | `ui-misc 1.png` / `ui-stars 1.png` |
-| Cat silhouette | Locked skin placeholder                   | Simple sitting cat outline, grey                   | `ui-skins 1.png`                   |
-| Globe / earth  | "World Map" button icon                   | Simple globe with minimal lines                    | —                                  |
+| Icon           | Context                                   | Style                                                | Draft Source                   |
+| -------------- | ----------------------------------------- | ---------------------------------------------------- | ------------------------------ |
+| Undo arrow     | HUD (active)                              | Counter-clockwise curved arrow, purple ring border   | `ui-button-3 1.png`            |
+| Undo arrow     | HUD (disabled)                            | Same shape, grey/desaturated, no ring                | `ui-button-3 1.png`            |
+| Restart arrow  | HUD                                       | Clockwise full-circle arrow                          | `ui-button-3 1.png`            |
+| Back chevron   | Screen nav (top-left)                     | Left-facing < chevron, cream border                  | `ui-button-3 1.png`            |
+| Settings gear  | Pause / options                           | Cogwheel, cream border                               | `ui-button-3 1.png`            |
+| Close ×        | Modal dismiss                             | × cross, cream border                                | `ui-button-3 1.png`            |
+| Padlock        | Locked levels / skins                     | Rounded, chunky, brown/warm fill (not gold)          | `ui-misc 1.png`                |
+| Star           | All rating contexts                       | 5-point, rounded tips, warm gold                     | `ui-stars 1.png`               |
+| Paw coin       | Currency counter (World Map, Skin Select) | Gold circular coin with paw pad design, ~32px        | `ui-misc 1.png`                |
+| NEW BEST       | Level complete (3-star)                   | Orange/amber pill, white ALL CAPS text, 320×90px     | `ui-misc.png` / `ui-stars.png` |
+| Star progress  | World map progress                        | Wide pill with star icon + fraction + bar, 560×96px  | `ui-misc.png`                  |
+| Unlock pill    | Locked skins/levels                       | Pill showing condition ("3★ any 5 levels"), 400×80px | `ui-misc.png`                  |
+| Cat silhouette | Locked skin placeholder                   | Simple sitting cat outline, grey                     | `ui-skins.png`                 |
+| Globe / earth  | "World Map" button icon                   | Simple globe with minimal lines                      | —                              |
 
 All icons: flat, no gradients, stroke weight 2–3px, matches rounded aesthetic.
 

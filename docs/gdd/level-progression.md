@@ -2,7 +2,7 @@
 
 > **Status**: Approved
 > **Created**: 2026-03-31
-> **Last Updated**: 2026-03-31
+> **Last Updated**: 2026-05-01
 > **System #**: 16 of 23
 > **Category**: Progression
 > **Priority**: MVP-Polish
@@ -84,7 +84,7 @@ what to show. It is only noticeable when it breaks.
 
 7. **Catalogue is static at runtime**: All `LevelData` resources are loaded once at
    `_ready()` via `preload()` paths defined in a `LevelCatalogue` resource, sorted by
-   `(world_id, level_index)`. The catalogue does not change at runtime. No DLC or
+   `(world_id ASC, level_index ASC)`. The catalogue does not change at runtime. No DLC or
    remote-content loading at MVP.
 
 8. **Level Progression is a node in the gameplay scene, not an autoload**: It requires
@@ -101,12 +101,13 @@ what to show. It is only noticeable when it breaks.
 
 A `LevelCatalogue` resource (`class_name LevelCatalogue extends Resource`) contains:
 
-```
-@export var levels: Array[LevelData]
+```gdscript
+@export var worlds: Array[WorldData]
+@export var always_unlocked_world_ids: PackedInt32Array
 ```
 
-Authored by the level designer: all `.tres` LevelData files are added to this array in
-`(world_id, level_index)` order. Level Progression sorts at runtime as a validation step.
+Authored by the level designer: all `.tres` LevelData files are grouped into `WorldData` resources,
+which are then added to the `worlds` array. Level Progression sorts at runtime as a validation step.
 
 ### Initialization
 
@@ -214,13 +215,13 @@ This avoids storing prior state; it checks post-write.
 
 ---
 
-## Level Catalogue Design Assumptions (MVP)
+## MVP Assumptions
 
 | Parameter        | Value               | Source                                  |
 | ---------------- | ------------------- | --------------------------------------- |
-| World count      | 3                   | Level Data Format GDD / game-concept.md |
-| Levels per world | 9                   | current authored catalogue             |
-| Total levels     | 27                  | Level Data Format GDD                   |
+| World count      | 4                   | Level Data Format GDD / game-concept.md |
+| Levels per world | 9                   | current authored catalogue              |
+| Total levels     | 36                  | Level Data Format GDD                   |
 | Level ordering   | Linear within world | Design Rule 2                           |
 
 Level Progression does not hard-code these numbers — it reads them from the catalogue.

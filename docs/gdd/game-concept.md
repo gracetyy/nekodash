@@ -198,10 +198,10 @@ _Design test_: "Should we add an energy system to extend playtime?" → No. Ener
 | **Key Technical Challenges** | Minimum-move solver (BFS on grid state with coverage tracking); swipe gesture disambiguation on mobile; TileMapLayer-based level design pipeline |
 | **Art Style**                | Flat 2D, pastel kawaii, thick outlines, top-down perspective                                                                                     |
 | **Art Pipeline Complexity**  | Low-Medium — tilesets, character sprites with animation frames, UI elements; manageable solo with basic art background                           |
-| **Audio Needs**              | Minimal — 1 looping ambient track per world, ~6 SFX (swipe, land, tile-cover, complete, star-earn, menu)                                         |
+| **Audio Needs**              | Minimal — 1 looping ambient track per world, ~10 SFX (swipe, land, tile-cover, complete, star-earn, menu)                                        |
 | **Networking**               | None                                                                                                                                             |
-| **Content Volume (MVP)**     | 15–20 levels, 3 worlds, 2–3 unlockable skins                                                                                                     |
-| **Content Volume (Full)**    | 50+ levels, 6+ worlds, 10+ skins, moving walls + teleporters + timed obstacles                                                                   |
+| **Content Volume (MVP)**     | 36 levels, 4 worlds (including Special), 2 unlockable skins                                                                                      |
+| **Content Volume (Full)**    | 100+ levels, 8+ worlds, 20+ skins, moving walls + teleporters + timed obstacles                                                                  |
 | **Procedural Systems**       | None — all levels hand-authored                                                                                                                  |
 
 ---
@@ -247,9 +247,9 @@ _Design test_: "Should we add an energy system to extend playtime?" → No. Ener
 1. Sliding movement system (swipe → glide → stop at wall)
 2. Coverage tracking + level completion detection
 3. Move counter + pre-computed minimum move display
-4. 15–20 hand-authored levels across 3 worlds (static walls only)
+4. 36 hand-authored levels across 4 worlds (static walls only)
 5. 1 playable cat skin + 1–2 unlockable skins via gameplay milestones
-6. Basic audio: 1 ambient loop + core SFX set
+6. Basic audio: 1 ambient loop per world + core SFX set
 7. Mobile-native swipe controls + portrait layout
 
 **Explicitly NOT in MVP** (defer to post-jam):
@@ -264,9 +264,9 @@ _Design test_: "Should we add an energy system to extend playtime?" → No. Ener
 
 | Tier                 | Content                    | Features                                    | Timeline    |
 | -------------------- | -------------------------- | ------------------------------------------- | ----------- |
-| **MVP (jam submit)** | 15–20 levels, 3 worlds     | Sliding + coverage + move counter + 2 skins | 3–5 weeks   |
+| **MVP (jam submit)** | 36 levels, 4 worlds        | Sliding + coverage + move counter + 2 skins | 4–6 weeks   |
 | **Post-jam v1.1**    | +2 worlds, +obstacle types | Moving walls, teleporters                   | +3–4 weeks  |
-| **Full Vision**      | 50+ levels, 6+ worlds      | All obstacles, rewarded ads, IAP skin shop  | +2–3 months |
+| **Full Vision**      | 100+ levels, 8+ worlds     | All obstacles, rewarded ads, IAP skin shop  | +3–4 months |
 
 ---
 
