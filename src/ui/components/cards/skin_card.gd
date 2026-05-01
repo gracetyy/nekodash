@@ -4,6 +4,7 @@ extends PanelContainer
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 
 signal pressed(skin_id: String)
+signal locked_pressed(skin_id: String)
 
 enum CardState {
 	UNLOCKED,
@@ -20,15 +21,20 @@ enum CardState {
 
 @export var card_state: CardState = CardState.UNLOCKED
 
-@export var selected: bool = false
+@export var selected: bool = false:
+	set(val):
+		selected = val
+		if is_inside_tree():
+			_apply_component_state()
 
 @onready var _preview: Control = $CardMargin/VBox/Preview
 @onready var _preview_cat: CatRig = $CardMargin/VBox/Preview/CatRig
 @onready var _name_label: Label = $CardMargin/VBox/NameLabel
 @onready var _hint_label: Label = $CardMargin/VBox/UnlockHintLabel
 @onready var _equipped_badge: BadgeEquipped = $CardMargin/VBox/EquippedBadge
-@onready var _lock_overlay: Control = $CardMargin/LockOverlay
-@onready var _lock_icon: TextureRect = $CardMargin/LockOverlay/LockIcon
+@onready var _lock_overlay: Control = $LockOverlay
+@onready var _lock_icon: TextureRect = $LockOverlay/LockIcon
+@onready var _selection_highlight: Control = $SelectionHighlight
 @onready var _overlay_button: Button = $OverlayButton
 
 
@@ -67,6 +73,7 @@ func _apply_component_state() -> void:
 	_equipped_badge.visible = card_state == CardState.EQUIPPED
 	_lock_overlay.visible = card_state == CardState.LOCKED
 	_lock_icon.texture = ShellThemeUtil.WORLD_MAP_LOCK_TEXTURE
+	_selection_highlight.visible = selected and card_state != CardState.LOCKED
 	_preview.modulate = Color(1.0, 1.0, 1.0, 1.0) if card_state != CardState.LOCKED else Color(0.8, 0.8, 0.8, 1.0)
 
 
@@ -74,17 +81,19 @@ func _make_card_style() -> StyleBoxFlat:
 	var fill: Color = ShellThemeUtil.CREAM
 	var border: Color = ShellThemeUtil.PLUM_SOFT
 	var border_width: int = 2
+	
 	if card_state == CardState.LOCKED:
 		fill = ShellThemeUtil.DISABLED_FILL
 		border = ShellThemeUtil.PLUM_SOFT
+	
+	if selected and card_state != CardState.LOCKED:
+		border = Color("#a083bd")
+		border_width = 6
 	elif card_state == CardState.EQUIPPED:
 		fill = ShellThemeUtil.CREAM
 		border = ShellThemeUtil.GOLD
 		border_width = 4
-	elif selected:
-		fill = ShellThemeUtil.CREAM_SOFT
-		border = ShellThemeUtil.LILAC
-		border_width = 4
+		
 	var style: StyleBoxFlat = ShellThemeUtil.make_rounded_style(fill, border, 20, border_width)
 	style.content_margin_left = 12.0
 	style.content_margin_top = 12.0
@@ -94,4 +103,42 @@ func _make_card_style() -> StyleBoxFlat:
 
 
 func _on_overlay_pressed() -> void:
+	if card_state == CardState.LOCKED:
+		_play_locked_feedback()
+		locked_pressed.emit(skin_id)
+		return
 	pressed.emit(skin_id)
+
+
+func _play_locked_feedback() -> void:
+	if SfxManager != null:
+		SfxManager.play_locked()
+	
+	if AppSettings != null and AppSettings.get_reduce_motion():
+		if _lock_icon != null:
+			_lock_icon.modulate = Color(1.0, 0.92, 0.92, 1.0)
+			var tint_tween: Tween = _lock_icon.create_tween()
+			tint_tween.tween_property(_lock_icon, "modulate", Color.WHITE, 0.12)
+		return
+
+	pivot_offset = size * 0.5
+	scale = Vector2.ONE
+	if _lock_icon != null:
+		_lock_icon.pivot_offset = _lock_icon.size * 0.5
+		_lock_icon.scale = Vector2.ONE
+		_lock_icon.rotation_degrees = 0.0
+
+	var card_tween: Tween = create_tween()
+	card_tween.tween_property(self, "scale", Vector2(0.96, 0.96), 0.08) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	card_tween.tween_property(self, "scale", Vector2.ONE, 0.12) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	if _lock_icon != null:
+		var lock_jiggle: float = 14.0
+		var lock_tween: Tween = _lock_icon.create_tween()
+		lock_tween.tween_property(_lock_icon, "rotation_degrees", -lock_jiggle, 0.06)
+		lock_tween.tween_property(_lock_icon, "rotation_degrees", lock_jiggle * 0.7, 0.08)
+		lock_tween.tween_property(_lock_icon, "rotation_degrees", 0.0, 0.08)
+		lock_tween.parallel().tween_property(_lock_icon, "scale", Vector2(1.12, 1.12), 0.08)
+		lock_tween.tween_property(_lock_icon, "scale", Vector2.ONE, 0.14)

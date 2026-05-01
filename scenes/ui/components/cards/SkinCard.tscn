@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/ui/components/cards/skin_card.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://b0dqhnxdw7f1x" path="res://scenes/ui/components/badges/BadgeEquipped.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://b7k5g2m3qz1rt" path="res://scenes/ui/components/cat_rig.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://dgiwx41xolgx6" path="res://assets/art/ui/settings/checkbox_checked.png" id="4"]
 
 [node name="SkinCard" type="PanelContainer"]
 custom_minimum_size = Vector2(110, 180)
@@ -49,22 +50,44 @@ autowrap_mode = 3
 [node name="EquippedBadge" parent="CardMargin/VBox" instance=ExtResource("2")]
 layout_mode = 2
 
-[node name="LockOverlay" type="Control" parent="CardMargin"]
+[node name="SelectionHighlight" type="Control" parent="."]
 visible = false
+z_index = 5
 layout_mode = 2
 mouse_filter = 2
 
-[node name="LockIcon" type="TextureRect" parent="CardMargin/LockOverlay"]
+[node name="Checkmark" type="TextureRect" parent="SelectionHighlight"]
+self_modulate = Color(0.752941, 0.686275, 0.886275, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -28.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 28.0
+grow_horizontal = 0
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LockOverlay" type="Control" parent="."]
+visible = false
+z_index = 20
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LockIcon" type="TextureRect" parent="LockOverlay"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.4
 anchor_right = 0.5
 anchor_bottom = 0.4
-offset_left = -24.0
-offset_top = -24.0
-offset_right = 24.0
-offset_bottom = 24.0
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
 grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
