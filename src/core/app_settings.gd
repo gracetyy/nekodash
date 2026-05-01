@@ -22,6 +22,7 @@ const KEY_LAST_WORLD_ID: String = "last_world_id"
 const KEY_TUTORIAL_SKIPPED: String = "tutorial_skipped"
 const KEY_DEV_MODE: String = "dev_mode"
 const KEY_UNLOCK_ALL_SKINS: String = "unlock_all_skins"
+const KEY_SHOW_DEV_TOOLS: String = "show_dev_tools"
 const KEY_INPUT_HINT_MODE: String = "input_hint_mode"
 const UI_SCALE_NORMAL: float = 1.0
 const UI_SCALE_LARGE: float = 1.0
@@ -44,6 +45,7 @@ const DEFAULTS: Dictionary = {
 		KEY_TUTORIAL_SKIPPED: false,
 		KEY_DEV_MODE: false,
 		KEY_UNLOCK_ALL_SKINS: false,
+		KEY_SHOW_DEV_TOOLS: false,
 	},
 	SECTION_INPUT: {
 		KEY_INPUT_HINT_MODE: INPUT_HINT_AUTO,
@@ -176,6 +178,14 @@ func get_unlock_all_skins() -> bool:
 
 func set_unlock_all_skins(enabled: bool) -> void:
 	set_value(SECTION_SHELL, KEY_UNLOCK_ALL_SKINS, enabled)
+
+
+func get_show_dev_tools() -> bool:
+	return get_value(SECTION_SHELL, KEY_SHOW_DEV_TOOLS, false) as bool
+
+
+func set_show_dev_tools(enabled: bool) -> void:
+	set_value(SECTION_SHELL, KEY_SHOW_DEV_TOOLS, enabled)
 
 
 func get_input_hint_mode() -> String:

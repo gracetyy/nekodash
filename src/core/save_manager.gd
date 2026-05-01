@@ -230,6 +230,9 @@ func unlock_skin(skin_id: String) -> void:
 # Public API — Debug
 # —————————————————————————————————————————————
 
+const EXPORT_FILE_PATH: String = "user://nekodash_progress_export.json"
+
+
 ## DEBUG ONLY — clears all data, reinitialises to default, writes to disk.
 func reset_all_progress() -> void:
 	if OS.has_feature("release"):
@@ -237,6 +240,57 @@ func reset_all_progress() -> void:
 		return
 	_init_default_data()
 	save_game()
+
+
+## DEBUG ONLY — exports current save data to a file as JSON.
+func export_to_file(path: String) -> Error:
+	var json_text: String = JSON.stringify(_data, "\t")
+	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		var err := FileAccess.get_open_error()
+		push_error("SaveManager: cannot write export file to %s — error %d." % [path, err])
+		return err
+	file.store_string(json_text)
+	file.close()
+	print("SaveManager: exported progress to %s" % path)
+	return OK
+
+
+## DEBUG ONLY — attempts to import save data from a specific file.
+func import_from_file(path: String) -> bool:
+	if not FileAccess.file_exists(path):
+		push_warning("SaveManager: import file does not exist at %s" % path)
+		return false
+
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_error("SaveManager: cannot open import file — error %d." % FileAccess.get_open_error())
+		return false
+
+	var json_text: String = file.get_as_text()
+	file.close()
+
+	var json: JSON = JSON.new()
+	var parse_error: int = json.parse(json_text)
+	if parse_error != OK:
+		push_warning("SaveManager: import file does not contain valid JSON.")
+		return false
+
+	var parsed = json.data
+	if not parsed is Dictionary:
+		push_warning("SaveManager: import file JSON root is not a Dictionary.")
+		return false
+
+	var parsed_dict: Dictionary = parsed as Dictionary
+	if not parsed_dict.has("version") or not parsed_dict.has("levels"):
+		push_warning("SaveManager: import file JSON is missing required save fields.")
+		return false
+
+	_data = parsed_dict
+	save_game()
+	save_loaded.emit()
+	print("SaveManager: imported progress from %s" % path)
+	return true
 
 
 # —————————————————————————————————————————————
