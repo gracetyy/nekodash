@@ -24,6 +24,7 @@ production/session-state/*.md
 docs/superpowers/
 .codex
 smoke-test/
+GEMINI.md
 
 # === Build Output ===
 build/
@@ -106,3 +107,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+# === Unrelated ===
+comp3329/
