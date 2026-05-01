@@ -29,7 +29,10 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	_apply_component_state()
 	if not Engine.is_editor_hint():
-		pressed.connect(func(): SfxManager.play_button_tap())
+		pressed.connect(func():
+			if Engine.has_singleton("SfxManager"):
+				Engine.get_singleton("SfxManager").play_button_tap()
+		)
 
 
 func _apply_component_state() -> void:

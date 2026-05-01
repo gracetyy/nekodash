@@ -629,9 +629,9 @@ func _is_reduce_motion_enabled() -> bool:
 
 
 func _call_save_manager_string(method_name: StringName, fallback: String = "") -> String:
-	if SaveManager == null:
+	if not Engine.has_singleton("SaveManager"):
 		return fallback
-	var method_callable: Callable = Callable(SaveManager, method_name)
+	var method_callable: Callable = Callable(Engine.get_singleton("SaveManager"), method_name)
 	if not method_callable.is_valid():
 		return fallback
 	var value: Variant = method_callable.call()
@@ -641,9 +641,9 @@ func _call_save_manager_string(method_name: StringName, fallback: String = "") -
 
 
 func _call_app_settings_bool(method_name: StringName, fallback: bool) -> bool:
-	if AppSettings == null:
+	if not Engine.has_singleton("AppSettings"):
 		return fallback
-	var method_callable: Callable = Callable(AppSettings, method_name)
+	var method_callable: Callable = Callable(Engine.get_singleton("AppSettings"), method_name)
 	if not method_callable.is_valid():
 		return fallback
 	var value: Variant = method_callable.call()

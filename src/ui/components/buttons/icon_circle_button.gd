@@ -22,7 +22,10 @@ var button_size: float = 64.0
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	_apply_component_state()
-	pressed.connect(func(): SfxManager.play_soft_tap())
+	pressed.connect(func():
+		if Engine.has_singleton("SfxManager"):
+			Engine.get_singleton("SfxManager").play_soft_tap()
+	)
 
 
 func _apply_component_state() -> void:
