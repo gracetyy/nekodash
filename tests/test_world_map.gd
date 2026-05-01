@@ -44,8 +44,24 @@ func _setup_catalogue(
 	always_unlocked_world_ids: PackedInt32Array = PackedInt32Array(),
 ) -> void:
 	var cat: LevelCatalogue = LevelCatalogue.new()
-	cat.levels = levels
+	var world_dict: Dictionary = {}
+	for l: LevelData in levels:
+		if not world_dict.has(l.world_id):
+			world_dict[l.world_id] = []
+		world_dict[l.world_id].append(l)
+	var worlds_array: Array[WorldData] = []
+	for w_id: int in world_dict:
+		var w: WorldData = WorldData.new()
+		w.world_id = w_id
+		w.world_name = "World %d" % w_id
+		var typed_levels: Array[LevelData] = []
+		for l: LevelData in world_dict[w_id]:
+			typed_levels.append(l)
+		w.levels = typed_levels
+		worlds_array.append(w)
+	cat.worlds = worlds_array
 	cat.always_unlocked_world_ids = always_unlocked_world_ids
+	_map.catalogue_override = cat
 	_map._catalogue = cat
 	_map._build_world_index()
 

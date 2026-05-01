@@ -9,8 +9,8 @@ class_name LevelCatalogue
 extends Resource
 
 
-## Ordered array of all LevelData resources in the game.
-@export var levels: Array[LevelData] = []
+## Ordered array of all WorldData resources in the game.
+@export var worlds: Array[WorldData] = []
 
 ## World IDs whose first level should be unlocked by default.
 ## Intended for special/event worlds that bypass normal world-to-world gating.

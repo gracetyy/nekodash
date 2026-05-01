@@ -90,11 +90,22 @@ func _make_level(id: String, world: int, index: int) -> LevelData:
 ## Builds a catalogue with a standard 2-world layout (3 + 2 = 5 levels).
 func _make_standard_catalogue() -> LevelCatalogue:
 	var cat: LevelCatalogue = LevelCatalogue.new()
-	cat.levels.append(_make_level("w1_l1", 1, 1))
-	cat.levels.append(_make_level("w1_l2", 1, 2))
-	cat.levels.append(_make_level("w1_l3", 1, 3))
-	cat.levels.append(_make_level("w2_l1", 2, 1))
-	cat.levels.append(_make_level("w2_l2", 2, 2))
+	var w1 := WorldData.new()
+	w1.world_id = 1
+	w1.world_name = "World 1"
+	w1.levels = [
+		_make_level("w1_l1", 1, 1),
+		_make_level("w1_l2", 1, 2),
+		_make_level("w1_l3", 1, 3)
+	]
+	var w2 := WorldData.new()
+	w2.world_id = 2
+	w2.world_name = "World 2"
+	w2.levels = [
+		_make_level("w2_l1", 2, 1),
+		_make_level("w2_l2", 2, 2)
+	]
+	cat.worlds = [w1, w2]
 	return cat
 
 
@@ -152,11 +163,21 @@ func test_set_current_level() -> void:
 func test_catalogue_sorted_by_world_then_index() -> void:
 	var cat: LevelCatalogue = LevelCatalogue.new()
 	# Intentionally out of order
-	cat.levels.append(_make_level("w2_l2", 2, 2))
-	cat.levels.append(_make_level("w1_l1", 1, 1))
-	cat.levels.append(_make_level("w1_l3", 1, 3))
-	cat.levels.append(_make_level("w2_l1", 2, 1))
-	cat.levels.append(_make_level("w1_l2", 1, 2))
+	var w1 := WorldData.new()
+	w1.world_id = 1
+	w1.levels = [
+		_make_level("w1_l1", 1, 1),
+		_make_level("w1_l3", 1, 3),
+		_make_level("w1_l2", 1, 2)
+	]
+	var w2 := WorldData.new()
+	w2.world_id = 2
+	w2.levels = [
+		_make_level("w2_l2", 2, 2),
+		_make_level("w2_l1", 2, 1)
+	]
+	# Intentionally reverse worlds
+	cat.worlds = [w2, w1]
 
 	_lp.initialize(cat, _sr)
 
@@ -434,9 +455,14 @@ func test_sentinel_completion_unlocks_next_level_lp8() -> void:
 
 func test_duplicate_level_id_logged_and_skipped_lp10() -> void:
 	var cat: LevelCatalogue = LevelCatalogue.new()
-	cat.levels.append(_make_level("dup", 1, 1))
-	cat.levels.append(_make_level("dup", 1, 2)) # Same level_id!
-	cat.levels.append(_make_level("w1_l3", 1, 3))
+	var w1 := WorldData.new()
+	w1.world_id = 1
+	w1.levels = [
+		_make_level("dup", 1, 1),
+		_make_level("dup", 1, 2), # Same level_id!
+		_make_level("w1_l3", 1, 3)
+	]
+	cat.worlds = [w1]
 
 	_lp.initialize(cat, _sr)
 
@@ -448,9 +474,14 @@ func test_duplicate_level_id_logged_and_skipped_lp10() -> void:
 
 func test_duplicate_does_not_break_unlock_chain() -> void:
 	var cat: LevelCatalogue = LevelCatalogue.new()
-	cat.levels.append(_make_level("w1_l1", 1, 1))
-	cat.levels.append(_make_level("w1_l1", 1, 2)) # Duplicate
-	cat.levels.append(_make_level("w1_l3", 1, 3))
+	var w1 := WorldData.new()
+	w1.world_id = 1
+	w1.levels = [
+		_make_level("w1_l1", 1, 1),
+		_make_level("w1_l1", 1, 2), # Duplicate
+		_make_level("w1_l3", 1, 3)
+	]
+	cat.worlds = [w1]
 
 	_lp.initialize(cat, _sr)
 
@@ -562,7 +593,12 @@ func test_reinitialize_with_different_catalogue() -> void:
 
 func test_single_level_game() -> void:
 	var cat: LevelCatalogue = LevelCatalogue.new()
-	cat.levels.append(_make_level("only", 1, 1))
+	var w1 := WorldData.new()
+	w1.world_id = 1
+	w1.levels = [
+		_make_level("only", 1, 1)
+	]
+	cat.worlds = [w1]
 	_lp.initialize(cat, _sr)
 
 	assert_true(_lp.is_level_unlocked("only"))

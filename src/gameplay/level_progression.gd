@@ -76,9 +76,13 @@ func initialize(catalogue: LevelCatalogue, star_rating_ref: Node) -> void:
 	_star_rating_ref = star_rating_ref
 	_catalogue = catalogue
 
-	# Sort catalogue by (world_id, level_index)
-	_levels = catalogue.levels.duplicate()
-	_levels.sort_custom(_compare_levels)
+	# Build flattened level list from worlds
+	_levels.clear()
+	for world in catalogue.worlds:
+		var world_levels = world.levels.duplicate()
+		# Ensure world levels are sorted by index
+		world_levels.sort_custom(func(a: LevelData, b: LevelData): return a.level_index < b.level_index)
+		_levels.append_array(world_levels)
 
 	# Build index map; detect duplicates (AC: LP-10)
 	_level_index_map.clear()
@@ -165,10 +169,9 @@ func get_levels_for_world(world_id: int) -> Array[LevelData]:
 
 ## Returns the number of distinct worlds in the catalogue.
 func get_world_count() -> int:
-	var worlds: Dictionary = {}
-	for ld: LevelData in _levels:
-		worlds[ld.world_id] = true
-	return worlds.size()
+	if _catalogue == null:
+		return 0
+	return _catalogue.worlds.size()
 
 
 ## Returns true if every level in the world is completed in SaveManager.

@@ -1,450 +1,78 @@
-[gd_resource type="Resource" script_class="LevelCatalogue" load_steps=41 format=3]
+[gd_resource type="Resource" script_class="LevelCatalogue" load_steps=53 format=3]
 
-[ext_resource type="Script" path="res://src/core/level_data.gd" id="1_5d23n"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l1.tres" id="2_wqjln"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l2.tres" id="3_7vxyv"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l3.tres" id="4_w8lcb"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l4.tres" id="5_cqw8s"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l5.tres" id="6_hllqo"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l6.tres" id="7_uo3q0"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l7.tres" id="8_kf60c"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l8.tres" id="9_87ni0"]
-[ext_resource type="Resource" path="res://data/levels/world1/w1_l9.tres" id="10_w1l9a"]
-[ext_resource type="Script" path="res://src/core/level_catalogue.gd" id="11_xnynh"]
+[ext_resource type="Script" path="res://src/core/level_data.gd" id="1_level_script"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l1.tres" id="2_w1l1"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l2.tres" id="3_w1l2"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l3.tres" id="4_w1l3"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l4.tres" id="5_w1l4"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l5.tres" id="6_w1l5"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l6.tres" id="7_w1l6"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l7.tres" id="8_w1l7"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l8.tres" id="9_w1l8"]
+[ext_resource type="Resource" path="res://data/levels/world1/w1_l9.tres" id="10_w1l9"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l1.tres" id="11_w2l1"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l2.tres" id="12_w2l2"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l3.tres" id="13_w2l3"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l4.tres" id="14_w2l4"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l5.tres" id="15_w2l5"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l6.tres" id="16_w2l6"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l7.tres" id="17_w2l7"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l8.tres" id="18_w2l8"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l9.tres" id="19_w2l9"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l1.tres" id="20_w3l1"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l2.tres" id="21_w3l2"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l3.tres" id="22_w3l3"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l4.tres" id="23_w3l4"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l5.tres" id="24_w3l5"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l6.tres" id="25_w3l6"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l7.tres" id="26_w3l7"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l8.tres" id="27_w3l8"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l9.tres" id="28_w3l9"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l1.tres" id="29_spl1"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l2.tres" id="30_spl2"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l3.tres" id="31_spl3"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l4.tres" id="32_spl4"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l5.tres" id="33_spl5"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l6.tres" id="34_spl6"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l7.tres" id="35_spl7"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l8.tres" id="36_spl8"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l9.tres" id="37_spl9"]
+[ext_resource type="Script" path="res://src/core/world_data.gd" id="38_world_script"]
+[ext_resource type="Script" path="res://src/core/level_catalogue.gd" id="39_cat_script"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/bedroom.wav" id="40_bgm1"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/kitchen.ogg" id="41_bgm2"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/living_room.ogg" id="42_bgm3"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/hku.ogg" id="43_bgm99"]
 
-[sub_resource type="Resource" id="Resource_5n1tr"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l1"
+[sub_resource type="Resource" id="World1"]
+script = ExtResource("38_world_script")
+world_id = 1
+world_name = "Pastel Plains"
+bgm_track = ExtResource("40_bgm1")
+levels = Array[ExtResource("1_level_script")]([ExtResource("2_w1l1"), ExtResource("3_w1l2"), ExtResource("4_w1l3"), ExtResource("5_w1l4"), ExtResource("6_w1l5"), ExtResource("7_w1l6"), ExtResource("8_w1l7"), ExtResource("9_w1l8"), ExtResource("10_w1l9")])
+
+[sub_resource type="Resource" id="World2"]
+script = ExtResource("38_world_script")
 world_id = 2
-level_index = 1
-display_name = "Kitchen 1"
-grid_width = 6
-grid_height = 6
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 8
-star_3_moves = 9
-star_2_moves = 11
-star_1_moves = 16
+world_name = "Kitchen"
+bgm_track = ExtResource("41_bgm2")
+levels = Array[ExtResource("1_level_script")]([ExtResource("11_w2l1"), ExtResource("12_w2l2"), ExtResource("13_w2l3"), ExtResource("14_w2l4"), ExtResource("15_w2l5"), ExtResource("16_w2l6"), ExtResource("17_w2l7"), ExtResource("18_w2l8"), ExtResource("19_w2l9")])
 
-[sub_resource type="Resource" id="Resource_kcpjq"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l2"
-world_id = 2
-level_index = 2
-display_name = "Kitchen 2"
-grid_width = 6
-grid_height = 6
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 9
-star_3_moves = 10
-star_2_moves = 12
-star_1_moves = 18
-
-[sub_resource type="Resource" id="Resource_0tl3o"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l3"
-world_id = 2
-level_index = 3
-display_name = "Kitchen 3"
-grid_width = 6
-grid_height = 6
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 10
-star_3_moves = 11
-star_2_moves = 14
-star_1_moves = 20
-
-[sub_resource type="Resource" id="Resource_wqqui"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l4"
-world_id = 2
-level_index = 4
-display_name = "Kitchen 4"
-grid_width = 6
-grid_height = 6
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 11
-star_3_moves = 12
-star_2_moves = 15
-star_1_moves = 22
-
-[sub_resource type="Resource" id="Resource_bofve"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l5"
-world_id = 2
-level_index = 5
-display_name = "Kitchen 5"
-grid_width = 7
-grid_height = 7
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 11
-star_3_moves = 12
-star_2_moves = 15
-star_1_moves = 22
-
-[sub_resource type="Resource" id="Resource_1es5g"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l6"
-world_id = 2
-level_index = 6
-display_name = "Kitchen 6"
-grid_width = 7
-grid_height = 7
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 12
-star_3_moves = 13
-star_2_moves = 16
-star_1_moves = 24
-
-[sub_resource type="Resource" id="Resource_f6qhm"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l7"
-world_id = 2
-level_index = 7
-display_name = "Kitchen 7"
-grid_width = 7
-grid_height = 7
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 13
-star_3_moves = 14
-star_2_moves = 18
-star_1_moves = 26
-
-[sub_resource type="Resource" id="Resource_xqk1m"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l8"
-world_id = 2
-level_index = 8
-display_name = "Kitchen 8"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 14
-star_3_moves = 15
-star_2_moves = 19
-star_1_moves = 28
-
-[sub_resource type="Resource" id="Resource_jytfc"]
-script = ExtResource("1_5d23n")
-level_id = "w2_l9"
-world_id = 2
-level_index = 9
-display_name = "Kitchen 9"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 15
-star_3_moves = 16
-star_2_moves = 21
-star_1_moves = 30
-
-[sub_resource type="Resource" id="Resource_cge7d"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l1"
+[sub_resource type="Resource" id="World3"]
+script = ExtResource("38_world_script")
 world_id = 3
-level_index = 1
-display_name = "Living Room 1"
-grid_width = 7
-grid_height = 7
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 12
-star_3_moves = 13
-star_2_moves = 16
-star_1_moves = 24
+world_name = "Living Room"
+bgm_track = ExtResource("42_bgm3")
+levels = Array[ExtResource("1_level_script")]([ExtResource("20_w3l1"), ExtResource("21_w3l2"), ExtResource("22_w3l3"), ExtResource("23_w3l4"), ExtResource("24_w3l5"), ExtResource("25_w3l6"), ExtResource("26_w3l7"), ExtResource("27_w3l8"), ExtResource("28_w3l9")])
 
-[sub_resource type="Resource" id="Resource_q1wjh"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l2"
-world_id = 3
-level_index = 2
-display_name = "Living Room 2"
-grid_width = 7
-grid_height = 7
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 13
-star_3_moves = 14
-star_2_moves = 18
-star_1_moves = 26
-
-[sub_resource type="Resource" id="Resource_onkv3"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l3"
-world_id = 3
-level_index = 3
-display_name = "Living Room 3"
-grid_width = 7
-grid_height = 7
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 14
-star_3_moves = 15
-star_2_moves = 19
-star_1_moves = 28
-
-[sub_resource type="Resource" id="Resource_tuwic"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l4"
-world_id = 3
-level_index = 4
-display_name = "Living Room 4"
-grid_width = 7
-grid_height = 7
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 15
-star_3_moves = 16
-star_2_moves = 21
-star_1_moves = 30
-
-[sub_resource type="Resource" id="Resource_wvkec"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l5"
-world_id = 3
-level_index = 5
-display_name = "Living Room 5"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 15
-star_3_moves = 16
-star_2_moves = 21
-star_1_moves = 30
-
-[sub_resource type="Resource" id="Resource_gq1n0"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l6"
-world_id = 3
-level_index = 6
-display_name = "Living Room 6"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 16
-star_3_moves = 17
-star_2_moves = 22
-star_1_moves = 32
-
-[sub_resource type="Resource" id="Resource_gapy2"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l7"
-world_id = 3
-level_index = 7
-display_name = "Living Room 7"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 17
-star_3_moves = 18
-star_2_moves = 23
-star_1_moves = 34
-
-[sub_resource type="Resource" id="Resource_eiyf6"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l8"
-world_id = 3
-level_index = 8
-display_name = "Living Room 8"
-grid_width = 9
-grid_height = 9
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 17
-star_3_moves = 18
-star_2_moves = 23
-star_1_moves = 34
-
-[sub_resource type="Resource" id="Resource_bxkqq"]
-script = ExtResource("1_5d23n")
-level_id = "w3_l9"
-world_id = 3
-level_index = 9
-display_name = "Living Room 9"
-grid_width = 9
-grid_height = 9
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 17
-star_3_moves = 18
-star_2_moves = 23
-star_1_moves = 34
-
-[sub_resource type="Resource" id="Resource_i33lq"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l1"
+[sub_resource type="Resource" id="World99"]
+script = ExtResource("38_world_script")
 world_id = 99
-level_index = 1
-display_name = "HKU 1"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 16
-star_3_moves = 17
-star_2_moves = 22
-star_1_moves = 32
-
-[sub_resource type="Resource" id="Resource_6d263"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l2"
-world_id = 99
-level_index = 2
-display_name = "HKU 2"
-grid_width = 9
-grid_height = 9
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 16
-star_3_moves = 17
-star_2_moves = 22
-star_1_moves = 32
-
-[sub_resource type="Resource" id="Resource_el7as"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l3"
-world_id = 99
-level_index = 3
-display_name = "HKU 3"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 17
-star_3_moves = 18
-star_2_moves = 23
-star_1_moves = 34
-
-[sub_resource type="Resource" id="Resource_eyac0"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l4"
-world_id = 99
-level_index = 4
-display_name = "HKU 4"
-grid_width = 9
-grid_height = 9
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 17
-star_3_moves = 18
-star_2_moves = 23
-star_1_moves = 34
-
-[sub_resource type="Resource" id="Resource_wmsep"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l5"
-world_id = 99
-level_index = 5
-display_name = "HKU 5"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 18
-star_3_moves = 19
-star_2_moves = 25
-star_1_moves = 36
-
-[sub_resource type="Resource" id="Resource_dtlen"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l6"
-world_id = 99
-level_index = 6
-display_name = "HKU 6"
-grid_width = 9
-grid_height = 9
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 18
-star_3_moves = 19
-star_2_moves = 25
-star_1_moves = 36
-
-[sub_resource type="Resource" id="Resource_2go54"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l7"
-world_id = 99
-level_index = 7
-display_name = "HKU 7"
-grid_width = 8
-grid_height = 8
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 19
-star_3_moves = 20
-star_2_moves = 26
-star_1_moves = 38
-
-[sub_resource type="Resource" id="Resource_8n2em"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l8"
-world_id = 99
-level_index = 8
-display_name = "HKU 8"
-grid_width = 9
-grid_height = 9
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 19
-star_3_moves = 20
-star_2_moves = 26
-star_1_moves = 38
-
-[sub_resource type="Resource" id="Resource_u8bq8"]
-script = ExtResource("1_5d23n")
-level_id = "sp_l9"
-world_id = 99
-level_index = 9
-display_name = "HKU 9"
-grid_width = 9
-grid_height = 9
-walkability_tiles = PackedInt32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-obstacle_tiles = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-cat_start = Vector2i(1, 1)
-minimum_moves = 20
-star_3_moves = 21
-star_2_moves = 28
-star_1_moves = 40
+world_name = "HKU Special"
+bgm_track = ExtResource("43_bgm99")
+levels = Array[ExtResource("1_level_script")]([ExtResource("29_spl1"), ExtResource("30_spl2"), ExtResource("31_spl3"), ExtResource("32_spl4"), ExtResource("33_spl5"), ExtResource("34_spl6"), ExtResource("35_spl7"), ExtResource("36_spl8"), ExtResource("37_spl9")])
 
 [resource]
-script = ExtResource("11_xnynh")
-levels = Array[ExtResource("1_5d23n")]([ExtResource("2_wqjln"), ExtResource("3_7vxyv"), ExtResource("4_w8lcb"), ExtResource("5_cqw8s"), ExtResource("6_hllqo"), ExtResource("7_uo3q0"), ExtResource("8_kf60c"), ExtResource("9_87ni0"), ExtResource("10_w1l9a"), SubResource("Resource_5n1tr"), SubResource("Resource_kcpjq"), SubResource("Resource_0tl3o"), SubResource("Resource_wqqui"), SubResource("Resource_bofve"), SubResource("Resource_1es5g"), SubResource("Resource_f6qhm"), SubResource("Resource_xqk1m"), SubResource("Resource_jytfc"), SubResource("Resource_cge7d"), SubResource("Resource_q1wjh"), SubResource("Resource_onkv3"), SubResource("Resource_tuwic"), SubResource("Resource_wvkec"), SubResource("Resource_gq1n0"), SubResource("Resource_gapy2"), SubResource("Resource_eiyf6"), SubResource("Resource_bxkqq"), SubResource("Resource_i33lq"), SubResource("Resource_6d263"), SubResource("Resource_el7as"), SubResource("Resource_eyac0"), SubResource("Resource_wmsep"), SubResource("Resource_dtlen"), SubResource("Resource_2go54"), SubResource("Resource_8n2em"), SubResource("Resource_u8bq8")])
+script = ExtResource("39_cat_script")
+worlds = Array[ExtResource("38_world_script")]([SubResource("World1"), SubResource("World2"), SubResource("World3"), SubResource("World99")])
 always_unlocked_world_ids = PackedInt32Array(99)

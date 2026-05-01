@@ -333,10 +333,12 @@ func _on_replay_tutorial_pressed() -> void:
 	var cat: LevelCatalogue = load("res://data/level_catalogue.tres")
 	if cat != null:
 		var l1: LevelData = null
-		for l in cat.levels:
-			if l.level_id == "w1_l1":
-				l1 = l
-				break
+		for world in cat.worlds:
+			for l in world.levels:
+				if l.level_id == "w1_l1":
+					l1 = l
+					break
+			if l1 != null: break
 		if l1 != null:
 			SceneManager.hide_overlay()
 			SceneManager.go_to(SceneManager.Screen.GAMEPLAY, {

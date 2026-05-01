@@ -8,13 +8,9 @@ const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 const WorldCardScene: PackedScene = preload("res://scenes/ui/components/cards/WorldCard.tscn")
 const LevelCardScene: PackedScene = preload("res://scenes/ui/components/cards/LevelCard.tscn")
 
-const CATALOGUE_PATH: String = "res://data/level_catalogue.tres"
-const WORLD_TITLES: Dictionary = {
-	1: "Pastel Plains",
-	2: "Kitchen",
-	3: "Living Room",
-	99: "HKU Special",
-}
+@export_category("Catalogue")
+## The level catalogue resource. If not assigned, will attempt to load from default path.
+@export var catalogue_override: LevelCatalogue
 
 @export_category("World Card Layout")
 ## Horizontal padding between world-map modal content and screen edges.
@@ -130,13 +126,19 @@ func _ready() -> void:
 		resized.connect(_on_world_map_resized)
 	_last_grid_column_target = _target_world_grid_columns()
 
-	_catalogue = load(CATALOGUE_PATH) as LevelCatalogue
-	if _catalogue == null:
-		push_error("WorldMap: LevelCatalogue not found at " + CATALOGUE_PATH)
-		_show_empty_state()
-		return
+	const DEFAULT_CATALOGUE_PATH: String = "res://data/level_catalogue.tres"
+	if catalogue_override != null:
+		_catalogue = catalogue_override
+	else:
+		if ResourceLoader.exists(DEFAULT_CATALOGUE_PATH):
+			_catalogue = load(DEFAULT_CATALOGUE_PATH) as LevelCatalogue
+		else:
+			push_error("WorldMap: LevelCatalogue not found at default path: " + DEFAULT_CATALOGUE_PATH)
+			_show_empty_state()
+			return
 
-	if _catalogue.levels.is_empty():
+	if _catalogue == null:
+
 		_show_empty_state()
 		return
 
@@ -176,15 +178,10 @@ func _build_world_index() -> void:
 	_world_index.clear()
 	_sorted_world_ids.clear()
 
-	for level: LevelData in _catalogue.levels:
-		if not _world_index.has(level.world_id):
-			_world_index[level.world_id] = [] as Array[LevelData]
-		(_world_index[level.world_id] as Array[LevelData]).append(level)
-
-	for world_id: int in _world_index:
+	for world: WorldData in _catalogue.worlds:
+		var world_id: int = world.world_id
+		_world_index[world_id] = world.levels
 		_sorted_world_ids.append(world_id)
-		var levels: Array[LevelData] = _world_index[world_id]
-		levels.sort_custom(func(a: LevelData, b: LevelData) -> bool: return a.level_index < b.level_index)
 
 	_sorted_world_ids.sort()
 
@@ -423,7 +420,10 @@ func _get_world_progress_text(levels: Array[LevelData]) -> String:
 
 
 func _get_world_title(world_id: int) -> String:
-	return str(WORLD_TITLES.get(world_id, "World %d" % world_id))
+	for world: WorldData in _catalogue.worlds:
+		if world.world_id == world_id:
+			return world.world_name
+	return "World %d" % world_id
 
 
 func _refresh_header_progress() -> void:

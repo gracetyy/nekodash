@@ -79,9 +79,6 @@ var _entry_fade_tween: Tween
 var _confirm_modal: ConfirmNavigationModal
 const LEVEL_COMPLETE_MODAL_DELAY_SEC: float = 0.34
 
-## Real SFX stream for level completion.
-var _sfx_level_complete: AudioStream = preload("res://assets/audio/sfx/gameplay/level_complete.wav")
-
 
 # —————————————————————————————————————————————
 # SceneManager contract
@@ -101,8 +98,11 @@ func receive_scene_params(params: Dictionary) -> void:
 
 func _ready() -> void:
 	# Fallback for direct scene launch (no SceneManager call)
-	if _current_level_data == null and level_catalogue != null and level_catalogue.levels.size() > 0:
-		_current_level_data = level_catalogue.levels[0]
+	if _current_level_data == null and level_catalogue != null:
+		for world in level_catalogue.worlds:
+			if not world.levels.is_empty():
+				_current_level_data = world.levels[0]
+				break
 
 	if _current_level_data == null:
 		push_error("LevelCoordinator: _ready() with no LevelData — call receive_scene_params() first.")
