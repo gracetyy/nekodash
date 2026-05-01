@@ -79,12 +79,6 @@ var _params_received: bool = false
 ## Whether results have been populated.
 var _populated: bool = false
 
-## Real SFX streams for star earned.
-var _sfx_star_1: AudioStream = preload("res://assets/audio/sfx/gameplay/star_1.wav")
-var _sfx_star_2: AudioStream = preload("res://assets/audio/sfx/gameplay/star_2.wav")
-var _sfx_star_3: AudioStream = preload("res://assets/audio/sfx/gameplay/star_3.wav")
-var _sfx_no_star: AudioStream = preload("res://assets/audio/sfx/gameplay/no_star.wav")
-
 const RIBBON_TITLE_LEVEL_COMPLETE: String = "Level Complete!"
 const RIBBON_TITLE_PERFECT: String = "Perfect!"
 
@@ -315,46 +309,45 @@ func _show_stars(stars: int) -> void:
 
 	# Sequential pop-in animation
 	var star_nodes: Array[Control] = []
-	for i in range(1, 4):
-		var node: Control = _star_strip.get_node_or_null("Star%d" % i) as Control
-		if node != null:
-			star_nodes.append(node)
+	for child in _star_strip.get_children():
+		if child is TextureRect:
+			star_nodes.append(child as Control)
 	
 	if star_nodes.is_empty():
-		for child in _star_strip.get_children():
-			if child is Control and child.visible:
-				star_nodes.append(child as Control)
-
-	if stars <= 0:
-		SfxManager.play(_sfx_no_star, SfxManager.SfxBus.SFX)
-		_animate_star_reveal(stars)
-		return
+		for i in range(1, 4):
+			var node: Control = _star_strip.get_node_or_null("Star%d" % i) as Control
+			if node != null:
+				star_nodes.append(node)
 
 	# Initial hide
 	for star in star_nodes:
 		star.scale = Vector2.ZERO
+		star.visible = false
+
+	# Always play strip reveal
+	_animate_star_reveal(stars)
 
 	for i in range(star_nodes.size()):
 		var star: Control = star_nodes[i]
+		
+		# Ensure pivot is correct even if layout hasn't finished
+		var star_size: Vector2 = star.size
+		if star_size.x <= 0:
+			star_size = star.custom_minimum_size
+		if star_size.x <= 0: # Last resort fallback
+			star_size = Vector2(104, 104)
+		star.pivot_offset = star_size * 0.5
+		
+		var tween: Tween = create_tween()
+		tween.tween_interval(0.45 + i * 0.22) # Wait for panel + stagger
+		tween.tween_callback(star.show) # Show right as animation starts
+		
 		if i < stars:
-			star.pivot_offset = star.size * 0.5
-			
-			var sfx: AudioStream = null
-			match i + 1:
-				1: sfx = _sfx_star_1
-				2: sfx = _sfx_star_2
-				3: sfx = _sfx_star_3
-			
-			var tween: Tween = create_tween()
-			tween.tween_interval(0.4 + i * 0.22) # Wait for panel + stagger
-			tween.tween_property(star, "scale", Vector2(1.2, 1.2), 0.15).set_trans(Tween.TRANS_SINE)
-			tween.tween_property(star, "scale", Vector2.ONE, 0.25) \
-				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			if sfx != null:
-				tween.parallel().tween_callback(SfxManager.play.bind(sfx, SfxManager.SfxBus.SFX))
-		else:
-			star.scale = Vector2.ONE
+			tween.tween_callback(SfxManager.play_star.bind(i + 1))
 
+		tween.tween_property(star, "scale", Vector2(1.2, 1.2), 0.15).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(star, "scale", Vector2.ONE, 0.25) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _play_intro_animation() -> void:
 	if AppSettings != null and AppSettings.get_reduce_motion():
@@ -390,11 +383,10 @@ func _play_intro_animation() -> void:
 
 
 func _play_star_sfx(stars: int) -> void:
-	match stars:
-		0: SfxManager.play(_sfx_no_star, SfxManager.SfxBus.SFX)
-		1: SfxManager.play(_sfx_star_1, SfxManager.SfxBus.SFX)
-		2: SfxManager.play(_sfx_star_2, SfxManager.SfxBus.SFX)
-		3: SfxManager.play(_sfx_star_3, SfxManager.SfxBus.SFX)
+	if stars <= 0:
+		SfxManager.play_no_star()
+	else:
+		SfxManager.play_star(stars)
 
 
 func _apply_legacy_star_visuals(stars: int) -> void:
@@ -567,12 +559,22 @@ func _animate_star_reveal(stars: int) -> void:
 	if _is_reduce_motion_enabled():
 		_star_strip.pivot_offset = _star_strip.size * 0.5
 		_star_strip.scale = Vector2.ONE
+		if stars <= 0:
+			SfxManager.play_no_star()
 		return
+
 	_star_strip.pivot_offset = _star_strip.size * 0.5
-	_star_strip.scale = Vector2(0.94, 0.94) if stars > 0 else Vector2.ONE
+	_star_strip.scale = Vector2(0.92, 0.92)
+	_star_strip.modulate.a = 0.0
+
 	var tween: Tween = create_tween()
-	tween.tween_property(_star_strip, "scale", Vector2.ONE, 0.12) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.set_parallel(true)
+	tween.tween_property(_star_strip, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(_star_strip, "modulate:a", 1.0, 0.15)
+
+	if stars <= 0:
+		tween.chain().tween_callback(SfxManager.play_no_star)
+
 
 
 func _is_reduce_motion_enabled() -> bool:

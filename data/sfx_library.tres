@@ -1,10 +1,22 @@
-[gd_resource type="Resource" script_class="SfxLibrary" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="SfxLibrary" load_steps=12 format=3]
 
-[ext_resource type="Script" path="res://src/core/sfx_library.gd" id="1"]
+[ext_resource type="Script" path="res://src/core/sfx_library.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui/button_tap.wav" id="2_tap"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui/soft_tap.ogg" id="3_soft"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui/locked_level.wav" id="4_locked"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/gameplay/level_complete.wav" id="5_complete"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/gameplay/star_1.wav" id="6_star1"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/gameplay/star_2.wav" id="7_star2"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/gameplay/star_3.wav" id="8_star3"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/gameplay/no_star.wav" id="9_no_star"]
 
 [resource]
-script = ExtResource("1")
-slide_move = null
-level_complete = null
-star_earned = null
-button_tap = null
+script = ExtResource("1_script")
+button_tap = ExtResource("2_tap")
+soft_tap = ExtResource("3_soft")
+locked = ExtResource("4_locked")
+level_complete = ExtResource("5_complete")
+star_1 = ExtResource("6_star1")
+star_2 = ExtResource("7_star2")
+star_3 = ExtResource("8_star3")
+no_star = ExtResource("9_no_star")

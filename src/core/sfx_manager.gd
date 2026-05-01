@@ -45,6 +45,9 @@ const SETTINGS_SECTION: String = "audio"
 const KEY_SFX_VOLUME: String = "sfx_volume"
 const KEY_SFX_MUTE: String = "sfx_mute"
 
+## Path to the SFX library resource.
+const LIB_PATH: String = "res://data/sfx_library.tres"
+
 
 # —————————————————————————————————————————————
 # State
@@ -62,12 +65,16 @@ var _volume: float = 1.0
 ## Whether SFX playback is muted.
 var _muted: bool = false
 
+## Loaded SFX library.
+var _lib: SfxLibrary
+
 
 # —————————————————————————————————————————————
 # Lifecycle
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	_load_library()
 	_create_pool()
 	_load_settings()
 	_apply_bus_settings()
@@ -76,11 +83,6 @@ func _ready() -> void:
 # —————————————————————————————————————————————
 # Public API
 # —————————————————————————————————————————————
-
-## Preloaded common SFX streams.
-var sfx_button_tap: AudioStream = preload("res://assets/audio/sfx/ui/button_tap.wav")
-var sfx_soft_tap: AudioStream = preload("res://assets/audio/sfx/ui/soft_tap.ogg")
-var sfx_locked: AudioStream = preload("res://assets/audio/sfx/ui/locked_level.wav")
 
 ## Plays a sound effect on the specified bus. Gracefully handles null streams.
 ## volume_mult allows scaling the sound per-call (e.g. 1.5 for 150% volume).
@@ -102,17 +104,35 @@ func play(stream: AudioStream, bus: SfxBus = SfxBus.SFX, pitch_scale: float = 1.
 
 ## Convenience method for pill button taps.
 func play_button_tap() -> void:
-	play(sfx_button_tap, SfxBus.UI)
+	if _lib: play(_lib.button_tap, SfxBus.UI)
 
 
 ## Convenience method for circular button taps.
 func play_soft_tap() -> void:
-	play(sfx_soft_tap, SfxBus.UI)
+	if _lib: play(_lib.soft_tap, SfxBus.UI)
 
 
 ## Convenience method for locked level feedback.
 func play_locked() -> void:
-	play(sfx_locked, SfxBus.UI)
+	if _lib: play(_lib.locked, SfxBus.UI)
+
+
+## Convenience method for level completion.
+func play_level_complete() -> void:
+	if _lib: play(_lib.level_complete, SfxBus.SFX)
+
+
+func play_star(index: int, volume_mult: float = 0.5) -> void:
+	if not _lib: return
+	match index:
+		1: play(_lib.star_1, SfxBus.SFX, 1.0, volume_mult)
+		2: play(_lib.star_2, SfxBus.SFX, 1.0, volume_mult)
+		3: play(_lib.star_3, SfxBus.SFX, 1.0, volume_mult)
+		_: play(_lib.no_star, SfxBus.SFX, 1.0, volume_mult)
+
+
+func play_no_star(volume_mult: float = 1.0) -> void:
+	if _lib: play(_lib.no_star, SfxBus.SFX, 1.0, volume_mult)
 
 
 ## Returns the current volume (0.0 – 1.0).
@@ -189,3 +209,10 @@ func _save_settings() -> void:
 	var err: Error = config.save(SETTINGS_PATH)
 	if err != OK:
 		push_error("[SfxManager] Failed to save settings: %s" % error_string(err))
+
+
+func _load_library() -> void:
+	if ResourceLoader.exists(LIB_PATH):
+		_lib = load(LIB_PATH) as SfxLibrary
+	else:
+		push_warning("[SfxManager] SfxLibrary not found at %s" % LIB_PATH)

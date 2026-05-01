@@ -24,7 +24,18 @@ extends Resource
 # —————————————————————————————————————————————
 
 ## Played when a star is awarded on the Level Complete screen.
-@export var star_earned: AudioStream
+@export var star_earned: AudioStream # Deprecated, use star_1/2/3
+
+@export var star_1: AudioStream
+@export var star_2: AudioStream
+@export var star_3: AudioStream
+@export var no_star: AudioStream
 
 ## Played when any HUD button is tapped (undo, restart, exit).
 @export var button_tap: AudioStream
+
+## Played when a circular button is tapped.
+@export var soft_tap: AudioStream
+
+## Played when a locked level is tapped.
+@export var locked: AudioStream
