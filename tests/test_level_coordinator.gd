@@ -98,8 +98,12 @@ func _build_coordinator(level_data: LevelData) -> Node2D:
 	lc.add_child(cv)
 
 	# Inject a LevelCatalogue containing the test level
+	var world := WorldData.new()
+	world.world_id = level_data.world_id
+	world.levels = [level_data]
+
 	var catalogue := LevelCatalogue.new()
-	catalogue.levels = [level_data]
+	catalogue.worlds = [world]
 	lc.level_catalogue = catalogue
 
 	# Deliver params (before _ready)

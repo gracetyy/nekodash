@@ -91,13 +91,15 @@ func test_play_while_muted_starts_after_unmute() -> void:
 	_music.set_muted(true)
 	_music.play(stream)
 
+	var bus_idx: int = AudioServer.get_bus_index("Music")
+	assert_true(AudioServer.is_bus_mute(bus_idx), "Music bus should be muted")
+	
 	var any_playing_while_muted: bool = _music._player_a.playing or _music._player_b.playing
-	assert_false(any_playing_while_muted, "No music should start while muted")
+	assert_true(any_playing_while_muted, "Music should play in background while muted")
 
 	_music.set_muted(false)
 
-	var any_playing_after_unmute: bool = _music._player_a.playing or _music._player_b.playing
-	assert_true(any_playing_after_unmute, "Pending track should start after unmute")
+	assert_false(AudioServer.is_bus_mute(bus_idx), "Music bus should be unmuted")
 
 
 func test_stop_no_crash() -> void:

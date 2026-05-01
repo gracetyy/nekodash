@@ -14,6 +14,8 @@ var _scene_mgr: Node
 func before_each() -> void:
 	_scene_mgr = load("res://src/core/scene_manager.gd").new()
 	add_child_autofree(_scene_mgr)
+	_scene_mgr._current_screen = _scene_mgr.Screen.NONE
+	_scene_mgr._previous_screen = _scene_mgr.Screen.NONE
 
 
 # —————————————————————————————————————————————
@@ -150,7 +152,7 @@ func test_screen_enum_has_main_menu() -> void:
 
 func test_all_screen_values_have_path_entry() -> void:
 	# Every Screen enum value except NONE should have a SCREEN_PATHS entry.
-	var paths: Dictionary = _scene_mgr.SCREEN_PATHS
+	var paths: Dictionary = _scene_mgr._registry.screen_paths
 	for key: String in _scene_mgr.Screen:
 		var val: int = _scene_mgr.Screen[key]
 		if val == _scene_mgr.Screen.NONE:
@@ -160,7 +162,7 @@ func test_all_screen_values_have_path_entry() -> void:
 
 func test_screen_paths_for_implemented_scenes() -> void:
 	# Scenes that have .tscn files should map to correct paths.
-	var paths: Dictionary = _scene_mgr.SCREEN_PATHS
+	var paths: Dictionary = _scene_mgr._registry.screen_paths
 	assert_eq(paths[_scene_mgr.Screen.MAIN_MENU], "res://scenes/ui/main_menu.tscn")
 	assert_eq(paths[_scene_mgr.Screen.WORLD_MAP], "res://scenes/ui/world_map.tscn")
 	assert_eq(paths[_scene_mgr.Screen.GAMEPLAY], "res://scenes/gameplay/gameplay.tscn")

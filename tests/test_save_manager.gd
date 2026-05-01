@@ -13,6 +13,10 @@ var _save: Node
 func before_each() -> void:
 	# Remove any save file left by a previous test so each test starts clean.
 	_remove_save_files()
+	if FileAccess.file_exists("user://app_settings.cfg"):
+		DirAccess.remove_absolute("user://app_settings.cfg")
+	if AppSettings != null:
+		AppSettings.set_unlock_all_skins(false)
 	_save = load("res://src/core/save_manager.gd").new()
 	add_child_autofree(_save)
 

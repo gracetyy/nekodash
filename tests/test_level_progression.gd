@@ -578,8 +578,13 @@ func test_reinitialize_with_different_catalogue() -> void:
 	_init_standard()
 	# Second catalogue with only 2 levels
 	var cat2: LevelCatalogue = LevelCatalogue.new()
-	cat2.levels.append(_make_level("x1", 1, 1))
-	cat2.levels.append(_make_level("x2", 1, 2))
+	var w1 := WorldData.new()
+	w1.world_id = 1
+	w1.levels = [
+		_make_level("x1", 1, 1),
+		_make_level("x2", 1, 2)
+	]
+	cat2.worlds = [w1]
 	_lp.initialize(cat2, _sr)
 
 	assert_eq(_lp.get_level_count(), 2)
