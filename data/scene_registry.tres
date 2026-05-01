@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SceneRegistry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/core/scene_registry.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+screen_paths = {
+0: "res://scenes/ui/main_menu.tscn",
+1: "res://scenes/ui/world_map.tscn",
+2: "res://scenes/gameplay/gameplay.tscn",
+3: "res://scenes/ui/level_complete.tscn",
+4: "res://scenes/ui/skin_select.tscn",
+5: "res://scenes/ui/loading.tscn",
+6: "res://scenes/ui/opening.tscn",
+7: "res://scenes/ui/credits.tscn"
+}
+overlay_paths = {
+0: "res://scenes/ui/options_overlay.tscn",
+1: "res://scenes/ui/pause_overlay.tscn",
+2: "res://scenes/ui/level_complete_overlay.tscn"
+}

@@ -40,31 +40,18 @@ enum Overlay {
 
 
 # —————————————————————————————————————————————
-# Constants
+# Resources
 # —————————————————————————————————————————————
 
-## Maps Screen enum values to scene file paths (populated when scenes exist).
-const SCREEN_PATHS: Dictionary = {
-	Screen.MAIN_MENU: "res://scenes/ui/main_menu.tscn",
-	Screen.WORLD_MAP: "res://scenes/ui/world_map.tscn",
-	Screen.GAMEPLAY: "res://scenes/gameplay/gameplay.tscn",
-	Screen.LEVEL_COMPLETE: "res://scenes/ui/level_complete.tscn",
-	Screen.SKIN_SELECT: "res://scenes/ui/skin_select.tscn",
-	Screen.LOADING: "res://scenes/ui/loading.tscn",
-	Screen.OPENING: "res://scenes/ui/opening.tscn",
-	Screen.CREDITS: "res://scenes/ui/credits.tscn",
-}
+const REGISTRY_PATH: String = "res://data/scene_registry.tres"
 
-const OVERLAY_PATHS: Dictionary = {
-	Overlay.OPTIONS: "res://scenes/ui/options_overlay.tscn",
-	Overlay.PAUSE: "res://scenes/ui/pause_overlay.tscn",
-	Overlay.LEVEL_COMPLETE: "res://scenes/ui/level_complete_overlay.tscn",
-}
+var _registry: SceneRegistry
 
 
 # —————————————————————————————————————————————
-# Signals
+# State
 # —————————————————————————————————————————————
+
 
 ## Fired before scene swap begins. Duration is 0.0 at MVP.
 signal transition_started(from_screen: Screen, to_screen: Screen)
@@ -101,9 +88,17 @@ var _overlay_paused_tree: bool = false
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	_load_registry()
 	# Identify the current scene at startup to ensure autoloads like MusicManager
 	# know which track to play without waiting for a navigation call.
 	_identify_current_screen()
+
+
+func _load_registry() -> void:
+	if ResourceLoader.exists(REGISTRY_PATH):
+		_registry = load(REGISTRY_PATH) as SceneRegistry
+	else:
+		push_warning("SceneManager: SceneRegistry not found at " + REGISTRY_PATH)
 
 
 # —————————————————————————————————————————————
@@ -190,11 +185,11 @@ func show_overlay(overlay: Overlay, params: Dictionary = {}) -> void:
 	if _active_overlay != Overlay.NONE:
 		_remove_overlay(false)
 
-	if not OVERLAY_PATHS.has(overlay):
-		push_warning("SceneManager.show_overlay(): Overlay %d has no OVERLAY_PATHS entry." % overlay)
+	if _registry == null or not _registry.overlay_paths.has(overlay):
+		push_warning("SceneManager.show_overlay(): Overlay %d has no entry in registry." % overlay)
 		return
 
-	var path: String = OVERLAY_PATHS[overlay]
+	var path: String = _registry.overlay_paths[overlay]
 	if not ResourceLoader.exists(path):
 		push_warning("SceneManager.show_overlay(): no .tscn at '%s' for Overlay %d." % [path, overlay])
 		return
@@ -266,11 +261,11 @@ func _finish_transition(screen: Screen, params: Dictionary) -> void:
 
 
 func _swap_scene(screen: Screen, params: Dictionary) -> bool:
-	if not SCREEN_PATHS.has(screen):
-		push_warning("SceneManager.go_to(): Screen %d has no SCREEN_PATHS entry." % screen)
+	if _registry == null or not _registry.screen_paths.has(screen):
+		push_warning("SceneManager.go_to(): Screen %d has no entry in registry." % screen)
 		return false
 
-	var path: String = SCREEN_PATHS[screen]
+	var path: String = _registry.screen_paths[screen]
 	if not ResourceLoader.exists(path):
 		push_warning("SceneManager.go_to(): no .tscn at '%s' for Screen %d — stub route." % [path, screen])
 		return false
@@ -318,9 +313,12 @@ func _identify_current_screen() -> void:
 	if tree == null or tree.current_scene == null:
 		return
 
+	if _registry == null:
+		return
+
 	var current_path: String = tree.current_scene.scene_file_path
-	for screen_key: Screen in SCREEN_PATHS:
-		if SCREEN_PATHS[screen_key] == current_path:
+	for screen_key: Screen in _registry.screen_paths:
+		if _registry.screen_paths[screen_key] == current_path:
 			_current_screen = screen_key
 			# Defer signal so other autoloads' _ready() have finished connecting.
 			call_deferred("_emit_initial_transition", _current_screen)
