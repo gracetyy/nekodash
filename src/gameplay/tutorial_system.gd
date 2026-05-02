@@ -28,11 +28,15 @@ func initialize(coordinator: Node, level_data: LevelData) -> void:
 	elif ResourceLoader.exists("res://data/tutorial_data.tres"):
 		_data = load("res://data/tutorial_data.tres") as TutorialData
 		
-	if AppSettings.get_tutorial_skipped():
-		_cleanup()
-		return
-		
 	_level_id = level_data.level_id
+	var group_id: String = _get_current_group_id()
+	
+	# Certain tutorials (mechanics) show every time, ignoring persistent skip settings.
+	if not _is_group_persistent(group_id):
+		if AppSettings.get_tutorial_group_skipped(group_id):
+			_cleanup()
+			return
+		
 	if _data == null or _level_id not in _data.trigger_level_ids:
 		_cleanup()
 		return
@@ -106,8 +110,29 @@ func reposition_ui() -> void:
 
 
 func _on_skip_pressed() -> void:
-	AppSettings.set_tutorial_skipped(true)
+	var group_id: String = _get_current_group_id()
+	# Persistent groups only "skip" for the current session, don't save to settings.
+	if not _is_group_persistent(group_id):
+		AppSettings.set_tutorial_group_skipped(group_id, true)
 	_cleanup()
+
+
+func _get_current_group_id() -> String:
+	match _level_id:
+		"w1_l1", "w1_l2", "w1_l3":
+			return "basics"
+		"w2_l10":
+			return "hazards"
+		"w3_l10":
+			return "stop_tiles"
+		"sp_l10":
+			return "one_way"
+		_:
+			return "other"
+
+
+func _is_group_persistent(group_id: String) -> bool:
+	return group_id in ["hazards", "stop_tiles", "one_way"]
 
 
 func _play_current_step() -> void:
@@ -122,6 +147,12 @@ func _play_current_step() -> void:
 			_play_w1_l2_step()
 		"w1_l3":
 			_play_w1_l3_step()
+		"w2_l10":
+			_play_w2_l10_step()
+		"w3_l10":
+			_play_w3_l10_step()
+		"sp_l10":
+			_play_sp_l10_step()
 
 
 func _clear_current_ui() -> void:
@@ -135,17 +166,18 @@ func _clear_current_ui() -> void:
 	_active_arrows.clear()
 
 
-func _show_bubble(grid_pos: Vector2i, text: String, point_down: bool = true) -> void:
-	_show_bubble_with_options(grid_pos, text, point_down, true, Vector2.ZERO)
+func _show_bubble(grid_pos: Vector2i, text: String, point_down: bool = true, show_close_button: bool = false) -> void:
+	_show_bubble_with_options(grid_pos, text, point_down, true, Vector2.ZERO, show_close_button)
 
 
 func _show_bubble_no_arrow(
 	grid_pos: Vector2i,
 	text: String,
 	point_down: bool = true,
-	bubble_offset: Vector2 = Vector2.ZERO
+	bubble_offset: Vector2 = Vector2.ZERO,
+	show_close_button: bool = false
 ) -> void:
-	_show_bubble_with_options(grid_pos, text, point_down, false, bubble_offset)
+	_show_bubble_with_options(grid_pos, text, point_down, false, bubble_offset, show_close_button)
 
 
 func _show_bubble_with_options(
@@ -153,9 +185,10 @@ func _show_bubble_with_options(
 	text: String,
 	point_down: bool,
 	show_arrow: bool,
-	bubble_offset: Vector2
+	bubble_offset: Vector2,
+	show_close_button: bool = false
 ) -> void:
-	var bubble = _data.bubble_scene.instantiate() as Control
+	var bubble = _data.bubble_scene.instantiate() as TutorialBubble
 	bubble.custom_minimum_size.x = 220
 	bubble.size.x = 220
 	if bubble.has_method("apply_text"):
@@ -166,6 +199,10 @@ func _show_bubble_with_options(
 			label.text = text
 	add_child(bubble)
 	_active_bubbles.append(bubble)
+	
+	if show_close_button:
+		bubble.add_close_button()
+		bubble.close_pressed.connect(_on_skip_pressed)
 	
 	# Position them
 	var px: Vector2 = GridSystem.grid_to_pixel(grid_pos) + _grid_renderer.get_grid_offset()
@@ -235,6 +272,7 @@ func _show_directional_arrow(grid_pos: Vector2i, texture: Texture2D) -> void:
 
 
 func _play_w1_l1_step() -> void:
+	if _skip_btn != null: _skip_btn.visible = true
 	var cat_pos: Vector2i = _sliding_movement.get_cat_pos()
 	var mode: String = AppSettings.get_effective_input_hint_mode()
 	var move_verb: String = "Swipe Right" if mode == AppSettings.INPUT_HINT_TOUCH else "Press D"
@@ -255,6 +293,7 @@ func _play_w1_l1_step() -> void:
 			_cleanup() # End of tutorial for l1
 
 func _play_w1_l2_step() -> void:
+	if _skip_btn != null: _skip_btn.visible = true
 	match _step:
 		0:
 			var cat_pos: Vector2i = _sliding_movement.get_cat_pos()
@@ -263,10 +302,38 @@ func _play_w1_l2_step() -> void:
 			_cleanup()
 
 func _play_w1_l3_step() -> void:
+	if _skip_btn != null: _skip_btn.visible = true
 	match _step:
 		0:
 			var cat_pos: Vector2i = _sliding_movement.get_cat_pos()
 			_show_bubble_no_arrow(cat_pos, "Completing levels with fewer moves earns you more stars!", true)
+		1:
+			_cleanup()
+
+
+func _play_w2_l10_step() -> void:
+	match _step:
+		0:
+			if _skip_btn != null: _skip_btn.visible = false
+			_show_bubble(Vector2i(3, 3), "Watch out! This is a hazard tile. Don't cross it!", true, true)
+		1:
+			_cleanup()
+
+
+func _play_w3_l10_step() -> void:
+	match _step:
+		0:
+			if _skip_btn != null: _skip_btn.visible = false
+			_show_bubble(Vector2i(3, 3), "This is a stop-slide tile. It will catch you mid-slide!", true, true)
+		1:
+			_cleanup()
+
+
+func _play_sp_l10_step() -> void:
+	match _step:
+		0:
+			if _skip_btn != null: _skip_btn.visible = false
+			_show_bubble(Vector2i(3, 1), "This is a one-way tile. You can only enter it from the direction of the arrow!", true, true)
 		1:
 			_cleanup()
 

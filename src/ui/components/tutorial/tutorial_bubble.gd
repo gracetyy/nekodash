@@ -1,6 +1,8 @@
 class_name TutorialBubble
 extends Panel
 
+signal close_pressed
+
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 
 @export_multiline var bubble_text: String = "Swipe to slide!"
@@ -50,3 +52,31 @@ func apply_text(text_val: String) -> void:
 	
 	_label.position = Vector2(20, 16)
 	_label.size = Vector2(content_width, text_size.y)
+
+
+func add_close_button() -> void:
+	var close_btn = TextureButton.new()
+	
+	# Load specific assets
+	var tex_normal = load("res://assets/art/ui/buttons/circular/btn_circle_close_normal.png")
+	var tex_hover = load("res://assets/art/ui/buttons/circular/btn_circle_close_hover.png")
+	var tex_pressed = load("res://assets/art/ui/buttons/circular/btn_circle_close_pressed.png")
+	
+	close_btn.texture_normal = tex_normal
+	close_btn.texture_hover = tex_hover
+	close_btn.texture_pressed = tex_pressed
+	
+	close_btn.ignore_texture_size = true
+	close_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	close_btn.custom_minimum_size = Vector2(32, 32)
+	close_btn.size = Vector2(32, 32)
+	
+	# Position at top right
+	close_btn.position = Vector2(size.x - 24, -12)
+	
+	add_child(close_btn)
+	close_btn.pressed.connect(_on_close_btn_pressed)
+
+
+func _on_close_btn_pressed() -> void:
+	close_pressed.emit()

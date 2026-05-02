@@ -9,7 +9,7 @@
 
 [resource]
 script = ExtResource("1_script")
-trigger_level_ids = ["w1_l1", "w1_l2", "w1_l3"]
+trigger_level_ids = ["w1_l1", "w1_l2", "w1_l3", "w2_l10", "w3_l10", "sp_l10"]
 bubble_scene = ExtResource("2_bubble")
 pill_button_scene = ExtResource("3_pill")
 arrow_down = ExtResource("4_down")
