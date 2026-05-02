@@ -39,11 +39,16 @@ extends Node2D
 @export_range(16.0, 512.0, 1.0, "or_greater")
 var display_size_px: float = 92.0
 ## Global offset applied to the assembled rig origin.
-@export var display_offset: Vector2 = Vector2(0.0, -16.0)
+@export var display_offset: Vector2 = Vector2(0.0, -16.0):
+	set(value):
+		display_offset = value
+		if is_inside_tree():
+			# Optimization: only update position, don't trigger full _apply_layout
+			position = display_offset * get_current_part_scale()
 
 @export_category("Pivots")
 ## Tail rotation anchor in source-canvas pixel coordinates.
-@export var tail_pivot_source_px: Vector2 = Vector2(15.0, 35.0)
+@export var tail_pivot_source_px: Vector2 = Vector2(26.0, 31.0)
 ## Head rotation anchor in source-canvas pixel coordinates.
 @export var head_pivot_source_px: Vector2 = Vector2(0.0, 8.0)
 
@@ -323,19 +328,33 @@ func _build_profile_signature(profile: CatRigProfile) -> String:
 func _apply_layout() -> void:
 	if not is_inside_tree():
 		return
-	position = _effective_display_offset()
+	
+	var part_scale: float = get_current_part_scale()
+	
+	# The assembly position is the scaled display offset.
+	# This ensures the rig origin (which handles slide/jump) stays at (0, 0) relative to parent,
+	# and the visual assembly is shifted.
+	position = _effective_display_offset() * part_scale
 
+	# Reset all parts to centered at (0, 0) relative to rig origin first
+	for sprite: Sprite2D in _part_sprites:
+		if sprite != null and is_instance_valid(sprite):
+			sprite.position = Vector2.ZERO
+
+	# Apply pivots in source-pixel space, scaled by current part_scale
+	var tail_pos: Vector2 = _effective_tail_pivot_source_px() * part_scale
 	if _tail_pivot != null and is_instance_valid(_tail_pivot):
-		_tail_pivot.position = _effective_tail_pivot_source_px()
+		_tail_pivot.position = tail_pos
 	if _tail_sprite != null and is_instance_valid(_tail_sprite):
-		_tail_sprite.position = - _effective_tail_pivot_source_px()
+		_tail_sprite.position = - tail_pos
 
+	var head_pos: Vector2 = _effective_head_pivot_source_px() * part_scale
 	if _head_pivot != null and is_instance_valid(_head_pivot):
-		_head_pivot.position = _effective_head_pivot_source_px()
+		_head_pivot.position = head_pos
 	if _head_sprite != null and is_instance_valid(_head_sprite):
-		_head_sprite.position = - _effective_head_pivot_source_px()
+		_head_sprite.position = - head_pos
 	if _face_sprite != null and is_instance_valid(_face_sprite):
-		_face_sprite.position = - _effective_head_pivot_source_px()
+		_face_sprite.position = - head_pos
 
 	_apply_part_scale()
 	_apply_static_pose()
@@ -476,13 +495,14 @@ func _apply_idle_head_breath_pose(elapsed_sec: float) -> void:
 	if _head_pivot == null or not is_instance_valid(_head_pivot):
 		return
 
-	var base_head_pivot: Vector2 = _effective_head_pivot_source_px()
+	var part_scale: float = get_current_part_scale()
+	var base_head_pivot: Vector2 = _effective_head_pivot_source_px() * part_scale
 	if _effective_idle_head_breath_period_sec() <= 0.0 or _effective_idle_head_breath_amplitude_px() <= 0.0:
 		_head_pivot.position = base_head_pivot
 		return
 
 	var cycle: float = (elapsed_sec / _effective_idle_head_breath_period_sec()) * TAU
-	var breath_offset_y: float = - sin(cycle) * _effective_idle_head_breath_amplitude_px()
+	var breath_offset_y: float = - sin(cycle) * (_effective_idle_head_breath_amplitude_px() * part_scale)
 	_head_pivot.position = base_head_pivot + Vector2(0.0, breath_offset_y)
 
 
@@ -493,8 +513,15 @@ func _reset_tail_pose() -> void:
 
 func _reset_head_breath_pose() -> void:
 	if _head_pivot != null and is_instance_valid(_head_pivot):
-		_head_pivot.position = _effective_head_pivot_source_px()
+		var part_scale: float = get_current_part_scale()
+		_head_pivot.position = _effective_head_pivot_source_px() * part_scale
 		_head_pivot.rotation_degrees = _effective_base_head_tilt_degrees()
+
+
+func get_current_part_scale() -> float:
+	if _source_canvas_size_px <= 0.0:
+		return 1.0
+	return _effective_display_size_px() / _source_canvas_size_px
 
 
 func _apply_static_pose() -> void:

@@ -21,7 +21,7 @@ const TITLE_PORTRAIT_MAX_WIDTH: float = 700.0
 
 ## Display size for the menu cat rig in pixels.
 @export_range(64.0, 320.0, 1.0, "or_greater")
-var menu_cat_size_px: float = 168.0
+var menu_cat_size_px: float = 320.0
 
 ## Vertical anchor of the menu cat within the illustration rect (0 top, 1 bottom).
 @export_range(0.0, 1.0, 0.01)
@@ -67,9 +67,6 @@ var _menu_cat_rig: CatRig
 @export var _buttons_box: VBoxContainer
 var _editor_menu_cat_signature: String = ""
 var _menu_cat_layout_refresh_queued: bool = false
-var _breathing_time: float = 0.0
-const BREATHING_AMPLITUDE: float = 6.0
-const BREATHING_PERIOD: float = 2.4
 
 
 # —————————————————————————————————————————————
@@ -404,12 +401,14 @@ func _call_app_settings_int(method_name: StringName, fallback: int) -> int:
 	return fallback
 
 
-func _update_menu_cat_breathing(delta: float) -> void:
-	if _menu_cat_rig == null or _is_reduce_motion_enabled():
-		if _menu_cat_rig != null:
-			_menu_cat_rig.display_offset = menu_cat_offset
+func _update_menu_cat_breathing(_delta: float) -> void:
+	if _menu_cat_rig == null:
+		return
+		
+	if _is_reduce_motion_enabled():
+		_menu_cat_rig.display_offset = menu_cat_offset
 		return
 	
-	_breathing_time += delta
-	var offset_y = sin(_breathing_time * (TAU / BREATHING_PERIOD)) * BREATHING_AMPLITUDE
-	_menu_cat_rig.display_offset = menu_cat_offset + Vector2(0, offset_y)
+	# Rig's internal idle_enabled handles head breathing and tail swing.
+	# We just ensure the base offset is set.
+	_menu_cat_rig.display_offset = menu_cat_offset

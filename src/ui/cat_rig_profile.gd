@@ -20,7 +20,7 @@ var display_size_px: float = 92.0
 
 @export_category("Pivots")
 ## Tail rotation anchor in source-canvas pixel coordinates.
-@export var tail_pivot_source_px: Vector2 = Vector2(15.0, 35.0)
+@export var tail_pivot_source_px: Vector2 = Vector2(26.0, 31.0)
 ## Head rotation anchor in source-canvas pixel coordinates.
 @export var head_pivot_source_px: Vector2 = Vector2(0.0, 8.0)
 

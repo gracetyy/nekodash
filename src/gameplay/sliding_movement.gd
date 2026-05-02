@@ -116,7 +116,7 @@ const MAX_SLIDE_DISTANCE: int = 20
 var cat_display_size_px: float = 92.0
 
 ## Global offset applied to gameplay cat rig when host override is enabled.
-@export var cat_display_offset: Vector2 = Vector2(0.0, -16.0)
+@export var cat_display_offset: Vector2 = Vector2(0.0, -32.0)
 
 ## Face variant used by gameplay cat rig when host override is enabled.
 @export_enum("idle", "blink", "excited", "relax", "smile")
@@ -124,7 +124,7 @@ var cat_face_variant: String = "idle"
 
 ## Idle tail sway amplitude in degrees when host override is enabled.
 @export_range(0.0, 60.0, 0.1, "or_greater")
-var cat_idle_tail_swing_degrees: float = 10.0
+var cat_idle_tail_swing_degrees: float = 2.0
 
 ## Idle tail sway cycle duration in seconds when host override is enabled.
 @export_range(0.0, 10.0, 0.01, "or_greater")
@@ -167,6 +167,23 @@ func _ready() -> void:
 	InputSystem.direction_input.connect(_on_direction_input)
 	_cache_cat_rig()
 	_apply_cat_host_overrides()
+
+
+func _process(delta: float) -> void:
+	_update_cat_breathing(delta)
+
+
+func _update_cat_breathing(_delta: float) -> void:
+	if _cat_rig == null:
+		return
+		
+	if _is_reduce_motion_enabled() or _state != State.IDLE:
+		_cat_rig.set("idle_enabled", false)
+		# Ensure we return to base offset if we were mid-animation
+		_cat_rig.set("display_offset", cat_display_offset)
+		return
+	
+	_cat_rig.set("idle_enabled", true)
 
 
 func _cache_cat_rig() -> void:

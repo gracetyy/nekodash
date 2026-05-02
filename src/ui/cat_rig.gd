@@ -32,10 +32,16 @@ extends Control
 
 @export_category("Display")
 @export_range(16.0, 512.0, 1.0, "or_greater") var display_size_px: float = 92.0
-@export var display_offset: Vector2 = Vector2(0.0, -16.0)
+@export var display_offset: Vector2 = Vector2(0.0, -16.0):
+	set(value):
+		display_offset = value
+		if _rig != null:
+			_rig.display_offset = value
+		if is_inside_tree():
+			_sync_rig_layout()
 
 @export_category("Pivots")
-@export var tail_pivot_source_px: Vector2 = Vector2(15.0, 35.0)
+@export var tail_pivot_source_px: Vector2 = Vector2(26.0, 31.0)
 @export var head_pivot_source_px: Vector2 = Vector2(0.0, 8.0)
 
 @export_category("Idle Motion")
@@ -174,7 +180,13 @@ func _sync_rig_layout() -> void:
 		_cache_rig()
 	if _rig == null:
 		return
-	_rig.position = size * 0.5
+	
+	var part_scale: float = 1.0
+	if _rig.has_method("get_current_part_scale"):
+		part_scale = _rig.get_current_part_scale()
+		
+	# Center the rig and apply the scaled display offset
+	_rig.position = (size * 0.5) + (display_offset * part_scale)
 
 
 func _build_editor_preview_signature() -> String:
