@@ -19,6 +19,10 @@ extends SceneTree
 #   "w"     : int          -- grid width  (>= 5)
 #   "h"     : int          -- grid height (>= 5)
 #   "obs"   : Array        -- obstacle positions as Vector2i
+#   "special": Dictionary  -- Vector2i -> SpecialType int
+#
+# -- SPECIAL TYPES ----------------------------------------
+# 1: Hazard | 2: Stop | 3: Up | 4: Down | 5: Left | 6: Right
 #
 # -- OBSTACLE RULES --------------------------------------
 # 1. Interior-edge only:  x in [1, w-2], y in [1, h-2],
@@ -42,14 +46,15 @@ extends SceneTree
 # vvv  AI AGENT: fill in proposals here  vvv
 const LEVEL_PROPOSALS: Array[Dictionary] = [
 	{
-		"id": "w2_l1",
-		"world": 2,
-		"index": 1,
-		"name": "Kitchen 1",
-		"w": 6,
-		"h": 6,
-		"obs": [Vector2i(2, 1), Vector2i(4, 2), Vector2i(1, 4)],
-	},
+		"id": "test_stop",
+		"world": 3,
+		"index": 11,
+		"name": "Stop Test",
+		"w": 7,
+		"h": 7,
+		"obs": [Vector2i(5, 1), Vector2i(1, 4), Vector2i(4, 5)],
+		"special": {Vector2i(3, 3): 2} # 2 = Stop
+	}
 ]
 
 # -------------------------------------------------------
@@ -64,6 +69,13 @@ const _DIRS: Array[Vector2i] = [
 ]
 const _MAX_SLIDE: int = 20
 const _MAX_WALK_BITS: int = 63
+
+const SPECIAL_HAZARD = 1
+const SPECIAL_STOP = 2
+const SPECIAL_ONE_WAY_UP = 3
+const SPECIAL_ONE_WAY_DOWN = 4
+const SPECIAL_ONE_WAY_LEFT = 5
+const SPECIAL_ONE_WAY_RIGHT = 6
 
 var _last_states: int = 0
 
@@ -93,8 +105,8 @@ func _init() -> void:
 				r["minimum_moves"], r["star3"], r["star2"], r["star1"],
 				r["states_explored"],
 			])
-			print("         obs=%s  grid=%dx%d  world=%d  index=%d" % [
-				_obs_str(r["obs"]), r["w"], r["h"], r["world"], r["index"],
+			print("         obs=%s  special=%s  grid=%dx%d  world=%d  index=%d" % [
+				_obs_str(r["obs"]), _spec_str(r["special"]), r["w"], r["h"], r["world"], r["index"],
 			])
 		print("\n  -- Ready-to-paste PACK entries --")
 		for r in passed:
@@ -117,6 +129,7 @@ func _validate_proposal(p: Dictionary) -> Dictionary:
 	var w: int         = int(p.get("w", 0))
 	var h: int         = int(p.get("h", 0))
 	var raw_obs: Array = p.get("obs", []) as Array
+	var spec: Dictionary = p.get("special", {}) as Dictionary
 
 	if w < 5 or h < 5:
 		return _fail(id, "Grid too small (%dx%d, minimum is 5x5)" % [w, h])
@@ -156,6 +169,10 @@ func _validate_proposal(p: Dictionary) -> Dictionary:
 	for v in obs:
 		if v == Vector2i(1, 1):
 			return _fail(id, "Obstacle placed on cat start (1,1)")
+			
+	# Rule 5 -- no hazard at cat start
+	if spec.get(Vector2i(1, 1), 0) == SPECIAL_HAZARD:
+		return _fail(id, "Hazard placed on cat start (1,1)")
 
 	# Build tile arrays
 	var walk: PackedInt32Array = PackedInt32Array()
@@ -168,9 +185,15 @@ func _validate_proposal(p: Dictionary) -> Dictionary:
 	ob_tiles.resize(w * h)
 	for v in obs:
 		ob_tiles[v.x + v.y * w] = 1
+		
+	var spec_tiles: PackedInt32Array = PackedInt32Array()
+	spec_tiles.resize(w * h)
+	spec_tiles.fill(0)
+	for v in spec:
+		spec_tiles[v.x + v.y * w] = spec[v]
 
 	# Solve
-	var min_moves: int = _bfs(w, h, walk, ob_tiles, Vector2i(1, 1))
+	var min_moves: int = _bfs(w, h, walk, ob_tiles, spec_tiles, Vector2i(1, 1))
 	if min_moves < 0:
 		return _fail(id, "Unsolvable -- BFS found no complete path")
 
@@ -181,20 +204,21 @@ func _validate_proposal(p: Dictionary) -> Dictionary:
 	return {
 		"ok": true,
 		"id": id, "world": world, "index": index, "name": dname,
-		"w": w, "h": h, "obs": obs,
+		"w": w, "h": h, "obs": obs, "special": spec,
 		"minimum_moves": min_moves,
 		"star3": star3, "star2": star2, "star1": star1,
 		"states_explored": _last_states,
 	}
 
 
-func _bfs(w: int, h: int, walk: PackedInt32Array, ob: PackedInt32Array, start: Vector2i) -> int:
+func _bfs(w: int, h: int, walk: PackedInt32Array, ob: PackedInt32Array, spec: PackedInt32Array, start: Vector2i) -> int:
 	var p2b: Dictionary = {}
 	var bit: int = 0
 	for y in range(h):
 		for x in range(w):
 			var p: Vector2i = Vector2i(x, y)
-			if _is_walk(p, w, h, walk, ob):
+			# Hazards are NOT walkable in terms of coverage (you die if you step on them)
+			if _is_walk(p, w, h, walk, ob) and spec[x + y * w] != SPECIAL_HAZARD:
 				p2b[p] = bit
 				bit += 1
 
@@ -223,8 +247,8 @@ func _bfs(w: int, h: int, walk: PackedInt32Array, ob: PackedInt32Array, start: V
 		var cd: int = int(cur[3])
 
 		for d in _DIRS:
-			var land: Vector2i = _slide(cp, d, w, h, walk, ob)
-			if land == cp:
+			var land: Vector2i = _slide(cp, d, w, h, walk, ob, spec)
+			if land == cp or land == Vector2i(-1, -1):
 				continue
 			var nm: int = cm
 			var step: Vector2i = cp + d
@@ -251,11 +275,39 @@ func _is_walk(p: Vector2i, w: int, h: int, walk: PackedInt32Array, ob: PackedInt
 	return walk[idx] == 0 and ob[idx] == 0
 
 
-func _slide(pos: Vector2i, dir: Vector2i, w: int, h: int, walk: PackedInt32Array, ob: PackedInt32Array) -> Vector2i:
+func _slide(pos: Vector2i, dir: Vector2i, w: int, h: int, walk: PackedInt32Array, ob: PackedInt32Array, spec: PackedInt32Array) -> Vector2i:
 	for _i in range(_MAX_SLIDE):
-		if not _is_walk(pos + dir, w, h, walk, ob):
+		var next := pos + dir
+		
+		# 1. One-way check
+		if next.x >= 0 and next.y >= 0 and next.x < w and next.y < h:
+			var n_idx = next.x + next.y * w
+			var s_type = spec[n_idx]
+			if s_type >= SPECIAL_ONE_WAY_UP and s_type <= SPECIAL_ONE_WAY_RIGHT:
+				var allowed = Vector2i.ZERO
+				match s_type:
+					SPECIAL_ONE_WAY_UP: allowed = Vector2i.UP
+					SPECIAL_ONE_WAY_DOWN: allowed = Vector2i.DOWN
+					SPECIAL_ONE_WAY_LEFT: allowed = Vector2i.LEFT
+					SPECIAL_ONE_WAY_RIGHT: allowed = Vector2i.RIGHT
+				if allowed != dir:
+					return pos # Acts as wall
+					
+		# 2. General walkability
+		if not _is_walk(next, w, h, walk, ob):
 			break
-		pos += dir
+			
+		pos = next
+		var idx = pos.x + pos.y * w
+		
+		# 3. Hazard check
+		if spec[idx] == SPECIAL_HAZARD:
+			return Vector2i(-1, -1)
+			
+		# 4. Stop tile check
+		if spec[idx] == SPECIAL_STOP:
+			return pos
+			
 	return pos
 
 
@@ -274,11 +326,18 @@ func _fail(id: String, reason: String) -> Dictionary:
 func _obs_str(obs: Array[Vector2i]) -> String:
 	var parts: Array[String] = []
 	for v in obs:
-		parts.append("Vector2i(%d,%d)" % [v.x, v.y])
+		parts.append("Vector2i(%d, %d)" % [v.x, v.y])
 	return "[" + ", ".join(parts) + "]"
 
 
+func _spec_str(spec: Dictionary) -> String:
+	var parts: Array[String] = []
+	for v in spec:
+		parts.append("Vector2i(%d, %d): %d" % [v.x, v.y, spec[v]])
+	return "{" + ", ".join(parts) + "}"
+
+
 func _pack_entry(r: Dictionary) -> String:
-	return '\t{"id":"%s", "world":%d, "index":%d, "name":"%s", "w":%d, "h":%d, "obs":%s},' % [
-		r["id"], r["world"], r["index"], r["name"], r["w"], r["h"], _obs_str(r["obs"]),
+	return '\t{"id":"%s", "world":%d, "index":%d, "name":"%s", "w":%d, "h":%d, "obs":%s, "special":%s},' % [
+		r["id"], r["world"], r["index"], r["name"], r["w"], r["h"], _obs_str(r["obs"]), _spec_str(r["special"]),
 	]

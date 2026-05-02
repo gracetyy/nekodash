@@ -46,6 +46,15 @@ const TILE_WALKABLE: int = 0
 ## Obstacle-free enum value — matches GridSystem.ObstacleType.NONE.
 const OBSTACLE_NONE: int = 0
 
+## SpecialTileType enum values — matches GridSystem.SpecialTileType.
+const SPECIAL_NONE: int = 0
+const SPECIAL_HAZARD: int = 1
+const SPECIAL_STOP_TILE: int = 2
+const SPECIAL_ONE_WAY_UP: int = 3
+const SPECIAL_ONE_WAY_DOWN: int = 4
+const SPECIAL_ONE_WAY_LEFT: int = 5
+const SPECIAL_ONE_WAY_RIGHT: int = 6
+
 # —————————————————————————————————————————————
 # Result container
 # —————————————————————————————————————————————
@@ -101,6 +110,9 @@ var _walkability: PackedInt32Array = PackedInt32Array()
 ## Flat obstacle array copied from LevelData.
 var _obstacle_tiles: PackedInt32Array = PackedInt32Array()
 
+## Flat special tiles array copied from LevelData.
+var _special_tiles: PackedInt32Array = PackedInt32Array()
+
 
 # —————————————————————————————————————————————
 # Public API
@@ -123,6 +135,7 @@ func solve(level_data: LevelData) -> SolveResult:
 	_grid_height = level_data.grid_height
 	_walkability = level_data.walkability_tiles
 	_obstacle_tiles = level_data.obstacle_tiles
+	_special_tiles = level_data.special_tiles if "special_tiles" in level_data else PackedInt32Array()
 
 	if _walkability.is_empty():
 		result.error = "walkability_tiles is empty"
@@ -135,8 +148,9 @@ func solve(level_data: LevelData) -> SolveResult:
 	var bit_index: int = 0
 	for row in range(_grid_height):
 		for col in range(_grid_width):
-			if _is_walkable(Vector2i(col, row)):
-				_pos_to_index[Vector2i(col, row)] = bit_index
+			var coord := Vector2i(col, row)
+			if _is_walkable(coord) and _get_special_type(coord) != SPECIAL_HAZARD:
+				_pos_to_index[coord] = bit_index
 				bit_index += 1
 
 	var walkable_count: int = bit_index
@@ -209,8 +223,8 @@ func solve(level_data: LevelData) -> SolveResult:
 		for dir: Vector2i in DIRECTIONS:
 			var landing: Vector2i = _resolve_slide(current.pos, dir)
 
-			# No movement — skip
-			if landing == current.pos:
+			# No movement or death — skip
+			if landing == current.pos or landing == Vector2i(-1, -1):
 				continue
 
 			# Update coverage mask for all traversed tiles
@@ -247,6 +261,7 @@ func solve(level_data: LevelData) -> SolveResult:
 				parent_map[key] = new_state
 				queue.push_back(new_state)
 	result.solve_time_msec = Time.get_ticks_msec() - start_tick
+	result.states_explored = states_explored
 	result.error = "Level is unsolvable"
 	push_error("[LevelSolver] ERROR: %s is unsolvable!" % level_data.level_id)
 	return result
@@ -285,10 +300,51 @@ func _is_walkable(coord: Vector2i) -> bool:
 func _resolve_slide(start: Vector2i, direction: Vector2i) -> Vector2i:
 	var pos: Vector2i = start
 	var iterations: int = 0
-	while _is_walkable(pos + direction) and iterations < MAX_SLIDE_DISTANCE:
-		pos += direction
+	
+	while iterations < MAX_SLIDE_DISTANCE:
+		var next := pos + direction
+		
+		# 1. One-way check
+		var next_special := _get_special_type(next)
+		if next_special >= SPECIAL_ONE_WAY_UP and next_special <= SPECIAL_ONE_WAY_RIGHT:
+			var allowed := _get_one_way_dir(next_special)
+			if allowed != direction:
+				break
+				
+		# 2. General walkability
+		if not _is_walkable(next):
+			break
+			
+		pos = next
 		iterations += 1
+		
+		# 3. Hazard check (immediately invalidates move)
+		if _get_special_type(pos) == SPECIAL_HAZARD:
+			return Vector2i(-1, -1)
+			
+		# 4. Stop tile check
+		if _get_special_type(pos) == SPECIAL_STOP_TILE:
+			break
+			
 	return pos
+
+
+func _get_special_type(coord: Vector2i) -> int:
+	if coord.x < 0 or coord.y < 0 or coord.x >= _grid_width or coord.y >= _grid_height:
+		return SPECIAL_NONE
+	var index: int = coord.x + coord.y * _grid_width
+	if index >= _special_tiles.size():
+		return SPECIAL_NONE
+	return _special_tiles[index]
+
+
+func _get_one_way_dir(type: int) -> Vector2i:
+	match type:
+		SPECIAL_ONE_WAY_UP: return Vector2i.UP
+		SPECIAL_ONE_WAY_DOWN: return Vector2i.DOWN
+		SPECIAL_ONE_WAY_LEFT: return Vector2i.LEFT
+		SPECIAL_ONE_WAY_RIGHT: return Vector2i.RIGHT
+		_: return Vector2i.ZERO
 
 
 ## Builds the BFS visited-set key string per design doc specification.
