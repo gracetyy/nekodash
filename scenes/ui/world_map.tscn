@@ -4,6 +4,8 @@
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://cknwn3q2gg3ht" path="res://scenes/ui/components/buttons/BackButton.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://bw2o5aftvi511" path="res://scenes/ui/components/status/ProgressPill.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://cy0x18adte55g" path="res://scenes/ui/components/panels/RibbonHeader.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://dm7dgglak8lo2" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="6"]
 
 [node name="WorldMap" type="Control"]
 layout_mode = 3
@@ -39,9 +41,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 64
+theme_override_constants/margin_left = 48
 theme_override_constants/margin_top = 38
-theme_override_constants/margin_right = 64
+theme_override_constants/margin_right = 48
 theme_override_constants/margin_bottom = 38
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer"]
@@ -55,57 +57,36 @@ size_flags_horizontal = 3
 theme_override_constants/margin_left = 23
 theme_override_constants/margin_right = 23
 
-[node name="HeaderCard" type="PanelContainer" parent="MarginContainer/VBox/HeaderOuterMargin"]
-custom_minimum_size = Vector2(0, 80)
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Margin" type="MarginContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard"]
-layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 12
-
-[node name="Header" type="HBoxContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin"]
+[node name="TopBar" type="HBoxContainer" parent="MarginContainer/VBox/HeaderOuterMargin"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="BackBtn" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("3")]
+[node name="BackBtnMargin" type="MarginContainer" parent="MarginContainer/VBox/HeaderOuterMargin/TopBar"]
 layout_mode = 2
-size_flags_vertical = 4
+theme_override_constants/margin_top = 16
 
-[node name="TitleBox" type="VBoxContainer" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
+[node name="BackBtn" parent="MarginContainer/VBox/HeaderOuterMargin/TopBar/BackBtnMargin" instance=ExtResource("3")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_constants/separation = 2
-alignment = 1
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)
-theme_override_font_sizes/font_size = 30
-text = "World Selection"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="SubtitleLabel" type="Label" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox"]
-visible = false
-layout_mode = 2
-theme_override_colors/font_color = Color(0.47451, 0.372549, 0.505882, 1)
-theme_override_font_sizes/font_size = 16
-horizontal_alignment = 1
-
-[node name="ProgressChip" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header" instance=ExtResource("4")]
+[node name="ProgressChip" parent="MarginContainer/VBox/HeaderOuterMargin/TopBar" instance=ExtResource("4")]
 layout_mode = 2
 custom_minimum_size = Vector2(146, 48)
 size_flags_vertical = 4
 
-[node name="RightSpacer" type="Control" parent="MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header"]
-custom_minimum_size = Vector2(44, 56)
+[node name="HeaderCard" parent="MarginContainer/VBox/HeaderOuterMargin/TopBar" instance=ExtResource("5")]
 layout_mode = 2
+size_flags_horizontal = 6
 size_flags_vertical = 4
+variant = 1
+
+[node name="SettingsBtnMargin" type="MarginContainer" parent="MarginContainer/VBox/HeaderOuterMargin/TopBar"]
+layout_mode = 2
+theme_override_constants/margin_top = 16
+
+[node name="SettingsBtn" parent="MarginContainer/VBox/HeaderOuterMargin/TopBar/SettingsBtnMargin" instance=ExtResource("6")]
+layout_mode = 2
+variant = 7
+button_size = 56.0
 
 [node name="HintLabel" type="Label" parent="MarginContainer/VBox"]
 visible = false

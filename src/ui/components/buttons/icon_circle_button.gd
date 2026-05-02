@@ -11,6 +11,7 @@ enum Variant {
 	HOME,
 	UNDO,
 	PAUSE,
+	SETTINGS,
 }
 
 @export var variant: Variant = Variant.BACK
@@ -42,5 +43,7 @@ func _apply_component_state() -> void:
 			ShellThemeUtil.apply_circle_undo_button(self , button_size)
 		Variant.PAUSE:
 			ShellThemeUtil.apply_circle_pause_button(self , button_size)
+		Variant.SETTINGS:
+			ShellThemeUtil.apply_circle_settings_button(self , button_size)
 		_:
 			ShellThemeUtil.apply_circle_back_button(self , button_size)

@@ -58,7 +58,8 @@ signal level_selected(level_data: LevelData)
 signal back_requested
 
 @export var _back_btn: BaseButton
-@export var _header_card: PanelContainer
+@export var _settings_btn: BaseButton
+@export var _header_card: RibbonHeader
 @export var _root_margin_container: MarginContainer
 @export var _progress_chip: Control
 @export var _world_list: VBoxContainer
@@ -91,34 +92,44 @@ func _ready() -> void:
 				list_margin.mouse_filter = Control.MOUSE_FILTER_PASS
 
 	if _back_btn == null:
-		_back_btn = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/BackBtn")
+		_back_btn = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/TopBar/BackBtnMargin/BackBtn")
+	if _settings_btn == null:
+		_settings_btn = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/TopBar/SettingsBtnMargin/SettingsBtn")
 	if _header_card == null:
-		_header_card = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard")
+		_header_card = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/TopBar/HeaderCard")
 	if _progress_chip == null:
-		_progress_chip = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/ProgressChip")
+		_progress_chip = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/TopBar/ProgressChip")
 	if _world_list == null:
 		_world_list = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer/WorldList")
 	if _scroll_container == null:
 		_scroll_container = get_node_or_null("MarginContainer/VBox/ListOuterMargin/ScrollContainer")
 	if _no_levels_label == null:
 		_no_levels_label = get_node_or_null("MarginContainer/VBox/NoLevelsLabel")
+	
+	if _header_card != null:
+		_title_label = _header_card.get_title_label()
+	
 	if _title_label == null:
-		_title_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/TitleLabel")
+		_title_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/TopBar/HeaderCard/Margin/Header/TitleBox/TitleLabel")
 	if _subtitle_label == null:
-		_subtitle_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/HeaderCard/Margin/Header/TitleBox/SubtitleLabel")
+		_subtitle_label = get_node_or_null("MarginContainer/VBox/HeaderOuterMargin/TopBar/HeaderCard/Margin/Header/TitleBox/SubtitleLabel")
 	if _hint_label == null:
 		_hint_label = get_node_or_null("MarginContainer/VBox/HintLabel")
+	
 	assert(_header_card != null, "_header_card not assigned")
 	assert(_root_margin_container != null, "_root_margin_container not assigned")
 	assert(_back_btn != null, "_back_btn not assigned")
+	assert(_settings_btn != null, "_settings_btn not assigned")
 	assert(_title_label != null, "_title_label not assigned")
-	assert(_subtitle_label != null, "_subtitle_label not assigned")
+	# Subtitle is optional now that we use RibbonHeader
+	#assert(_subtitle_label != null, "_subtitle_label not assigned")
 	assert(_progress_chip != null, "_progress_chip not assigned")
 	assert(_hint_label != null, "_hint_label not assigned")
 	assert(_scroll_container != null, "_scroll_container not assigned")
 	assert(_world_list != null, "_world_list not assigned")
 	assert(_no_levels_label != null, "_no_levels_label not assigned")
 	_connect_back_button_signal()
+	_connect_settings_button_signal()
 	_connect_navigation()
 	_apply_screen_edge_margins()
 	_apply_visual_style()
@@ -504,16 +515,32 @@ func _connect_back_button_signal() -> void:
 		_back_btn.pressed.connect(_on_back_btn_pressed)
 
 
+func _connect_settings_button_signal() -> void:
+	if _settings_btn != null and not _settings_btn.pressed.is_connected(_on_settings_btn_pressed):
+		_settings_btn.pressed.connect(_on_settings_btn_pressed)
+
+
+func _on_settings_btn_pressed() -> void:
+	if SceneManager != null:
+		SceneManager.show_overlay(SceneManager.Overlay.OPTIONS)
+
+
 func _apply_visual_style() -> void:
 	if _header_card != null:
-		_header_card.add_theme_stylebox_override("panel", ShellThemeUtil.make_ribbon_style("white"))
-	ShellThemeUtil.apply_title(_title_label, 38)
+		_header_card.title_text = "World Selection"
+		_header_card.title_color = ShellThemeUtil.PLUM
+		_header_card.title_font_size = 28
+		_header_card.refresh_style()
+	
+	if _title_label != null:
+		ShellThemeUtil.apply_title(_title_label, 28)
 	if _subtitle_label != null:
 		_subtitle_label.visible = false
 	if _hint_label != null:
 		_hint_label.visible = false
 	if _progress_chip != null:
 		_progress_chip.visible = false
+
 
 
 func _apply_screen_edge_margins() -> void:

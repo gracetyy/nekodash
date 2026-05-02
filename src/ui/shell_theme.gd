@@ -87,6 +87,10 @@ const CIRCLE_UNDO_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/butto
 const CIRCLE_UNDO_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_undo_hover.png")
 const CIRCLE_UNDO_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_undo_pressed.png")
 const CIRCLE_UNDO_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_undo_disabled.png")
+const CIRCLE_SETTINGS_NORMAL_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_settings_ver1_normal.png")
+const CIRCLE_SETTINGS_HOVER_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_settings_ver1_hover.png")
+const CIRCLE_SETTINGS_PRESSED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_settings_ver1_pressed.png")
+const CIRCLE_SETTINGS_DISABLED_TEXTURE: Texture2D = preload("res://assets/art/ui/buttons/circular/btn_circle_settings_ver1_disabled.png")
 const STAR_SMALL_FILLED_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_small_filled.png")
 const STAR_SMALL_EMPTY_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_small_empty.png")
 const STAR_SMALL_HOLLOW_TEXTURE: Texture2D = preload("res://assets/art/ui/stars/star_small_hollow.png")
@@ -234,7 +238,11 @@ static func get_ribbon_texture(variant: String) -> Texture2D:
 
 
 static func make_ribbon_style(variant: String = "purple") -> StyleBoxTexture:
-	return make_texture_style(get_ribbon_texture(variant), 72, 0, 72, 0, 30.0, 14.0, 30.0, 20.0)
+	# 3-slice horizontally, but also protect vertical height to prevent stretching.
+	# Top/Bottom margins match the art's non-repeatable curly edges (approx 22px top, 28px bottom).
+	# Content margins set to 0 vertically so the container exactly matches its children's height,
+	# avoiding stretching the 80px height texture if we size the children correctly.
+	return make_texture_style(get_ribbon_texture(variant), 72, 22, 72, 28, 30.0, 0.0, 30.0, 0.0)
 
 
 static func _pill_variant_from_fill(fill: Color) -> String:
@@ -825,5 +833,16 @@ static func apply_circle_undo_button(button: BaseButton, size: float = 62.0) -> 
 		CIRCLE_UNDO_HOVER_TEXTURE,
 		CIRCLE_UNDO_PRESSED_TEXTURE,
 		CIRCLE_UNDO_DISABLED_TEXTURE,
+		size
+	)
+
+
+static func apply_circle_settings_button(button: BaseButton, size: float = 62.0) -> void:
+	apply_circle_icon_button(
+		button,
+		CIRCLE_SETTINGS_NORMAL_TEXTURE,
+		CIRCLE_SETTINGS_HOVER_TEXTURE,
+		CIRCLE_SETTINGS_PRESSED_TEXTURE,
+		CIRCLE_SETTINGS_DISABLED_TEXTURE,
 		size
 	)
