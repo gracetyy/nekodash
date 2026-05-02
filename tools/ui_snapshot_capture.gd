@@ -10,6 +10,7 @@ func _initialize() -> void:
 	await process_frame
 
 	await _capture_scene("res://scenes/ui/world_map.tscn", "world_map_current")
+	await _capture_scene("res://scenes/ui/skin_select.tscn", "skin_select_current")
 	await _capture_scene("res://scenes/ui/level_complete.tscn", "level_complete_plain_current")
 	await _capture_scene("res://scenes/ui/options_overlay.tscn", "options_current")
 	await _capture_scene("res://scenes/ui/pause_overlay.tscn", "pause_current")
@@ -28,7 +29,7 @@ func _capture_scene(scene_path: String, output_name: String) -> void:
 	root.add_child(instance)
 	var settle_frames: int = 2
 	if scene_path == "res://scenes/ui/world_map.tscn":
-		settle_frames = 18
+		settle_frames = 30
 	for i: int in range(settle_frames):
 		await process_frame
 	_save_viewport(output_name)

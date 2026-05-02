@@ -23,7 +23,6 @@ production/session-logs/
 production/session-state/*.md
 docs/superpowers/
 .codex
-smoke-test/
 GEMINI.md
 
 # === Build Output ===
@@ -63,6 +62,8 @@ __pycache__/
 node_modules/
 .npm/
 *.txt
+screenshots/
+smoke-test/
 
 # === Archives ===
 *.zip
