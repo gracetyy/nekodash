@@ -28,6 +28,9 @@
 [ext_resource type="Resource" path="res://data/levels/world3/w3_l7.tres" id="26_w3l7"]
 [ext_resource type="Resource" path="res://data/levels/world3/w3_l8.tres" id="27_w3l8"]
 [ext_resource type="Resource" path="res://data/levels/world3/w3_l9.tres" id="28_w3l9"]
+[ext_resource type="Resource" path="res://data/levels/world2/w2_l10.tres" id="new_w2l10"]
+[ext_resource type="Resource" path="res://data/levels/world3/w3_l10.tres" id="new_w3l10"]
+[ext_resource type="Resource" path="res://data/levels/special/sp_l10.tres" id="new_spl10"]
 [ext_resource type="Resource" path="res://data/levels/special/sp_l1.tres" id="29_spl1"]
 [ext_resource type="Resource" path="res://data/levels/special/sp_l2.tres" id="30_spl2"]
 [ext_resource type="Resource" path="res://data/levels/special/sp_l3.tres" id="31_spl3"]
@@ -56,21 +59,21 @@ script = ExtResource("38_world_script")
 world_id = 2
 world_name = "Kitchen"
 bgm_track = ExtResource("41_bgm2")
-levels = Array[ExtResource("1_level_script")]([ExtResource("11_w2l1"), ExtResource("12_w2l2"), ExtResource("13_w2l3"), ExtResource("14_w2l4"), ExtResource("15_w2l5"), ExtResource("16_w2l6"), ExtResource("17_w2l7"), ExtResource("18_w2l8"), ExtResource("19_w2l9")])
+levels = Array[ExtResource("1_level_script")]([ExtResource("11_w2l1"), ExtResource("12_w2l2"), ExtResource("13_w2l3"), ExtResource("14_w2l4"), ExtResource("15_w2l5"), ExtResource("16_w2l6"), ExtResource("17_w2l7"), ExtResource("18_w2l8"), ExtResource("19_w2l9"), ExtResource("new_w2l10")])
 
 [sub_resource type="Resource" id="World3"]
 script = ExtResource("38_world_script")
 world_id = 3
 world_name = "Living Room"
 bgm_track = ExtResource("42_bgm3")
-levels = Array[ExtResource("1_level_script")]([ExtResource("20_w3l1"), ExtResource("21_w3l2"), ExtResource("22_w3l3"), ExtResource("23_w3l4"), ExtResource("24_w3l5"), ExtResource("25_w3l6"), ExtResource("26_w3l7"), ExtResource("27_w3l8"), ExtResource("28_w3l9")])
+levels = Array[ExtResource("1_level_script")]([ExtResource("20_w3l1"), ExtResource("21_w3l2"), ExtResource("22_w3l3"), ExtResource("23_w3l4"), ExtResource("24_w3l5"), ExtResource("25_w3l6"), ExtResource("26_w3l7"), ExtResource("27_w3l8"), ExtResource("28_w3l9"), ExtResource("new_w3l10")])
 
 [sub_resource type="Resource" id="World99"]
 script = ExtResource("38_world_script")
 world_id = 99
 world_name = "HKU Special"
 bgm_track = ExtResource("43_bgm99")
-levels = Array[ExtResource("1_level_script")]([ExtResource("29_spl1"), ExtResource("30_spl2"), ExtResource("31_spl3"), ExtResource("32_spl4"), ExtResource("33_spl5"), ExtResource("34_spl6"), ExtResource("35_spl7"), ExtResource("36_spl8"), ExtResource("37_spl9")])
+levels = Array[ExtResource("1_level_script")]([ExtResource("29_spl1"), ExtResource("30_spl2"), ExtResource("31_spl3"), ExtResource("32_spl4"), ExtResource("33_spl5"), ExtResource("34_spl6"), ExtResource("35_spl7"), ExtResource("36_spl8"), ExtResource("37_spl9"), ExtResource("new_spl10")])
 
 [resource]
 script = ExtResource("39_cat_script")
