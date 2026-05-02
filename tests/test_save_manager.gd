@@ -11,13 +11,21 @@ var _save: Node
 # —————————————————————————————————————————————
 
 func before_each() -> void:
-	# Remove any save file left by a previous test so each test starts clean.
+	# Use isolated test paths to avoid overwriting real player progress.
+	var test_save_path := "user://test_nekodash_save.json"
+	var test_corrupt_path := "user://test_nekodash_save.corrupt.json"
+	
+	# Override static paths in the script before instantiating.
+	var save_script = load("res://src/core/save_manager.gd")
+	save_script.save_file_path = test_save_path
+	save_script.corrupt_file_path = test_corrupt_path
+	
 	_remove_save_files()
-	if FileAccess.file_exists("user://app_settings.cfg"):
-		DirAccess.remove_absolute("user://app_settings.cfg")
+	if FileAccess.file_exists("user://test_app_settings.cfg"):
+		DirAccess.remove_absolute("user://test_app_settings.cfg")
 	if AppSettings != null:
 		AppSettings.set_unlock_all_skins(false)
-	_save = load("res://src/core/save_manager.gd").new()
+	_save = save_script.new()
 	add_child_autofree(_save)
 
 
@@ -26,10 +34,12 @@ func after_all() -> void:
 
 
 func _remove_save_files() -> void:
-	if FileAccess.file_exists("user://nekodash_save.json"):
-		DirAccess.remove_absolute("user://nekodash_save.json")
-	if FileAccess.file_exists("user://nekodash_save.corrupt.json"):
-		DirAccess.remove_absolute("user://nekodash_save.corrupt.json")
+	var test_save_path := "user://test_nekodash_save.json"
+	var test_corrupt_path := "user://test_nekodash_save.corrupt.json"
+	if FileAccess.file_exists(test_save_path):
+		DirAccess.remove_absolute(test_save_path)
+	if FileAccess.file_exists(test_corrupt_path):
+		DirAccess.remove_absolute(test_corrupt_path)
 
 
 # —————————————————————————————————————————————
@@ -201,8 +211,7 @@ func test_load_game_emits_save_loaded() -> void:
 func test_roundtrip_level_record_survives_reload() -> void:
 	_save.set_level_record("w1_l3", true, 3, 5)
 	# Create a fresh SaveManager instance that reads from the same file.
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_true(save2.is_level_completed("w1_l3"), "Level record should survive reload")
 	assert_eq(save2.get_best_stars("w1_l3"), 3)
 	assert_eq(save2.get_best_moves("w1_l3"), 5)
@@ -210,16 +219,14 @@ func test_roundtrip_level_record_survives_reload() -> void:
 
 func test_roundtrip_skin_unlock_survives_reload() -> void:
 	_save.unlock_skin("cat_cozy")
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_has(save2.get_unlocked_skins(), "cat_cozy")
 
 
 func test_roundtrip_equipped_skin_survives_reload() -> void:
 	_save.unlock_skin("cat_cozy")
 	_save.set_equipped_skin("cat_cozy")
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_eq(save2.get_equipped_skin(), "cat_cozy")
 
 
@@ -229,8 +236,7 @@ func test_roundtrip_equipped_skin_survives_reload() -> void:
 
 func test_missing_file_initialises_defaults() -> void:
 	_remove_save_files()
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_true(save2._is_loaded)
 	assert_eq(save2.get_equipped_skin(), "cat_default")
 	assert_false(save2.is_level_completed("w1_l1"))
@@ -238,9 +244,8 @@ func test_missing_file_initialises_defaults() -> void:
 
 func test_missing_file_creates_save_on_disk() -> void:
 	_remove_save_files()
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
-	assert_true(FileAccess.file_exists("user://nekodash_save.json"), "Save file should be created on first load")
+	var save2: Node = _create_new_save_manager()
+	assert_true(FileAccess.file_exists("user://test_nekodash_save.json"), "Save file should be created on first load")
 
 
 # —————————————————————————————————————————————
@@ -249,34 +254,33 @@ func test_missing_file_creates_save_on_disk() -> void:
 
 func test_corrupt_json_recovers_to_defaults() -> void:
 	# Write garbage to the save file.
-	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open("user://test_nekodash_save.json", FileAccess.WRITE)
 	file.store_string("NOT VALID JSON {{{{")
 	file.close()
 
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_true(save2._is_loaded, "Should recover after corrupt file")
 	assert_eq(save2.get_equipped_skin(), "cat_default")
 	assert_false(save2.is_level_completed("w1_l1"))
 
 
 func test_corrupt_json_renames_to_corrupt_file() -> void:
-	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open("user://test_nekodash_save.json", FileAccess.WRITE)
 	file.store_string("{{GARBAGE}}")
 	file.close()
 
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
-	assert_true(FileAccess.file_exists("user://nekodash_save.corrupt.json"), "Corrupt file should be renamed")
+	var save2: Node = _create_new_save_manager()
+	assert_true(FileAccess.file_exists("user://test_nekodash_save.corrupt.json"), "Corrupt file should be renamed")
 
 
 func test_corrupt_json_emits_save_corrupted() -> void:
-	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open("user://test_nekodash_save.json", FileAccess.WRITE)
 	file.store_string("NOT JSON!")
 	file.close()
 
 	# Must watch BEFORE add_child, because _ready() triggers load_game().
-	var save2: Node = load("res://src/core/save_manager.gd").new()
+	var save_script = load("res://src/core/save_manager.gd")
+	var save2: Node = save_script.new()
 	watch_signals(save2)
 	add_child_autofree(save2)
 	assert_signal_emitted(save2, "save_corrupted")
@@ -284,12 +288,11 @@ func test_corrupt_json_emits_save_corrupted() -> void:
 
 func test_non_dict_root_recovers() -> void:
 	# Valid JSON but root is an array instead of a dictionary.
-	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open("user://test_nekodash_save.json", FileAccess.WRITE)
 	file.store_string("[1, 2, 3]")
 	file.close()
 
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_true(save2._is_loaded)
 	assert_eq(save2.get_equipped_skin(), "cat_default")
 
@@ -300,23 +303,33 @@ func test_non_dict_root_recovers() -> void:
 
 func test_version_mismatch_recovers() -> void:
 	var bad_data: Dictionary = {"version": 999, "levels": {}, "equipped_skin_id": "cat_default", "unlocked_skin_ids": ["cat_default"]}
-	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open("user://test_nekodash_save.json", FileAccess.WRITE)
 	file.store_string(JSON.stringify(bad_data))
 	file.close()
 
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_true(save2._is_loaded, "Version mismatch should recover to defaults")
 	assert_eq(save2.get_equipped_skin(), "cat_default")
 
 
 func test_missing_version_key_recovers() -> void:
 	var bad_data: Dictionary = {"levels": {}, "equipped_skin_id": "cat_default"}
-	var file: FileAccess = FileAccess.open("user://nekodash_save.json", FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open("user://test_nekodash_save.json", FileAccess.WRITE)
 	file.store_string(JSON.stringify(bad_data))
 	file.close()
 
-	var save2: Node = load("res://src/core/save_manager.gd").new()
-	add_child_autofree(save2)
+	var save2: Node = _create_new_save_manager()
 	assert_true(save2._is_loaded)
-	assert_true(FileAccess.file_exists("user://nekodash_save.corrupt.json"))
+	assert_true(FileAccess.file_exists("user://test_nekodash_save.corrupt.json"))
+
+
+# —————————————————————————————————————————————
+# Helpers
+# —————————————————————————————————————————————
+
+func _create_new_save_manager() -> Node:
+	var save_script = load("res://src/core/save_manager.gd")
+	var save_node = save_script.new()
+	add_child_autofree(save_node)
+	return save_node
+

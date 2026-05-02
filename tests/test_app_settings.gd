@@ -10,8 +10,15 @@ var _settings: Node
 # —————————————————————————————————————————————
 
 func before_each() -> void:
+	# Use isolated test path to avoid overwriting real player settings.
+	var test_path := "user://test_app_settings.cfg"
+	
+	# Override static path in the script before instantiating.
+	var settings_script = load("res://src/core/app_settings.gd")
+	settings_script.settings_path = test_path
+	
 	_remove_settings_file()
-	_settings = load("res://src/core/app_settings.gd").new()
+	_settings = settings_script.new()
 	add_child_autofree(_settings)
 
 
@@ -20,8 +27,9 @@ func after_all() -> void:
 
 
 func _remove_settings_file() -> void:
-	if FileAccess.file_exists("user://app_settings.cfg"):
-		DirAccess.remove_absolute("user://app_settings.cfg")
+	var test_path := "user://test_app_settings.cfg"
+	if FileAccess.file_exists(test_path):
+		DirAccess.remove_absolute(test_path)
 
 
 # —————————————————————————————————————————————
@@ -39,12 +47,18 @@ func test_defaults_loaded_on_ready() -> void:
 
 
 func test_settings_file_is_separate_from_progress_and_audio() -> void:
-	var save: Node = load("res://src/core/save_manager.gd").new()
+	var save_script = load("res://src/core/save_manager.gd")
+	save_script.save_file_path = "user://test_save_sep.json"
+	var save = save_script.new()
 	add_child_autofree(save)
-	var sfx: Node = load("res://src/core/sfx_manager.gd").new()
+	
+	var sfx_script = load("res://src/core/sfx_manager.gd")
+	sfx_script.settings_path = "user://test_sfx_sep.cfg"
+	var sfx = sfx_script.new()
 	add_child_autofree(sfx)
-	assert_ne(_settings.SETTINGS_PATH, save.SAVE_FILE_PATH)
-	assert_ne(_settings.SETTINGS_PATH, sfx.SETTINGS_PATH)
+	
+	assert_ne(_settings.settings_path, save.save_file_path)
+	assert_ne(_settings.settings_path, sfx.settings_path)
 
 
 # —————————————————————————————————————————————
@@ -53,22 +67,19 @@ func test_settings_file_is_separate_from_progress_and_audio() -> void:
 
 func test_reduce_motion_roundtrip() -> void:
 	_settings.set_reduce_motion(true)
-	var settings2: Node = load("res://src/core/app_settings.gd").new()
-	add_child_autofree(settings2)
+	var settings2: Node = _create_new_settings()
 	assert_true(settings2.get_reduce_motion())
 
 
 func test_large_ui_roundtrip() -> void:
 	_settings.set_large_ui(true)
-	var settings2: Node = load("res://src/core/app_settings.gd").new()
-	add_child_autofree(settings2)
+	var settings2: Node = _create_new_settings()
 	assert_true(settings2.get_large_ui())
 
 
 func test_simple_ui_roundtrip() -> void:
 	_settings.set_simple_ui(true)
-	var settings2: Node = load("res://src/core/app_settings.gd").new()
-	add_child_autofree(settings2)
+	var settings2: Node = _create_new_settings()
 	assert_true(settings2.get_simple_ui())
 
 
@@ -86,22 +97,19 @@ func test_text_scale_factor_reflects_large_text_setting() -> void:
 
 func test_input_hint_mode_roundtrip() -> void:
 	_settings.set_input_hint_mode("controller")
-	var settings2: Node = load("res://src/core/app_settings.gd").new()
-	add_child_autofree(settings2)
+	var settings2: Node = _create_new_settings()
 	assert_eq(settings2.get_input_hint_mode(), "controller")
 
 
 func test_last_world_id_roundtrip() -> void:
 	_settings.set_last_world_id(3)
-	var settings2: Node = load("res://src/core/app_settings.gd").new()
-	add_child_autofree(settings2)
+	var settings2: Node = _create_new_settings()
 	assert_eq(settings2.get_last_world_id(), 3)
 
 
 func test_dev_mode_roundtrip() -> void:
 	_settings.set_dev_mode(true)
-	var settings2: Node = load("res://src/core/app_settings.gd").new()
-	add_child_autofree(settings2)
+	var settings2: Node = _create_new_settings()
 	assert_true(settings2.get_dev_mode())
 
 
@@ -117,3 +125,14 @@ func test_setting_changed_emits_with_payload() -> void:
 		"setting_changed",
 		[_settings.SECTION_DISPLAY, _settings.KEY_REDUCE_MOTION, true]
 	)
+
+
+# —————————————————————————————————————————————
+# Helpers
+# —————————————————————————————————————————————
+
+func _create_new_settings() -> Node:
+	var settings_script = load("res://src/core/app_settings.gd")
+	var settings_node = settings_script.new()
+	add_child_autofree(settings_node)
+	return settings_node

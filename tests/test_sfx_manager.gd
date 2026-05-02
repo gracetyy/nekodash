@@ -12,8 +12,15 @@ var _sfx: Node
 # —————————————————————————————————————————————
 
 func before_each() -> void:
+	# Use isolated test path to avoid overwriting real player settings.
+	var test_path := "user://test_settings.cfg"
+	
+	# Override static path in the script before instantiating.
+	var sfx_script = load("res://src/core/sfx_manager.gd")
+	sfx_script.settings_path = test_path
+	
 	_remove_settings_file()
-	_sfx = load("res://src/core/sfx_manager.gd").new()
+	_sfx = sfx_script.new()
 	add_child_autofree(_sfx)
 
 
@@ -22,8 +29,9 @@ func after_all() -> void:
 
 
 func _remove_settings_file() -> void:
-	if FileAccess.file_exists("user://settings.cfg"):
-		DirAccess.remove_absolute("user://settings.cfg")
+	var test_path := "user://test_settings.cfg"
+	if FileAccess.file_exists(test_path):
+		DirAccess.remove_absolute(test_path)
 
 
 # —————————————————————————————————————————————
@@ -33,6 +41,13 @@ func _remove_settings_file() -> void:
 ## Returns a lightweight stub AudioStream for testing (no actual audio needed).
 func _stub_stream() -> AudioStream:
 	return AudioStreamWAV.new()
+
+
+func _create_new_sfx_manager() -> Node:
+	var sfx_script = load("res://src/core/sfx_manager.gd")
+	var sfx_node = sfx_script.new()
+	add_child_autofree(sfx_node)
+	return sfx_node
 
 
 # —————————————————————————————————————————————
@@ -56,8 +71,7 @@ func test_volume_setter_persists() -> void:
 	assert_almost_eq(_sfx.get_volume(), 0.5, 0.001, "Volume should be 0.5 after set")
 
 	# Create a fresh instance — it should load the persisted value.
-	var sfx2: Node = load("res://src/core/sfx_manager.gd").new()
-	add_child_autofree(sfx2)
+	var sfx2: Node = _create_new_sfx_manager()
 	assert_almost_eq(sfx2.get_volume(), 0.5, 0.001, "Volume should persist across instances")
 
 

@@ -12,8 +12,15 @@ var _music: Node
 # —————————————————————————————————————————————
 
 func before_each() -> void:
+	# Use isolated test path to avoid overwriting real player settings.
+	var test_path := "user://test_settings.cfg"
+	
+	# Override static path in the script before instantiating.
+	var music_script = load("res://src/core/music_manager.gd")
+	music_script.settings_path = test_path
+	
 	_remove_settings_file()
-	_music = load("res://src/core/music_manager.gd").new()
+	_music = music_script.new()
 	add_child_autofree(_music)
 
 
@@ -22,8 +29,9 @@ func after_all() -> void:
 
 
 func _remove_settings_file() -> void:
-	if FileAccess.file_exists("user://settings.cfg"):
-		DirAccess.remove_absolute("user://settings.cfg")
+	var test_path := "user://test_settings.cfg"
+	if FileAccess.file_exists(test_path):
+		DirAccess.remove_absolute(test_path)
 
 
 # —————————————————————————————————————————————
@@ -32,6 +40,13 @@ func _remove_settings_file() -> void:
 
 func _stub_stream() -> AudioStream:
 	return AudioStreamWAV.new()
+
+
+func _create_new_music_manager() -> Node:
+	var music_script = load("res://src/core/music_manager.gd")
+	var music_node = music_script.new()
+	add_child_autofree(music_node)
+	return music_node
 
 
 # —————————————————————————————————————————————
@@ -55,7 +70,7 @@ func test_same_track_guard_no_restart() -> void:
 	_music.play(stream)
 
 	# Get the active player's play position after first play.
-	var active: AudioStreamPlayer = _music._get_active_player()
+	var _active: AudioStreamPlayer = _music._get_active_player()
 
 	# Play the same stream again — should be a no-op (same-track guard).
 	_music.play(stream)
@@ -70,8 +85,7 @@ func test_volume_setter_persists() -> void:
 	_music.set_volume(0.6)
 	assert_almost_eq(_music.get_volume(), 0.6, 0.001, "Volume should be 0.6 after set")
 
-	var music2: Node = load("res://src/core/music_manager.gd").new()
-	add_child_autofree(music2)
+	var music2: Node = _create_new_music_manager()
 	assert_almost_eq(music2.get_volume(), 0.6, 0.001, "Volume should persist across instances")
 
 
