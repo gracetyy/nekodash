@@ -45,8 +45,7 @@ alignment = 1
 custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 pose_variant = "idle"
-display_size_px = 112.0
-
+display_size_px = 140.0
 [node name="TitleLabel" type="Label" parent="CenterContainer/LoadingCard/CardMargin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)

@@ -319,11 +319,6 @@ func _show_stars(stars: int) -> void:
 			if node != null:
 				star_nodes.append(node)
 
-	# Initial hide
-	for star in star_nodes:
-		star.scale = Vector2.ZERO
-		star.visible = false
-
 	# Always play strip reveal
 	_animate_star_reveal(stars)
 
@@ -338,6 +333,9 @@ func _show_stars(stars: int) -> void:
 			star_size = Vector2(104, 104)
 		star.pivot_offset = star_size * 0.5
 		
+		star.visible = false
+		star.scale = Vector2.ZERO
+		
 		var tween: Tween = create_tween()
 		tween.tween_interval(0.45 + i * 0.22) # Wait for panel + stagger
 		tween.tween_callback(star.show) # Show right as animation starts
@@ -348,6 +346,7 @@ func _show_stars(stars: int) -> void:
 		tween.tween_property(star, "scale", Vector2(1.2, 1.2), 0.15).set_trans(Tween.TRANS_SINE)
 		tween.tween_property(star, "scale", Vector2.ONE, 0.25) \
 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
 
 func _play_intro_animation() -> void:
 	if AppSettings != null and AppSettings.get_reduce_motion():

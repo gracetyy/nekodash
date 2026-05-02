@@ -124,18 +124,23 @@ func _layout_size(star_size: float) -> Vector2:
 func _place_star(star: TextureRect, index: int, star_size: float, row_width: float) -> void:
 	if layout_variant == LayoutVariant.CELEBRATION:
 		var positions: Array[Vector2] = [
-			Vector2(0.0, 16.0),
+			Vector2(10.0, 10.0),
 			Vector2(100.0, 0.0),
-			Vector2(200.0, 16.0),
+			Vector2(190.0, 10.0),
 		]
+		var rotations: Array[float] = [-15.0, 0.0, 15.0]
 		var layout_width: float = 304.0
-		var offset_x: float = maxf(0.0, (size.x - layout_width) * 0.5)
+		var current_width: float = size.x if size.x > 0 else custom_minimum_size.x
+		var offset_x: float = maxf(0.0, (current_width - layout_width) * 0.5)
+		
+		star.pivot_offset = Vector2(star_size, star_size) * 0.5
 		star.position = positions[index] + Vector2(offset_x, 0.0)
-		star.rotation_degrees = 0.0
+		star.rotation_degrees = rotations[index]
 		return
 
 	star.rotation_degrees = 0.0
-	var offset_x: float = maxf(0.0, (size.x - row_width) * 0.5) + row_horizontal_nudge_px
+	var current_width: float = size.x if size.x > 0 else custom_minimum_size.x
+	var offset_x: float = maxf(0.0, (current_width - row_width) * 0.5) + row_horizontal_nudge_px
 	star.position = Vector2(offset_x + (star_size + row_spacing_px) * float(index), 0.0)
 
 

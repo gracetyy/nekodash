@@ -40,7 +40,7 @@ width = 2.0
 default_color = Color(0.415686, 0.886275, 0.596078, 0.9)
 
 [node name="GlobalCatRig" type="Node2D" parent="."]
-position = Vector2(0, -16)
+position = Vector2(0, -6.4)
 script = ExtResource("2")
 local_profile_override = ExtResource("3")
 skin_id_override = "cat_default"
@@ -52,7 +52,7 @@ position = Vector2(0, -16)
 gizmo_extents = 14.0
 
 [node name="TailPivotHandle" type="Marker2D" parent="."]
-position = Vector2(15, 19)
+position = Vector2(31, 30)
 gizmo_extents = 12.0
 
 [node name="HeadPivotHandle" type="Marker2D" parent="."]

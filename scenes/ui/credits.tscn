@@ -50,8 +50,7 @@ theme_override_constants/separation = 18
 custom_minimum_size = Vector2(140, 140)
 layout_mode = 2
 pose_variant = "idle"
-display_size_px = 112.0
-
+display_size_px = 140.0
 [node name="TitleLabel" type="Label" parent="MarginContainer/CreditsCard/CardMargin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.352941, 0.247059, 0.368627, 1)

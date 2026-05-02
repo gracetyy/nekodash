@@ -27,11 +27,11 @@ enum CardState {
 		if is_inside_tree():
 			_apply_component_state()
 
-@onready var _preview: Control = $CardMargin/VBox/Preview
-@onready var _preview_cat: CatRig = $CardMargin/VBox/Preview/CatRig
-@onready var _name_label: Label = $CardMargin/VBox/NameLabel
-@onready var _hint_label: Label = $CardMargin/VBox/UnlockHintLabel
-@onready var _equipped_badge: BadgeEquipped = $CardMargin/VBox/EquippedBadge
+@onready var _preview: Control = $VBox/Preview
+@onready var _preview_cat: CatRig = $VBox/Preview/CatRig
+@onready var _name_label: Label = $VBox/NameLabel
+@onready var _hint_label: Label = $VBox/UnlockHintLabel
+@onready var _equipped_badge: BadgeEquipped = $VBox/EquippedBadge
 @onready var _lock_overlay: Control = $LockOverlay
 @onready var _lock_icon: TextureRect = $LockOverlay/LockIcon
 @onready var _selection_highlight: Control = $SelectionHighlight
@@ -63,7 +63,7 @@ func _apply_component_state() -> void:
 	if _preview_cat != null:
 		_preview_cat.skin_id_override = skin_id
 		_preview_cat.pose_variant = preview_pose_variant
-		_preview_cat.display_size_px = 72.0
+		_preview_cat.display_size_px = 100.0
 		_preview_cat.refresh_rig()
 	_name_label.text = skin_name
 	ShellThemeUtil.apply_body(_name_label, ShellThemeUtil.PLUM, 20)
@@ -95,10 +95,10 @@ func _make_card_style() -> StyleBoxFlat:
 		border_width = 4
 		
 	var style: StyleBoxFlat = ShellThemeUtil.make_rounded_style(fill, border, 20, border_width)
-	style.content_margin_left = 12.0
-	style.content_margin_top = 12.0
-	style.content_margin_right = 12.0
-	style.content_margin_bottom = 12.0
+	style.content_margin_left = 16.0
+	style.content_margin_top = 16.0
+	style.content_margin_right = 16.0
+	style.content_margin_bottom = 16.0
 	return style
 
 
