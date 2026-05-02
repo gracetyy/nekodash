@@ -38,9 +38,13 @@ State = (position: Vector2i, covered: Set[Vector2i])
 
 - **Initial state**: `(cat_start, {cat_start})`
 - **Transition**: For each direction `d` in `{UP, DOWN, LEFT, RIGHT}`:
-  - Compute `landing = slide(position, d)` — the cat slides until blocked
-  - If `landing == position`: no transition (blocked immediately)
-  - Otherwise: `tiles_traversed` = all tiles from `position + d` to `landing` inclusive
+  - Compute `landing = slide(position, d)` using the Advanced Slide rules:
+    - **Wall/Boundary**: Stops the slide (landing = last walkable tile).
+    - **Hazard**: If any tile in the path is a Hazard, the move is **invalid** (landing = `(-1, -1)`).
+    - **Stop Tile**: Slide ends exactly on this tile, even if there is open space behind it.
+    - **One-Way Tile**: Can only be entered from the arrow's direction. If entering from the wrong direction, it acts as a **wall** (stops the slide before entering).
+  - If `landing == position` or `landing == (-1, -1)`: no transition.
+  - Otherwise: `tiles_traversed` = all tiles from `position + d` to `landing` inclusive.
   - New state: `(landing, covered ∪ tiles_traversed)`
 - **Goal**: `covered == all_walkable_tiles`
 
@@ -147,6 +151,11 @@ on 3 sides with the 4th side being a wall-adjacent tile that the cat can't stop 
 **What it misses**: Tiles that are on slide lines but still unreachable due to
 ordering constraints (the full BFS catches these).
 
+### 4.4 Advanced Tile Necessary Conditions
+
+- **Hazard Avoidance**: `cat_start` must not be a Hazard. Every walkable tile must have at least one slide path between two reachable landing positions that **does not cross a Hazard**.
+- **One-Way Exit**: Any region entered via a One-Way tile must have at least one slide path (possibly through more One-Way tiles or obstacles) that leads back to the main reachable graph, OR it must be the final tile needed for 100% coverage.
+
 ### 4.2 Reachable Positions Test
 
 **Rule**: Every possible "landing position" (position where the cat can stop)
@@ -218,6 +227,14 @@ which of 4 simultaneous walls broke solvability.
 | **Asymmetry aids solvability**      | Asymmetric wall placement creates more distinct slide paths, reducing the chance of dead-end coverage loops.                                                          |
 | **L-shapes and T-shapes work well** | Wall configurations that block in one axis but leave the perpendicular axis open create routing "forks" that enable solution paths.                                   |
 | **Avoid center bisection**          | A wall line that fully bisects the grid horizontally or vertically can make one half unreachable from the other.                                                      |
+
+### 5.5 Advanced Tile Principles
+
+| Tile Type | Design Rule |
+| --------- | ----------- |
+| **Hazard** | **Negative Obstacles**. They don't give you a place to land; they remove a path. Use them to make "forbidden" lanes. Never place a Hazard where it blocks the *only* exit from a stopping point. |
+| **Stop Tile** | **Mid-Grid Landing**. Use these to allow the cat to stop in the center of an open room without needing a wall. They increase solvability by adding more "nodes" to the movement graph. |
+| **One-Way** | **Flow Control**. Use to create mandatory loops or "valves" that prevent backtracking. High risk of creating "trap rooms" where coverage becomes impossible if tiles outside are missed. |
 
 ### 5.2.1 Final-Slot Validation Rule
 
@@ -396,6 +413,24 @@ _ W _ W _     after completing the first.
 
 **Fix**: Break symmetry. Move one wall to create asymmetric routing.
 
+### Pattern 5: The Hazard Gate
+
+```
+S _ H _ _    If the Hazard (H) is placed in the only path
+_ _ _ _ _    between the spawn (S) and the rest of the grid,
+_ _ _ _ _    the level is instantly unsolvable.
+```
+
+### Pattern 6: The One-Way Valve Trap
+
+```
+_ _ _ _ _
+_ [→] _ _    The cat slides through the one-way tile [→]
+_ _ _ _ _    but the layout on the right side provides no 
+             path to slide back to the left. If tiles on 
+             the left were missed, the level is stuck.
+```
+
 ---
 
 ## 9. Reference: Slide Resolution Function
@@ -404,14 +439,44 @@ Every solvability check needs this function. Copy it exactly — it must match
 the production `SlidingMovement.resolve_slide()` behavior.
 
 ```gdscript
-func slide(start: Vector2i, direction: Vector2i, grid: Dictionary) -> Vector2i:
+const TYPE_HAZARD = 1
+const TYPE_STOP = 2
+const TYPE_ONE_WAY_UP = 3
+const TYPE_ONE_WAY_DOWN = 4
+const TYPE_ONE_WAY_LEFT = 5
+const TYPE_ONE_WAY_RIGHT = 6
+
+func slide(start: Vector2i, direction: Vector2i, grid: Dictionary, special: Dictionary) -> Vector2i:
     var pos: Vector2i = start
     while true:
         var next: Vector2i = pos + direction
-        if not grid.has(next) or not grid[next]:  # out-of-bounds or wall
+        
+        # 1. One-way check (Diodes)
+        if special.has(next) and special[next] >= TYPE_ONE_WAY_UP and special[next] <= TYPE_ONE_WAY_RIGHT:
+            var allowed = Vector2i.ZERO
+            match special[next]:
+                TYPE_ONE_WAY_UP: allowed = Vector2i.UP
+                TYPE_ONE_WAY_DOWN: allowed = Vector2i.DOWN
+                TYPE_ONE_WAY_LEFT: allowed = Vector2i.LEFT
+                TYPE_ONE_WAY_RIGHT: allowed = Vector2i.RIGHT
+            if allowed != direction:
+                return pos # Acts as a wall
+        
+        # 2. General walkability (Walls/Bounds)
+        if not grid.has(next) or not grid[next]:
             return pos
+            
         pos = next
-    return pos  # unreachable
+        
+        # 3. Hazard check (Death)
+        if special.has(pos) and special[pos] == TYPE_HAZARD:
+            return Vector2i(-1, -1) # Invalid move
+            
+        # 4. Stop tile check (Interrupts)
+        if special.has(pos) and special[pos] == TYPE_STOP:
+            return pos
+            
+    return pos
 ```
 
 `grid` is `Dictionary[Vector2i, bool]` where `true` = walkable, missing/`false` = wall.

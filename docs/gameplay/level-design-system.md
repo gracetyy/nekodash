@@ -38,6 +38,26 @@ Avoid symmetric or regular patterns. Place obstacles in a loose triangle or scat
 
 The cat always starts at the top-left walkable tile. This is the convention across all levels.
 
+## Advanced Tile Mechanics
+
+World 2+ introduces special tile types that modify slide behavior.
+
+### 1. Hazards (World 2+)
+Hazards act as "negative obstacles". Entering a Hazard results in an invalid move (death).
+- **Rule**: Never block the only exit from a spawn or landing point with a Hazard.
+- **Rule**: Sparse usage (1-2 per level). Use them to "prune" trivial paths or force lane changes.
+
+### 2. Stop Tiles (World 3+)
+Stop tiles catch the cat mid-slide, regardless of obstacles.
+- **Rule**: Use them to allow landing in the center of open rooms. 
+- **Rule**: They increase solvability by adding more stopping points (nodes) to the movement graph.
+
+### 3. One-Way Tiles (Special World / HKU)
+One-Way tiles act as "diodes" — you can only pass through them from one direction.
+- **Rule**: Entering from the wrong side acts as a wall.
+- **Rule**: Use to create mandatory loops or prevent backtracking.
+- **Warning**: High risk of "trap rooms". Ensure the cat can always exit any region it enters, or that the region contains the final tiles for 100% coverage.
+
 ## Difficulty Progression
 
 Difficulty scales through two knobs:
