@@ -7,7 +7,7 @@ extends Node
 # Constants
 # —————————————————————————————————————————————
 
-const SETTINGS_PATH: String = "user://app_settings.cfg"
+static var settings_path: String = "user://app_settings.cfg"
 
 const SECTION_DISPLAY: String = "display"
 const SECTION_SHELL: String = "shell"
@@ -90,7 +90,7 @@ func is_loaded() -> bool:
 
 func load_settings() -> void:
 	_config = ConfigFile.new()
-	var err: Error = _config.load(SETTINGS_PATH)
+	var err: Error = _config.load(settings_path)
 	if err != OK:
 		_apply_defaults()
 		_save_settings()
@@ -164,6 +164,14 @@ func set_tutorial_skipped(skipped: bool) -> void:
 	set_value(SECTION_SHELL, KEY_TUTORIAL_SKIPPED, skipped)
 
 
+func get_tutorial_group_skipped(group_id: String) -> bool:
+	return get_value(SECTION_SHELL, "tutorial_skipped_" + group_id, false) as bool
+
+
+func set_tutorial_group_skipped(group_id: String, skipped: bool) -> void:
+	set_value(SECTION_SHELL, "tutorial_skipped_" + group_id, skipped)
+
+
 func get_dev_mode() -> bool:
 	return get_value(SECTION_SHELL, KEY_DEV_MODE, false) as bool
 
@@ -228,7 +236,7 @@ func _apply_defaults() -> void:
 
 
 func _save_settings() -> void:
-	var err: Error = _config.save(SETTINGS_PATH)
+	var err: Error = _config.save(settings_path)
 	if err != OK:
 		push_error("[AppSettings] Failed to save settings: %s" % error_string(err))
 

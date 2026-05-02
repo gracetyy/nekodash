@@ -18,10 +18,16 @@ extends Node
 # Constants
 # —————————————————————————————————————————————
 
-const SAVE_FILE_PATH: String = "user://nekodash_save.json"
-const CORRUPT_FILE_PATH: String = "user://nekodash_save.corrupt.json"
 const SAVE_VERSION: int = 1
 const DEFAULT_SKIN_ID: String = "cat_default"
+
+static var save_file_path: String = "user://nekodash_save.json"
+static var corrupt_file_path: String = "user://nekodash_save.corrupt.json"
+
+func set_test_paths(save_path: String, corrupt_path: String) -> void:
+	save_file_path = save_path
+	corrupt_file_path = corrupt_path
+	_is_loaded = false # Force reload if needed
 
 
 # —————————————————————————————————————————————
@@ -64,14 +70,14 @@ func _ready() -> void:
 ## Loads save data from disk. If file is missing, initialises defaults. If file
 ## is corrupt or has a version mismatch, renames to .corrupt.json and resets.
 func load_game() -> void:
-	if not FileAccess.file_exists(SAVE_FILE_PATH):
+	if not FileAccess.file_exists(save_file_path):
 		_init_default_data()
 		_write_to_disk()
 		_is_loaded = true
 		save_loaded.emit()
 		return
 
-	var file: FileAccess = FileAccess.open(SAVE_FILE_PATH, FileAccess.READ)
+	var file: FileAccess = FileAccess.open(save_file_path, FileAccess.READ)
 	if file == null:
 		push_error("SaveManager: cannot open save file — error %d." % FileAccess.get_open_error())
 		_init_default_data()
@@ -314,10 +320,10 @@ func _default_level_record() -> Dictionary:
 	}
 
 
-## Serializes _data to JSON and writes to SAVE_FILE_PATH.
+## Serializes _data to JSON and writes to save_file_path.
 func _write_to_disk() -> void:
 	var json_text: String = JSON.stringify(_data, "\t")
-	var file: FileAccess = FileAccess.open(SAVE_FILE_PATH, FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open(save_file_path, FileAccess.WRITE)
 	if file == null:
 		push_error("SaveManager: cannot write save file — error %d." % FileAccess.get_open_error())
 		return
@@ -328,9 +334,9 @@ func _write_to_disk() -> void:
 ## Renames the corrupt save file, initialises defaults, and writes a clean file.
 func _handle_corruption() -> void:
 	# Preserve the corrupt file for debugging.
-	if FileAccess.file_exists(CORRUPT_FILE_PATH):
-		DirAccess.remove_absolute(CORRUPT_FILE_PATH)
-	DirAccess.rename_absolute(SAVE_FILE_PATH, CORRUPT_FILE_PATH)
+	if FileAccess.file_exists(corrupt_file_path):
+		DirAccess.remove_absolute(corrupt_file_path)
+	DirAccess.rename_absolute(save_file_path, corrupt_file_path)
 
 	_init_default_data()
 	_write_to_disk()

@@ -25,7 +25,7 @@ const BUS_NAME: String = "Music"
 const CROSSFADE_DURATION: float = 1.0
 
 ## Settings file path (shared with SfxManager).
-const SETTINGS_PATH: String = "user://settings.cfg"
+static var settings_path: String = "user://settings.cfg"
 
 ## Settings section and key names.
 const SETTINGS_SECTION: String = "audio"
@@ -292,7 +292,7 @@ func _apply_bus_settings() -> void:
 ## Loads music volume and mute settings from user://settings.cfg.
 func _load_settings() -> void:
 	var config := ConfigFile.new()
-	var err: Error = config.load(SETTINGS_PATH)
+	var err: Error = config.load(settings_path)
 	if err != OK:
 		return
 	_volume = config.get_value(SETTINGS_SECTION, KEY_MUSIC_VOLUME, 1.0)
@@ -303,10 +303,10 @@ func _load_settings() -> void:
 func _save_settings() -> void:
 	var config := ConfigFile.new()
 	# Load existing to preserve other sections (e.g., SFX settings).
-	config.load(SETTINGS_PATH)
+	config.load(settings_path)
 	config.set_value(SETTINGS_SECTION, KEY_MUSIC_VOLUME, _volume)
 	config.set_value(SETTINGS_SECTION, KEY_MUSIC_MUTE, _muted)
-	var err: Error = config.save(SETTINGS_PATH)
+	var err: Error = config.save(settings_path)
 	if err != OK:
 		push_error("[MusicManager] Failed to save settings: %s" % error_string(err))
 

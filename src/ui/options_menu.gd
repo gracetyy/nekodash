@@ -385,6 +385,12 @@ func _on_replay_tutorial_pressed() -> void:
 	if _suppress_events:
 		return
 	_app_settings_ref.set_tutorial_skipped(false)
+	# Also reset group-based skips
+	_app_settings_ref.set_tutorial_group_skipped("basics", false)
+	_app_settings_ref.set_tutorial_group_skipped("hazards", false)
+	_app_settings_ref.set_tutorial_group_skipped("stop_tiles", false)
+	_app_settings_ref.set_tutorial_group_skipped("one_way", false)
+	
 	# Provide some feedback.
 	if _replay_tutorial_btn is Button:
 		_replay_tutorial_btn.text = "Tutorial Reset!"

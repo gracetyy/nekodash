@@ -227,6 +227,9 @@ func _connect_signals() -> void:
 
 	# Blocked slide → coordinator → HUD / audio
 	_sliding_movement.slide_blocked.connect(_on_slide_blocked)
+	
+	# Death → restart
+	_sliding_movement.cat_died.connect(restart_level)
 
 	# Level complete chain:
 	#   CoverageTracking.level_completed → coordinator (freeze + star compute)
@@ -273,6 +276,10 @@ func _disconnect_signals() -> void:
 	# slide_blocked
 	if _sliding_movement.slide_blocked.is_connected(_on_slide_blocked):
 		_sliding_movement.slide_blocked.disconnect(_on_slide_blocked)
+	
+	# cat_died
+	if _sliding_movement.cat_died.is_connected(restart_level):
+		_sliding_movement.cat_died.disconnect(restart_level)
 
 	# level_completed
 	if _coverage_tracking.level_completed.is_connected(_on_level_completed):

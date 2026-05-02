@@ -38,7 +38,7 @@ const BUS_NAMES: Dictionary = {
 }
 
 ## Settings file path.
-const SETTINGS_PATH: String = "user://settings.cfg"
+static var settings_path: String = "user://settings.cfg"
 
 ## Settings section and key names.
 const SETTINGS_SECTION: String = "audio"
@@ -190,7 +190,7 @@ func _create_pool() -> void:
 ## Loads volume and mute settings from user://settings.cfg.
 func _load_settings() -> void:
 	var config := ConfigFile.new()
-	var err: Error = config.load(SETTINGS_PATH)
+	var err: Error = config.load(settings_path)
 	if err != OK:
 		# No settings file yet — use defaults.
 		return
@@ -203,10 +203,10 @@ func _load_settings() -> void:
 func _save_settings() -> void:
 	var config := ConfigFile.new()
 	# Load existing to preserve other sections (e.g., music settings).
-	config.load(SETTINGS_PATH)
+	config.load(settings_path)
 	config.set_value(SETTINGS_SECTION, KEY_SFX_VOLUME, _volume)
 	config.set_value(SETTINGS_SECTION, KEY_SFX_MUTE, _muted)
-	var err: Error = config.save(SETTINGS_PATH)
+	var err: Error = config.save(settings_path)
 	if err != OK:
 		push_error("[SfxManager] Failed to save settings: %s" % error_string(err))
 

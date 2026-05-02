@@ -94,6 +94,7 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 		"blocking_path": "res://assets/art/tiles/grids/grid_purple.png",
 		"wall_draws": [],
 		"obstacles": [],
+		"special_draws": [],
 	}
 
 	if level_data == null or use_simple_ui:
@@ -102,6 +103,19 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 	var dims: Vector2i = _get_level_dimensions(level_data)
 	if dims.x == 0 or dims.y == 0:
 		return layout
+
+	# Add special tile draws
+	var special_tiles_arr: PackedInt32Array = level_data.special_tiles if "special_tiles" in level_data else PackedInt32Array()
+	for row in range(dims.y):
+		for col in range(dims.x):
+			var index: int = col + row * level_data.grid_width
+			if index < special_tiles_arr.size():
+				var type: int = special_tiles_arr[index]
+				if type != GridSystem.SpecialTileType.NONE:
+					layout["special_draws"].append({
+						"coord": Vector2i(col, row),
+						"type": type
+					})
 
 	var world_assets: Dictionary = _get_world_assets(world_id)
 	var wall_assets: Array = world_assets.get("wall_assets", []) as Array
