@@ -31,6 +31,17 @@ enum ObstacleType {
 	STATIC_WALL = 1,
 }
 
+## Special mechanics for the tile (traversal death, forced stop, etc.)
+enum SpecialTileType {
+	NONE = 0,
+	HAZARD = 1,
+	STOP_TILE = 2,
+	ONE_WAY_UP = 3,
+	ONE_WAY_DOWN = 4,
+	ONE_WAY_LEFT = 5,
+	ONE_WAY_RIGHT = 6,
+}
+
 
 # —————————————————————————————————————————————
 # Constants (tuning knobs — see GDD Section G)
@@ -59,13 +70,16 @@ var _current_tile_size: int = DEFAULT_TILE_SIZE_PX
 class GridTileData:
 	var walkability: TileWalkability
 	var obstacle_type: ObstacleType
+	var special_type: SpecialTileType
 
 	func _init(
 		p_walkability: TileWalkability = TileWalkability.BLOCKING,
-		p_obstacle_type: ObstacleType = ObstacleType.NONE
+		p_obstacle_type: ObstacleType = ObstacleType.NONE,
+		p_special_type: SpecialTileType = SpecialTileType.NONE
 	) -> void:
 		walkability = p_walkability
 		obstacle_type = p_obstacle_type
+		special_type = p_special_type
 
 
 # —————————————————————————————————————————————
@@ -120,22 +134,25 @@ func load_grid(level_data: LevelData) -> void:
 	# Populate tiles from packed arrays
 	var walkability_arr: PackedInt32Array = level_data.walkability_tiles
 	var obstacle_arr: PackedInt32Array = level_data.obstacle_tiles
+	var special_arr: PackedInt32Array = level_data.special_tiles
 	for row in range(_height):
 		for col in range(_width):
 			var index: int = col + row * level_data.grid_width
 			# Guard against short arrays — default to BLOCKING / NONE
 			var walk_val: int = walkability_arr[index] if index < walkability_arr.size() else TileWalkability.BLOCKING
 			var obs_val: int = obstacle_arr[index] if index < obstacle_arr.size() else ObstacleType.NONE
+			var spec_val: int = special_arr[index] if index < special_arr.size() else SpecialTileType.NONE
 
 			var tile := GridTileData.new(
 				walk_val as TileWalkability,
-				obs_val as ObstacleType
+				obs_val as ObstacleType,
+				spec_val as SpecialTileType
 			)
 
 			var coord := Vector2i(col, row)
 			_tiles[coord] = tile
 
-			if walk_val == TileWalkability.WALKABLE and obs_val == ObstacleType.NONE:
+			if walk_val == TileWalkability.WALKABLE and obs_val == ObstacleType.NONE and spec_val != SpecialTileType.HAZARD:
 				_walkable_cache.append(coord)
 
 	if _walkable_cache.is_empty():
@@ -151,6 +168,33 @@ func is_walkable(coord: Vector2i) -> bool:
 		return false
 	var tile: GridTileData = _tiles[coord]
 	return tile.walkability == TileWalkability.WALKABLE and tile.obstacle_type == ObstacleType.NONE
+
+
+## Returns true if the tile at coord is a HAZARD.
+func is_hazard(coord: Vector2i) -> bool:
+	if not _tiles.has(coord):
+		return false
+	return _tiles[coord].special_type == SpecialTileType.HAZARD
+
+
+## Returns true if the tile at coord is a STOP_TILE.
+func is_stop_tile(coord: Vector2i) -> bool:
+	if not _tiles.has(coord):
+		return false
+	return _tiles[coord].special_type == SpecialTileType.STOP_TILE
+
+
+## Returns the allowed entry direction for a ONE_WAY tile, or Vector2i.ZERO if not ONE_WAY.
+func get_one_way_direction(coord: Vector2i) -> Vector2i:
+	if not _tiles.has(coord):
+		return Vector2i.ZERO
+	var type: SpecialTileType = _tiles[coord].special_type
+	match type:
+		SpecialTileType.ONE_WAY_UP: return Vector2i.UP
+		SpecialTileType.ONE_WAY_DOWN: return Vector2i.DOWN
+		SpecialTileType.ONE_WAY_LEFT: return Vector2i.LEFT
+		SpecialTileType.ONE_WAY_RIGHT: return Vector2i.RIGHT
+		_: return Vector2i.ZERO
 
 
 ## Returns the GridTileData for coord. Out-of-bounds -> default BLOCKING/NONE.

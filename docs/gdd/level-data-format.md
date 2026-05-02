@@ -47,7 +47,24 @@ extends Resource
 @export var grid_height: int           # 3–MAX_GRID_SIZE (15)
 @export var walkability_tiles: PackedInt32Array   # TileWalkability int values, row-major
 @export var obstacle_tiles: PackedInt32Array      # ObstacleType int values, row-major
+@export var special_tiles: PackedInt32Array       # SpecialTileType int values, row-major
 @export var cat_start: Vector2i        # Starting tile coord for the cat
+
+## Advanced Tile Mechanics
+
+Levels in World 2 and beyond use the `special_tiles` array to modify sliding physics.
+
+| Value | Type | Description |
+| ----- | ---- | ----------- |
+| 0 | NONE | No special effect. |
+| 1 | HAZARD | **Negative Obstacle**. Cat dies immediately upon entering. Move is invalid. |
+| 2 | STOP | **Mid-Grid Stop**. Cat stops exactly on this tile, regardless of space behind it. |
+| 3 | ONE-WAY UP | **Diode**. Cat can only enter this tile when sliding UP. |
+| 4 | ONE-WAY DOWN | **Diode**. Cat can only enter this tile when sliding DOWN. |
+| 5 | ONE-WAY LEFT | **Diode**. Cat can only enter this tile when sliding LEFT. |
+| 6 | ONE-WAY RIGHT | **Diode**. Cat can only enter this tile when sliding RIGHT. |
+
+*Note: Entering a One-Way tile from an unauthorized direction acts as a Wall (slide ends on the previous tile).*
 
 ## Pre-computed Solution
 @export var minimum_moves: int         # BFS optimal; 0 = not yet solved

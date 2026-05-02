@@ -14,6 +14,7 @@ extends Resource
 @export var grid_height: int ## 3–MAX_GRID_SIZE (15)
 @export var walkability_tiles: PackedInt32Array ## TileWalkability int values, row-major
 @export var obstacle_tiles: PackedInt32Array ## ObstacleType int values, row-major
+@export var special_tiles: PackedInt32Array ## SpecialTileType int values, row-major
 @export var cat_start: Vector2i ## Starting tile coord for the cat
 
 ## Pre-computed Solution

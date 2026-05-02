@@ -39,6 +39,9 @@ signal slide_blocked(pos: Vector2i, direction: Vector2i)
 ## mark the starting tile as pre-covered.
 signal spawn_position_set(pos: Vector2i)
 
+## Emitted when the cat hits a HAZARD tile.
+signal cat_died()
+
 
 # —————————————————————————————————————————————
 # Enums
@@ -242,6 +245,7 @@ func refresh_visual_size() -> void:
 ## and emits spawn_position_set for Coverage Tracking.
 func initialize_level(spawn_pos: Vector2i) -> void:
 	_kill_all_tweens()
+	_apply_cat_host_overrides() # Reset face and other visual properties
 	refresh_visual_size()
 	_cat_pos = spawn_pos
 	position = _grid_to_pixel(spawn_pos)
@@ -255,6 +259,7 @@ func initialize_level(spawn_pos: Vector2i) -> void:
 ## Used by Undo/Restart to rewind position. Kills any in-flight tweens.
 func set_grid_position_instant(coord: Vector2i) -> void:
 	_kill_all_tweens()
+	_apply_cat_host_overrides() # Reset face and other visual properties
 	_cat_pos = coord
 	position = _grid_to_pixel(coord)
 	scale = Vector2.ONE
@@ -285,9 +290,31 @@ func unlock() -> void:
 func resolve_slide(start: Vector2i, direction: Vector2i) -> Vector2i:
 	var pos: Vector2i = start
 	var iterations: int = 0
-	while GridSystem.is_walkable(pos + direction) and iterations < MAX_SLIDE_DISTANCE:
-		pos += direction
+	
+	while iterations < MAX_SLIDE_DISTANCE:
+		var next := pos + direction
+		
+		# 1. One-way check: can we enter 'next' from this direction?
+		var one_way_dir := GridSystem.get_one_way_direction(next)
+		if one_way_dir != Vector2i.ZERO and one_way_dir != direction:
+			break
+			
+		# 2. General walkability check (walls, boundaries)
+		if not GridSystem.is_walkable(next):
+			break
+			
+		# Valid move to next tile
+		pos = next
 		iterations += 1
+		
+		# 3. Hazard check: stop immediately if we hit a hazard (will trigger death)
+		if GridSystem.is_hazard(pos):
+			break
+			
+		# 4. Stop tile check: stop early if this is a force-stop tile
+		if GridSystem.is_stop_tile(pos):
+			break
+			
 	if iterations >= MAX_SLIDE_DISTANCE:
 		push_error("SlidingMovement: Slide exceeded MAX_SLIDE_DISTANCE — possible malformed level")
 	return pos
@@ -365,13 +392,86 @@ func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> vo
 	if _travel_tween and _travel_tween.is_valid():
 		_travel_tween.kill()
 	scale = Vector2.ONE
-	_play_squish()
+	
+	if GridSystem.is_hazard(to):
+		_play_hazard_animation()
+		# cat_died emitted after animation delay
+		return
+
+	if GridSystem.is_stop_tile(to):
+		_play_stop_tile_animation()
+	else:
+		_play_squish()
 
 	var tiles: Array[Vector2i] = compute_tiles_covered(from, to, direction)
 
 	_state = State.IDLE
 	slide_completed.emit(from, to, direction, tiles)
 	InputSystem.set_accepting_input(true)
+
+
+# —————————————————————————————————————————————
+# Animation — special tiles
+# —————————————————————————————————————————————
+
+func _play_hazard_animation() -> void:
+	if _cat_rig == null:
+		cat_died.emit()
+		return
+
+	# Shake animation
+	var shake_tween := create_tween()
+	var original_pos := _cat_rig.get("display_offset") as Vector2
+	var shake_strength := 8.0
+	
+	# Transition face to 'surprised'
+	_cat_rig.set("override_face_locally", true)
+	_cat_rig.set("face_variant", "surprised")
+	if _cat_rig.has_method("refresh_rig"):
+		_cat_rig.call("refresh_rig")
+
+	for i in range(6):
+		var offset := Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)).normalized() * shake_strength
+		shake_tween.tween_property(_cat_rig, "position", original_pos + offset, 0.05)
+		shake_strength *= 0.8
+	
+	shake_tween.tween_property(_cat_rig, "position", original_pos, 0.05)
+	shake_tween.tween_callback(func(): cat_died.emit())
+
+
+func _play_stop_tile_animation() -> void:
+	if _cat_rig == null:
+		_play_squish()
+		return
+
+	# Brief 'smile' face and a bigger bounce
+	var original_face: String = _cat_rig.get("face_variant") as String
+	var was_override: bool = _cat_rig.get("override_face_locally") as bool
+	
+	_cat_rig.set("override_face_locally", true)
+	_cat_rig.set("face_variant", "smile")
+	if _cat_rig.has_method("refresh_rig"):
+		_cat_rig.call("refresh_rig")
+
+	# Pounce-like bounce
+	if _squish_tween and _squish_tween.is_valid():
+		_squish_tween.kill()
+	
+	_squish_tween = create_tween()
+	_squish_tween.tween_property(self , "scale", Vector2(1.3, 0.7), 0.1) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	_squish_tween.tween_property(self , "scale", Vector2.ONE, 0.2) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
+	
+	# Restore face after a delay
+	_squish_tween.tween_interval(0.5)
+	_squish_tween.tween_callback(func():
+		if _cat_rig != null and is_instance_valid(_cat_rig):
+			_cat_rig.set("override_face_locally", was_override)
+			_cat_rig.set("face_variant", original_face)
+			if _cat_rig.has_method("refresh_rig"):
+				_cat_rig.call("refresh_rig")
+	)
 
 
 # —————————————————————————————————————————————

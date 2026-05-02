@@ -173,3 +173,47 @@ func _draw() -> void:
 			tabletop_size,
 		)
 		draw_texture_rect(tabletop_texture, tabletop_rect, false)
+
+	# Draw special tiles (HAZARD, STOP_TILE, ONE_WAY)
+	for special: Dictionary in _render_layout.get("special_draws", []):
+		var coord: Vector2i = special.get("coord", Vector2i.ZERO) as Vector2i
+		var type: int = special.get("type", 0) as int
+		var rect := Rect2(coord.x * _tile_size, coord.y * _tile_size, _tile_size, _tile_size)
+		
+		match type:
+			GridSystem.SpecialTileType.HAZARD:
+				# Red translucent overlay with a warning pattern
+				draw_rect(rect, Color(1.0, 0.0, 0.0, 0.3), true)
+				# Draw an X
+				var padding: float = _tile_size * 0.2
+				draw_line(rect.position + Vector2(padding, padding), rect.end - Vector2(padding, padding), Color.WHITE, 2.0)
+				draw_line(rect.position + Vector2(rect.size.x - padding, padding), rect.position + Vector2(padding, rect.size.y - padding), Color.WHITE, 2.0)
+				
+			GridSystem.SpecialTileType.STOP_TILE:
+				# Green circle in the middle
+				var center: Vector2 = rect.get_center()
+				var radius: float = _tile_size * 0.3
+				draw_circle(center, radius, Color(0.0, 1.0, 0.0, 0.5))
+				draw_arc(center, radius, 0, TAU, 32, Color.WHITE, 2.0)
+				
+			GridSystem.SpecialTileType.ONE_WAY_UP, \
+			GridSystem.SpecialTileType.ONE_WAY_DOWN, \
+			GridSystem.SpecialTileType.ONE_WAY_LEFT, \
+			GridSystem.SpecialTileType.ONE_WAY_RIGHT:
+				# Directional arrow
+				var center: Vector2 = rect.get_center()
+				var arrow_size: float = _tile_size * 0.4
+				var direction: Vector2 = Vector2.ZERO
+				match type:
+					GridSystem.SpecialTileType.ONE_WAY_UP: direction = Vector2.UP
+					GridSystem.SpecialTileType.ONE_WAY_DOWN: direction = Vector2.DOWN
+					GridSystem.SpecialTileType.ONE_WAY_LEFT: direction = Vector2.LEFT
+					GridSystem.SpecialTileType.ONE_WAY_RIGHT: direction = Vector2.RIGHT
+				
+				var tip: Vector2 = center + direction * arrow_size * 0.5
+				var base: Vector2 = center - direction * arrow_size * 0.5
+				draw_line(base, tip, Color.WHITE, 3.0)
+				# Draw arrow head
+				var perp := Vector2(-direction.y, direction.x) * arrow_size * 0.2
+				draw_line(tip, tip - direction * arrow_size * 0.3 + perp, Color.WHITE, 3.0)
+				draw_line(tip, tip - direction * arrow_size * 0.3 - perp, Color.WHITE, 3.0)
