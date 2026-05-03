@@ -4,6 +4,8 @@ extends CanvasLayer
 
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 
+const INPUT_HINT_OPTIONS = ["Auto", "Touch", "Desktop"]
+
 signal close_requested
 
 var _title_text: String = "Options"
@@ -21,6 +23,17 @@ var _sfx_manager_ref: Node
 @export var _input_label: Label
 @export var _panel: PanelContainer
 @export var _backdrop: ColorRect
+@export var _input_hint_row: OptionSettingRow
+@export var _input_hint_button: OptionButton
+@export var _keyboard_hint_row: Control
+@export var _keyboard_move_icon: TextureRect
+@export var _keyboard_undo_icon: TextureRect
+@export var _keyboard_restart_icon: TextureRect
+@export var _keyboard_pause_icon: TextureRect
+@export var _keyboard_move_label: Label
+@export var _keyboard_undo_label: Label
+@export var _keyboard_restart_label: Label
+@export var _keyboard_pause_label: Label
 @export var _music_slider: Range
 @export var _music_mute_toggle: BaseButton
 @export var _sfx_slider: Range
@@ -58,6 +71,30 @@ func _ready() -> void:
 		_display_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/DisplayLabel")
 	if _input_label == null:
 		_input_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputLabel")
+	if _input_hint_row == null:
+		_input_hint_row = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputHintRow")
+	if _input_hint_button == null and _input_hint_row != null:
+		_input_hint_button = _input_hint_row.get_option_button()
+	if _input_hint_button == null:
+		_input_hint_button = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputHintRow/OptionButton")
+	if _keyboard_hint_row == null:
+		_keyboard_hint_row = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow")
+	if _keyboard_move_icon == null:
+		_keyboard_move_icon = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/MoveHint/KeyIcon")
+	if _keyboard_undo_icon == null:
+		_keyboard_undo_icon = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/UndoHint/KeyIcon")
+	if _keyboard_restart_icon == null:
+		_keyboard_restart_icon = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/RestartHint/KeyIcon")
+	if _keyboard_pause_icon == null:
+		_keyboard_pause_icon = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/PauseHint/KeyIcon")
+	if _keyboard_move_label == null:
+		_keyboard_move_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/MoveHint/HintLabel")
+	if _keyboard_undo_label == null:
+		_keyboard_undo_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/UndoHint/HintLabel")
+	if _keyboard_restart_label == null:
+		_keyboard_restart_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/RestartHint/HintLabel")
+	if _keyboard_pause_label == null:
+		_keyboard_pause_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/PauseHint/HintLabel")
 	if _music_slider == null:
 		_music_slider = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/AudioSection/MusicRow/Slider")
 	if _music_mute_toggle == null:
@@ -96,6 +133,7 @@ func _ready() -> void:
 	assert(_title_label != null, "_title_label not assigned")
 	assert(_audio_label != null, "_audio_label not assigned")
 	assert(_display_label != null, "_display_label not assigned")
+	assert(_input_label != null, "_input_label not assigned")
 	assert(_music_slider != null, "_music_slider not assigned")
 	assert(_music_mute_toggle != null, "_music_mute_toggle not assigned")
 	assert(_sfx_slider != null, "_sfx_slider not assigned")
@@ -111,6 +149,7 @@ func _ready() -> void:
 
 	assert(_close_btn != null, "_close_btn not assigned")
 	_resolve_services()
+	_configure_input_hint_options()
 	_connect_settings_signal()
 	_connect_ui()
 	_apply_visual_style()
@@ -206,6 +245,8 @@ func _connect_ui() -> void:
 		_replay_tutorial_btn.pressed.connect(_on_replay_tutorial_pressed)
 	if _close_btn != null and not _close_btn.pressed.is_connected(on_close_btn_pressed):
 		_close_btn.pressed.connect(on_close_btn_pressed)
+	if _input_hint_button != null and not _input_hint_button.item_selected.is_connected(_on_input_hint_selected):
+		_input_hint_button.item_selected.connect(_on_input_hint_selected)
 	if _cat_peek != null:
 		_cat_peek.mouse_filter = Control.MOUSE_FILTER_STOP
 		if not _cat_peek.gui_input.is_connected(_on_cat_peek_input):
@@ -240,9 +281,12 @@ func _sync_controls() -> void:
 		_dev_mode_toggle.button_pressed = _app_settings_ref.get_dev_mode()
 	if _unlock_all_skins_toggle != null:
 		_unlock_all_skins_toggle.button_pressed = _app_settings_ref.get_unlock_all_skins()
+	if _input_hint_button != null:
+		_input_hint_button.selected = _input_hint_index_from_mode(_app_settings_ref.get_input_hint_mode())
 	if _developer_section != null:
 		_developer_section.visible = _app_settings_ref.get_show_dev_tools()
 	_refresh_audio_control_states()
+	_refresh_keyboard_hint_visibility()
 	_sync_tutorial_button_state()
 	_suppress_events = false
 
@@ -305,6 +349,13 @@ func _on_unlock_all_skins_toggled(button_pressed: bool) -> void:
 	_app_settings_ref.set_unlock_all_skins(button_pressed)
 
 
+func _on_input_hint_selected(index: int) -> void:
+	if _suppress_events:
+		return
+	_app_settings_ref.set_input_hint_mode(_input_hint_mode_from_index(index))
+	_refresh_keyboard_hint_visibility()
+
+
 func _on_import_progress_pressed() -> void:
 	if _suppress_events:
 		return
@@ -335,8 +386,8 @@ func _on_import_file_selected(path: String) -> void:
 		if _import_progress_btn is Button:
 			var old_text: String = _import_progress_btn.text
 			_import_progress_btn.text = "Success!"
-			get_tree().create_timer(2.0).timeout.connect(func(): 
-				if _import_progress_btn is Button: 
+			get_tree().create_timer(2.0).timeout.connect(func():
+				if _import_progress_btn is Button:
 					_import_progress_btn.text = old_text
 			)
 		SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
@@ -344,8 +395,8 @@ func _on_import_file_selected(path: String) -> void:
 		if _import_progress_btn is Button:
 			var old_text: String = _import_progress_btn.text
 			_import_progress_btn.text = "Failed!"
-			get_tree().create_timer(1.5).timeout.connect(func(): 
-				if _import_progress_btn is Button: 
+			get_tree().create_timer(1.5).timeout.connect(func():
+				if _import_progress_btn is Button:
 					_import_progress_btn.text = old_text
 			)
 
@@ -356,8 +407,8 @@ func _on_export_file_selected(path: String) -> void:
 		if _export_progress_btn is Button:
 			var old_text: String = _export_progress_btn.text
 			_export_progress_btn.text = "Success!"
-			get_tree().create_timer(2.0).timeout.connect(func(): 
-				if _export_progress_btn is Button: 
+			get_tree().create_timer(2.0).timeout.connect(func():
+				if _export_progress_btn is Button:
 					_export_progress_btn.text = old_text
 			)
 		SfxManager.play(_sfx_button_tap, SfxManager.SfxBus.UI)
@@ -365,8 +416,8 @@ func _on_export_file_selected(path: String) -> void:
 		if _export_progress_btn is Button:
 			var old_text: String = _export_progress_btn.text
 			_export_progress_btn.text = "Error!"
-			get_tree().create_timer(1.5).timeout.connect(func(): 
-				if _export_progress_btn is Button: 
+			get_tree().create_timer(1.5).timeout.connect(func():
+				if _export_progress_btn is Button:
 					_export_progress_btn.text = old_text
 			)
 
@@ -418,20 +469,34 @@ func _sync_tutorial_button_state() -> void:
 		return
 	_replay_tutorial_btn.disabled = false
 	if _replay_tutorial_btn is Button:
-		_replay_tutorial_btn.text = "Replay Tutorial"
+		_replay_tutorial_btn.text = "REPLAY TUTORIAL"
 
 
 func _apply_visual_style() -> void:
 	ShellThemeUtil.apply_modal_backdrop(_backdrop)
 	_refresh_title_components()
+	_apply_keyboard_hint_style()
 
 
 func _refresh_title_components() -> void:
-	for node: Label in [_title_label, _audio_label, _display_label, _developer_label]:
+	for node: Label in [_title_label, _audio_label, _display_label, _input_label, _developer_label]:
 		if node != null and node.has_method("refresh_style"):
 			node.call("refresh_style")
 	if _ribbon != null and _ribbon.has_method("refresh_style"):
 		_ribbon.call("refresh_style")
+
+
+func _apply_keyboard_hint_style() -> void:
+	_apply_keyboard_hint_icon(_keyboard_move_icon, ShellThemeUtil.get_input_hint_icon("move"))
+	_apply_keyboard_hint_icon(_keyboard_undo_icon, ShellThemeUtil.get_input_hint_icon("undo"))
+	_apply_keyboard_hint_icon(_keyboard_restart_icon, ShellThemeUtil.get_input_hint_icon("restart"))
+	_apply_keyboard_hint_icon(_keyboard_pause_icon, ShellThemeUtil.get_input_hint_icon("pause"))
+	if _input_label != null:
+		_input_label.text = tr("Input")
+	_apply_keyboard_hint_label(_keyboard_move_label, tr("Move"))
+	_apply_keyboard_hint_label(_keyboard_undo_label, tr("Undo"))
+	_apply_keyboard_hint_label(_keyboard_restart_label, tr("Restart"))
+	_apply_keyboard_hint_label(_keyboard_pause_label, tr("Pause"))
 
 
 func _play_intro_animation() -> void:
@@ -456,10 +521,68 @@ func _refresh_audio_control_states() -> void:
 	_set_slider_enabled(_sfx_slider, _sfx_mute_toggle == null or not _sfx_mute_toggle.button_pressed)
 
 
+func _refresh_keyboard_hint_visibility() -> void:
+	if _keyboard_hint_row == null or _app_settings_ref == null:
+		return
+	var mode: String = _get_effective_input_hint_mode()
+	_keyboard_hint_row.visible = mode != AppSettings.INPUT_HINT_TOUCH
+
+
 func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
 	if slider_control == null or not slider_control is HSlider:
 		return
 	ShellThemeUtil.set_slider_interactive(slider_control as HSlider, is_enabled)
+
+
+func _configure_input_hint_options() -> void:
+	if _input_hint_button == null:
+		return
+	_input_hint_button.clear()
+	for label in INPUT_HINT_OPTIONS:
+		_input_hint_button.add_item(tr(label))
+
+
+func _input_hint_index_from_mode(mode: String) -> int:
+	match mode:
+		AppSettings.INPUT_HINT_TOUCH:
+			return 1
+		AppSettings.INPUT_HINT_CONTROLLER:
+			return 2
+		_:
+			return 0
+
+
+func _input_hint_mode_from_index(index: int) -> String:
+	match index:
+		1:
+			return AppSettings.INPUT_HINT_TOUCH
+		2:
+			return AppSettings.INPUT_HINT_CONTROLLER
+		_:
+			return AppSettings.INPUT_HINT_AUTO
+
+
+func _get_effective_input_hint_mode() -> String:
+	if _app_settings_ref != null and _app_settings_ref.has_method("get_effective_input_hint_mode"):
+		return _app_settings_ref.get_effective_input_hint_mode()
+	if _app_settings_ref != null and _app_settings_ref.has_method("get_input_hint_mode"):
+		return _app_settings_ref.get_input_hint_mode()
+	return AppSettings.get_effective_input_hint_mode()
+
+
+func _apply_keyboard_hint_icon(icon_rect: TextureRect, texture: Texture2D) -> void:
+	if icon_rect == null:
+		return
+	icon_rect.texture = texture
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+
+func _apply_keyboard_hint_label(label: Label, text: String) -> void:
+	if label == null:
+		return
+	label.text = text
+	ShellThemeUtil.apply_body(label, ShellThemeUtil.PLUM_SOFT, 14)
 
 
 func _on_app_setting_changed(section: String, key: String, _value: Variant) -> void:

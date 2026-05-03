@@ -6,6 +6,9 @@ Free Icon Pack by Nieobie https://nieobie.itch.io/free-icons
 art\ui\icons\pill_interiors\*
 art\ui\buttons\circular\*
 
+Game UI Wireframe Kit by GavMakesGames in Figma https://www.figma.com/community/file/1387093843913812299/game-ui-wireframe-kit :
+assets\art\ui\icons\input_hint\pc\ (keyboard shortcut icons)
+
 Bumper Audio Pack by Chequered Ink https://ci.itch.io/bumper-audio-pack :
 audio\bgm\bedroom.ogg
 

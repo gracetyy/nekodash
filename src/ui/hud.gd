@@ -112,6 +112,23 @@ func _ready() -> void:
 	_apply_visual_style()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not _initialized or _level_complete:
+		return
+	if SceneManager.has_active_overlay():
+		return
+	if AppSettings.get_effective_input_hint_mode() == AppSettings.INPUT_HINT_TOUCH:
+		return
+	if event is InputEventKey and event.pressed and not event.is_echo():
+		match event.keycode:
+			KEY_Z:
+				on_undo_btn_pressed()
+				get_viewport().set_input_as_handled()
+			KEY_R:
+				on_restart_btn_pressed()
+				get_viewport().set_input_as_handled()
+
+
 # —————————————————————————————————————————————
 # Public API
 # —————————————————————————————————————————————

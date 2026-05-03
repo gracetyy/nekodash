@@ -22,7 +22,7 @@ func get_option_button() -> OptionButton:
 
 
 func _apply_component_state() -> void:
-	_label.text = label_text
+	_label.text = tr(label_text)
 	ShellThemeUtil.apply_title(_label, 24)
 	ShellThemeUtil.apply_option_button(_option_button)
 

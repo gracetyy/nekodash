@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://b5h5g7che7rep" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="9"]
 [ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="10"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="11"]
-[ext_resource type="FontVariation" uid="uid://b3cj4o7ces726" path="res://assets/fonts/Fredoka-Display-Bold.tres" id="12"]
+[ext_resource type="FontVariation" path="res://assets/fonts/Fredoka-Display-SemiBold.tres" id="12"]
 [ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="13"]
 [ext_resource type="Texture2D" uid="uid://6jgkeoae2v48" path="res://assets/art/ui/buttons/pill_bases/disabled.png" id="14"]
 [ext_resource type="Texture2D" uid="uid://d3jj481kx355h" path="res://assets/art/ui/buttons/pill_bases/primary_hover.png" id="15"]
@@ -25,45 +25,45 @@ shader_parameter/dim_tint = Vector3(0.22, 0.18, 0.25)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qdh64"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("13")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hgr6n"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("14")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6aevj"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("15")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2iro5"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("16")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_uvoln"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("13")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
@@ -129,12 +129,13 @@ offset_right = 260.0
 offset_bottom = 223.0
 grow_horizontal = 2
 title_text = "PAUSED"
-title_font_size = 28
+title_font_size = 32
 
 [node name="Panel" parent="Backdrop/Margin/VBox" instance=ExtResource("4")]
 z_index = 1
 custom_minimum_size = Vector2(440, 200)
 layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 3
 
 [node name="CardMargin" type="MarginContainer" parent="Backdrop/Margin/VBox/Panel"]
@@ -200,6 +201,84 @@ label_text = "Large Text"
 [node name="SimpleUiRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection" instance=ExtResource("8")]
 layout_mode = 2
 label_text = "Simple UI"
+
+[node name="InputSection" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="InputLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection"]
+layout_mode = 2
+text = ""
+script = ExtResource("10")
+font_size = 24
+
+[node name="InputHintRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection" instance=ExtResource("9")]
+layout_mode = 2
+
+[node name="KeyboardHintRow" type="HBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="MoveHint" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="KeyIcon" type="TextureRect" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/MoveHint"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HintLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/MoveHint"]
+layout_mode = 2
+text = ""
+
+[node name="UndoHint" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="KeyIcon" type="TextureRect" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/UndoHint"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HintLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/UndoHint"]
+layout_mode = 2
+text = ""
+
+[node name="RestartHint" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="KeyIcon" type="TextureRect" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/RestartHint"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HintLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/RestartHint"]
+layout_mode = 2
+text = ""
+
+[node name="PauseHint" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="KeyIcon" type="TextureRect" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/PauseHint"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HintLabel" type="Label" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow/PauseHint"]
+layout_mode = 2
+text = ""
 
 [node name="DeveloperSection" type="VBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox"]
 layout_mode = 2
