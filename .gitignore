@@ -26,6 +26,7 @@ docs/superpowers/
 GEMINI.md
 
 # === Build Output ===
+export/
 build/
 builds/
 bin/
