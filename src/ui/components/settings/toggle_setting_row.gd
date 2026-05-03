@@ -22,7 +22,7 @@ func get_toggle() -> CheckButton:
 
 
 func _apply_component_state() -> void:
-	_label.text = label_text
+	_label.text = tr(label_text)
 	ShellThemeUtil.apply_body(_label, ShellThemeUtil.PLUM_SOFT, 20)
 	ShellThemeUtil.apply_checkbox(_toggle)
 

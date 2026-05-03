@@ -24,6 +24,7 @@ const KEY_DEV_MODE: String = "dev_mode"
 const KEY_UNLOCK_ALL_SKINS: String = "unlock_all_skins"
 const KEY_SHOW_DEV_TOOLS: String = "show_dev_tools"
 const KEY_INPUT_HINT_MODE: String = "input_hint_mode"
+const KEY_SHOW_INPUT_HINTS: String = "show_input_hints"
 const UI_SCALE_NORMAL: float = 1.0
 const UI_SCALE_LARGE: float = 1.0
 const TEXT_SCALE_NORMAL: float = 1.0
@@ -49,6 +50,7 @@ const DEFAULTS: Dictionary = {
 	},
 	SECTION_INPUT: {
 		KEY_INPUT_HINT_MODE: INPUT_HINT_AUTO,
+		KEY_SHOW_INPUT_HINTS: true,
 	},
 }
 
@@ -205,6 +207,14 @@ func set_input_hint_mode(mode: String) -> void:
 	if normalized not in [INPUT_HINT_AUTO, INPUT_HINT_TOUCH, INPUT_HINT_CONTROLLER]:
 		normalized = INPUT_HINT_AUTO
 	set_value(SECTION_INPUT, KEY_INPUT_HINT_MODE, normalized)
+
+
+func get_show_input_hints() -> bool:
+	return get_value(SECTION_INPUT, KEY_SHOW_INPUT_HINTS, true) as bool
+
+
+func set_show_input_hints(enabled: bool) -> void:
+	set_value(SECTION_INPUT, KEY_SHOW_INPUT_HINTS, enabled)
 
 
 func get_effective_input_hint_mode() -> String:

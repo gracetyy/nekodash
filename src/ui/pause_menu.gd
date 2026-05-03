@@ -5,7 +5,6 @@ extends CanvasLayer
 const ShellThemeUtil = preload("res://src/ui/shell_theme.gd")
 const ConfirmNavigationModalScene: PackedScene = preload("res://scenes/ui/components/panels/ConfirmNavigationModal.tscn")
 
-const INPUT_HINT_OPTIONS = ["Auto", "Touch", "Desktop"]
 
 signal resume_requested
 signal restart_requested
@@ -25,8 +24,8 @@ signal main_menu_requested
 @export var _music_mute_toggle: BaseButton
 @export var _sfx_slider: Range
 @export var _sfx_mute_toggle: BaseButton
-@export var _input_hint_row: OptionSettingRow
-@export var _input_hint_button: OptionButton
+@export var _show_input_hints_row: ToggleSettingRow
+@export var _show_input_hints_toggle: CheckButton
 @export var _keyboard_hint_row: Control
 @export var _keyboard_move_icon: TextureRect
 @export var _keyboard_undo_icon: TextureRect
@@ -71,12 +70,12 @@ func _ready() -> void:
 		_display_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/DisplayLabel")
 	if _input_label == null:
 		_input_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputLabel")
-	if _input_hint_row == null:
-		_input_hint_row = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputHintRow")
-	if _input_hint_button == null and _input_hint_row != null:
-		_input_hint_button = _input_hint_row.get_option_button()
-	if _input_hint_button == null:
-		_input_hint_button = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputHintRow/OptionButton")
+	if _show_input_hints_row == null:
+		_show_input_hints_row = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/ShowInputHintsRow")
+	if _show_input_hints_toggle == null and _show_input_hints_row != null:
+		_show_input_hints_toggle = _show_input_hints_row.get_toggle()
+	if _show_input_hints_toggle == null:
+		_show_input_hints_toggle = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/ShowInputHintsRow/Toggle")
 	if _keyboard_hint_row == null:
 		_keyboard_hint_row = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/KeyboardHintRow")
 	if _keyboard_move_icon == null:
@@ -141,7 +140,6 @@ func _ready() -> void:
 	_ensure_confirm_modal()
 	_connect_signals()
 	_connect_navigation()
-	_configure_input_hint_options()
 	_apply_visual_style()
 	_sync_controls()
 	_play_intro_animation()
@@ -190,8 +188,8 @@ func _connect_signals() -> void:
 		_dev_mode_toggle.toggled.connect(_on_dev_mode_toggled)
 	if _unlock_all_skins_toggle != null and not _unlock_all_skins_toggle.toggled.is_connected(_on_unlock_all_skins_toggled):
 		_unlock_all_skins_toggle.toggled.connect(_on_unlock_all_skins_toggled)
-	if _input_hint_button != null and not _input_hint_button.item_selected.is_connected(_on_input_hint_selected):
-		_input_hint_button.item_selected.connect(_on_input_hint_selected)
+	if _show_input_hints_toggle != null and not _show_input_hints_toggle.toggled.is_connected(_on_show_input_hints_toggled):
+		_show_input_hints_toggle.toggled.connect(_on_show_input_hints_toggled)
 	if _cat_peek != null:
 		_cat_peek.mouse_filter = Control.MOUSE_FILTER_STOP
 		if not _cat_peek.gui_input.is_connected(_on_cat_peek_input):
@@ -274,8 +272,8 @@ func _sync_controls() -> void:
 		_dev_mode_toggle.button_pressed = AppSettings.get_dev_mode()
 	if _unlock_all_skins_toggle != null:
 		_unlock_all_skins_toggle.button_pressed = AppSettings.get_unlock_all_skins()
-	if _input_hint_button != null:
-		_input_hint_button.selected = _input_hint_index_from_mode(AppSettings.get_input_hint_mode())
+	if _show_input_hints_toggle != null:
+		_show_input_hints_toggle.button_pressed = AppSettings.get_show_input_hints()
 	if _developer_section != null:
 		_developer_section.visible = AppSettings.get_show_dev_tools()
 	_refresh_audio_control_states()
@@ -341,10 +339,10 @@ func _on_unlock_all_skins_toggled(button_pressed: bool) -> void:
 	AppSettings.set_unlock_all_skins(button_pressed)
 
 
-func _on_input_hint_selected(index: int) -> void:
+func _on_show_input_hints_toggled(button_pressed: bool) -> void:
 	if _suppress_events:
 		return
-	AppSettings.set_input_hint_mode(_input_hint_mode_from_index(index))
+	AppSettings.set_show_input_hints(button_pressed)
 	_refresh_keyboard_hint_visibility()
 
 
@@ -426,42 +424,15 @@ func _refresh_audio_control_states() -> void:
 func _refresh_keyboard_hint_visibility() -> void:
 	if _keyboard_hint_row == null:
 		return
+	var show_hints: bool = AppSettings.get_show_input_hints()
 	var mode: String = AppSettings.get_effective_input_hint_mode()
-	_keyboard_hint_row.visible = mode != AppSettings.INPUT_HINT_TOUCH
+	_keyboard_hint_row.visible = show_hints and mode != AppSettings.INPUT_HINT_TOUCH
 
 
 func _set_slider_enabled(slider_control: Range, is_enabled: bool) -> void:
 	if slider_control == null or not slider_control is HSlider:
 		return
 	ShellThemeUtil.set_slider_interactive(slider_control as HSlider, is_enabled)
-
-
-func _configure_input_hint_options() -> void:
-	if _input_hint_button == null:
-		return
-	_input_hint_button.clear()
-	for label in INPUT_HINT_OPTIONS:
-		_input_hint_button.add_item(tr(label))
-
-
-func _input_hint_index_from_mode(mode: String) -> int:
-	match mode:
-		AppSettings.INPUT_HINT_TOUCH:
-			return 1
-		AppSettings.INPUT_HINT_CONTROLLER:
-			return 2
-		_:
-			return 0
-
-
-func _input_hint_mode_from_index(index: int) -> String:
-	match index:
-		1:
-			return AppSettings.INPUT_HINT_TOUCH
-		2:
-			return AppSettings.INPUT_HINT_CONTROLLER
-		_:
-			return AppSettings.INPUT_HINT_AUTO
 
 
 func _apply_keyboard_hint_icon(icon_rect: TextureRect, texture: Texture2D) -> void:
@@ -515,5 +486,5 @@ func _on_app_setting_changed(section: String, key: String, _value: Variant) -> v
 		_sync_controls()
 	elif section == AppSettings.SECTION_SHELL and (key == AppSettings.KEY_DEV_MODE or key == AppSettings.KEY_UNLOCK_ALL_SKINS or key == AppSettings.KEY_SHOW_DEV_TOOLS):
 		_sync_controls()
-	elif section == AppSettings.SECTION_INPUT and key == AppSettings.KEY_INPUT_HINT_MODE:
+	elif section == AppSettings.SECTION_INPUT and (key == AppSettings.KEY_INPUT_HINT_MODE or key == AppSettings.KEY_SHOW_INPUT_HINTS):
 		_sync_controls()

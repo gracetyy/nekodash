@@ -16,6 +16,7 @@ class MockSettings extends Node:
 	var dev_mode: bool = false
 	var unlock_all_skins: bool = false
 	var input_hint_mode: String = AppSettings.INPUT_HINT_AUTO
+	var show_input_hints: bool = true
 
 	func get_fullscreen() -> bool:
 		return fullscreen
@@ -58,6 +59,12 @@ class MockSettings extends Node:
 
 	func set_input_hint_mode(mode: String) -> void:
 		input_hint_mode = mode
+
+	func get_show_input_hints() -> bool:
+		return show_input_hints
+
+	func set_show_input_hints(enabled: bool) -> void:
+		show_input_hints = enabled
 
 
 class MockAudioManager extends Node:
@@ -111,6 +118,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	_settings.simple_ui = true
 	_settings.dev_mode = true
 	_settings.input_hint_mode = AppSettings.INPUT_HINT_CONTROLLER
+	_settings.show_input_hints = false
 	_music.volume = 0.35
 	_music.muted = true
 	_sfx.volume = 0.65
@@ -129,7 +137,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	var large_ui: CheckButton = _menu.get_node(base_path + "/DisplaySection/LargeUiRow/Toggle") as CheckButton
 	var simple_ui: CheckButton = _menu.get_node(base_path + "/DisplaySection/SimpleUiRow/Toggle") as CheckButton
 	var dev_mode: CheckButton = _menu.get_node(base_path + "/DeveloperSection/DevModeRow/Toggle") as CheckButton
-	var input_hint: OptionButton = _menu.get_node(base_path + "/InputSection/InputHintRow/OptionButton") as OptionButton
+	var show_input_hints: CheckButton = _menu.get_node(base_path + "/InputSection/ShowInputHintsRow/Toggle") as CheckButton
 
 	assert_eq(music_slider.value, 35.0)
 	assert_true(music_mute.button_pressed)
@@ -139,7 +147,7 @@ func test_sync_controls_reads_injected_services() -> void:
 	assert_true(large_ui.button_pressed)
 	assert_true(simple_ui.button_pressed)
 	assert_true(dev_mode.button_pressed)
-	assert_eq(input_hint.selected, 2)
+	assert_false(show_input_hints.button_pressed)
 
 
 func test_controls_write_through_to_services() -> void:
@@ -151,7 +159,7 @@ func test_controls_write_through_to_services() -> void:
 	_menu._on_large_ui_toggled(true)
 	_menu._on_simple_ui_toggled(true)
 	_menu._on_dev_mode_toggled(true)
-	_menu._on_input_hint_selected(1)
+	_menu._on_show_input_hints_toggled(false)
 
 	assert_eq(_music.volume, 0.25)
 	assert_true(_music.muted)
@@ -161,7 +169,7 @@ func test_controls_write_through_to_services() -> void:
 	assert_true(_settings.large_ui)
 	assert_true(_settings.simple_ui)
 	assert_true(_settings.dev_mode)
-	assert_eq(_settings.input_hint_mode, AppSettings.INPUT_HINT_TOUCH)
+	assert_false(_settings.show_input_hints)
 
 
 func test_close_button_emits_close_requested() -> void:

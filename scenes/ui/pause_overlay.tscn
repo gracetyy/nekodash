@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://d1p7xihah4drw"]
+[gd_scene load_steps=11 format=3 uid="uid://d1p7xihah4drw"]
 
 [ext_resource type="Script" path="res://src/ui/pause_menu.gd" id="1"]
 [ext_resource type="Shader" path="res://assets/shaders/ui/canvas_ui_overlay_blur.gdshader" id="2"]
@@ -8,7 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://dm7dgglak8lo2" path="res://scenes/ui/components/buttons/IconCircleButton.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://s7olix7hr7wf" path="res://scenes/ui/components/settings/SliderSettingRow.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://ddd6r0f0kpb2y" path="res://scenes/ui/components/settings/ToggleSettingRow.tscn" id="8"]
-[ext_resource type="PackedScene" uid="uid://b5h5g7che7rep" path="res://scenes/ui/components/settings/OptionSettingRow.tscn" id="9"]
 [ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="10"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="11"]
 [ext_resource type="FontVariation" path="res://assets/fonts/Fredoka-Display-SemiBold.tres" id="12"]
@@ -212,8 +211,9 @@ text = ""
 script = ExtResource("10")
 font_size = 24
 
-[node name="InputHintRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection" instance=ExtResource("9")]
+[node name="ShowInputHintsRow" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection" instance=ExtResource("8")]
 layout_mode = 2
+label_text = "Show Input Hints"
 
 [node name="KeyboardHintRow" type="HBoxContainer" parent="Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection"]
 layout_mode = 2
