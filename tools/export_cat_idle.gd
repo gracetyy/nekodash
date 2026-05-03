@@ -32,9 +32,8 @@ func _initialize() -> void:
 	# Configure the cat
 	cat_rig.display_size_px = 320.0 # Fit well within 512px
 	cat_rig.idle_enabled = true
-	
-	# Force a specific skin if requested via CLI or just use default
-	# cat_rig.skin_id_override = "cat_default"
+	cat_rig.override_idle_locally = true # Ensure it uses local values instead of profile
+	cat_rig.idle_head_breath_amplitude_px = 4.0 # 2px was too subtle, 4px is better for 320px size
 	
 	container.add_child(cat_rig)
 	
