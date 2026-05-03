@@ -507,7 +507,7 @@ All circular buttons are present with `normal`, `hover`, `pressed`, and `disable
 | ---------------------------- | ------ | ------ |
 | `Fredoka-Variable.ttf`       | TTF    | ✅     |
 | `Fredoka-Body-SemiBold.tres` | TRES   | ✅     |
-| `Fredoka-Display-Bold.tres`  | TRES   | ✅     |
+| `Fredoka-Display-SemiBold.tres` | TRES   | ✅     |
 | `Nunito-Variable.ttf`        | TTF    | ✅     |
 
 ---

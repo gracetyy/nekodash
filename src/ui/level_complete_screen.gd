@@ -79,8 +79,8 @@ var _params_received: bool = false
 ## Whether results have been populated.
 var _populated: bool = false
 
-const RIBBON_TITLE_LEVEL_COMPLETE: String = "Level Complete!"
-const RIBBON_TITLE_PERFECT: String = "Perfect!"
+const RIBBON_TITLE_LEVEL_COMPLETE: String = "LEVEL COMPLETE!"
+const RIBBON_TITLE_PERFECT: String = "PERFECT!"
 
 
 # —————————————————————————————————————————————
@@ -524,7 +524,7 @@ func _connect_button_signals() -> void:
 
 func _apply_visual_style() -> void:
 	if _level_name_ribbon != null:
-		_level_name_ribbon.title_font_size = 40
+		_level_name_ribbon.title_font_size = 32
 		_level_name_ribbon.title_color = Color(1.0, 0.984, 0.957, 1.0)
 		_level_name_ribbon.refresh_style()
 	if _moves_label != null and _moves_label is Label:
@@ -573,7 +573,6 @@ func _animate_star_reveal(stars: int) -> void:
 
 	if stars <= 0:
 		tween.chain().tween_callback(SfxManager.play_no_star)
-
 
 
 func _is_reduce_motion_enabled() -> bool:

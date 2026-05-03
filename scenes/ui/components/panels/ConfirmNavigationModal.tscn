@@ -69,15 +69,14 @@ alignment = 1
 [node name="CancelBtn" parent="Panel/Margin/VBox/ButtonRow" instance=ExtResource("4")]
 custom_minimum_size = Vector2(170, 58)
 layout_mode = 2
-text = "Stay"
+text = "STAY"
 variant = 1
 
 [node name="ConfirmBtn" parent="Panel/Margin/VBox/ButtonRow" instance=ExtResource("4")]
 custom_minimum_size = Vector2(220, 58)
 layout_mode = 2
-text = "Go to Level Select"
+text = "EXIT"
 variant = 0
-
 [node name="Ribbon" parent="." instance=ExtResource("3")]
 layout_mode = 1
 anchors_preset = 8
@@ -91,5 +90,5 @@ offset_right = 250.0
 offset_bottom = -84.0
 grow_horizontal = 2
 grow_vertical = 2
-title_text = "Return to Level Select"
-title_font_size = 30
+title_text = "RETURN TO LEVEL SELECT"
+title_font_size = 32

@@ -39,7 +39,7 @@ func refresh_style() -> void:
 
 
 func set_title(value: String) -> void:
-	title_text = value
+	title_text = value.to_upper()
 	_apply_component_state()
 
 
@@ -75,7 +75,7 @@ func _apply_component_state() -> void:
 	
 	_title_label.clip_text = true
 	_title_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	_title_label.text = title_text
+	_title_label.text = title_text.to_upper()
 	
 	ShellThemeUtil.apply_title(_title_label, title_font_size)
 	_fit_title_to_label_width()
@@ -101,7 +101,7 @@ func _fit_title_to_label_width() -> void:
 		if font == null:
 			continue
 		var font_px: int = _title_label.get_theme_font_size("font_size")
-		var width_px: float = font.get_string_size(title_text, HORIZONTAL_ALIGNMENT_CENTER, -1.0, font_px).x
+		var width_px: float = font.get_string_size(title_text.to_upper(), HORIZONTAL_ALIGNMENT_CENTER, -1.0, font_px).x
 		if width_px <= available_width:
 			return
 

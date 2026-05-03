@@ -529,11 +529,11 @@ func _apply_visual_style() -> void:
 	if _header_card != null:
 		_header_card.title_text = "World Selection"
 		_header_card.title_color = ShellThemeUtil.PLUM
-		_header_card.title_font_size = 28
+		_header_card.title_font_size = 32
 		_header_card.refresh_style()
 	
 	if _title_label != null:
-		ShellThemeUtil.apply_title(_title_label, 28)
+		ShellThemeUtil.apply_title(_title_label, 32)
 	if _subtitle_label != null:
 		_subtitle_label.visible = false
 	if _hint_label != null:

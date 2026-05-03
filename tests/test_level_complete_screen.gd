@@ -217,12 +217,12 @@ func test_populate_not_populated_by_default() -> void:
 
 func test_populate_sets_level_complete_ribbon_title() -> void:
 	_init_screen({"final_moves": 9, "level_data": _make_level_data("l1", "Sunny Fields", 8)})
-	assert_eq(_level_name_label.text, "Level Complete!")
+	assert_eq(_level_name_label.text, "LEVEL COMPLETE!")
 
 
 func test_populate_sets_perfect_ribbon_title_when_minimum_met() -> void:
 	_init_screen({"final_moves": 8, "level_data": _make_level_data("l1", "Any Name", 8)})
-	assert_eq(_level_name_label.text, "Perfect!")
+	assert_eq(_level_name_label.text, "PERFECT!")
 
 
 # —————————————————————————————————————————————

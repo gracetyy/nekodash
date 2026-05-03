@@ -1,8 +1,73 @@
-[gd_scene load_steps=2 format=3 uid="uid://cf4k46vj7xk5t"]
+[gd_scene load_steps=12 format=3 uid="uid://cf4k46vj7xk5t"]
 
 [ext_resource type="Script" path="res://src/ui/components/buttons/pill_button.gd" id="1"]
+[ext_resource type="FontVariation" uid="uid://csht5nehvcup" path="res://assets/fonts/Fredoka-Display-SemiBold.tres" id="1_dhv1n"]
+[ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="2_yrwxq"]
+[ext_resource type="Texture2D" uid="uid://6jgkeoae2v48" path="res://assets/art/ui/buttons/pill_bases/disabled.png" id="3_t4gsa"]
+[ext_resource type="Texture2D" uid="uid://d3jj481kx355h" path="res://assets/art/ui/buttons/pill_bases/primary_hover.png" id="4_jub68"]
+[ext_resource type="Texture2D" uid="uid://d0d1rtfonnn2c" path="res://assets/art/ui/buttons/pill_bases/primary_pressed.png" id="5_kq8ox"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jkd0k"]
+content_margin_left = 30.0
+content_margin_top = 11.0
+content_margin_right = 30.0
+content_margin_bottom = 21.0
+texture = ExtResource("2_yrwxq")
+texture_margin_left = 52.0
+texture_margin_right = 52.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rb6j8"]
+content_margin_left = 30.0
+content_margin_top = 11.0
+content_margin_right = 30.0
+content_margin_bottom = 21.0
+texture = ExtResource("3_t4gsa")
+texture_margin_left = 52.0
+texture_margin_right = 52.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8ytwk"]
+content_margin_left = 30.0
+content_margin_top = 11.0
+content_margin_right = 30.0
+content_margin_bottom = 21.0
+texture = ExtResource("4_jub68")
+texture_margin_left = 52.0
+texture_margin_right = 52.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hcle2"]
+content_margin_left = 30.0
+content_margin_top = 11.0
+content_margin_right = 30.0
+content_margin_bottom = 21.0
+texture = ExtResource("5_kq8ox")
+texture_margin_left = 52.0
+texture_margin_right = 52.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1hvjn"]
+content_margin_left = 30.0
+content_margin_top = 11.0
+content_margin_right = 30.0
+content_margin_bottom = 21.0
+texture = ExtResource("2_yrwxq")
+texture_margin_left = 52.0
+texture_margin_right = 52.0
 
 [node name="PillButton" type="Button"]
 custom_minimum_size = Vector2(0, 60)
+mouse_filter = 1
+theme_override_colors/font_disabled_color = Color(0.519, 0.467, 0.561, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_hover_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_pressed_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_focus_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_colors/font_color = Color(0.353, 0.247, 0.369, 1)
+theme_override_constants/h_separation = 10
+theme_override_fonts/font = ExtResource("1_dhv1n")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/focus = SubResource("StyleBoxTexture_jkd0k")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_rb6j8")
+theme_override_styles/hover = SubResource("StyleBoxTexture_8ytwk")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_hcle2")
+theme_override_styles/normal = SubResource("StyleBoxTexture_1hvjn")
 text = "BUTTON"
 script = ExtResource("1")

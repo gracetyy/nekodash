@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/ui/components/panels/ribbon_header.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://tn12innvnf7b" path="res://assets/art/ui/headers/ribbon_purple.png" id="1_3is07"]
-[ext_resource type="FontVariation" uid="uid://b3cj4o7ces726" path="res://assets/fonts/Fredoka-Display-Bold.tres" id="3_qwxxg"]
+[ext_resource type="FontVariation" path="res://assets/fonts/Fredoka-Display-SemiBold.tres" id="3_qwxxg"]
 
 [node name="RibbonHeader" type="NinePatchRect"]
 custom_minimum_size = Vector2(320, 80)

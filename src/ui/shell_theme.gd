@@ -35,12 +35,15 @@ const CIRCLE_HOVER_WIRED_META: String = "_shell_circle_hover_wired"
 const CIRCLE_HOVER_TWEEN_META: String = "_shell_circle_hover_tween"
 const SLIDER_MIN_HEIGHT_PX: float = 22.0
 const FREDOKA_BODY_FONT_PATH: String = "res://assets/fonts/Fredoka-Body-SemiBold.tres"
-const FREDOKA_DISPLAY_FONT_PATH: String = "res://assets/fonts/Fredoka-Display-Bold.tres"
+const FREDOKA_MEDIUM_FONT_PATH: String = "res://assets/fonts/Fredoka-Body-Medium.tres"
+const FREDOKA_DISPLAY_FONT_PATH: String = "res://assets/fonts/Fredoka-Display-SemiBold.tres"
 const FREDOKA_VARIABLE_FALLBACK: FontFile = preload("res://assets/fonts/Fredoka-Variable.ttf")
 
 static var FONT_BODY: Font = _load_font_or_fallback(FREDOKA_BODY_FONT_PATH)
+static var FONT_MEDIUM: Font = _load_font_or_fallback(FREDOKA_MEDIUM_FONT_PATH)
 static var FONT_DISPLAY: Font = _load_font_or_fallback(FREDOKA_DISPLAY_FONT_PATH)
 static var _checkbox_icons: Dictionary = {}
+static var _input_hint_icons: Dictionary = {}
 
 const TITLE_TEXTURE: Texture2D = preload("res://assets/art/ui/headers/nekodash_title_landscape.png")
 const PANEL_TEXTURE: Texture2D = preload("res://assets/art/ui/panels/panel_modal_normal.png")
@@ -261,7 +264,7 @@ static func _pill_style(variant: String, state: String) -> StyleBoxTexture:
 	var textures: Dictionary = _PILL_TEXTURES.get(variant, _PILL_TEXTURES["primary"])
 	var texture: Texture2D = textures.get(state, textures["normal"]) as Texture2D
 	# 3-slice layout: Left and right caps protect the fully rounded corners, top/bottom scale freely.
-	return make_texture_style(texture, 52, 0, 52, 0, 30.0, 14.0, 30.0, 18.0)
+	return make_texture_style(texture, 52, 0, 52, 0, 30.0, 11.0, 30.0, 21.0)
 
 
 static func _ensure_fonts_loaded() -> void:
@@ -529,11 +532,12 @@ static func apply_progress_bar(bar: ProgressBar) -> void:
 	bar.add_theme_stylebox_override("fill", _make_slider_fill_style(false))
 
 
-static func apply_title(label: Label, size: int = 48) -> void:
+static func apply_title(label: Label, size: int = 48, font_override: Font = null) -> void:
 	if label == null:
 		return
 	_ensure_fonts_loaded()
-	label.add_theme_font_override("font", FONT_DISPLAY)
+	var font: Font = font_override if font_override != null else FONT_DISPLAY
+	label.add_theme_font_override("font", font)
 	label.add_theme_color_override("font_color", PLUM)
 	label.add_theme_font_size_override("font_size", _scaled_font_size(size))
 
@@ -654,6 +658,30 @@ static func _get_checkbox_icons() -> Dictionary:
 	_checkbox_icons["unchecked"] = _build_scaled_texture(CHECKBOX_EMPTY_TEXTURE, 32)
 	_checkbox_icons["disabled"] = _build_scaled_texture(CHECKBOX_DISABLED_TEXTURE, 32)
 	return _checkbox_icons
+
+
+static func get_input_hint_icon(icon_key: String) -> Texture2D:
+	if _input_hint_icons.has(icon_key):
+		return _input_hint_icons[icon_key] as Texture2D
+
+	var path: String = ""
+	match icon_key:
+		"move":
+			path = "res://assets/art/ui/icons/input_hint/pc/keyboard_arrows.png"
+		"undo":
+			path = "res://assets/art/ui/icons/input_hint/pc/keyboard_z.png"
+		"restart":
+			path = "res://assets/art/ui/icons/input_hint/pc/keyboard_r.png"
+		"pause":
+			path = "res://assets/art/ui/icons/input_hint/pc/keyboard_escape.png"
+		_:
+			return null
+
+	var resource: Resource = load(path)
+	if resource is Texture2D:
+		_input_hint_icons[icon_key] = resource
+		return resource as Texture2D
+	return null
 
 
 static func _build_scaled_texture(source: Texture2D, target_size: int) -> Texture2D:

@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bmwegoayt705h" path="res://scenes/ui/components/panels/ModalPanel.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="7"]
 [ext_resource type="Script" path="res://src/ui/components/text/shell_title_label.gd" id="8"]
-[ext_resource type="FontVariation" uid="uid://b3cj4o7ces726" path="res://assets/fonts/Fredoka-Display-Bold.tres" id="9_h7ah8"]
+[ext_resource type="FontVariation" path="res://assets/fonts/Fredoka-Display-SemiBold.tres" id="9_h7ah8"]
 [ext_resource type="Texture2D" uid="uid://df1vy7d35l4x7" path="res://assets/art/ui/buttons/pill_bases/secondary_normal.png" id="10_wxr5l"]
 [ext_resource type="Texture2D" uid="uid://6jgkeoae2v48" path="res://assets/art/ui/buttons/pill_bases/disabled.png" id="11_sa0i0"]
 [ext_resource type="Texture2D" uid="uid://bm1rxtel0kral" path="res://assets/art/ui/buttons/pill_bases/secondary_hover.png" id="12_nnf48"]
@@ -22,135 +22,135 @@
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_md71x"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("10_wxr5l")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2daq5"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("11_sa0i0")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ietj7"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("12_nnf48")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_oq3c8"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("13_hf2mr")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vaed5"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("10_wxr5l")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lhocn"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("14_purva")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ou35j"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("11_sa0i0")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_u4jtx"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("15_islfd")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xhbyl"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("16_hvy77")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m7cdq"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("14_purva")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_geqa5"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("17_vbfy6")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_h8403"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("11_sa0i0")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_75x51"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("18_cgdrh")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4g8ai"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("19_6asx6")
 texture_margin_left = 52.0
 texture_margin_right = 52.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fkjv7"]
 content_margin_left = 30.0
-content_margin_top = 14.0
+content_margin_top = 11.0
 content_margin_right = 30.0
-content_margin_bottom = 18.0
+content_margin_bottom = 21.0
 texture = ExtResource("17_vbfy6")
 texture_margin_left = 52.0
 texture_margin_right = 52.0

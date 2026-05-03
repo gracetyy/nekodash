@@ -1,12 +1,10 @@
-[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://c8h8i5bsw5k2t"]
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://b68h4jlshpb52"]
 
 [ext_resource type="FontFile" uid="uid://c322oe8lu4x5l" path="res://assets/fonts/Fredoka-Variable.ttf" id="1_wgkiw"]
 
 [resource]
 base_font = ExtResource("1_wgkiw")
 variation_opentype = {
-2003072104: 100,
-2003265652: 600,
 "wdth": 100,
-"wght": 600
+"wght": 300
 }

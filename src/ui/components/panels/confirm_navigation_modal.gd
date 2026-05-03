@@ -58,17 +58,17 @@ func _unhandled_input(event: InputEvent) -> void:
 func show_modal(
 	title_text: String,
 	body_text: String,
-	confirm_text: String = "Go to Level Select",
-	cancel_text: String = "Stay"
+	confirm_text: String = "EXIT",
+	cancel_text: String = "STAY"
 ) -> void:
 	if _ribbon != null:
-		_ribbon.set_title(title_text)
+		_ribbon.set_title(title_text.to_upper())
 	if _body_label != null:
 		_body_label.text = body_text
 	if _confirm_btn != null:
-		_confirm_btn.text = confirm_text
+		_confirm_btn.text = confirm_text.to_upper()
 	if _cancel_btn != null:
-		_cancel_btn.text = cancel_text
+		_cancel_btn.text = cancel_text.to_upper()
 
 	visible = true
 	_on_modal_resized()
@@ -132,6 +132,18 @@ func _apply_visual_style() -> void:
 		ShellThemeUtil.apply_body(_body_label, ShellThemeUtil.PLUM, 22)
 		_body_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_body_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	if _cancel_btn != null:
+		if _cancel_btn is PillButton:
+			var cancel_pill: PillButton = _cancel_btn as PillButton
+			cancel_pill.variant = PillButton.Variant.SECONDARY
+		else:
+			ShellThemeUtil.apply_pill_button(_cancel_btn, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED)
+	if _confirm_btn != null:
+		if _confirm_btn is PillButton:
+			var confirm_pill: PillButton = _confirm_btn as PillButton
+			confirm_pill.variant = PillButton.Variant.PRIMARY
+		else:
+			ShellThemeUtil.apply_pill_button(_confirm_btn, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
 
 
 func _play_intro_animation() -> void:

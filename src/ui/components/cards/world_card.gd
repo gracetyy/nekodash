@@ -95,7 +95,7 @@ func _apply_component_state() -> void:
 	var level_grid: GridContainer = get_level_grid()
 	custom_minimum_size.y = 216.0
 	add_theme_stylebox_override("panel", ShellThemeUtil.make_world_card_style(selected))
-	ShellThemeUtil.apply_title(_title_label, 26)
+	ShellThemeUtil.apply_title(_title_label, 26, ShellThemeUtil.FONT_MEDIUM)
 	ShellThemeUtil.apply_body(_subtitle_label, ShellThemeUtil.PLUM_SOFT, 18)
 	_title_label.text = world_title
 	_subtitle_label.text = world_subtitle
