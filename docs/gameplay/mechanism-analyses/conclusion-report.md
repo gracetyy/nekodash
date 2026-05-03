@@ -42,7 +42,7 @@ Ratings: **L** (Low concern), **M** (Medium), **H** (High concern).
 
 ### **MVP Candidates (Quick Wins)**
 *High design impact, low technical risk, and zero to low BFS state expansion.*
-*   **Kill Tile (Puddles):** Essential hazard for basic routing.
+*   **Kill Tile (Puddles):** Essential kill tile for basic routing.
 *   **Stop-Slide Tile (Yarn Ball/Rug):** Opens massive design space for "island" puzzles.
 *   **One-Way Tile (Cat Flap):** Foundational for asymmetric routing.
 *   **Warp Tile (Laundry Chute):** Simplifies traversal in larger grids while feeling "magical."

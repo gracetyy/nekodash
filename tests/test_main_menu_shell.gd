@@ -38,4 +38,5 @@ func test_credits_button_navigates_to_credits() -> void:
 
 
 func test_menu_cat_is_centered_after_layout_settles() -> void:
-	pass
+	var cat_rig: CatRig = _menu.find_child("CatIllustration", true, false) as CatRig
+	assert_not_null(cat_rig, "CatRig illustration should be present")

@@ -1,36 +1,36 @@
-# Kill Tile (Hazard Floor) - Analysis
+# Kill Tile - Analysis
 
 ## 1. Technical Implementation
-- **Slide resolver change:** Minimal change required. The `resolve_slide()` function already checks for obstacles to stop the cat. This would add a "traversal check" where, during the loop that moves the cat tile-by-tile, it checks if the current tile's type is `HAZARD`. If true, it immediately triggers a `death` event instead of continuing or stopping.
-- **Grid System tile type:** Requires a new `tile_type` enum value (e.g., `HAZARD`).
-- **New node/system required:** No new standalone system needed. It integrates directly into the existing `GridSystem` and `SlidingMovement` logic. A `HazardManager` could be added for visual/audio variety, but is not strictly necessary for logic.
+- **Slide resolver change:** Minimal change required. The `resolve_slide()` function already checks for obstacles to stop the cat. This would add a "traversal check" where, during the loop that moves the cat tile-by-tile, it checks if the current tile's type is `KILL`. If true, it immediately triggers a `death` event instead of continuing or stopping.
+- **Grid System tile type:** Requires a new `tile_type` enum value (e.g., `KILL`).
+- **New node/system required:** No new standalone system needed. It integrates directly into the existing `GridSystem` and `SlidingMovement` logic. A `KillManager` could be added for visual/audio variety, but is not strictly necessary for logic.
 - **Signal contract changes:** Requires a new `cat_died` signal in the `LevelCoordinator` or `SlidingMovement` system to trigger the restart/death sequence.
 - **Hard vs. soft dependency:** Soft dependency. It builds upon existing tile logic without restructuring core movement.
 
 ## 2. Level Solvability & BFS Impact
 - **State space expansion:** Zero. Since the cat dies upon contact, these tiles are effectively "inverse walls" or "holes" that cannot be part of a valid state. They do not add new variables to the state tuple.
-- **State count multiplier:** 1x. It actually *reduces* the searchable state space by pruning any paths that touch a hazard tile.
+- **State count multiplier:** 1x. It actually *reduces* the searchable state space by pruning any paths that touch a kill tile.
 - **BFS tractability threshold:** Improves tractability. By making certain tiles impassable, it narrows the search tree.
-- **Solver reuse:** The `slide()` reference function can be easily updated to return a `null` or `DEATH` state if a hazard is crossed, allowing the BFS to discard that branch.
+- **Solver reuse:** The `slide()` reference function can be easily updated to return a `null` or `DEATH` state if a kill tile is crossed, allowing the BFS to discard that branch.
 - **Per-level re-verification cost:** Low. Standard BFS verification remains efficient.
 
 ## 3. Level Design Impact
-- **Design space opened:** "Narrow bridge" puzzles, "one-way" style routing (by placing hazards strategically), and high-stakes traversal. It forces players to move *around* areas rather than through them.
+- **Design space opened:** "Narrow bridge" puzzles, "one-way" style routing (by placing kills strategically), and high-stakes traversal. It forces players to move *around* areas rather than through them.
 - **Design space closed:** Reduces the amount of "safe" space. Overuse can make levels feel claustrophobic.
-- **Placement rule compatibility:** Fully compatible with edge-row/column rules. Hazards act as "invisible walls" during a slide.
-- **Incremental wall-addition workflow:** Fully compatible. Designers can swap a wall for a hazard to change the "failure feel" without breaking the logic flow.
+- **Placement rule compatibility:** Fully compatible with edge-row/column rules. Kills act as "invisible walls" during a slide.
+- **Incremental wall-addition workflow:** Fully compatible. Designers can swap a wall for a kill tile to change the "failure feel" without breaking the logic flow.
 - **Difficulty scaling:** Excellent. Early levels can have large, obvious puddles. Late-game levels can use them to create tight, single-solution corridors.
 
 ## 4. Game Design & Player Experience
-- **Pillar 1 — Every Move Is a Choice:** Fully supported. The player can see the hazard and knows that sliding over it results in death. The outcome is 100% predictable.
+- **Pillar 1 — Every Move Is a Choice:** Fully supported. The player can see the kill tile and knows that sliding over it results in death. The outcome is 100% predictable.
 - **Pillar 2 — Joyful at Every Moment:** Death must be "cute" or "funny" rather than punishing. A "wet cat" animation or a "shocked" expression keeps the tone light.
-- **Pillar 3 — Complete Your Own Way:** Hazards restrict paths, potentially limiting creative solutions, but they define the "boundaries" of the puzzle clearly.
+- **Pillar 3 — Complete Your Own Way:** Kills restrict paths, potentially limiting creative solutions, but they define the "boundaries" of the puzzle clearly.
 - **Cognitive load:** Low. "Don't touch the bad tile" is a universal gaming convention.
 - **First-encounter teachability:** Very high. A single puddle in a simple path is self-explanatory.
-- **Frustration vs. challenge balance:** Low frustration as long as the visual cues are clear. If a hazard looks like a regular tile, frustration spikes.
+- **Frustration vs. challenge balance:** Low frustration as long as the visual cues are clear. If a kill tile looks like a regular tile, frustration spikes.
 
 ## 5. Audio & Visual Feedback
-- **Unique SFX requirement:** Requires a "splash", "crackle", or "tinkle" sound depending on the hazard type, followed by a failure jingle.
+- **Unique SFX requirement:** Requires a "splash", "crackle", or "tinkle" sound depending on the kill tile type, followed by a failure jingle.
 - **Animation requirement:** Needs a "death" or "failure" state for the cat sprite (e.g., puff of smoke, soaked fur).
 - **Visual legibility on mobile:** High. Use high-contrast colors (blue for water, yellow for sparks) against the floor tiles.
 - **Thematic fit:** Perfect. Wet floors, spilled juice, broken glass, or loose wires are all common in a messy apartment.
@@ -45,7 +45,7 @@
 ## 7. Save / Persistence
 - **New persisted fields:** None.
 - **Mid-level transient state:** None.
-- **Best-moves record validity:** No impact. Hazards don't change move counts; they just restrict valid paths.
+- **Best-moves record validity:** No impact. Kills don't change move counts; they just restrict valid paths.
 
 ## 8. Star Rating & Move Economy
 - **Move count inflation:** None.
@@ -69,6 +69,6 @@
 
 ## 11. Post-MVP Scope Risk
 - **GDD amendment surface:** Low. Small updates to `GridSystem` and `SlidingMovement`.
-- **Combinatorial interaction risk:** Low. Interacts predictably with other mechanics (e.g., a pushable block might cover a hazard - see "Pushable Block" analysis).
+- **Combinatorial interaction risk:** Low. Interacts predictably with other mechanics (e.g., a pushable block might cover a kill tile - see "Pushable Block" analysis).
 - **Reversibility:** High. Easily removed by changing the tile type back to `WALKABLE`.
 - **Prototype validation requirement:** Recommended to test "traversal death" vs "destination death" (do you die if you *end* on it, or *pass through* it?). The prompt specifies "upon contact during a slide," which implies traversal death.

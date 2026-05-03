@@ -66,6 +66,6 @@
 
 ## 11. Post-MVP Scope Risk
 - **GDD amendment surface:** Medium. Updates to `Undo/Restart`, `BFS Solver`, and `Level Data Format` (to define item fall direction).
-- **Combinatorial interaction risk:** Medium. What happens if the item falls on a hazard? Or on a conveyor belt? (Usually, it should just become a static obstacle at its landing point).
+- **Combinatorial interaction risk:** Medium. What happens if the item falls on a kill? Or on a conveyor belt? (Usually, it should just become a static obstacle at its landing point).
 - **Reversibility:** Medium. Easy to remove from levels, but requires stripping out the state tracking from the snapshot and solver systems.
 - **Prototype validation requirement:** Highly recommended to tune the "mini-slide" calculation (does it fall 1 tile, or slide until hitting a wall?) and verify the BFS tractability with $2^N$ state expansion.

@@ -4,7 +4,7 @@
 - **Slide resolver change:** Requires a fundamental paradigm shift in the movement system. Currently, NekoDash is strictly turn-based and deterministic based on static grid states. A real-time patrol introduces a timer-driven loop independent of player input. The `resolve_slide()` function would need to be refactored from a discrete tile-hop calculation into a continuous collision check (potentially using raycasting or frequent polling) to account for mid-slide collisions with a moving object.
 - **Grid System tile type:** Does not require a new static tile type, but necessitates a "Dynamic Obstacle" layer in the Grid System. This layer must update tile walkability in real-time (per frame or per tick) to ensure the cat cannot "tunnel" through a moving obstacle during a high-speed slide.
 - **New node/system required:** A `PatrolCoordinator` system is required to manage the movement cycles of all patrol objects, ensuring they stay synced with the visual animations and the logical grid state.
-- **Signal contract changes:** Existing signals like `slide_completed` and `slide_blocked` would need to be augmented with `slide_interrupted_by_hazard` to handle cases where the cat is hit mid-motion.
+- **Signal contract changes:** Existing signals like `slide_completed` and `slide_blocked` would need to be augmented with `slide_interrupted_by_kill` to handle cases where the cat is hit mid-motion.
 - **Hard vs. soft dependency:** Hard dependency. Implementing this requires a significant rewrite of the core `SlidingMovement` and `GridSystem` logic to move from a discrete state machine to a hybrid real-time/turn-based model.
 
 ## 2. Level Solvability & BFS Impact

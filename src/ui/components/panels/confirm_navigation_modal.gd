@@ -62,13 +62,13 @@ func show_modal(
 	cancel_text: String = "STAY"
 ) -> void:
 	if _ribbon != null:
-		_ribbon.set_title(title_text.to_upper())
+		_ribbon.set_title(title_text)
 	if _body_label != null:
 		_body_label.text = body_text
 	if _confirm_btn != null:
-		_confirm_btn.text = confirm_text.to_upper()
+		_confirm_btn.text = confirm_text
 	if _cancel_btn != null:
-		_cancel_btn.text = cancel_text.to_upper()
+		_cancel_btn.text = cancel_text
 
 	visible = true
 	_on_modal_resized()
@@ -138,12 +138,6 @@ func _apply_visual_style() -> void:
 			cancel_pill.variant = PillButton.Variant.SECONDARY
 		else:
 			ShellThemeUtil.apply_pill_button(_cancel_btn, ShellThemeUtil.MINT, ShellThemeUtil.MINT_PRESSED)
-	if _confirm_btn != null:
-		if _confirm_btn is PillButton:
-			var confirm_pill: PillButton = _confirm_btn as PillButton
-			confirm_pill.variant = PillButton.Variant.PRIMARY
-		else:
-			ShellThemeUtil.apply_pill_button(_confirm_btn, ShellThemeUtil.GOLD, ShellThemeUtil.GOLD_PRESSED)
 
 
 func _play_intro_animation() -> void:

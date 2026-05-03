@@ -140,7 +140,12 @@ func _process(_delta: float) -> void:
 		return
 	if _menu_cat_rig == null:
 		return
-	_set_menu_cat_rig_property("idle_enabled", not _is_reduce_motion_enabled())
+	
+	var is_reduce_motion: bool = _is_reduce_motion_enabled()
+	var target_idle: bool = not is_reduce_motion
+	if _menu_cat_rig.idle_enabled != target_idle:
+		_set_menu_cat_rig_property("idle_enabled", target_idle)
+	
 	_update_menu_cat_breathing(_delta)
 
 

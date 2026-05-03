@@ -19,7 +19,7 @@
 - **Design space closed:** Pure static logic. It shifts the game slightly towards a Sokoban hybrid.
 - **Placement rule compatibility:** Changes the edge-row/column rules, as players can create their own stopping points in the middle of open space.
 - **Incremental wall-addition workflow:** Complicated. Moving a block changes the routing for the rest of the puzzle dynamically.
-- **Difficulty scaling:** High skill ceiling. Early levels can use a single block to block a hazard or bridge a gap. Late levels can involve complex block routing.
+- **Difficulty scaling:** High skill ceiling. Early levels can use a single block to block a kill or bridge a gap. Late levels can involve complex block routing.
 
 ## 4. Game Design & Player Experience
 - **Pillar 1 — Every Move Is a Choice:** Fully supported. The player can accurately predict where the block will slide and where they will end up.
@@ -66,6 +66,6 @@
 
 ## 11. Post-MVP Scope Risk
 - **GDD amendment surface:** High. Requires updates to `GridSystem`, `SlidingMovement`, `Undo/Restart`, and the `BFS Solver`.
-- **Combinatorial interaction risk:** High. How do blocks interact with hazards? Conveyor belts? Warp tiles? Each interaction needs explicit handling.
+- **Combinatorial interaction risk:** High. How do blocks interact with kills? Conveyor belts? Warp tiles? Each interaction needs explicit handling.
 - **Reversibility:** Medium. It integrates deeply into the solver and snapshot systems, making it tricky to extract cleanly.
 - **Prototype validation requirement:** **Mandatory**, particularly to test the BFS tractability threshold before committing to level design.
