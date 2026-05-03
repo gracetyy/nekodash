@@ -20,6 +20,7 @@ var _sfx_manager_ref: Node
 @export var _audio_label: Label
 @export var _display_label: Label
 @export var _input_label: Label
+@export var _input_section: Control
 @export var _panel: PanelContainer
 @export var _backdrop: ColorRect
 @export var _show_input_hints_row: ToggleSettingRow
@@ -70,6 +71,8 @@ func _ready() -> void:
 		_display_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/DisplaySection/DisplayLabel")
 	if _input_label == null:
 		_input_label = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/InputLabel")
+	if _input_section == null:
+		_input_section = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection")
 	if _show_input_hints_row == null:
 		_show_input_hints_row = get_node_or_null("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection/ShowInputHintsRow")
 	if _show_input_hints_toggle == null and _show_input_hints_row != null:
@@ -282,6 +285,8 @@ func _sync_controls() -> void:
 		_unlock_all_skins_toggle.button_pressed = _app_settings_ref.get_unlock_all_skins()
 	if _show_input_hints_toggle != null:
 		_show_input_hints_toggle.button_pressed = _app_settings_ref.get_show_input_hints()
+	if _input_section != null:
+		_input_section.visible = not _app_settings_ref.is_mobile()
 	if _developer_section != null:
 		_developer_section.visible = _app_settings_ref.get_show_dev_tools()
 	_refresh_audio_control_states()

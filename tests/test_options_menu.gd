@@ -15,6 +15,7 @@ class MockSettings extends Node:
 	var simple_ui: bool = false
 	var dev_mode: bool = false
 	var unlock_all_skins: bool = false
+	var show_dev_tools: bool = false
 	var input_hint_mode: String = AppSettings.INPUT_HINT_AUTO
 	var show_input_hints: bool = true
 
@@ -54,6 +55,12 @@ class MockSettings extends Node:
 	func set_unlock_all_skins(enabled: bool) -> void:
 		unlock_all_skins = enabled
 
+	func get_show_dev_tools() -> bool:
+		return show_dev_tools
+
+	func set_show_dev_tools(enabled: bool) -> void:
+		show_dev_tools = enabled
+
 	func get_input_hint_mode() -> String:
 		return input_hint_mode
 
@@ -65,6 +72,10 @@ class MockSettings extends Node:
 
 	func set_show_input_hints(enabled: bool) -> void:
 		show_input_hints = enabled
+
+	var mobile: bool = false
+	func is_mobile() -> bool:
+		return mobile
 
 
 class MockAudioManager extends Node:
@@ -148,6 +159,17 @@ func test_sync_controls_reads_injected_services() -> void:
 	assert_true(simple_ui.button_pressed)
 	assert_true(dev_mode.button_pressed)
 	assert_false(show_input_hints.button_pressed)
+
+
+func test_input_section_hidden_on_mobile() -> void:
+	_menu.queue_free()
+	_settings.mobile = true
+	_menu = load("res://scenes/ui/options_overlay.tscn").instantiate()
+	_menu.set_services(_settings, _music, _sfx)
+	add_child_autofree(_menu)
+
+	var input_section: Control = _menu.get_node("Backdrop/Margin/VBox/Panel/CardMargin/ScrollContainer/ContentVBox/InputSection") as Control
+	assert_false(input_section.visible)
 
 
 func test_controls_write_through_to_services() -> void:

@@ -217,6 +217,10 @@ func set_show_input_hints(enabled: bool) -> void:
 	set_value(SECTION_INPUT, KEY_SHOW_INPUT_HINTS, enabled)
 
 
+func is_mobile() -> bool:
+	return OS.has_feature("mobile")
+
+
 func get_effective_input_hint_mode() -> String:
 	var configured_mode: String = get_input_hint_mode()
 	if configured_mode != INPUT_HINT_AUTO:
