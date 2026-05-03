@@ -437,7 +437,7 @@ func _prompt_level_select_confirmation() -> void:
 		_sliding_movement.lock()
 	_set_tutorial_overlay_visible(false)
 	_confirm_modal.show_modal(
-		"Return to Level Select",
+		"RETURN TO LEVEL SELECT",
 		"Leave this level and return to level select? Progress in this run will not be saved.",
 	)
 
