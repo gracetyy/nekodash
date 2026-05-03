@@ -1,6 +1,6 @@
 # NekoDash — Asset Manifest
 
-> **Updated**: 2026-05-01
+> **Updated**: 2026-05-03
 > **Source of truth**: Actual file system (`assets/`), `docs/design/design-system.md`, `docs/design/art-direction-grid.md`
 
 **Status legend**
@@ -76,6 +76,7 @@ All UI sprites are exported at **320×320px** (and **640×640px** for `@2x`).
 | `cat_face_relax.png`     | Relaxed face.   | 320/640   | ✅                  |
 | `cat_face_smile.png`     | Smile face.     | 320/640   | ✅                  |
 | `cat_face_surprised.png` | Surprised face. | 320/640   | ✅                  |
+| `cat_face_painful.png`   | Painful face.   | 320/640   | ✅                  |
 
 ---
 
@@ -117,6 +118,17 @@ Applicable to all rooms listed above:
 | `top_right_corner.png`    | Top-right corner wall tile.    | 64×64     | ✅     |
 | `bottom_left_corner.png`  | Bottom-left corner wall tile.  | 64×64     | ✅     |
 | `bottom_right_corner.png` | Bottom-right corner wall tile. | 64×64     | ✅     |
+
+### 3.2 Special Tiles — `assets/art/tiles/**/1x1_special_tile/`
+
+| Asset Path                                   | Description                      | Size (px) | Status |
+| -------------------------------------------- | -------------------------------- | --------- | ------ |
+| `home/kitchen/1x1_special_tile/kill.png`     | KILL tile (hazard).              | 64×64     | ✅     |
+| `home/living_room/1x1_special_tile/stop.png` | STOP tile (forced stop).         | 64×64     | ✅     |
+| `hku/1x1_special_tile/one_way_up.png`        | One-way tile (entry from south). | 64×64     | ✅     |
+| `hku/1x1_special_tile/one_way_down.png`      | One-way tile (entry from north). | 64×64     | ✅     |
+| `hku/1x1_special_tile/one_way_left.png`      | One-way tile (entry from east).  | 64×64     | ✅     |
+| `hku/1x1_special_tile/one_way_right.png`     | One-way tile (entry from west).  | 64×64     | ✅     |
 
 ---
 
@@ -236,18 +248,18 @@ Backdrops do not block movement. Base directory: `assets/art/tiles/{world}/{room
 
 ### 6.1 World 1 — Bedroom (`home/bedroom/`)
 
-| Asset Path                      | Description              | Status |
-| ------------------------------- | ------------------------ | ------ |
-| `1x1_backdrop/bookshelf_v1.png` | Small bookshelf.         | ✅     |
-| `1x1_backdrop/bookshelf_v2.png` | Small bookshelf variant. | ✅     |
-| `1x1_backdrop/cat_sofa.png`     | Small sofa for cats.     | ✅     |
+| Asset Path                        | Description              | Status |
+| --------------------------------- | ------------------------ | ------ |
+| `1x1_backdrop/bookshelf_v1.png`   | Small bookshelf.         | ✅     |
+| `1x1_backdrop/bookshelf_v2.png`   | Small bookshelf variant. | ✅     |
+| `1x1_backdrop/cat_sofa.png`       | Small sofa for cats.     | ✅     |
 | `1x1_backdrop/clothes_basket.png` | Laundry basket.          | ✅     |
-| `1x1_backdrop/drawing.png`      | Wall drawing.            | ✅     |
-| `1x1_backdrop/luggage.png`      | Travel luggage.          | ✅     |
-| `1x1_backdrop/wardrobe.png`     | Bedroom wardrobe.        | ✅     |
-| `1x2_backdrop/bookshelf.png`    | Tall bookshelf.          | ✅     |
-| `1x2_backdrop/mirror.png`       | Standing mirror.         | ✅     |
-| `1x2_backdrop/wardrobe.png`     | Large bedroom wardrobe.  | ✅     |
+| `1x1_backdrop/drawing.png`        | Wall drawing.            | ✅     |
+| `1x1_backdrop/luggage.png`        | Travel luggage.          | ✅     |
+| `1x1_backdrop/wardrobe.png`       | Bedroom wardrobe.        | ✅     |
+| `1x2_backdrop/bookshelf.png`      | Tall bookshelf.          | ✅     |
+| `1x2_backdrop/mirror.png`         | Standing mirror.         | ✅     |
+| `1x2_backdrop/wardrobe.png`       | Large bedroom wardrobe.  | ✅     |
 
 ### 6.2 World 2 — Kitchen (`home/kitchen/`)
 
@@ -503,12 +515,12 @@ All circular buttons are present with `normal`, `hover`, `pressed`, and `disable
 
 ## 19. Fonts — `assets/fonts/`
 
-| File                         | Format | Status |
-| ---------------------------- | ------ | ------ |
-| `Fredoka-Variable.ttf`       | TTF    | ✅     |
-| `Fredoka-Body-SemiBold.tres` | TRES   | ✅     |
+| File                            | Format | Status |
+| ------------------------------- | ------ | ------ |
+| `Fredoka-Variable.ttf`          | TTF    | ✅     |
+| `Fredoka-Body-SemiBold.tres`    | TRES   | ✅     |
 | `Fredoka-Display-SemiBold.tres` | TRES   | ✅     |
-| `Nunito-Variable.ttf`        | TTF    | ✅     |
+| `Nunito-Variable.ttf`           | TTF    | ✅     |
 
 ---
 

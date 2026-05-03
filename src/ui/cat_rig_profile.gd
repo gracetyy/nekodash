@@ -9,7 +9,7 @@ extends Resource
 ## Fallback skin when SaveManager skin lookup is unavailable.
 @export var default_skin_id: String = "cat_default"
 ## Default face variant for rigs inheriting this profile.
-@export_enum("idle", "blink", "excited", "relax", "smile", "curious", "happy", "peek", "surprised") var face_variant: String = "idle"
+@export_enum("idle", "blink", "excited", "relax", "smile", "curious", "happy", "peek", "surprised", "painful") var face_variant: String = "idle"
 
 @export_category("Display")
 ## Final rendered size for each layered part canvas in pixels.

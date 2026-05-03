@@ -112,9 +112,12 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 			if index < special_tiles_arr.size():
 				var type: int = special_tiles_arr[index]
 				if type != GridSystem.SpecialTileType.NONE:
+					var special_entry: Dictionary = _get_special_tile_entry(world_id, type)
 					layout["special_draws"].append({
 						"coord": Vector2i(col, row),
-						"type": type
+						"type": type,
+						"path": special_entry.get("path", ""),
+						"texture": special_entry.get("texture", null),
 					})
 
 	var world_assets: Dictionary = _get_world_assets(world_id)
@@ -160,6 +163,7 @@ static func _get_world_assets(world_id: int) -> Dictionary:
 	var assets: Dictionary = {
 		"floors": {},
 		"wall_assets": [],
+		"special_tiles": {},
 		"obstacle_groups": {},
 		"tabletop_items": [],
 	}
@@ -278,6 +282,21 @@ static func _merge_asset_bucket(asset_set: Dictionary, bucket_path: String, buck
 			})
 		_sort_assets_by_name(wall_assets)
 		asset_set["wall_assets"] = wall_assets
+		return
+
+	if bucket_name.ends_with("_special_tile"):
+		var special_tiles: Dictionary = asset_set.get("special_tiles", {}) as Dictionary
+		for asset_path: String in png_paths:
+			var texture: Texture2D = _load_png_texture(asset_path)
+			if texture == null:
+				continue
+			var key: String = _basename_from_path(asset_path).to_lower()
+			special_tiles[key] = {
+				"name": _basename_from_path(asset_path),
+				"path": asset_path,
+				"texture": texture,
+			}
+		asset_set["special_tiles"] = special_tiles
 		return
 
 	if bucket_name.ends_with("_tabletop_item"):
@@ -688,6 +707,33 @@ static func _get_floor_entry_by_key(
 		"path": "res://assets/art/tiles/grids/grid_mint.png" if is_normal_default else "res://assets/art/tiles/grids/grid_yellow.png",
 		"texture": SIMPLE_FLOOR_TEXTURE if is_normal_default else SIMPLE_VISITED_TEXTURE,
 	}
+
+
+static func _get_special_tile_entry(world_id: int, special_type: int) -> Dictionary:
+	var token: String = _get_special_tile_token(special_type)
+	if token == "":
+		return {}
+	var world_assets: Dictionary = _get_world_assets(world_id)
+	var special_tiles: Dictionary = world_assets.get("special_tiles", {}) as Dictionary
+	return special_tiles.get(token, {}) as Dictionary
+
+
+static func _get_special_tile_token(special_type: int) -> String:
+	match special_type:
+		GridSystem.SpecialTileType.KILL:
+			return "kill"
+		GridSystem.SpecialTileType.STOP_TILE:
+			return "stop"
+		GridSystem.SpecialTileType.ONE_WAY_UP:
+			return "one_way_up"
+		GridSystem.SpecialTileType.ONE_WAY_DOWN:
+			return "one_way_down"
+		GridSystem.SpecialTileType.ONE_WAY_LEFT:
+			return "one_way_left"
+		GridSystem.SpecialTileType.ONE_WAY_RIGHT:
+			return "one_way_right"
+		_:
+			return ""
 
 
 static func _get_level_dimensions(level_data: LevelData) -> Vector2i:

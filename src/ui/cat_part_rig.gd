@@ -32,7 +32,7 @@ extends Node2D
 ## Optional skin id override. Leave empty to follow SaveManager equipped skin.
 @export var skin_id_override: String = ""
 ## Face overlay variant used on top of the head part.
-@export_enum("idle", "blink", "excited", "relax", "smile", "curious", "happy", "peek", "surprised") var face_variant: String = "idle"
+@export_enum("idle", "blink", "excited", "relax", "smile", "curious", "happy", "peek", "surprised", "painful") var face_variant: String = "idle"
 
 @export_category("Display")
 ## Final rendered size for each layered part canvas in pixels.

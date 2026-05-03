@@ -174,14 +174,18 @@ func _draw() -> void:
 		)
 		draw_texture_rect(tabletop_texture, tabletop_rect, false)
 
-	# Draw special tiles (HAZARD, STOP_TILE, ONE_WAY)
+	# Draw special tiles (KILL, STOP_TILE, ONE_WAY)
 	for special: Dictionary in _render_layout.get("special_draws", []):
 		var coord: Vector2i = special.get("coord", Vector2i.ZERO) as Vector2i
 		var type: int = special.get("type", 0) as int
 		var rect := Rect2(coord.x * _tile_size, coord.y * _tile_size, _tile_size, _tile_size)
+		var special_texture: Texture2D = special.get("texture", null) as Texture2D
+		if special_texture != null:
+			draw_texture_rect(special_texture, rect, false)
+			continue
 		
 		match type:
-			GridSystem.SpecialTileType.HAZARD:
+			GridSystem.SpecialTileType.KILL:
 				# Red translucent overlay with a warning pattern
 				draw_rect(rect, Color(1.0, 0.0, 0.0, 0.3), true)
 				# Draw an X

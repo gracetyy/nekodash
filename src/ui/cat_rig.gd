@@ -12,26 +12,69 @@ extends Control
 # —————————————————————————————————————————————
 
 @export_category("Global Profile")
-@export var use_global_profile: bool = true
-@export_file("*.tres") var global_profile_path: String = "res://data/cat_rig_defaults.tres"
-@export var local_profile_override: CatRigProfile
-@export var override_display_locally: bool = true
-@export var override_pivots_locally: bool = false
-@export var override_idle_locally: bool = true
-@export var override_face_locally: bool = true
-@export var override_pose_locally: bool = true
+@export var use_global_profile: bool = true:
+	set(value):
+		use_global_profile = value
+		_apply_to_rig()
+@export_file("*.tres") var global_profile_path: String = "res://data/cat_rig_defaults.tres":
+	set(value):
+		global_profile_path = value
+		_apply_to_rig()
+@export var local_profile_override: CatRigProfile:
+	set(value):
+		local_profile_override = value
+		_apply_to_rig()
+@export var override_display_locally: bool = true:
+	set(value):
+		override_display_locally = value
+		_apply_to_rig()
+@export var override_pivots_locally: bool = false:
+	set(value):
+		override_pivots_locally = value
+		_apply_to_rig()
+@export var override_idle_locally: bool = true:
+	set(value):
+		override_idle_locally = value
+		_apply_to_rig()
+@export var override_face_locally: bool = true:
+	set(value):
+		override_face_locally = value
+		_apply_to_rig()
+@export var override_pose_locally: bool = true:
+	set(value):
+		override_pose_locally = value
+		_apply_to_rig()
 
 @export_category("Rig")
-@export var skin_id_override: String = ""
-@export_enum("idle", "blink", "excited", "relax", "smile") var face_variant: String = "idle"
+@export var skin_id_override: String = "":
+	set(value):
+		skin_id_override = value
+		_apply_to_rig()
+@export_enum("idle", "blink", "excited", "relax", "smile", "painful") var face_variant: String = "idle":
+	set(value):
+		face_variant = value
+		_apply_to_rig()
 
 @export_category("Pose")
-@export_enum("custom", "idle", "curious", "happy", "peek", "smile") var pose_variant: String = "idle"
-@export_range(-30.0, 30.0, 0.1) var base_head_tilt_degrees: float = 0.0
-@export_range(-45.0, 45.0, 0.1) var base_tail_rotation_degrees: float = 0.0
+@export_enum("custom", "idle", "curious", "happy", "peek", "smile") var pose_variant: String = "idle":
+	set(value):
+		pose_variant = value
+		_apply_pose_variant_defaults()
+		_apply_to_rig()
+@export_range(-30.0, 30.0, 0.1) var base_head_tilt_degrees: float = 0.0:
+	set(value):
+		base_head_tilt_degrees = value
+		_apply_to_rig()
+@export_range(-45.0, 45.0, 0.1) var base_tail_rotation_degrees: float = 0.0:
+	set(value):
+		base_tail_rotation_degrees = value
+		_apply_to_rig()
 
 @export_category("Display")
-@export_range(16.0, 512.0, 1.0, "or_greater") var display_size_px: float = 92.0
+@export_range(16.0, 512.0, 1.0, "or_greater") var display_size_px: float = 92.0:
+	set(value):
+		display_size_px = value
+		_apply_to_rig()
 @export var display_offset: Vector2 = Vector2(0.0, -16.0):
 	set(value):
 		display_offset = value
@@ -41,15 +84,36 @@ extends Control
 			_sync_rig_layout()
 
 @export_category("Pivots")
-@export var tail_pivot_source_px: Vector2 = Vector2(26.0, 31.0)
-@export var head_pivot_source_px: Vector2 = Vector2(0.0, 8.0)
+@export var tail_pivot_source_px: Vector2 = Vector2(26.0, 31.0):
+	set(value):
+		tail_pivot_source_px = value
+		_apply_to_rig()
+@export var head_pivot_source_px: Vector2 = Vector2(0.0, 8.0):
+	set(value):
+		head_pivot_source_px = value
+		_apply_to_rig()
 
 @export_category("Idle Motion")
-@export var idle_enabled: bool = true
-@export_range(0.0, 10.0, 0.01, "or_greater") var idle_tail_swing_period_sec: float = 1.45
-@export_range(0.0, 60.0, 0.1, "or_greater") var idle_tail_swing_degrees: float = 10.0
-@export_range(0.0, 10.0, 0.01, "or_greater") var idle_head_breath_period_sec: float = 2.2
-@export_range(0.0, 24.0, 0.1, "or_greater") var idle_head_breath_amplitude_px: float = 2.0
+@export var idle_enabled: bool = true:
+	set(value):
+		idle_enabled = value
+		_apply_to_rig()
+@export_range(0.0, 10.0, 0.01, "or_greater") var idle_tail_swing_period_sec: float = 1.45:
+	set(value):
+		idle_tail_swing_period_sec = value
+		_apply_to_rig()
+@export_range(0.0, 60.0, 0.1, "or_greater") var idle_tail_swing_degrees: float = 10.0:
+	set(value):
+		idle_tail_swing_degrees = value
+		_apply_to_rig()
+@export_range(0.0, 10.0, 0.01, "or_greater") var idle_head_breath_period_sec: float = 2.2:
+	set(value):
+		idle_head_breath_period_sec = value
+		_apply_to_rig()
+@export_range(0.0, 24.0, 0.1, "or_greater") var idle_head_breath_amplitude_px: float = 2.0:
+	set(value):
+		idle_head_breath_amplitude_px = value
+		_apply_to_rig()
 
 @export_category("Editor")
 @export var auto_refresh_in_editor: bool = true
