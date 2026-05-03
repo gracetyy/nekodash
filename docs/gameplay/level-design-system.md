@@ -42,9 +42,9 @@ The cat always starts at the top-left walkable tile. This is the convention acro
 
 World 2+ introduces special tile types that modify slide behavior.
 
-### 1. Hazards (World 2+)
-Hazards act as "negative obstacles". Entering a Hazard results in an invalid move (death).
-- **Rule**: Never block the only exit from a spawn or landing point with a Hazard.
+### 1. Kills (World 2+)
+Kills act as "negative obstacles". Entering a Kill results in an invalid move (death).
+- **Rule**: Never block the only exit from a spawn or landing point with a Kill.
 - **Rule**: Sparse usage (1-2 per level). Use them to "prune" trivial paths or force lane changes.
 
 ### 2. Stop Tiles (World 3+)

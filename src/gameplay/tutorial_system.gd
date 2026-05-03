@@ -122,7 +122,7 @@ func _get_current_group_id() -> String:
 		"w1_l1", "w1_l2", "w1_l3":
 			return "basics"
 		"w2_l10":
-			return "hazards"
+			return "kills"
 		"w3_l10":
 			return "stop_tiles"
 		"sp_l10":
@@ -132,7 +132,7 @@ func _get_current_group_id() -> String:
 
 
 func _is_group_persistent(group_id: String) -> bool:
-	return group_id in ["hazards", "stop_tiles", "one_way"]
+	return group_id in ["kills", "stop_tiles", "one_way"]
 
 
 func _play_current_step() -> void:
@@ -315,7 +315,7 @@ func _play_w2_l10_step() -> void:
 	match _step:
 		0:
 			if _skip_btn != null: _skip_btn.visible = false
-			_show_bubble(Vector2i(3, 3), "Watch out! This is a hazard tile. Don't cross it!", true, true)
+			_show_bubble(Vector2i(3, 3), "Watch out! This is a kill tile. Don't cross it!", true, true)
 		1:
 			_cleanup()
 

@@ -48,17 +48,17 @@ func test_stop_tile():
 	var landing = _sm.resolve_slide(Vector2i(0, 0), Vector2i(1, 0))
 	assert_eq(landing, Vector2i(2, 0), "Should stop on STOP_TILE")
 
-func test_hazard_tile_resolve():
-	# Place hazard at (2, 0)
-	_level_data.special_tiles[2] = GridSystem.SpecialTileType.HAZARD
+func test_kill_tile_resolve():
+	# Place kill tile at (2, 0)
+	_level_data.special_tiles[2] = GridSystem.SpecialTileType.KILL
 	GridSystem.load_grid(_level_data)
 	
 	var landing = _sm.resolve_slide(Vector2i(0, 0), Vector2i(1, 0))
-	assert_eq(landing, Vector2i(2, 0), "Should land on HAZARD tile")
+	assert_eq(landing, Vector2i(2, 0), "Should land on KILL tile")
 
-func test_hazard_tile_death_signal():
-	# Place hazard at (2, 0)
-	_level_data.special_tiles[2] = GridSystem.SpecialTileType.HAZARD
+func test_kill_tile_death_signal():
+	# Place kill tile at (2, 0)
+	_level_data.special_tiles[2] = GridSystem.SpecialTileType.KILL
 	GridSystem.load_grid(_level_data)
 	
 	watch_signals(_sm)
@@ -67,7 +67,7 @@ func test_hazard_tile_death_signal():
 	# Wait for slide to complete
 	await wait_for_signal(_sm.cat_died, 2.0)
 	
-	assert_signal_emitted(_sm, "cat_died", "Should emit cat_died when landing on HAZARD")
+	assert_signal_emitted(_sm, "cat_died", "Should emit cat_died when landing on KILL tile")
 
 func test_one_way_tile_pass():
 	# One-way UP at (1, 1). Cat at (1, 2) moving UP.
@@ -85,7 +85,7 @@ func test_one_way_tile_blocked():
 	var landing = _sm.resolve_slide(Vector2i(1, 0), Vector2i(0, 1))
 	assert_eq(landing, Vector2i(1, 0), "Should be blocked by ONE_WAY_UP from top")
 
-func test_solver_with_hazard():
+func test_solver_with_kill_tile():
 	# 5x5 grid with obstacles to make it solvable
 	_level_data.grid_width = 5
 	_level_data.grid_height = 5
@@ -107,7 +107,7 @@ func test_solver_with_hazard():
 		0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0,
-		0, 0, 1, 0, 0, # Hazard at (2,3)
+		0, 0, 1, 0, 0, # Kill tile at (2,3)
 		0, 0, 0, 0, 0
 	])
 	_level_data.cat_start = Vector2i(1, 1)
@@ -116,8 +116,8 @@ func test_solver_with_hazard():
 	var solver = LevelSolver.new()
 	var result = solver.solve(_level_data)
 	
-	print("Hazard solver result moves: ", result.minimum_moves)
-	assert_true(result.minimum_moves > 0, "Should be solvable with obstacles and hazard")
+	print("Kill tile solver result moves: ", result.minimum_moves)
+	assert_true(result.minimum_moves > 0, "Should be solvable with obstacles and kill tile")
 
 func test_solver_with_stop_tile():
 	_level_data.grid_width = 3

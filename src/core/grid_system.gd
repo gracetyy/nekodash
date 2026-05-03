@@ -34,7 +34,7 @@ enum ObstacleType {
 ## Special mechanics for the tile (traversal death, forced stop, etc.)
 enum SpecialTileType {
 	NONE = 0,
-	HAZARD = 1,
+	KILL = 1,
 	STOP_TILE = 2,
 	ONE_WAY_UP = 3,
 	ONE_WAY_DOWN = 4,
@@ -152,7 +152,7 @@ func load_grid(level_data: LevelData) -> void:
 			var coord := Vector2i(col, row)
 			_tiles[coord] = tile
 
-			if walk_val == TileWalkability.WALKABLE and obs_val == ObstacleType.NONE and spec_val != SpecialTileType.HAZARD:
+			if walk_val == TileWalkability.WALKABLE and obs_val == ObstacleType.NONE and spec_val != SpecialTileType.KILL:
 				_walkable_cache.append(coord)
 
 	if _walkable_cache.is_empty():
@@ -170,11 +170,11 @@ func is_walkable(coord: Vector2i) -> bool:
 	return tile.walkability == TileWalkability.WALKABLE and tile.obstacle_type == ObstacleType.NONE
 
 
-## Returns true if the tile at coord is a HAZARD.
-func is_hazard(coord: Vector2i) -> bool:
+## Returns true if the tile at coord is a KILL tile.
+func is_kill(coord: Vector2i) -> bool:
 	if not _tiles.has(coord):
 		return false
-	return _tiles[coord].special_type == SpecialTileType.HAZARD
+	return _tiles[coord].special_type == SpecialTileType.KILL
 
 
 ## Returns true if the tile at coord is a STOP_TILE.

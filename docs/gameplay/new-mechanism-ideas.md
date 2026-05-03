@@ -4,7 +4,7 @@
 
 A furniture piece slides back and forth along a straight line on a fixed timer, independent of player input. When it moves, it updates the Grid System's walkability in real time — tiles it occupies become temporarily blocked. The cat cannot pass through its current position mid-slide, forcing the player to time their moves around the patrol cycle.
 
-## 2. ☠️ Kill Tile (Hazard Floor)
+## 2. ☠️ Kill Tile
 
 A tile that instantly kills the cat upon contact during a slide. It looks walkable but triggers a death event the moment the cat traverses it, restarting the level. Visually it could be a wet floor puddle, a sparking socket, or a broken glass shard — each fitting a different world theme. The cat cannot survive crossing it under any condition.
 

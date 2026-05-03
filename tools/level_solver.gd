@@ -48,7 +48,7 @@ const OBSTACLE_NONE: int = 0
 
 ## SpecialTileType enum values — matches GridSystem.SpecialTileType.
 const SPECIAL_NONE: int = 0
-const SPECIAL_HAZARD: int = 1
+const SPECIAL_KILL: int = 1
 const SPECIAL_STOP_TILE: int = 2
 const SPECIAL_ONE_WAY_UP: int = 3
 const SPECIAL_ONE_WAY_DOWN: int = 4
@@ -149,7 +149,7 @@ func solve(level_data: LevelData) -> SolveResult:
 	for row in range(_grid_height):
 		for col in range(_grid_width):
 			var coord := Vector2i(col, row)
-			if _is_walkable(coord) and _get_special_type(coord) != SPECIAL_HAZARD:
+			if _is_walkable(coord) and _get_special_type(coord) != SPECIAL_KILL:
 				_pos_to_index[coord] = bit_index
 				bit_index += 1
 
@@ -318,8 +318,8 @@ func _resolve_slide(start: Vector2i, direction: Vector2i) -> Vector2i:
 		pos = next
 		iterations += 1
 		
-		# 3. Hazard check (immediately invalidates move)
-		if _get_special_type(pos) == SPECIAL_HAZARD:
+		# 3. Kill check (immediately invalidates move)
+		if _get_special_type(pos) == SPECIAL_KILL:
 			return Vector2i(-1, -1)
 			
 		# 4. Stop tile check

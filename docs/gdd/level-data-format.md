@@ -57,7 +57,7 @@ Levels in World 2 and beyond use the `special_tiles` array to modify sliding phy
 | Value | Type | Description |
 | ----- | ---- | ----------- |
 | 0 | NONE | No special effect. |
-| 1 | HAZARD | **Negative Obstacle**. Cat dies immediately upon entering. Move is invalid. |
+| 1 | KILL | **Negative Obstacle**. Cat dies immediately upon entering. Move is invalid. |
 | 2 | STOP | **Mid-Grid Stop**. Cat stops exactly on this tile, regardless of space behind it. |
 | 3 | ONE-WAY UP | **Diode**. Cat can only enter this tile when sliding UP. |
 | 4 | ONE-WAY DOWN | **Diode**. Cat can only enter this tile when sliding DOWN. |

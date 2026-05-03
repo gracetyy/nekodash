@@ -22,7 +22,7 @@ extends SceneTree
 #   "special": Dictionary  -- Vector2i -> SpecialType int
 #
 # -- SPECIAL TYPES ----------------------------------------
-# 1: Hazard | 2: Stop | 3: Up | 4: Down | 5: Left | 6: Right
+# 1: Kill | 2: Stop | 3: Up | 4: Down | 5: Left | 6: Right
 #
 # -- OBSTACLE RULES --------------------------------------
 # 1. Interior-edge only:  x in [1, w-2], y in [1, h-2],
@@ -70,7 +70,7 @@ const _DIRS: Array[Vector2i] = [
 const _MAX_SLIDE: int = 20
 const _MAX_WALK_BITS: int = 63
 
-const SPECIAL_HAZARD = 1
+const SPECIAL_KILL = 1
 const SPECIAL_STOP = 2
 const SPECIAL_ONE_WAY_UP = 3
 const SPECIAL_ONE_WAY_DOWN = 4
@@ -170,9 +170,9 @@ func _validate_proposal(p: Dictionary) -> Dictionary:
 		if v == Vector2i(1, 1):
 			return _fail(id, "Obstacle placed on cat start (1,1)")
 			
-	# Rule 5 -- no hazard at cat start
-	if spec.get(Vector2i(1, 1), 0) == SPECIAL_HAZARD:
-		return _fail(id, "Hazard placed on cat start (1,1)")
+	# Rule 5 -- no kill tile at cat start
+	if spec.get(Vector2i(1, 1), 0) == SPECIAL_KILL:
+		return _fail(id, "Kill tile placed on cat start (1,1)")
 
 	# Build tile arrays
 	var walk: PackedInt32Array = PackedInt32Array()
@@ -217,8 +217,8 @@ func _bfs(w: int, h: int, walk: PackedInt32Array, ob: PackedInt32Array, spec: Pa
 	for y in range(h):
 		for x in range(w):
 			var p: Vector2i = Vector2i(x, y)
-			# Hazards are NOT walkable in terms of coverage (you die if you step on them)
-			if _is_walk(p, w, h, walk, ob) and spec[x + y * w] != SPECIAL_HAZARD:
+			# Kill tiles are NOT walkable in terms of coverage (you die if you step on them)
+			if _is_walk(p, w, h, walk, ob) and spec[x + y * w] != SPECIAL_KILL:
 				p2b[p] = bit
 				bit += 1
 
@@ -300,8 +300,8 @@ func _slide(pos: Vector2i, dir: Vector2i, w: int, h: int, walk: PackedInt32Array
 		pos = next
 		var idx = pos.x + pos.y * w
 		
-		# 3. Hazard check
-		if spec[idx] == SPECIAL_HAZARD:
+		# 3. Kill check
+		if spec[idx] == SPECIAL_KILL:
 			return Vector2i(-1, -1)
 			
 		# 4. Stop tile check

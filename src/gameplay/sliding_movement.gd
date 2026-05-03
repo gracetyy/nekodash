@@ -39,7 +39,7 @@ signal slide_blocked(pos: Vector2i, direction: Vector2i)
 ## mark the starting tile as pre-covered.
 signal spawn_position_set(pos: Vector2i)
 
-## Emitted when the cat hits a HAZARD tile.
+## Emitted when the cat hits a KILL tile.
 signal cat_died()
 
 
@@ -324,8 +324,8 @@ func resolve_slide(start: Vector2i, direction: Vector2i) -> Vector2i:
 		pos = next
 		iterations += 1
 		
-		# 3. Hazard check: stop immediately if we hit a hazard (will trigger death)
-		if GridSystem.is_hazard(pos):
+		# 3. Kill check: stop immediately if we hit a kill tile (will trigger death)
+		if GridSystem.is_kill(pos):
 			break
 			
 		# 4. Stop tile check: stop early if this is a force-stop tile
@@ -410,8 +410,8 @@ func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> vo
 		_travel_tween.kill()
 	scale = Vector2.ONE
 	
-	if GridSystem.is_hazard(to):
-		_play_hazard_animation()
+	if GridSystem.is_kill(to):
+		_play_kill_animation()
 		# cat_died emitted after animation delay
 		return
 
@@ -431,7 +431,7 @@ func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> vo
 # Animation — special tiles
 # —————————————————————————————————————————————
 
-func _play_hazard_animation() -> void:
+func _play_kill_animation() -> void:
 	if _cat_rig == null:
 		cat_died.emit()
 		return
@@ -441,9 +441,9 @@ func _play_hazard_animation() -> void:
 	var original_pos := _cat_rig.get("display_offset") as Vector2
 	var shake_strength := 8.0
 	
-	# Transition face to 'surprised'
+	# Transition face to 'painful'
 	_cat_rig.set("override_face_locally", true)
-	_cat_rig.set("face_variant", "surprised")
+	_cat_rig.set("face_variant", "painful")
 	if _cat_rig.has_method("refresh_rig"):
 		_cat_rig.call("refresh_rig")
 

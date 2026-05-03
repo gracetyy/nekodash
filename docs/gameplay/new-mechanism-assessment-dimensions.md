@@ -9,7 +9,7 @@
 How much new code does this require, and how cleanly does it integrate?
 
 - **Slide resolver change** — Does `resolve_slide()` need a new condition, a recursive call, or a complete restructure?
-- **Grid System tile type** — Does it need a new `tile_type` enum value (e.g., `HAZARD`, `STICKY`, `MOVABLE`)?
+- **Grid System tile type** — Does it need a new `tile_type` enum value (e.g., `KILL`, `STICKY`, `MOVABLE`)?
 - **New node/system required** — Can it extend an existing GDD (Obstacle System, Grid System), or does it need a standalone system entry in the Systems Index?
 - **Signal contract changes** — Does it require new signals, or modifications to existing ones such as `slide_completed` or `slide_blocked`?
 - **Hard vs. soft dependency** — Is it a hard dependency on core systems (Grid, Sliding Movement), or a soft downstream subscriber?
