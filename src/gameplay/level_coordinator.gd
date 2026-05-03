@@ -54,6 +54,7 @@ enum State {
 @onready var _hud: HUD = $HUD
 @onready var _grid_renderer: Node = $GridRenderer
 @onready var _coverage_visualizer: CoverageVisualizer = $CoverageVisualizer
+@onready var _special_tile_renderer: Node2D = get_node_or_null("SpecialTileRenderer")
 
 
 # —————————————————————————————————————————————
@@ -547,6 +548,13 @@ func _refresh_grid_visuals() -> void:
 		
 	if _coverage_visualizer != null:
 		_coverage_visualizer.refresh_theme(_current_level_data)
+
+	if _special_tile_renderer != null and _grid_renderer != null:
+		_special_tile_renderer.render_special_tiles(
+			_current_level_data,
+			_grid_renderer.get_tile_size(),
+			_grid_renderer.get_render_layout()
+		)
 
 	if has_node("TutorialSystem"):
 		var tutorial: Node = get_node("TutorialSystem")

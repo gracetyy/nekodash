@@ -433,7 +433,7 @@ func _on_slide_finished(from: Vector2i, to: Vector2i, direction: Vector2i) -> vo
 
 func _play_kill_animation() -> void:
 	if _cat_rig == null:
-		cat_died.emit()
+		get_tree().create_timer(0.8).timeout.connect(func(): cat_died.emit())
 		return
 
 	# Shake animation
@@ -453,6 +453,8 @@ func _play_kill_animation() -> void:
 		shake_strength *= 0.8
 	
 	shake_tween.tween_property(_cat_rig, "position", original_pos, 0.05)
+	# Wait a bit longer so the player can see the 'painful' face and realize they died
+	shake_tween.tween_interval(0.8)
 	shake_tween.tween_callback(func(): cat_died.emit())
 
 

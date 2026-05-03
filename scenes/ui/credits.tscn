@@ -92,8 +92,7 @@ Adapted from Maaack's Godot Game Template
 ---
 
 NekoDash maintains its own core systems (SceneManager, SaveManager, MusicManager, and SfxManager) while borrowing the cozy menu-stack cadence of its template.
-
-Design references and draft UI studies live in the project's [i]docs/design[/i] folder.[/center]"
+[/center]"
 fit_content = true
 autowrap_mode = 3
 
