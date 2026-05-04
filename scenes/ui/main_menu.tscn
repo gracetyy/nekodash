@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://bviidcinrtufp" path="res://assets/art/ui/headers/nekodash_title_landscape.png" id="3_rjwv1"]
+[ext_resource type="Texture2D" uid="uid://b5k3qcaoeg0kq" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="3_ec3as"]
 [ext_resource type="PackedScene" uid="uid://b7k5g2m3q01rt" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
 [ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="7_ios88"]
@@ -21,7 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 [ext_resource type="FontVariation" uid="uid://c8h8i5bsw5k2t" path="res://assets/fonts/Fredoka-Body-SemiBold.tres" id="21_kmk05"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_afo3x"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uqoel"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cok3t"]
 content_margin_left = 30.0
@@ -258,7 +258,7 @@ alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_afo3x")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_uqoel")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2
@@ -273,9 +273,9 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="TitleLabel" type="TextureRect" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody"]
-custom_minimum_size = Vector2(560, 220)
+custom_minimum_size = Vector2(320, 228)
 layout_mode = 2
-texture = ExtResource("3_rjwv1")
+texture = ExtResource("3_ec3as")
 expand_mode = 1
 stretch_mode = 5
 
@@ -307,11 +307,6 @@ theme_override_constants/separation = 14
 
 [node name="PlayBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
-theme_override_colors/font_hover_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_hover_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_focus_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_color = Color(0.992157, 0.992157, 0.984314, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
 theme_override_styles/focus = SubResource("StyleBoxTexture_cok3t")
@@ -325,11 +320,6 @@ metadata/_shell_pill_hover_wired = true
 
 [node name="SkinsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
-theme_override_colors/font_hover_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_hover_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_focus_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_color = Color(0.992157, 0.992157, 0.984314, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
 theme_override_styles/focus = SubResource("StyleBoxTexture_smcpr")
@@ -344,11 +334,6 @@ metadata/_shell_pill_hover_wired = true
 
 [node name="OptionsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
-theme_override_colors/font_hover_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_hover_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_focus_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_color = Color(0.992157, 0.992157, 0.984314, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
 theme_override_styles/focus = SubResource("StyleBoxTexture_saelv")
@@ -363,11 +348,6 @@ metadata/_shell_pill_hover_wired = true
 
 [node name="CreditsBtn" parent="MarginContainer/Content/HeroCard/CardMargin/CardBody/Buttons" instance=ExtResource("5")]
 layout_mode = 2
-theme_override_colors/font_hover_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_hover_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_pressed_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_focus_color = Color(0.992157, 0.992157, 0.984314, 1)
-theme_override_colors/font_color = Color(0.992157, 0.992157, 0.984314, 1)
 theme_override_constants/h_separation = 14
 theme_override_constants/icon_max_width = 34
 theme_override_styles/focus = SubResource("StyleBoxTexture_o2447")

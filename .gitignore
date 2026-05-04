@@ -65,6 +65,7 @@ node_modules/
 *.txt
 screenshots/
 smoke-test/
+temp_*/
 
 # === Archives ===
 *.zip
