@@ -1,6 +1,6 @@
 # NekoDash 🐾
 
-![NekoDash Header](assets/readme/header_landscape.png)
+<img src="assets/readme/header_landscape.png" width="100%">
 
 > **A kawaii mobile puzzle game where every swipe is a purr-fectly planned slide.**
 
@@ -8,11 +8,8 @@ NekoDash is a single-player, mobile-first, kawaii-themed 2.5D top-down puzzle ga
 
 Your goal? **Cover every single tile on the floor.** It's like [Pokémon's ice cave puzzles](https://bulbapedia.bulbagarden.net/wiki/Ice_Path), but with the added challenge of 100% coverage and a mathematically optimal move counter to beat.
 
-<div align="center">
-  <video src="assets/readme/trailer.mp4" width="100%" controls></video>
-</div>
+https://github.com/user-attachments/assets/50b15f1e-930d-415b-91b7-043c8550722c
 
----
 
 ## 🎮 Gameplay Mechanics
 
@@ -26,7 +23,6 @@ Your goal? **Cover every single tile on the floor.** It's like [Pokémon's ice c
 
 ![Mechanics](assets/readme/mechanics.png)
 
----
 
 ## 🖼️ Screenshots
 
@@ -38,7 +34,6 @@ Your goal? **Cover every single tile on the floor.** It's like [Pokémon's ice c
 | **Level Complete**  | <img src="assets/readme/level_complete.png" height="250"> | <img src="assets/readme/level_complete_mobile.png" height="250"> |
 | **Skin Selection**  |     <img src="assets/readme/skins.png" height="250">      |     <img src="assets/readme/skins_mobile.png" height="250">      |
 
----
 
 ## 🧩 Example Levels
 
@@ -50,7 +45,6 @@ The game features a gradual difficulty curve, starting with simple tutorials and
 | ![Tutorial 2](assets/readme/lvl_tutorial_2.png) | ![Special 2](assets/readme/lvl_special_2.png) |
 | ![Tutorial 3](assets/readme/lvl_tutorial_3.png) | ![Special 3](assets/readme/lvl_special_3.png) |
 
----
 
 ## 🌍 Four Themed Worlds
 
@@ -61,7 +55,6 @@ NekoDash features 36 levels across four distinct environments:
 - **Living Room**: Golden-hour light oak.
 - **HKU Special**: Outdoor campus theme inspired by the HKU Main Building.
 
----
 
 ## 🛠️ Technical Stack
 
@@ -71,7 +64,6 @@ NekoDash features 36 levels across four distinct environments:
 - **UI**: Responsive Control nodes with Custom Theme
 - **Audio**: Centralized `SFXLibrary` with per-world BGM tracks
 
----
 
 ## ✨ Key Features
 
@@ -97,7 +89,6 @@ Designing 36 solvable and fun puzzles is tough! NekoDash uses a two-stage automa
 
 Play on **Android** with intuitive touch swipes or on **Desktop** with WASD/Arrow keys. The UI is fully responsive and scales across all screen sizes.
 
----
 
 ## 🚀 Installation
 
@@ -122,16 +113,44 @@ Play on **Android** with intuitive touch swipes or on **Desktop** with WASD/Arro
 3. Import `project.godot` into Godot.
 4. Press **F5** to run!
 
----
-
 ## 🐱 Easter Egg: Developer Mode
 
 Want to unlock all levels and skins without any limitation?
 
 1. Go to the **Option Menu**.
 2. Rapidly tap the **Cat Head** above the purple ribbon 10 times.
-3. Enjoy the developer perks!
+3. View the developer options at the end of the menu!
+
+
+## 📜 Credits
+
+### Frameworks & Tools
+
+- **Template**: Partially adapted from [Maaack's Game Template](https://github.com/Maaack/Godot-Game-Template)
+
+### Fonts
+
+- **[Fredoka](https://fonts.google.com/specimen/Fredoka)** - Google Fonts (OFL)
+- **[Nunito](https://fonts.google.com/specimen/Nunito)** - Google Fonts (OFL)
+
+### Music
+
+- **[Bumper Audio Pack](https://ci.itch.io/bumper-audio-pack)** by Chequered Ink
+- **[Music Loop Bundle](https://tallbeard.itch.io/music-loop-bundle)** by Abstraction
+- **[Seth_Makes_Sounds](https://freesound.org/people/Seth_Makes_Sounds/sounds/709779/)** on freesound.org
+
+### Sound Effects
+
+- **[400 Sounds Pack](https://ci.itch.io/400-sounds-pack)** by Chequered Ink
+- **[Shapeforms Audio Free SFX](https://shapeforms.itch.io/shapeforms-audio-free-sfx)**
+- **[Universal UI/Menu Soundpack](https://cyrex-studios.itch.io/universal-ui-soundpack)** by Nathan Gibson
+- **[Geoff-Bremner-Audio](https://freesound.org/people/Geoff-Bremner-Audio/sounds/653233/)** on freesound.org
+
+### UI Assets
+
+- **[Free Icon Pack](https://nieobie.itch.io/free-icons)** by Nieobie
+- **[Game UI Wireframe Kit](https://www.figma.com/community/file/1387093843913812299/game-ui-wireframe-kit)** by GavMakesGames
 
 ---
 
-_Developed as a solo project for COMP3329: Computer Game Design and Programming_
+_Developed with ❤︎⁠ as a solo project for COMP3329: Computer Game Design and Programming_
