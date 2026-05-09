@@ -7,7 +7,7 @@ _Status: Approved_
 
 ## Elevator Pitch
 
-> A kawaii mobile puzzle game where you swipe a cute cat across a top-down grid, gliding until it hits a wall, with the goal of covering every tile in the fewest moves possible. It's like Pokémon's ice cave puzzles, AND ALSO your entire score is always visible as a challenge to beat.
+> A kawaii mobile puzzle game where you swipe a cute cat across a top-down grid, gliding until it hits a wall, with the goal of covering every tile in the fewest moves possible. It's like [Pokémon's ice cave puzzles](https://bulbapedia.bulbagarden.net/wiki/Ice_Path), AND ALSO your entire score is always visible as a challenge to beat.
 
 ---
 
