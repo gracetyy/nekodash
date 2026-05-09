@@ -55,6 +55,9 @@ func _ready() -> void:
 	_is_component_ready = true
 	var empty_style: StyleBoxEmpty = StyleBoxEmpty.new()
 	_overlay_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	if OS.has_feature("web"):
+		# Web exports can delay click release; fire on press for snappier UI.
+		_overlay_button.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	_overlay_button.add_theme_stylebox_override("normal", empty_style)
 	_overlay_button.add_theme_stylebox_override("hover", empty_style)
 	_overlay_button.add_theme_stylebox_override("pressed", empty_style)

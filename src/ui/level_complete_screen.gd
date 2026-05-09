@@ -88,6 +88,9 @@ const RIBBON_TITLE_PERFECT: String = "PERFECT!"
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	var has_scene_nodes: bool = get_node_or_null("MarginContainer") != null
+	if not has_scene_nodes and _panel == null and _level_name_ribbon == null and _moves_label == null:
+		return
 	if _panel == null:
 		_panel = get_node_or_null("MarginContainer/ResultsCard")
 	if _level_name_ribbon == null:

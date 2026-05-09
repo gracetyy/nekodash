@@ -16,6 +16,16 @@ extends Node
 
 
 # —————————————————————————————————————————————
+# Signals
+# —————————————————————————————————————————————
+
+## Emitted when the current tile size changes.
+## Usage:
+##   GridSystem.tile_size_changed.connect(_on_tile_size_changed)
+signal tile_size_changed(tile_size_px: int)
+
+
+# —————————————————————————————————————————————
 # Enums
 # —————————————————————————————————————————————
 
@@ -235,7 +245,11 @@ func get_tile_size() -> int:
 
 ## Sets the current tile size in pixels.
 func set_tile_size(value: int) -> void:
-	_current_tile_size = maxi(1, value)
+	var next_size: int = maxi(1, value)
+	if next_size == _current_tile_size:
+		return
+	_current_tile_size = next_size
+	tile_size_changed.emit(_current_tile_size)
 
 
 ## Converts a grid coordinate to pixel-space center position.

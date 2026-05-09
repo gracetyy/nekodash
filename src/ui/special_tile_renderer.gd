@@ -4,6 +4,11 @@
 ## Separated from GridRenderer to ensure it renders ABOVE CoverageVisualizer.
 extends Node2D
 
+const SIMPLE_ONE_WAY_UP: Texture2D = preload("res://assets/art/ui/icons/arrows/purple_up.png")
+const SIMPLE_ONE_WAY_DOWN: Texture2D = preload("res://assets/art/ui/icons/arrows/purple_down.png")
+const SIMPLE_ONE_WAY_LEFT: Texture2D = preload("res://assets/art/ui/icons/arrows/purple_left.png")
+const SIMPLE_ONE_WAY_RIGHT: Texture2D = preload("res://assets/art/ui/icons/arrows/purple_right.png")
+
 
 # —————————————————————————————————————————————
 # State
@@ -32,6 +37,8 @@ func render_special_tiles(level_data: LevelData, tile_size: int, layout: Diction
 func _draw() -> void:
 	if _render_layout.is_empty():
 		return
+
+	var use_simple_ui: bool = _render_layout.get("simple_ui", false) as bool
 
 	# Draw special tiles (KILL, STOP_TILE, ONE_WAY)
 	for special: Dictionary in _render_layout.get("special_draws", []):
@@ -66,6 +73,13 @@ func _draw() -> void:
 			GridSystem.SpecialTileType.ONE_WAY_RIGHT:
 				# Directional arrow
 				var center: Vector2 = rect.get_center()
+				if use_simple_ui:
+					var simple_texture: Texture2D = _get_simple_one_way_texture(type)
+					if simple_texture != null:
+						var icon_size: float = _tile_size * 0.62
+						var icon_rect := Rect2(center - Vector2.ONE * (icon_size * 0.5), Vector2.ONE * icon_size)
+						draw_texture_rect(simple_texture, icon_rect, false)
+						continue
 				var arrow_size: float = _tile_size * 0.4
 				var direction: Vector2 = Vector2.ZERO
 				match type:
@@ -81,3 +95,17 @@ func _draw() -> void:
 				var perp := Vector2(-direction.y, direction.x) * arrow_size * 0.2
 				draw_line(tip, tip - direction * arrow_size * 0.3 + perp, Color.WHITE, 3.0)
 				draw_line(tip, tip - direction * arrow_size * 0.3 - perp, Color.WHITE, 3.0)
+
+
+func _get_simple_one_way_texture(tile_type: int) -> Texture2D:
+	match tile_type:
+		GridSystem.SpecialTileType.ONE_WAY_UP:
+			return SIMPLE_ONE_WAY_UP
+		GridSystem.SpecialTileType.ONE_WAY_DOWN:
+			return SIMPLE_ONE_WAY_DOWN
+		GridSystem.SpecialTileType.ONE_WAY_LEFT:
+			return SIMPLE_ONE_WAY_LEFT
+		GridSystem.SpecialTileType.ONE_WAY_RIGHT:
+			return SIMPLE_ONE_WAY_RIGHT
+		_:
+			return null

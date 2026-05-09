@@ -48,7 +48,7 @@ script = ExtResource("19")
 [node name="SlidingMovement" type="Node2D" parent="."]
 script = ExtResource("2")
 cat_override_global_defaults = true
-cat_display_size_px = 112.0
+cat_display_size_px = 128.0
 
 [node name="CatSprite" type="Node2D" parent="SlidingMovement"]
 position = Vector2(0, -16)

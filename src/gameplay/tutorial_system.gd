@@ -3,6 +3,11 @@ extends CanvasLayer
 
 @export var tutorial_data: TutorialData
 const PILL_HOVER_WIRED_META: String = "_shell_pill_hover_wired"
+const ENTRY_BASE_SCALE_META: String = "_entry_base_scale"
+const ENTRY_BASE_ALPHA_META: String = "_entry_base_alpha"
+const ENTRY_APPEAR_ALPHA_START: float = 0.0
+const ENTRY_APPEAR_SCALE_START: float = 0.9
+const ENTRY_APPEAR_DURATION_SEC: float = 0.24
 
 var _data: TutorialData
 var _level_id: String = ""
@@ -10,6 +15,7 @@ var _step: int = 0
 var _active_bubbles: Array[Control] = []
 var _active_arrows: Array[TextureRect] = []
 var _skip_btn: BaseButton = null
+var _entry_appear_tween: Tween
 
 var _coordinator: Node = null
 var _grid_renderer: Node = null
@@ -60,6 +66,7 @@ func initialize(coordinator: Node, level_data: LevelData) -> void:
 
 func _cleanup() -> void:
 	_tutorial_active = false
+	_kill_entry_appear_tween()
 	_clear_current_ui()
 	if _skip_btn != null:
 		_skip_btn.queue_free()
@@ -107,6 +114,80 @@ func reposition_ui() -> void:
 	_position_skip_button()
 	if _tutorial_active:
 		_play_current_step()
+
+
+func play_entry_appearance() -> void:
+	visible = true
+	if not _tutorial_active:
+		return
+	var items: Array[CanvasItem] = _collect_entry_items()
+	if items.is_empty():
+		return
+	_kill_entry_appear_tween()
+	_entry_appear_tween = create_tween()
+	_entry_appear_tween.set_parallel(true)
+	for item: CanvasItem in items:
+		_capture_entry_item_base(item)
+		var base_scale: Vector2 = item.get_meta(ENTRY_BASE_SCALE_META, item.scale) as Vector2
+		var base_alpha: float = float(item.get_meta(ENTRY_BASE_ALPHA_META, item.modulate.a))
+		var base_color: Color = item.modulate
+		item.visible = true
+		item.modulate = Color(base_color.r, base_color.g, base_color.b, ENTRY_APPEAR_ALPHA_START)
+		item.scale = base_scale * ENTRY_APPEAR_SCALE_START
+		_entry_appear_tween.tween_property(
+			item,
+			"modulate:a",
+			base_alpha,
+			ENTRY_APPEAR_DURATION_SEC
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_entry_appear_tween.tween_property(
+			item,
+			"scale",
+			base_scale,
+			ENTRY_APPEAR_DURATION_SEC
+		).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func show_entry_immediate() -> void:
+	visible = true
+	_kill_entry_appear_tween()
+	if not _tutorial_active:
+		return
+	var items: Array[CanvasItem] = _collect_entry_items()
+	for item: CanvasItem in items:
+		_capture_entry_item_base(item)
+		var base_scale: Vector2 = item.get_meta(ENTRY_BASE_SCALE_META, item.scale) as Vector2
+		var base_alpha: float = float(item.get_meta(ENTRY_BASE_ALPHA_META, item.modulate.a))
+		var base_color: Color = item.modulate
+		item.visible = true
+		item.scale = base_scale
+		item.modulate = Color(base_color.r, base_color.g, base_color.b, base_alpha)
+
+
+func _collect_entry_items() -> Array[CanvasItem]:
+	var items: Array[CanvasItem] = []
+	for bubble: Control in _active_bubbles:
+		if bubble != null:
+			items.append(bubble)
+	for arrow: TextureRect in _active_arrows:
+		if arrow != null:
+			items.append(arrow)
+	if _skip_btn != null:
+		items.append(_skip_btn)
+	return items
+
+
+func _capture_entry_item_base(item: CanvasItem) -> void:
+	if not item.has_meta(ENTRY_BASE_SCALE_META):
+		item.set_meta(ENTRY_BASE_SCALE_META, item.scale)
+	if not item.has_meta(ENTRY_BASE_ALPHA_META):
+		item.set_meta(ENTRY_BASE_ALPHA_META, item.modulate.a)
+
+
+func _kill_entry_appear_tween() -> void:
+	if _entry_appear_tween != null and _entry_appear_tween.is_valid():
+		_entry_appear_tween.kill()
+	_entry_appear_tween = null
 
 
 func _on_skip_pressed() -> void:

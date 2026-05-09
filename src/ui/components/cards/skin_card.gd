@@ -44,6 +44,9 @@ func _ready() -> void:
 	_overlay_button.add_theme_stylebox_override("hover", empty_style)
 	_overlay_button.add_theme_stylebox_override("pressed", empty_style)
 	_overlay_button.add_theme_stylebox_override("focus", empty_style)
+	if OS.has_feature("web"):
+		# Web exports can delay click release; fire on press for snappier UI.
+		_overlay_button.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	if not _overlay_button.pressed.is_connected(_on_overlay_pressed):
 		_overlay_button.pressed.connect(_on_overlay_pressed)
 	_apply_component_state()
@@ -129,9 +132,9 @@ func _play_locked_feedback() -> void:
 		_lock_icon.rotation_degrees = 0.0
 
 	var card_tween: Tween = create_tween()
-	card_tween.tween_property(self, "scale", Vector2(0.96, 0.96), 0.08) \
+	card_tween.tween_property(self , "scale", Vector2(0.96, 0.96), 0.08) \
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	card_tween.tween_property(self, "scale", Vector2.ONE, 0.12) \
+	card_tween.tween_property(self , "scale", Vector2.ONE, 0.12) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	if _lock_icon != null:

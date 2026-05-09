@@ -2,26 +2,26 @@
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/paw_background.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://b5k3qcaoeg0kq" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="3_ec3as"]
+[ext_resource type="Texture2D" uid="uid://b55jne78dncsl" path="res://assets/art/ui/headers/nekodash_title_portrait.png" id="3_ec3as"]
 [ext_resource type="PackedScene" uid="uid://b7k5g2m3q01rt" path="res://scenes/ui/components/cat_rig.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cf4k46vj7xk5t" path="res://scenes/ui/components/buttons/PillButton.tscn" id="5"]
-[ext_resource type="Texture2D" uid="uid://k6ej42kku4fn" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="7_ios88"]
-[ext_resource type="Texture2D" uid="uid://6jgkeoae2v48" path="res://assets/art/ui/buttons/pill_bases/disabled.png" id="8_dfxvl"]
-[ext_resource type="Texture2D" uid="uid://d3jj481kx355h" path="res://assets/art/ui/buttons/pill_bases/primary_hover.png" id="9_a2e2i"]
-[ext_resource type="Texture2D" uid="uid://fc3huxga0qgi" path="res://assets/art/ui/icons/pill_interiors/icon_pill_play.png" id="9_pakoq"]
-[ext_resource type="Texture2D" uid="uid://d0d1rtfonnn2c" path="res://assets/art/ui/buttons/pill_bases/primary_pressed.png" id="10_0uhx7"]
-[ext_resource type="Texture2D" uid="uid://df1vy7d35l4x7" path="res://assets/art/ui/buttons/pill_bases/secondary_normal.png" id="12_rl32t"]
-[ext_resource type="Texture2D" uid="uid://bm1rxtel0kral" path="res://assets/art/ui/buttons/pill_bases/secondary_hover.png" id="13_nnilk"]
-[ext_resource type="Texture2D" uid="uid://bcotrsgul8gy6" path="res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png" id="13_pgqpn"]
-[ext_resource type="Texture2D" uid="uid://by0k82stbbs3e" path="res://assets/art/ui/buttons/pill_bases/secondary_pressed.png" id="14_3ynsu"]
-[ext_resource type="Texture2D" uid="uid://dss1ovxjynsw7" path="res://assets/art/ui/buttons/pill_bases/tertiary_normal.png" id="16_ey86w"]
-[ext_resource type="Texture2D" uid="uid://bcune8t4wyux2" path="res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png" id="17_40dxg"]
-[ext_resource type="Texture2D" uid="uid://bwqh1xuf4ojiy" path="res://assets/art/ui/buttons/pill_bases/tertiary_hover.png" id="17_cxos5"]
-[ext_resource type="Texture2D" uid="uid://cw7g0dupphjw" path="res://assets/art/ui/buttons/pill_bases/tertiary_pressed.png" id="18_kvqn7"]
-[ext_resource type="Texture2D" uid="uid://b7dxr5si2i6t3" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
+[ext_resource type="Texture2D" uid="uid://cjjwscjkr037w" path="res://assets/art/ui/buttons/pill_bases/primary_normal.png" id="7_ios88"]
+[ext_resource type="Texture2D" uid="uid://bcp0iutepdq74" path="res://assets/art/ui/buttons/pill_bases/disabled.png" id="8_dfxvl"]
+[ext_resource type="Texture2D" uid="uid://c3snp4l0p2w3i" path="res://assets/art/ui/buttons/pill_bases/primary_hover.png" id="9_a2e2i"]
+[ext_resource type="Texture2D" uid="uid://fsgrk8xp7n4v" path="res://assets/art/ui/icons/pill_interiors/icon_pill_play.png" id="9_pakoq"]
+[ext_resource type="Texture2D" uid="uid://jvs5wfwq388v" path="res://assets/art/ui/buttons/pill_bases/primary_pressed.png" id="10_0uhx7"]
+[ext_resource type="Texture2D" uid="uid://cixljs3sd4tws" path="res://assets/art/ui/buttons/pill_bases/secondary_normal.png" id="12_rl32t"]
+[ext_resource type="Texture2D" uid="uid://81doc3himtjh" path="res://assets/art/ui/buttons/pill_bases/secondary_hover.png" id="13_nnilk"]
+[ext_resource type="Texture2D" uid="uid://dsh1wyeio4bbe" path="res://assets/art/ui/icons/pill_interiors/icon_pill_cat.png" id="13_pgqpn"]
+[ext_resource type="Texture2D" uid="uid://dyt1od6ogfgh7" path="res://assets/art/ui/buttons/pill_bases/secondary_pressed.png" id="14_3ynsu"]
+[ext_resource type="Texture2D" uid="uid://d0r25cv135k66" path="res://assets/art/ui/buttons/pill_bases/tertiary_normal.png" id="16_ey86w"]
+[ext_resource type="Texture2D" uid="uid://cxdff1ylkyfo6" path="res://assets/art/ui/icons/pill_interiors/icon_pill_settings.png" id="17_40dxg"]
+[ext_resource type="Texture2D" uid="uid://dqvv13lmhkcpl" path="res://assets/art/ui/buttons/pill_bases/tertiary_hover.png" id="17_cxos5"]
+[ext_resource type="Texture2D" uid="uid://binnhimn623jm" path="res://assets/art/ui/buttons/pill_bases/tertiary_pressed.png" id="18_kvqn7"]
+[ext_resource type="Texture2D" uid="uid://cmhxlq33c64aq" path="res://assets/art/ui/icons/pill_interiors/icon_pill_info.png" id="18_y1h30"]
 [ext_resource type="FontVariation" uid="uid://c8h8i5bsw5k2t" path="res://assets/fonts/Fredoka-Body-SemiBold.tres" id="21_kmk05"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_uqoel"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x2450"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cok3t"]
 content_margin_left = 30.0
@@ -258,7 +258,7 @@ alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="MarginContainer/Content"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_uqoel")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_x2450")
 
 [node name="CardMargin" type="MarginContainer" parent="MarginContainer/Content/HeroCard"]
 layout_mode = 2

@@ -12,6 +12,9 @@ signal toggled(button_pressed: bool)
 
 
 func _ready() -> void:
+	if OS.has_feature("web"):
+		# Web exports can delay click release; fire on press for snappier UI.
+		_toggle.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	if not _toggle.toggled.is_connected(_on_toggle_toggled):
 		_toggle.toggled.connect(_on_toggle_toggled)
 	_apply_component_state()

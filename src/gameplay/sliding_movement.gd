@@ -58,6 +58,7 @@ enum State {IDLE, SLIDING, LOCKED}
 
 ## Safety guard for malformed level data — no realistic slide exceeds this.
 const MAX_SLIDE_DISTANCE: int = 20
+const DEFAULT_GAMEPLAY_CAT_DISPLAY_SIZE_PX: float = 128.0
 
 
 # —————————————————————————————————————————————
@@ -156,6 +157,7 @@ var _tile_reveal_tween: Tween
 ## If set to non-zero, only this input direction is accepted. Used by Tutorial.
 var forced_direction: Vector2i = Vector2i.ZERO
 var _cat_rig: Node
+var _base_cat_display_size_px: float = DEFAULT_GAMEPLAY_CAT_DISPLAY_SIZE_PX
 
 
 # —————————————————————————————————————————————
@@ -164,9 +166,13 @@ var _cat_rig: Node
 
 func _ready() -> void:
 	_slide_velocity = slide_velocity_mobile if DisplayServer.is_touchscreen_available() else slide_velocity_desktop
+	_base_cat_display_size_px = cat_display_size_px if cat_display_size_px > 0.0 else DEFAULT_GAMEPLAY_CAT_DISPLAY_SIZE_PX
 	InputSystem.direction_input.connect(_on_direction_input)
 	_cache_cat_rig()
 	_apply_cat_host_overrides()
+	if GridSystem != null and GridSystem.has_signal("tile_size_changed"):
+		if not GridSystem.tile_size_changed.is_connected(_on_tile_size_changed):
+			GridSystem.tile_size_changed.connect(_on_tile_size_changed)
 
 
 func _process(delta: float) -> void:
@@ -184,6 +190,10 @@ func _update_cat_breathing(_delta: float) -> void:
 		return
 	
 	_cat_rig.set("idle_enabled", true)
+
+
+func _on_tile_size_changed(_tile_size_px: int) -> void:
+	refresh_visual_size()
 
 
 func _cache_cat_rig() -> void:
@@ -247,8 +257,8 @@ func refresh_visual_size() -> void:
 		return
 	
 	var tile_size: int = GridSystem.get_tile_size()
-	# Default was 112px for 72px tiles -> ~1.55 ratio
-	var target_cat_size: float = float(tile_size) * 1.55
+	var baseline_ratio: float = _resolve_cat_display_size_ratio()
+	var target_cat_size: float = float(tile_size) * baseline_ratio
 	# Bump offset ratio: 6px for 72px tiles -> ~0.083 ratio
 	blocked_bump_offset_px = float(tile_size) * 0.083
 	
@@ -256,6 +266,16 @@ func refresh_visual_size() -> void:
 	_cat_rig.set("display_size_px", cat_display_size_px)
 	if _cat_rig.has_method("refresh_rig"):
 		_cat_rig.call("refresh_rig")
+
+
+func _resolve_cat_display_size_ratio() -> float:
+	var default_tile_size: float = float(GridSystem.DEFAULT_TILE_SIZE_PX)
+	if default_tile_size <= 0.0:
+		return DEFAULT_GAMEPLAY_CAT_DISPLAY_SIZE_PX / 72.0
+	var baseline_display_size: float = _base_cat_display_size_px
+	if baseline_display_size <= 0.0:
+		baseline_display_size = DEFAULT_GAMEPLAY_CAT_DISPLAY_SIZE_PX
+	return baseline_display_size / default_tile_size
 
 
 ## Called once at level load. Snaps cat to spawn_pos, resets state to IDLE,

@@ -74,6 +74,7 @@ var _lib: SfxLibrary
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load_library()
 	_create_pool()
 	_load_settings()
@@ -152,7 +153,7 @@ func is_muted() -> bool:
 	return _muted
 
 
-## Toggles or sets the mute state and persists to settings.
+## Sets the muted state and persists to settings.
 func set_muted(muted: bool) -> void:
 	_muted = muted
 	_apply_bus_settings()
@@ -183,6 +184,7 @@ func _create_pool() -> void:
 	for i: int in range(POOL_SIZE):
 		var player := AudioStreamPlayer.new()
 		player.name = "SfxPlayer%d" % i
+		player.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(player)
 		_pool.append(player)
 

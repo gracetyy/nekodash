@@ -82,6 +82,9 @@ var _sfx_button_tap: AudioStream = AudioStreamWAV.new()
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	var has_scene_nodes: bool = get_node_or_null("MarginContainer") != null
+	if not has_scene_nodes and _move_label == null and _undo_btn == null and _restart_btn == null and _exit_btn == null and _pause_btn == null:
+		return
 	if _move_label == null:
 		_move_label = get_node_or_null("MarginContainer/TopRow/MoveCounter/MoveLabel")
 	if _coverage_label == null:
@@ -117,9 +120,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if SceneManager.has_active_overlay():
 		return
-	if AppSettings.get_effective_input_hint_mode() == AppSettings.INPUT_HINT_TOUCH:
-		return
 	if event is InputEventKey and event.pressed and not event.is_echo():
+		if AppSettings.get_effective_input_hint_mode() == AppSettings.INPUT_HINT_TOUCH and not OS.has_feature("web"):
+			return
 		match event.keycode:
 			KEY_Z:
 				on_undo_btn_pressed()

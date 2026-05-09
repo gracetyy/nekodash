@@ -29,7 +29,8 @@ GridSystem="*res://src/core/grid_system.gd"
 InputSystem="*res://src/core/input_system.gd"
 SfxManager="*res://src/core/sfx_manager.gd"
 MusicManager="*res://src/core/music_manager.gd"
-PlaytestCapture="*res://tools/playtest_capture.gd"
+WebCaptureRouter="*res://src/ui/web_capture_router.gd"
+UIAnimation="*res://addons/godot_ui_animations/UIAnimationHandler.tscn"
 
 [display]
 
@@ -41,7 +42,7 @@ window/handheld/orientation=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_ui_animations/plugin.cfg", "res://addons/gui_auto_layout/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/ui_design_tool/plugin.cfg")
 
 [gui]
 

@@ -398,12 +398,10 @@ static func _wire_pill_hover_feedback(button: BaseButton) -> void:
 	if not button.mouse_exited.is_connected(exited_callable):
 		button.mouse_exited.connect(exited_callable)
 	
-	# Mobile fix: reset scale on button_up/pressed as well to avoid stuck hover on touch devices.
+	# Mobile fix: reset scale on button_up as well to avoid stuck hover on touch devices.
 	if DisplayServer.is_touchscreen_available():
 		if not button.button_up.is_connected(exited_callable):
 			button.button_up.connect(exited_callable)
-		if not button.pressed.is_connected(exited_callable):
-			button.pressed.connect(exited_callable)
 
 	if not Engine.is_editor_hint():
 		button.set_meta(PILL_HOVER_WIRED_META, true)
@@ -748,12 +746,10 @@ static func _wire_circle_hover_feedback(button: BaseButton) -> void:
 	if not button.mouse_exited.is_connected(exited_callable):
 		button.mouse_exited.connect(exited_callable)
 	
-	# Mobile fix: reset scale on button_up/pressed as well to avoid stuck hover on touch devices.
+	# Mobile fix: reset scale on button_up as well to avoid stuck hover on touch devices.
 	if DisplayServer.is_touchscreen_available():
 		if not button.button_up.is_connected(exited_callable):
 			button.button_up.connect(exited_callable)
-		if not button.pressed.is_connected(exited_callable):
-			button.pressed.connect(exited_callable)
 
 	if not Engine.is_editor_hint():
 		button.set_meta(CIRCLE_HOVER_WIRED_META, true)

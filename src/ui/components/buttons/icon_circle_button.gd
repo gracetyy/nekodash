@@ -22,10 +22,13 @@ var button_size: float = 64.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
+	if OS.has_feature("web"):
+		# Web exports can delay click release; fire on press for snappier UI.
+		action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	_apply_component_state()
 	pressed.connect(func():
-		if Engine.has_singleton("SfxManager"):
-			Engine.get_singleton("SfxManager").play_soft_tap()
+		if is_instance_valid(SfxManager):
+			SfxManager.play_soft_tap()
 	)
 
 

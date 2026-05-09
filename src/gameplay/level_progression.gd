@@ -76,10 +76,12 @@ func initialize(catalogue: LevelCatalogue, star_rating_ref: Node) -> void:
 	_star_rating_ref = star_rating_ref
 	_catalogue = catalogue
 
-	# Build flattened level list from worlds
+	# Build flattened level list from worlds (sorted by world_id)
 	_levels.clear()
-	for world in catalogue.worlds:
-		var world_levels = world.levels.duplicate()
+	var worlds_sorted: Array[WorldData] = catalogue.worlds.duplicate()
+	worlds_sorted.sort_custom(func(a: WorldData, b: WorldData): return a.world_id < b.world_id)
+	for world: WorldData in worlds_sorted:
+		var world_levels: Array = world.levels.duplicate()
 		# Ensure world levels are sorted by index
 		world_levels.sort_custom(func(a: LevelData, b: LevelData): return a.level_index < b.level_index)
 		_levels.append_array(world_levels)

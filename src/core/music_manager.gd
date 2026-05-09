@@ -82,6 +82,7 @@ var _fade_out_tween: Tween
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_create_players()
 	_load_resources()
 	_load_settings()

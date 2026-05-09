@@ -97,14 +97,14 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 		"special_draws": [],
 	}
 
-	if level_data == null or use_simple_ui:
+	if level_data == null:
 		return layout
 
 	var dims: Vector2i = _get_level_dimensions(level_data)
 	if dims.x == 0 or dims.y == 0:
 		return layout
 
-	# Add special tile draws
+	# Add special tile draws (always, including simple UI mode).
 	var special_tiles_arr: PackedInt32Array = level_data.special_tiles if "special_tiles" in level_data else PackedInt32Array()
 	for row in range(dims.y):
 		for col in range(dims.x):
@@ -112,13 +112,21 @@ static func build_layout(level_data: LevelData, use_simple_ui: bool = false) -> 
 			if index < special_tiles_arr.size():
 				var type: int = special_tiles_arr[index]
 				if type != GridSystem.SpecialTileType.NONE:
-					var special_entry: Dictionary = _get_special_tile_entry(world_id, type)
+					var special_path: String = ""
+					var special_texture: Texture2D = null
+					if not use_simple_ui:
+						var special_entry: Dictionary = _get_special_tile_entry(world_id, type)
+						special_path = str(special_entry.get("path", ""))
+						special_texture = special_entry.get("texture", null) as Texture2D
 					layout["special_draws"].append({
 						"coord": Vector2i(col, row),
 						"type": type,
-						"path": special_entry.get("path", ""),
-						"texture": special_entry.get("texture", null),
+						"path": special_path,
+						"texture": special_texture,
 					})
+
+	if use_simple_ui:
+		return layout
 
 	var world_assets: Dictionary = _get_world_assets(world_id)
 	var wall_assets: Array = world_assets.get("wall_assets", []) as Array

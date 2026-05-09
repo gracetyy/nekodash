@@ -12,6 +12,9 @@ signal item_selected(index: int)
 
 
 func _ready() -> void:
+	if OS.has_feature("web"):
+		# Web exports can delay click release; fire on press for snappier UI.
+		_option_button.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	if not _option_button.item_selected.is_connected(_on_item_selected):
 		_option_button.item_selected.connect(_on_item_selected)
 	_apply_component_state()

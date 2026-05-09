@@ -471,6 +471,11 @@ func _resolve_source_canvas_size_px() -> float:
 			continue
 		var texture_size: Vector2i = sprite.texture.get_size()
 		if texture_size.x > 0:
+			# Cat parts are authored on a 320 px logical canvas.
+			# Web/high-DPI imports can report a doubled texture width for @2x assets,
+			# but the rig pivots and display sizing should stay on the authored grid.
+			if texture_size.x >= int(SOURCE_CANVAS_FALLBACK_PX) and texture_size.x % int(SOURCE_CANVAS_FALLBACK_PX) == 0:
+				return SOURCE_CANVAS_FALLBACK_PX
 			return float(texture_size.x)
 	return SOURCE_CANVAS_FALLBACK_PX
 

@@ -77,8 +77,13 @@ var _was_previously_completed: bool = false
 var _entry_fade_layer: CanvasLayer
 var _entry_fade_rect: ColorRect
 var _entry_fade_tween: Tween
+var _entry_visuals_tween: Tween
+var _entry_sliding_base_scale: Vector2 = Vector2.ONE
+var _entry_sliding_base_modulate: Color = Color.WHITE
 var _confirm_modal: ConfirmNavigationModal
 const LEVEL_COMPLETE_MODAL_DELAY_SEC: float = 0.34
+var _last_viewport_size: Vector2i = Vector2i.ZERO
+var _web_resize_poll_enabled: bool = false
 
 
 # —————————————————————————————————————————————
@@ -124,6 +129,10 @@ func _ready() -> void:
 	
 	if not get_viewport().size_changed.is_connected(_on_viewport_size_changed):
 		get_viewport().size_changed.connect(_on_viewport_size_changed)
+	_last_viewport_size = Vector2i(get_viewport_rect().size)
+	_web_resize_poll_enabled = OS.has_feature("web")
+	set_process(_web_resize_poll_enabled)
+	_schedule_web_layout_refresh()
 
 	# 4. Initialize sliding movement (emits spawn_position_set → CoverageTracking)
 	_sliding_movement.initialize_level(_current_level_data.cat_start)
@@ -152,6 +161,32 @@ func _ready() -> void:
 			])
 
 	_play_level_entry_transition()
+
+
+func _process(_delta: float) -> void:
+	if not _web_resize_poll_enabled:
+		return
+	var current_size: Vector2i = Vector2i(get_viewport_rect().size)
+	if current_size == _last_viewport_size:
+		return
+	_last_viewport_size = current_size
+	_refresh_grid_visuals()
+
+
+func _schedule_web_layout_refresh() -> void:
+	if not OS.has_feature("web"):
+		return
+	call_deferred("_refresh_web_layout_after_frames")
+
+
+func _refresh_web_layout_after_frames() -> void:
+	if get_tree() == null:
+		return
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_inside_tree():
+		return
+	_refresh_grid_visuals()
 
 
 func _exit_tree() -> void:
@@ -500,6 +535,23 @@ func _on_tile_uncovered(_coord: Vector2i) -> void:
 func _play_level_entry_transition() -> void:
 	if _is_reduce_motion_enabled():
 		return
+	if _grid_renderer != null and _grid_renderer.has_method("play_entry_reveal"):
+		_start_entry_reveal()
+		return
+	_play_entry_fade()
+
+
+func _start_entry_reveal() -> void:
+	_cache_entry_actor_bases()
+	_set_entry_visuals_visible(false)
+	var finished_callable: Callable = Callable(self , "_on_entry_reveal_finished")
+	if _grid_renderer.is_connected("entry_reveal_finished", finished_callable):
+		_grid_renderer.disconnect("entry_reveal_finished", finished_callable)
+	_grid_renderer.connect("entry_reveal_finished", finished_callable, Object.CONNECT_ONE_SHOT)
+	_grid_renderer.call("play_entry_reveal")
+
+
+func _play_entry_fade() -> void:
 	if _entry_fade_layer != null and is_instance_valid(_entry_fade_layer):
 		_entry_fade_layer.queue_free()
 
@@ -527,6 +579,7 @@ func _clear_level_entry_transition() -> void:
 	_entry_fade_layer = null
 	_entry_fade_rect = null
 	_entry_fade_tween = null
+	_set_entry_visuals_visible(true)
 
 
 func _is_reduce_motion_enabled() -> bool:
@@ -579,6 +632,7 @@ func _disconnect_app_settings_signal() -> void:
 
 
 func _on_viewport_size_changed() -> void:
+	_last_viewport_size = Vector2i(get_viewport_rect().size)
 	_refresh_grid_visuals()
 
 
@@ -586,6 +640,99 @@ func _on_app_setting_changed(section: String, key: String, _value: Variant) -> v
 	if section == AppSettings.SECTION_DISPLAY:
 		if key == AppSettings.KEY_SIMPLE_UI or key == AppSettings.KEY_FULLSCREEN:
 			_refresh_grid_visuals()
+		if key == AppSettings.KEY_REDUCE_MOTION and AppSettings.get_reduce_motion():
+			if _grid_renderer != null and _grid_renderer.has_method("skip_entry_reveal"):
+				_grid_renderer.call("skip_entry_reveal")
+			_set_entry_visuals_visible(true)
+
+
+func _set_entry_visuals_visible(visible_flag: bool) -> void:
+	_set_entry_overlay_visible(visible_flag)
+	_set_entry_actor_visible_immediate(visible_flag)
+
+
+func _cache_entry_actor_bases() -> void:
+	if _sliding_movement == null:
+		return
+	_entry_sliding_base_scale = _sliding_movement.scale
+	_entry_sliding_base_modulate = _sliding_movement.modulate
+
+
+func _set_entry_overlay_visible(visible_flag: bool) -> void:
+	if _coverage_visualizer != null:
+		_coverage_visualizer.visible = visible_flag
+	if _special_tile_renderer != null:
+		_special_tile_renderer.visible = visible_flag
+
+
+func _set_entry_actor_visible_immediate(visible_flag: bool) -> void:
+	if _entry_visuals_tween != null and _entry_visuals_tween.is_valid():
+		_entry_visuals_tween.kill()
+	_entry_visuals_tween = null
+
+	if _sliding_movement != null:
+		_sliding_movement.visible = visible_flag
+		if visible_flag:
+			_cache_entry_actor_bases()
+			_sliding_movement.scale = _entry_sliding_base_scale
+			_sliding_movement.modulate = _entry_sliding_base_modulate
+
+	_set_tutorial_overlay_visible(visible_flag)
+	if visible_flag:
+		_apply_tutorial_entry_immediate()
+
+
+func _apply_tutorial_entry_immediate() -> void:
+	var tutorial_node: Node = get_node_or_null("TutorialSystem")
+	if tutorial_node != null and tutorial_node.has_method("show_entry_immediate"):
+		tutorial_node.call("show_entry_immediate")
+
+
+func _play_entry_actor_appearance() -> void:
+	if _is_reduce_motion_enabled():
+		_set_entry_visuals_visible(true)
+		return
+
+	_set_entry_overlay_visible(true)
+
+	if _sliding_movement != null:
+		_cache_entry_actor_bases()
+		_sliding_movement.visible = true
+		_sliding_movement.modulate = Color(
+			_entry_sliding_base_modulate.r,
+			_entry_sliding_base_modulate.g,
+			_entry_sliding_base_modulate.b,
+			0.0
+		)
+		_sliding_movement.scale = _entry_sliding_base_scale * 0.92
+
+		if _entry_visuals_tween != null and _entry_visuals_tween.is_valid():
+			_entry_visuals_tween.kill()
+		_entry_visuals_tween = create_tween()
+		_entry_visuals_tween.set_parallel(true)
+		_entry_visuals_tween.tween_property(
+			_sliding_movement,
+			"modulate:a",
+			_entry_sliding_base_modulate.a,
+			0.22
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_entry_visuals_tween.tween_property(
+			_sliding_movement,
+			"scale",
+			_entry_sliding_base_scale,
+			0.24
+		).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	var tutorial_node: Node = get_node_or_null("TutorialSystem")
+	if tutorial_node != null:
+		if tutorial_node.has_method("play_entry_appearance"):
+			tutorial_node.call("play_entry_appearance")
+		else:
+			_set_tutorial_overlay_visible(true)
+
+
+func _on_entry_reveal_finished() -> void:
+	_play_entry_actor_appearance()
 
 
 # —————————————————————————————————————————————

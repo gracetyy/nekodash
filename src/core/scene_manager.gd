@@ -88,8 +88,10 @@ var _overlay_paused_tree: bool = false
 # —————————————————————————————————————————————
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load_registry()
-	# Identify the current scene at startup to ensure autoloads like MusicManager
+	# Identify the current screen at startup to ensure autoloads like MusicManager
+
 	# know which track to play without waiting for a navigation call.
 	_identify_current_screen()
 

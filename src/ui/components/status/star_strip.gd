@@ -128,14 +128,13 @@ func _place_star(star: TextureRect, index: int, star_size: float, row_width: flo
 			Vector2(100.0, 0.0),
 			Vector2(190.0, 10.0),
 		]
-		var rotations: Array[float] = [-15.0, 0.0, 15.0]
 		var layout_width: float = 304.0
 		var current_width: float = size.x if size.x > 0 else custom_minimum_size.x
 		var offset_x: float = maxf(0.0, (current_width - layout_width) * 0.5)
 		
 		star.pivot_offset = Vector2(star_size, star_size) * 0.5
 		star.position = positions[index] + Vector2(offset_x, 0.0)
-		star.rotation_degrees = rotations[index]
+		star.rotation_degrees = 0.0
 		return
 
 	star.rotation_degrees = 0.0

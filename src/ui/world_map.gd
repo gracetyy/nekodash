@@ -149,7 +149,6 @@ func _ready() -> void:
 			return
 
 	if _catalogue == null:
-
 		_show_empty_state()
 		return
 
@@ -430,6 +429,18 @@ func _get_world_progress_text(levels: Array[LevelData]) -> String:
 	return "%d / %d" % [earned_stars, levels.size() * 3]
 
 
+func _build_star_text(stars: int, completed: bool) -> String:
+	var filled: String = String.chr(0x2605)
+	var empty: String = String.chr(0x2606)
+	if not completed:
+		return empty + empty + empty
+	var clamped: int = clampi(stars, 0, 3)
+	var output: String = ""
+	for i: int in range(3):
+		output += filled if i < clamped else empty
+	return output
+
+
 func _get_world_title(world_id: int) -> String:
 	for world: WorldData in _catalogue.worlds:
 		if world.world_id == world_id:
@@ -540,7 +551,6 @@ func _apply_visual_style() -> void:
 		_hint_label.visible = false
 	if _progress_chip != null:
 		_progress_chip.visible = false
-
 
 
 func _apply_screen_edge_margins() -> void:
