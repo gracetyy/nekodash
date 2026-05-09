@@ -120,8 +120,9 @@ func test_level_complete_perfect_result_uses_smile_cat_variant() -> void:
 
 	# Assert
 	var content: Control = overlay.get_node("Content") as Control
-	var cat_illustration: TextureRect = content.get_node("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration") as TextureRect
-	assert_eq(cat_illustration.texture.resource_path, "res://assets/art/cats/cat_default_smile.png")
+	var cat_illustration: CatRig = content.get_node("MarginContainer/ResultsCard/CardMargin/VBox/CatIllustration") as CatRig
+	assert_not_null(cat_illustration)
+	assert_eq(cat_illustration.pose_variant, "smile")
 
 
 func test_level_complete_wide_layout_keeps_stars_and_ribbon_centered() -> void:

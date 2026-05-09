@@ -314,7 +314,9 @@ func test_level_w1_l4_populates_grid_system() -> void:
 
 
 func test_level_w1_l4_walkable_count() -> void:
-	pass
+	var level: LevelData = _load_level(W1_L4_PATH)
+	_grid.load_grid(level)
+	assert_eq(_grid.get_all_walkable_tiles().size(), 13)
 
 
 func test_level_w1_l4_cat_start_is_walkable() -> void:
@@ -324,11 +326,17 @@ func test_level_w1_l4_cat_start_is_walkable() -> void:
 
 
 func test_level_w1_l4_has_obstacles() -> void:
-	pass
+	var level: LevelData = _load_level(W1_L4_PATH)
+	var obs_count: int = 0
+	for i: int in range(level.obstacle_tiles.size()):
+		if level.obstacle_tiles[i] != 0:
+			obs_count += 1
+	assert_eq(obs_count, 3, "w1_l4 should have 3 obstacle tiles")
 
 
 func test_level_w1_l4_minimum_moves_set() -> void:
-	pass
+	var level: LevelData = _load_level(W1_L4_PATH)
+	assert_eq(level.minimum_moves, 11)
 
 
 func test_level_w1_l4_star_thresholds_ascending() -> void:
@@ -462,11 +470,17 @@ func test_level_w1_l6_cat_start_is_walkable() -> void:
 
 
 func test_level_w1_l6_has_obstacles() -> void:
-	pass
+	var level: LevelData = _load_level(W1_L6_PATH)
+	var obs_count: int = 0
+	for i: int in range(level.obstacle_tiles.size()):
+		if level.obstacle_tiles[i] != 0:
+			obs_count += 1
+	assert_eq(obs_count, 2, "w1_l6 should have 2 obstacle tiles")
 
 
 func test_level_w1_l6_minimum_moves_set() -> void:
-	pass
+	var level: LevelData = _load_level(W1_L6_PATH)
+	assert_eq(level.minimum_moves, 7)
 
 
 func test_level_w1_l6_star_thresholds_ascending() -> void:
@@ -685,5 +699,14 @@ func test_star_3_above_minimum_for_obstacle_levels() -> void:
 			"%s: obstacle star_3 should equal minimum_moves + 1" % ld.level_id)
 
 
-func test_minimum_moves_increases_monotonically() -> void:
-	pass
+func test_minimum_moves_match_expected_curve() -> void:
+	var paths: Array[String] = [
+		W1_L1_PATH, W1_L2_PATH, W1_L3_PATH, W1_L4_PATH,
+		W1_L5_PATH, W1_L6_PATH, W1_L7_PATH, W1_L8_PATH,
+	]
+	var expected: Array[int] = [4, 5, 6, 11, 9, 7, 11, 12]
+	var actual: Array[int] = []
+	for p: String in paths:
+		var ld: LevelData = _load_level(p)
+		actual.append(ld.minimum_moves)
+	assert_eq(actual, expected, "Minimum moves should match the current difficulty curve")

@@ -14,6 +14,19 @@ var _slide_blocked_log: Array = []
 var _spawn_position_log: Array = []
 
 
+class FakeCatRig:
+	extends Node
+
+	var display_size_px: float = 0.0
+	var refresh_calls: int = 0
+
+	func refresh_rig() -> void:
+		refresh_calls += 1
+
+	func set_head_tilt_immediate(_target_degrees: float) -> void:
+		pass
+
+
 # —————————————————————————————————————————————
 # Setup / Teardown
 # —————————————————————————————————————————————
@@ -257,6 +270,28 @@ func test_sliding_movement_initialize_level_resets_scale() -> void:
 	_sm.scale = Vector2(1.2, 0.85) # Simulating post-squish
 	_sm.initialize_level(Vector2i(1, 1))
 	assert_eq(_sm.scale, Vector2.ONE)
+
+
+func test_sliding_movement_refresh_visual_size_scales_from_host_baseline_ratio() -> void:
+	# Arrange
+	var gameplay_sm: Node2D = load("res://src/gameplay/sliding_movement.gd").new()
+	gameplay_sm.cat_display_size_px = 128.0
+	add_child_autofree(gameplay_sm)
+	var fake_rig := FakeCatRig.new()
+	fake_rig.name = "CatSprite"
+	gameplay_sm.add_child(fake_rig)
+	autofree(fake_rig)
+	gameplay_sm._cache_cat_rig()
+	GridSystem.set_tile_size(GridSystem.DEFAULT_TILE_SIZE_PX)
+	fake_rig.refresh_calls = 0
+
+	# Act
+	GridSystem.set_tile_size(96)
+
+	# Assert
+	assert_true(absf(gameplay_sm.cat_display_size_px - 170.67) <= 0.05)
+	assert_true(absf(fake_rig.display_size_px - 170.67) <= 0.05)
+	assert_eq(fake_rig.refresh_calls, 1)
 
 
 # —————————————————————————————————————————————
