@@ -1,8 +1,8 @@
 # Export Tooling Audit
 
-**Date:** May 9, 2026
+**Date:** May 10, 2026
 
-This audit now covers both capture-related tooling and the broader non-game files that were leaking into shipping exports. It reflects the current preset configuration in `export_presets.cfg`, fresh Windows and Web rebuilds performed on May 9, 2026, browser-based verification of the new Web capture split, and the still-stale Android APK currently checked into `android/build/nekodash.apk`.
+This audit now covers both capture-related tooling and the broader non-game files that were leaking into shipping exports. It reflects the current preset configuration in `export_presets.cfg`, fresh Windows/Web/Android verification performed on May 10, 2026, browser-based verification of the Web capture split, and the repo-side Android fallback wrapper `android/build_signed_debug.ps1` that is required when the direct Godot Android export stalls after refreshing `android/build/assets`.
 
 ## Pre-Ship Checklist
 
@@ -12,7 +12,8 @@ This audit now covers both capture-related tooling and the broader non-game file
 - Serve the `Web Dev Capture` export and confirm the same URL opens the requested capture screen, which verifies the `dev_capture` split still works.
 - Run the full GUT suite.
 - Run `tools/ui_snapshot_capture.gd`; if headless Windows skips screenshots because of the dummy renderer, run `tools/web_ui_snapshot_capture.ps1` against a served `Web Dev Capture` export and inspect the generated options, pause, and level-complete images.
-- For Android, confirm the APK timestamp changed before trusting any APK string probe or packaging result.
+- For Android, use `android/build_signed_debug.ps1` when the direct Godot export does not finish the Gradle package step. The wrapper sets Java 17, applies `perform_signing=true`, carries the Android preset metadata from `export_presets.cfg`, and copies the signed APK back to `android/build/nekodash.apk` and `android/build/NekoDash.apk`.
+- For Android, confirm the APK timestamp changed, `apksigner verify --verbose --print-certs` succeeds, and the APK installs and launches on an emulator or device before trusting the result.
 
 ## Current Preset Configuration
 
@@ -67,33 +68,26 @@ The root cause was not autoload registration. It was `all_resources` plus narrow
 
 ## Post-Cleanup Packaging Status
 
-| Platform        | Artifact status                                | Dev-only capture/test/editor tooling | Runtime-required exceptions              | Notes                                                                                                                                                                                                                      |
-| --------------- | ---------------------------------------------- | ------------------------------------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Windows Desktop | Fresh rebuild completed on May 9               | Not present in `savepack` output     | Present                                  | Export finished with pre-existing project warnings, but no `Storing File:` matches remained for `tests/**`, `addons/gut/**`, `addons/ui_design_tool/**`, `addons/gui_auto_layout/**`, or the excluded `tools/*.gd` helpers |
-| Web             | Fresh rebuild completed on May 9               | Not present in `savepack` output     | Present                                  | Same packaging result as Windows Desktop                                                                                                                                                                                   |
-| Web Dev Capture | Fresh rebuild completed on May 9               | Same exclusions as shipping Web      | Present                                  | Adds only the `dev_capture` custom feature, not the excluded dev-only scripts                                                                                                                                              |
-| Android         | No fresh post-fix APK produced in this session | Post-fix status unverified           | Stale APK still contains pre-fix leakage | `android/build/nekodash.apk` still has an April 3, 2026 timestamp and still exposes old leaked paths, so it cannot be treated as a post-fix result                                                                         |
+| Platform        | Artifact status                          | Dev-only capture/test/editor tooling          | Runtime-required exceptions | Notes                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------- | ---------------------------------------- | --------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows Desktop | Fresh rebuild completed on May 10        | Not present in `savepack` output              | Present                     | Export finished with the same pre-existing project warnings, stayed alive during startup smoke, created a main window, and wrote a runtime log.                                                                                                                                                                                                                                          |
+| Web             | Fresh rebuild completed on May 10        | Not present in `savepack` output              | Present                     | Shipping Web stayed on the normal main-menu flow when `capture_ui=1&screen=options` was tested with an isolated browser profile. An earlier non-isolated probe that opened Options was a stale browser-state false positive.                                                                                                                                                             |
+| Web Dev Capture | Fresh rebuild completed on May 10        | Same exclusions as shipping Web               | Present                     | Desktop capture routes for Options, Pause, and Level Complete rendered correctly. Some mobile routes still only reached the Godot loading screen within the current capture budgets, so mobile dev-capture verification is only partial.                                                                                                                                                 |
+| Android         | Fresh signed rebuild completed on May 10 | Not found in generated `android/build/assets` | Present                     | Direct Godot export still stalled after refreshing `android/build/assets`, but `android/build_signed_debug.ps1` rebuilt the generated Gradle project in a temp directory with Java 17, `perform_signing=true`, and the Android preset metadata. The resulting APK verifies with `apksigner`, installs on the local emulator, and launches as `io.itch.nekodash/com.godot.game.GodotApp`. |
 
 ## Capture-Related Files Still Ending Up In Shipped Builds
 
-For the fresh May 9 shipping rebuilds that were actually produced in this session:
+For the fresh May 10 shipping rebuilds that were verified in this session:
 
 - `src/ui/web_capture_router.gd` still ships in Windows and Web because it is an autoloaded project script.
-
-For the currently checked-in Android APK on disk:
-
-- `assets/tests/**`
-- `assets/tools/playtest_capture.gd`
-- `assets/tools/playtest_runner.gd`
-- other pre-fix tooling strings still appear in the stale APK payload
-
-That Android APK is not a valid post-cleanup verification artifact.
+- No blocked dev-only capture, test, or editor files were found in the generated `android/build/assets` tree before the final signed Android package step.
+- The Android runtime-required `tools/level_solver.gd` and `addons/godot_ui_animations/UIAnimationHandler.tscn` content still survives in exported/remapped form under `android/build/assets/tools/level_solver.gd.remap`, `android/build/assets/tools/level_solver.gdc`, and `android/build/assets/addons/godot_ui_animations/UIAnimationHandler.tscn.remap`.
 
 ## Browser Verification Of The New Web Split
 
 Two direct browser probes were run against local servers:
 
-- Shipping Web export with `capture_ui=1&screen=options&delay_ms=5000`
+- Shipping Web export with `capture_ui=1&screen=options&delay_ms=5000` using an isolated browser profile
   - Result: remained on the main menu
   - Evidence screenshot: `screenshots/export_audit/web_shipping_options_probe.png`
 - `Web Dev Capture` export with the same query string
@@ -111,9 +105,14 @@ This confirms that the runtime capture behavior is now behind the dedicated `dev
   - `options_desktop_web.png`
   - `pause_desktop_web.png`
   - `level_complete_desktop_web.png`
+- Mobile `Web Dev Capture` screenshots for `world_map_mobile_web.png`, `skin_select_mobile_web.png`, and `options_mobile_web.png` still showed the Godot loading screen within the current capture budgets and should be treated as a remaining verification gap.
+- The original unsigned Android failure was caused by invoking `gradlew assembleDebug` without `-Pperform_signing=true`; `android/build/config.gradle` defaults signing off for non-Android-Studio builds unless that property is explicitly supplied.
+- `android/build_signed_debug.ps1` now rebuilds from a temp copy of the generated Gradle project, applies Java 17 and the Android preset metadata, verifies the result with `apksigner`, and writes the signed APK back to `android/build/nekodash.apk` and `android/build/NekoDash.apk`.
+- The final signed Android APK installed successfully on the local `Medium_Phone` emulator, and `dumpsys activity` reported `io.itch.nekodash/com.godot.game.GodotApp` as the top resumed activity.
 
 ## Evidence Methodology
 
 - For fresh Windows and Web exports, the exporter `savepack` log is the authoritative source for whether a file was packaged.
 - Raw `rg -a` probes against `.pck` files can still surface excluded paths from metadata such as `project.binary` or script caches, so they are useful for spot checks but not authoritative on their own.
-- For Android, the stale artifact timestamp is the decisive reason the current APK probe cannot be used as post-fix evidence.
+- For Android, the generated `android/build/assets` tree is the authoritative pre-Gradle payload source when the direct Godot export stalls before final packaging.
+- For Android CLI fallback builds, use `android/build_signed_debug.ps1` instead of a bare `gradlew assembleDebug`; otherwise Gradle will emit an unsigned APK and may also fall back to the default `com.godot.game` application id instead of the Android export preset metadata.
